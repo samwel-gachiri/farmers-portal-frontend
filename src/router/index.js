@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-// import store from '@/store';
+import store from '@/store';
 import VueMeta from 'vue-meta';
 import Landing from '@/views/Landing';
 import Connection from '@/views/errors/Connection';
@@ -9,40 +9,41 @@ Vue.use(VueMeta);
 
 Vue.use(VueRouter);
 
-// const ifNotAuthenticated = (_to, _from, next) => {
-//   if (!store.getters['auth/isAuthenticated']) {
-//     next();
-//     return;
-//   }
-//   next('/dashboard');
-// };
+const ifNotAuthenticated = (_to, _from, next) => {
+  if (!store.getters['auth/isAuthenticated']) {
+    next();
+    return;
+  }
+  next('/dashboard');
+};
 //
-// const ifAuthenticated = (_to, _from, next) => {
-//   if (store.getters['auth/isAuthenticated']) {
-//     next();
-//     return;
-//   }
-//   next(`/signin?r=${btoa(window.location.href)}`);
-// };
+const ifAuthenticated = (_to, _from, next) => {
+  if (store.getters['auth/isAuthenticated']) {
+    next();
+    return;
+  }
+  next(`/signin?r=${btoa(window.location.href)}`);
+};
 
 const routes = [
   {
     path: '/',
     name: 'Landing',
+    beforeEnter: ifAuthenticated,
     component: Landing,
   },
-  // {
-  //   path: '/signin',
-  //   name: 'SignIn',
-  //   beforeEnter: ifNotAuthenticated,
-  //   component: () => import('../views/auth/SignIn'),
-  // },
-  // {
-  //   path: '/signup',
-  //   name: 'SignUp',
-  //   beforeEnter: ifNotAuthenticated,
-  //   component: () => import('../views/auth/SignUp'),
-  // },
+  {
+    path: '/signin',
+    name: 'SignIn',
+    beforeEnter: ifNotAuthenticated,
+    component: () => import('../views/auth/SignIn'),
+  },
+  {
+    path: '/signup',
+    name: 'SignUp',
+    beforeEnter: ifNotAuthenticated,
+    component: () => import('../views/auth/SignUp'),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',

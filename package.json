@@ -1,5 +1,5 @@
 {
-  "name": "portfolio-project",
+  "name": "farmer-portal-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,6 +21,7 @@
     "date-fns": "^2.16.1",
     "eslint-import-resolver-webpack": "^0.13.8",
     "firebase": "^7.24.0",
+    "flag-icons": "^7.2.3",
     "google-maps": "^4.3.2",
     "idle-vue": "^2.0.5",
     "jwt-decode": "^3.0.0",

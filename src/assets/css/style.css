@@ -19,8 +19,8 @@ html, body, p, .v-application {
 .c-white-text {
     color: var(--white-color) ;
 }
-.c-blue-text{
-    color: var(--blue-color) ;
+.c-green-text{
+    color: var(--green-color) ;
 }
 .c-yellow-text{
     color: var(--yellow-color) ;
@@ -30,6 +30,9 @@ html, body, p, .v-application {
 }
 .c-bg-gray {
     background-color: var(--bg-gray) !important;
+}
+.c-bg-green {
+    background-color: var(--green-color) !important;
 }
 .c-bg-blue {
     background-color: var(--blue-color) !important;
@@ -97,4 +100,16 @@ html, body, p, .v-application {
 }
 ul{
     list-style: none!important;
+}
+::-webkit-scrollbar {
+    width: 0;
+}
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #d6dee1;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: padding-box;
 }
