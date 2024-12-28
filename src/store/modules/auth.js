@@ -87,6 +87,7 @@ const actions = {
       // SUSPEND USER LOGIN STATE HERE FOR OTP VERIFICATION
       localStorage.setItem('tempUser', JSON.stringify(user));
     } catch (err) {
+      this.$toast.error('Wrong credentials');
       context.commit('auth/setAuthenticationError', err, { root: true });
     }
   },
@@ -103,7 +104,7 @@ const actions = {
     context.commit('setUserConfirmed', false);
     try {
       await Auth.signUp(params);
-      await context.dispatch('auth/generateOtp', { email: params.attributes.email, mobile: params.attributes.phone_number }, { root: true });
+      // await context.dispatch('auth/generateOtp', { email: params.attributes.email, mobile: params.attributes.phone_number }, { root: true });
       // keep user cred
       // eslint-disable-next-line no-underscore-dangle,global-require,import/no-extraneous-dependencies
       const CryptoJS = require('crypto-js');
@@ -113,6 +114,7 @@ const actions = {
       context.commit('auth/clearAuthentication', null, { root: true });
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
+      console.error(err);
     }
   },
   refresh: async (context) => {

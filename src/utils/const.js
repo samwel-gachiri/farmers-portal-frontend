@@ -1,8 +1,8 @@
 export const MINIMUM_COMP_PREMIUM = 37500;
 
-export const USER_EMAIL = '842ekhdajshqe7ry78df78o2e';
-export const ACCESS_TOKEN = '72ryo4yr87436br7824bx74s3t8';
-export const USER = 'gry7873i4yrgv8us4';
+export const USER_EMAIL = '823458teduuf334';
+export const ACCESS_TOKEN = '12wedfh3wdfhedvtre8';
+export const USER = 'g1kdk-damedoja-p';
 export const APP_CODE = '2Rp99UAjqVA';
 export const USER_OTP = 'usr-otp';
 export const CR_KEY = 'tywrtr25cf';

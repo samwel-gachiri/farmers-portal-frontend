@@ -44,6 +44,11 @@ const routes = [
     beforeEnter: ifNotAuthenticated,
     component: () => import('../views/auth/SignUp'),
   },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../views/profile'),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',

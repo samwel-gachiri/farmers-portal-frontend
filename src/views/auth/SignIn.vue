@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <v-main>
-      <div v-if="!form.userType" class="tw-h-full">
+      <div v-if="!form.userType" class="tw-min-h-full">
         <div class="tw-flex h-80 md:tw-flex-row tw-flex-col-reverse tw-justify-start tw-gap-5 tw-items-center tw-px-12">
           <h1
             style="font-size: 46px"
@@ -55,13 +55,27 @@
               elevation="2"
           >
             <card-title>Sign in</card-title>
-            <phone-input />
+            <phone-number-input
+                class="tw-my-3"
+                v-model="form.phoneNumber"
+                default-country-code="KE"
+                :no-country-selector="false"
+                :preferred-countries="['KE', 'US', 'UG', 'TZ']"
+            />
+            <v-text-field
+                label="email"
+                v-model="form.email"
+                dense
+            >
+              <v-icon slot="prepend">mdi-email</v-icon>
+            </v-text-field>
             <div class="tw-flex tw-flex-row tw-gap-3 tw-mr-3">
               <v-icon slot="prepend" color="primary">mdi-lock</v-icon>
               <v-text-field
                   id="password"
                   label="Password"
                   class="tw-bg-gray-100 tw-rounded-lg"
+                  dense
                   v-model="form.password"
                   :rules="[required('Password')]"
               >
@@ -71,14 +85,17 @@
             <div
                 class="tw-mx-5 tw-pl-4 tw-my-6 tw-justify-end"
             >
-              <router-link
-                  to="signup"
-              >Don't have an account? Sign up</router-link>
+              <div
+                  class="tw-border-0 tw-font-bold"
+                  @click="toSignUp"
+              >Don't have an account? Sign up
+              </div>
             </div>
             <div class="tw-my-6 tw-mx-3">
               <v-btn
                   block
                   color="primary"
+                  @click="onSubmit"
               >Login</v-btn>
             </div>
           </v-card>
@@ -89,15 +106,16 @@
 </template>
 <script>
 import validations from '@/utils/validations';
-import PhoneInput from '@/components/layout/components/PhoneInput';
+// import PhoneInput from '@/components/layout/components/PhoneInput';
 import CardTitle from '@/components/shared/CardTitle';
 
 export default {
-  components: { CardTitle, PhoneInput },
+  components: { CardTitle },
   data() {
     return {
       form: {
         password: '',
+        phoneNumber: '',
         email: '',
         userType: null,
       },
@@ -105,6 +123,38 @@ export default {
       ...validations,
       selectedCountry: 'KE',
     };
+  },
+  methods: {
+    onSubmit() {
+      // this.$store.state.lo
+      console.log(this.form);
+      const formData = {
+        username: this.form.email,
+        password: this.form.password,
+      };
+      this.$store.dispatch('auth/signIn', formData).then(() => {
+        // this.$store.state.loading = false;
+        if (
+          this.createUser !== '' && this.createUser.challengeName === 'NEW_PASSWORD_REQUIRED'
+        ) {
+          this.$router.push({ name: 'CreatePassword' });
+        }
+        if (this.hasAuthenticationStatus) {
+          if (this.authenticationStatus.variant === 'error') {
+            this.$store.commit('SNACKBAR', this.authenticationStatus);
+          } else {
+            this.$router.push({ name: 'Dashboard' });
+          }
+        }
+      });
+      // this.$toast.success(this.form.email, this.form.password);
+    },
+    toSignUp() {
+      this.$cookies.set('userType', this.form.userType);
+      this.$router.push({
+        name: 'SignUp',
+      });
+    },
   },
 };
 </script>
