@@ -14,6 +14,7 @@
         app
         :flat="true"
         color="white"
+        class="tw-rounded-lg"
     >
       <v-app-bar-nav-icon class="tw-block lg:tw-hidden" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title
@@ -24,7 +25,7 @@
 
       <v-spacer></v-spacer>
       <div class="tw-w-full tw-flex tw-justify-end tw-items-center">
-        <v-btn :to="{ name: 'Notifications' }" class="tw-mr-2" icon>
+        <v-btn :to="{ name: 'Notifications' }" class="tw-mb-2" icon>
           <v-badge
               overlap
               :color="$store.getters.notificationCount === 0 ? 'success' : 'error'"
@@ -40,11 +41,11 @@
 
     <v-main>
       <v-container
-          class="fill-heigh tw-min-h-full c-bg-gray tw-bg-bottom tw-pb-40 lg:tw-pb-16"
+          class="fill-height tw-min-h-full c-bg-gray tw-bg-bottom tw-pb-40 lg:tw-pb-16"
           fluid
       >
 
-        <div class="tw-px-0 md:tw-px-10 tw-pb-10 md:tw-pb-48">
+        <div class="tw-pb-10 md:tw-pb-48 ">
           <slot></slot>
         </div>
 
@@ -71,7 +72,7 @@ export default {
     ...mapGetters('auth', ['authenticatedUser']),
   },
   mounted() {
-    this.getClient();
+    // this.getClient();
   },
   methods: {
     getClient() {
@@ -85,8 +86,7 @@ export default {
 </script>
 
 <style scoped>
-.sidebar{
-  background-color: #114cac;
-  //background-image: linear-gradient(#114cac, #012247);
+.sidebar {
+  background-color: rgba(255, 255, 255);
 }
 </style>

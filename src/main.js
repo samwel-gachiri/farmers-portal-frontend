@@ -5,6 +5,7 @@ import initialize from '@/utils/initialize';
 import Auth from '@aws-amplify/auth';
 import AuthConfig from '@/utils/aws-exports';
 import VueIziToast from 'vue-izitoast';
+import InfiniteLoading from 'vue-infinite-loading';
 import '@/assets/css/tailwind.css';
 import '@/assets/css/color/default.css';
 import '@/assets/css/nprogress.css';
@@ -12,6 +13,7 @@ import '@/assets/css/style.css';
 import 'izitoast/dist/css/iziToast.min.css';
 import helperMixins from '@/mixins/helperMixins';
 import VuePhoneNumberInput from 'vue-phone-number-input';
+import Avatar from 'vue-avatar';
 import router from './router';
 import vuetify from './plugins/vuetify';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
@@ -28,6 +30,8 @@ Vue.$cookies.config('7d', null, null, true, 'Strict');
 Vue.component('phone-number-input', VuePhoneNumberInput);
 
 Vue.use(VueIziToast, { position: 'topRight', timeout: 5000 });
+Vue.use(InfiniteLoading);
+Vue.use(Avatar);
 Auth.configure(AuthConfig);
 
 initialize.init(router, store);

@@ -82,13 +82,13 @@ const actions = {
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
       const user = await Auth.signIn(params.username, params.password);
-      // context.commit('setUserAuthenticated', user);
+      context.commit('setUserAuthenticated', user);
       context.commit('auth/setAuthenticationSuccess', 'logged in', { root: true });
       // SUSPEND USER LOGIN STATE HERE FOR OTP VERIFICATION
       localStorage.setItem('tempUser', JSON.stringify(user));
     } catch (err) {
-      this.$toast.error('Wrong credentials');
       context.commit('auth/setAuthenticationError', err, { root: true });
+      throw err;
     }
   },
   signOut: async (context) => {
@@ -114,7 +114,7 @@ const actions = {
       context.commit('auth/clearAuthentication', null, { root: true });
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
-      console.error(err);
+      throw err;
     }
   },
   refresh: async (context) => {

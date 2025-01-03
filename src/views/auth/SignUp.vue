@@ -28,7 +28,7 @@
                 color="green darken-3"
                 class="tw-rounded-lg"
             >
-              <v-icon>mdi mdi-sitemap</v-icon>
+              <v-icon>mdi mdi-web</v-icon>
               View catalogue
             </v-btn>
           </div>
@@ -40,7 +40,8 @@
               elevation="2"
           >
             <card-title>Sign up</card-title>
-            <div
+            <v-form
+                v-model="form.isValid"
                 class="tw-px-4 tw-fex tw-flex-col"
             >
               <phone-number-input
@@ -52,9 +53,10 @@
               />
               <v-text-field
                   label="Full names"
-                  class="tw-my-3"
+                  class="tw-my-5"
                   dense
                   v-model="form.fullName"
+                  :rules="required('Name')"
               >
                 <v-icon slot="prepend" color="primary">mdi-account</v-icon>
               </v-text-field>
@@ -98,9 +100,10 @@
                     block
                     color="primary"
                     @click="onSignUp"
+                    :disabled="!form.isValid"
                 >Sign up</v-btn>
               </div>
-            </div>
+            </v-form>
             <router-link
                 to="/profile"
             >profile</router-link>
@@ -126,6 +129,7 @@ export default {
         phoneNumber: '',
         userType: this.$cookies.get('userType'),
         terms: '',
+        isValid: false,
       },
       userTypes: ['Farmer', 'Buyer'],
       ...validations,
@@ -137,14 +141,12 @@ export default {
   },
   methods: {
     async onSignUp() {
-      this.$toast.success('hello');
       const payload = {
-        username: '+254712345678',
+        username: `+254${this.form.phoneNumber.slice(1)}`,
         password: this.form.password,
         attributes: {
           picture: 'https://images.app.goo.gl/CS3uJKWnP61jdUNQ7',
           name: this.form.fullName,
-          phone_number: `+254${this.form.phoneNumber.slice(1)}`,
           'custom:role': this.form.userType, // Custom attribute for user type
         },
       };
@@ -163,7 +165,7 @@ export default {
           }
         })
         .catch((reason) => {
-          this.$toast.error(reason);
+          this.$toast.error(reason.message);
         });
     },
   },

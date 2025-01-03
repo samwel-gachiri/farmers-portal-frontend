@@ -12,16 +12,16 @@
             :rules="[required('Full Name')]"
         >
         </v-text-field>
-        <v-text-field
-            id="email"
-            type="email"
-            name="email"
-            v-model="email"
-            label="Email Address"
-            :rules="[required('Email'), emailFormat()]"
-            disabled
-        >
-        </v-text-field>
+<!--        <v-text-field-->
+<!--            id="email"-->
+<!--            type="email"-->
+<!--            name="email"-->
+<!--            v-model="email"-->
+<!--            label="Email Address"-->
+<!--            :rules="[required('Email'), emailFormat()]"-->
+<!--            disabled-->
+<!--        >-->
+<!--        </v-text-field>-->
         <v-text-field
             id="phone"
             type="text"
@@ -29,16 +29,6 @@
             v-model="phone_number"
             label="Phone Number"
             :rules="[required('Mobile No.'), mobileFormat()]"
-            disabled
-        >
-        </v-text-field>
-        <v-text-field
-            id="karPin"
-            type="text"
-            name="kraPin"
-            v-model="kra_pin"
-            label="KRA Pin"
-            :rules="[required('KRA PIN'), kraPinFormat()]"
             disabled
         >
         </v-text-field>
@@ -84,7 +74,6 @@ export default {
     this.fullname = this.user.name;
     this.email = this.user.email;
     this.phone_number = this.user.phone_number;
-    this.kra_pin = this.user['custom:kra-pin'];
   },
   methods: {
     async updateProfile() {
