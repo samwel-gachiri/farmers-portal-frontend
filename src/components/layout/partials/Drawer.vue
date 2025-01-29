@@ -39,9 +39,9 @@ export default {
   components: { avatar },
   data: () => ({
     items: [
-      { icon: 'mdi-account-group', text: 'Community', link: { name: 'Dashboard' } },
-      { icon: 'mdi-tractor', text: 'Sell produce', link: { name: '', query: { toSamwel: true } } },
-      { icon: 'mdi-library-shelves', text: 'My Sales', link: { name: '' } },
+      { icon: 'mdi-apps', text: 'Dashboard', link: { name: 'Dashboard' } },
+      { icon: 'mdi-account', text: 'Students', link: { name: 'Students' } },
+      // { icon: 'mdi-library-shelves', text: 'My Sales', link: { name: '' } },
     ],
   }),
 };

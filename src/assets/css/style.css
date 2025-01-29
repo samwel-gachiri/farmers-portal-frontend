@@ -22,6 +22,9 @@ html, body, p, .v-application {
 .c-green-text{
     color: var(--green-color) ;
 }
+.c-blue-text{
+    color: var(--blue-color) ;
+}
 .c-yellow-text{
     color: var(--yellow-color) ;
 }

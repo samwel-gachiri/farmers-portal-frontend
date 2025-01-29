@@ -1,58 +1,31 @@
 <template>
   <v-app id="inspire">
     <v-main>
-      <div v-if="!form.userType" class="">
-        <div class="tw-flex h-80 md:tw-flex-row tw-flex-col-reverse tw-justify-start tw-gap-5 tw-items-center tw-px-12">
-          <h1
-            style="font-size: 46px"
-            class="c-green-text tw-font-bold"
-          >Log in to access your account</h1>
-          <img
-              src="../../assets/images/logo.png"
-              alt="Company Logo"
-              class="tw-border tw-rounded-lg tw-pl-5"
-              loading="lazy"
-          />
-        </div>
-        <div class="tw-flex md:tw-flex-row tw-flex-col tw-w-full tw-gap-5 tw-p-12">
-          <div
-            v-for="(user, index) in userTypes"
-            :key="index"
-            class="tw-flex tw-flex-row tw-w-full tw-border-b-4 tw-border-black tw-pb-5 hover:tw-bg-gray-100"
-            @click="form.userType = user"
-          >
-            <h2 style="font-size: 32px"
-              class="tw-font-bold tw-w-full c-green-text"
-            >{{ user }}</h2>
-            <v-icon
-                size="30px"
-                large
-                color="black"
-                class="font-weight-bold tw-font-bold"
-            >mdi-arrow-right</v-icon>
+      <div class="main-bg tw-flex md:tw-flex-row tw-flex-col tw-h-full tw-gap-5 tw-rounded-lg">
+        <!--Ad part-->
+        <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-p-4">
+          <div class="tw-w-full tw-flex tw-justify-center md:tw-justify-start tw-flex-row">
+            <div class="tw-flex tw-justify-center tw-items-center tw-flex-col tw-border-b-4">
+              <h2 class="c-title c-green-text c-blue-text tw-text-2xl tw-font-bold tw-mb-4 md:tw-mb-0 md:tw-mr-4">
+                Welcome To Little Angels Academy
+              </h2>
+            </div>
+            <img
+                v-if="false"
+                src="@/assets/images/logo.png"
+                alt="Company Logo"
+                class="tw-border tw-rounded-lg"
+                width="100"
+                height="100"
+                loading="lazy"
+            />
           </div>
         </div>
-      </div>
-      <div v-else class="tw-flex tw-h-full tw-flex-col tw-my-2 tw-mx-8 tw-gap-5 tw-rounded-lg">
-        <header class="tw-flex tw-flex-col md:tw-flex-row tw-justify-center tw-items-center tw-p-2">
-          <h2 class="c-title c-green-text tw-text-2xl tw-font-bold tw-mb-4 md:tw-mb-0 md:tw-mr-4">
-            Welcome To AgriConnect
-            {{ form.userType }}
-          </h2>
-          <img
-              src="../../assets/images/logo.png"
-              alt="Company Logo"
-              class="tw-border tw-rounded-lg"
-              width="100"
-              height="100"
-              loading="lazy"
-          />
-        </header>
-        <div class="tw-flex tw-w-full tw-justify-center">
-          <v-card
-              class="md:tw-p-5 tw-p-2"
+<!--        form part-->
+        <div class="tw-flex tw-justify-center tw-items-center tw-w-full">
+          <div
+              class="neumorphism md:tw-p-5 tw-p-2 md:tw-mr-10 tw-mb-8 tw-border tw-bg-gray-100 tw-rounded"
               draggable="true"
-              elevation="2"
           >
             <card-title>Sign in</card-title>
             <v-form v-model="isValid" @submit.prevent="onSubmit">
@@ -102,7 +75,8 @@
                 >Login</v-btn>
               </div>
             </v-form>
-          </v-card>
+          </div>
+          <div></div>
         </div>
       </div>
     </v-main>
@@ -162,7 +136,6 @@ export default {
       // this.$toast.success(this.form.email, this.form.password);
     },
     toSignUp() {
-      this.$cookies.set('userType', this.form.userType);
       this.$router.push({
         name: 'SignUp',
       });
@@ -171,5 +144,14 @@ export default {
 };
 </script>
 <style scoped>
+.main-bg {
+  //background: rgb(34,195,110);
+  //background: linear-gradient(236deg, rgba(34,195,110,1) 0%, rgba(253,187,45,1) 100%);
+}
 @media (min-width: 768px) {     .h-80 {         height: 70vh     } }
+.neumorphism {
+  background: #e0e0e0;
+  box-shadow:  -5px 5px 10px #bebebe,
+  5px -5px 10px #ffffff;
+}
 </style>

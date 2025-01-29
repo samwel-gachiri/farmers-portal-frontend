@@ -2,41 +2,10 @@
   <v-app id="inspire">
     <v-main>
       <div class="tw-flex tw-h-full md:tw-flex-row tw-flex-col tw-rounded-lg">
-        <!--Ad part-->
-        <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-p-4">
-          <div class="tw-w-full tw-flex tw-flex-row">
-            <div class="tw-flex tw-justify-center tw-flex-col">
-              <h2 class="c-title c-green-text tw-text-2xl tw-font-bold tw-mb-4 md:tw-mb-0 md:tw-mr-4">
-                Welcome To AgriConnect
-                {{ form.userType }}
-              </h2>
-              <h2>Where farmers meet buyers</h2>
-            </div>
-            <img
-                src="@/assets/images/logo.png"
-                alt="Company Logo"
-                class="tw-border tw-rounded-lg"
-                width="100"
-                height="100"
-                loading="lazy"
-            />
-          </div>
-          <div class="tw-w-full tw-mt-5 tw-flex md:tw-justify-start tw-justify-center tw-items-center">
-            <v-btn
-                outlined
-                rounded
-                color="green darken-3"
-                class="tw-rounded-lg"
-            >
-              <v-icon>mdi mdi-web</v-icon>
-              View catalogue
-            </v-btn>
-          </div>
-        </div>
         <!--Form part-->
-        <div class="tw-flex tw-flex-col tw-m-3 tw-w-full tw-items-start tw-justify-end">
+        <div class="tw-flex tw-flex-col tw-m-3 tw-w-full tw-items-center tw-justify-center">
           <v-card
-              class="md:tw-w-2/3 md:tw-p-5 tw-p-2 md:tw-mx-0 tw-mx-3"
+              class="md:tw-p-5 tw-p-2 md:tw-mx-0 tw-mx-3"
               elevation="2"
           >
             <card-title>Sign up</card-title>
@@ -104,10 +73,8 @@
                 >Sign up</v-btn>
               </div>
             </v-form>
-            <router-link
-                to="/profile"
-            >profile</router-link>
           </v-card>
+          <div/>
         </div>
       </div>
     </v-main>
@@ -127,7 +94,7 @@ export default {
         password: '',
         confirmPassword: '',
         phoneNumber: '',
-        userType: this.$cookies.get('userType'),
+        userType: '',
         terms: '',
         isValid: false,
       },

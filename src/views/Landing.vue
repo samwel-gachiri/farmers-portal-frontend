@@ -14,12 +14,13 @@ export default {
 
 <template>
   <v-app id="inspire" class=" tw-bg-white">
-    <div class="tw-w-full tw-flex tw-h-full lg:tw-h-full tw-items-center tw-justify-center tw-px-2 lg:tw-px-4 tw-border-4">
-      <router-link id="dashboard" :to="{ name: 'Dashboard' }" class="tw-flex tw-flex-col tw-justify-center tw-mx-4">
+    <div class="tw-w-full tw-flex tw-flex-col tw-h-full lg:tw-h-full tw-items-center tw-justify-center tw-px-2 lg:tw-px-4">
+      <h2 class="c-title blue--text">Little Angels Academy</h2>
+      <router-link id="dashboard" :to="{ name: 'Dashboard' }" class="tw-flex tw-flex-col tw-justify-center">
         <v-icon
             size="120"
-        >mdi-truck</v-icon>
-        <div class="c-green-text">Dashboard <v-icon color="primary">mdi-chevron-right</v-icon></div>
+        >mdi-school-outline</v-icon>
+        <div class="c-green-text tw-ml-10">Dashboard <v-icon color="primary">mdi-chevron-right</v-icon></div>
       </router-link>
     </div>
 

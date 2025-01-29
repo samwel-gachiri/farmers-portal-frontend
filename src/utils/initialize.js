@@ -7,6 +7,7 @@ import NProgress from 'nprogress';
 
 export default {
   init(router, store) {
+    axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL;
     axios.interceptors.request.use(async (config) => {
       NProgress.configure({ showSpinner: false });
       NProgress.start();
@@ -47,6 +48,7 @@ export default {
       * The request was made and the server responded with a
       * status code that falls out of the range of 2xx
       */
+        console.log(error);
         if (error.response.status === 401) {
           const config = { retryAttempts: 1, ...error.config };
 

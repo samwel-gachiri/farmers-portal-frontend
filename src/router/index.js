@@ -17,19 +17,19 @@ const ifNotAuthenticated = (_to, _from, next) => {
   next('/dashboard');
 };
 //
-const ifAuthenticated = (_to, _from, next) => {
-  if (store.getters['auth/isAuthenticated']) {
-    next();
-    return;
-  }
-  next(`/signin?r=${btoa(window.location.href)}`);
-};
+// const ifAuthenticated = (_to, _from, next) => {
+//   if (store.getters['auth/isAuthenticated']) {
+//     next();
+//     return;
+//   }
+//   next(`/signin?r=${btoa(window.location.href)}`);
+// };
 
 const routes = [
   {
     path: '/',
     name: 'Landing',
-    beforeEnter: ifAuthenticated,
+    // beforeEnter: ifAuthenticated,
     component: Landing,
   },
   {
@@ -43,11 +43,6 @@ const routes = [
     name: 'SignUp',
     beforeEnter: ifNotAuthenticated,
     component: () => import('../views/auth/SignUp'),
-  },
-  {
-    path: '/profile',
-    name: 'profile',
-    component: () => import('../views/profile'),
   },
   // {
   //   path: '/confirm-otp',
@@ -78,6 +73,11 @@ const routes = [
     name: 'Dashboard',
     // beforeEnter: ifAuthenticated,
     component: () => import('../views/Dashboard'),
+  },
+  {
+    path: '/students',
+    name: 'Students',
+    component: () => import('../views/StudentsDetails'),
   },
   // {
   //   path: '/buy-cover',
