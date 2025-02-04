@@ -9,6 +9,10 @@ import {
   ACCESS_TOKEN, APP_CODE, CR_KEY, USER, USER_EMAIL, USER_OTP,
 } from '@/utils/const';
 
+// await context.dispatch('auth/generateOtp', { email: params.attributes.email, mobile: params.attributes.phone_number }, { root: true });
+// keep user cred
+import CryptoJS from 'crypto-js';
+
 const { Logger } = Amplify;
 Logger.LOG_LEVEL = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' ? 'ERROR' : 'DEBUG'; // to show detailed logs from Amplify library
 const logger = new Logger('store:auth');
@@ -85,7 +89,7 @@ const actions = {
       context.commit('setUserAuthenticated', user);
       context.commit('auth/setAuthenticationSuccess', 'logged in', { root: true });
       // SUSPEND USER LOGIN STATE HERE FOR OTP VERIFICATION
-      localStorage.setItem('tempUser', JSON.stringify(user));
+      return user;
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
       throw err;
@@ -104,13 +108,8 @@ const actions = {
     context.commit('setUserConfirmed', false);
     try {
       await Auth.signUp(params);
-      // await context.dispatch('auth/generateOtp', { email: params.attributes.email, mobile: params.attributes.phone_number }, { root: true });
-      // keep user cred
-      // eslint-disable-next-line no-underscore-dangle,global-require,import/no-extraneous-dependencies
-      const CryptoJS = require('crypto-js');
       const creds = CryptoJS.AES.encrypt(JSON.stringify({ username: params.username, password: params.password }), CR_KEY).toString();
       cookie.set(CR_KEY, creds);
-
       context.commit('auth/clearAuthentication', null, { root: true });
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });

@@ -3,28 +3,23 @@
     <v-main>
       <div class="main-bg tw-flex md:tw-flex-row tw-flex-col tw-h-full tw-gap-5 tw-rounded-lg">
         <!--Ad part-->
-        <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-full tw-p-4">
-          <div class="tw-w-full tw-flex tw-justify-center md:tw-justify-start tw-flex-row">
-            <div class="tw-flex tw-justify-center tw-items-center tw-flex-col tw-border-b-4">
-              <h2 class="c-title c-green-text c-blue-text tw-text-2xl tw-font-bold tw-mb-4 md:tw-mb-0 md:tw-mr-4">
-                Welcome To Little Angels Academy
-              </h2>
+        <div class="tw-flex tw-flex-row tw-justify-center tw-items-center tw-w-full tw-p-4">
+          <logo-title class="tw-w-1/2">
+            <div>
+              <v-icon color="green">mdi-map-marker-radius</v-icon><h2></h2>
             </div>
-            <img
-                v-if="false"
-                src="@/assets/images/logo.png"
-                alt="Company Logo"
-                class="tw-border tw-rounded-lg"
-                width="100"
-                height="100"
-                loading="lazy"
-            />
+          </logo-title>
+          <div class="tw-mt-5 tw-flex tw-flex-col tw-justify-start tw-items-center md:tw-items-start">
+            <v-img
+                class="tw-rounded-lg tw-my-4 md:tw-h-0"
+                sizes="500x500"
+                src="@/assets/images/sisal_basket.png"></v-img>
           </div>
         </div>
 <!--        form part-->
-        <div class="tw-flex tw-justify-center tw-items-center tw-w-full">
+        <div class="tw-flex md:tw-justify-start tw-justify-center tw-items-center tw-w-full">
           <div
-              class="neumorphism md:tw-p-5 tw-p-2 md:tw-mr-10 tw-mb-8 tw-border tw-bg-gray-100 tw-rounded"
+              class="md:tw-p-5 tw-p-2 md:tw-mr-10 tw-mb-8 tw-border tw-bg-gray-100 tw-rounded"
               draggable="true"
           >
             <card-title>Sign in</card-title>
@@ -69,6 +64,7 @@
               <div class="tw-my-6 tw-mx-3">
                 <v-btn
                     block
+                    :loading="loading"
                     color="primary"
                     type="submit"
                     :disabled="!isValid"
@@ -78,6 +74,7 @@
           </div>
           <div></div>
         </div>
+<!--        other options-->
       </div>
     </v-main>
   </v-app>
@@ -86,9 +83,12 @@
 import validations from '@/utils/validations';
 // import PhoneInput from '@/components/layout/components/PhoneInput';
 import CardTitle from '@/components/shared/CardTitle';
+import AuthMixins from '@/mixins/AuthMixins';
+import LogoTitle from '@/components/shared/LogoText';
+import { isAuthenticated } from '@/utils/roles';
 
 export default {
-  components: { CardTitle },
+  components: { LogoTitle, CardTitle },
   data() {
     return {
       form: {
@@ -104,36 +104,30 @@ export default {
       passwordConfirmField: 'password',
       show: false,
       isValid: false,
+      loading: false,
     };
   },
+  mixins: [AuthMixins],
+  computed: {
+    isAuthenticated,
+  },
   methods: {
-    onSubmit() {
-      // this.$store.state.lo
-      console.log(this.form);
-      const formData = {
-        username: `+254${this.form.phoneNumber.slice(1)}`,
-        password: this.form.password,
-      };
-      this.$store.dispatch('auth/signIn', formData).then(() => {
-        // this.$store.state.loading = false;
-        // if (
-        //   this.createUser !== '' && this.createUser.challengeName === 'NEW_PASSWORD_REQUIRED'
-        // ) {
-        //   this.$router.push({ name: 'CreatePassword' });
-        // }
-        if (this.hasAuthenticationStatus) {
-          if (this.authenticationStatus.variant === 'error') {
-            this.$store.commit('SNACKBAR', this.authenticationStatus);
-          } else {
-            this.$toast.success('Signed in successfully!');
+    async onSubmit() {
+      this.loading = true;
+      await this.signInUser(this.form.phoneNumber, this.form.password)
+        .then((user) => {
+          this.loading = false;
+          if (user != null) {
+            this.$toast.success('Signed in successfully!', `${user.attributes.name}`);
             this.$router.push({ name: 'Dashboard' });
+          } else {
+            this.$toast.error('Login failed');
           }
-        }
-        this.$router.push({ name: 'Dashboard' });
-      }).catch((err) => {
-        this.$toast.error(err.message);
-      });
-      // this.$toast.success(this.form.email, this.form.password);
+        })
+        .catch((err) => {
+          this.loading = false;
+          this.$toast.error(err.message);
+        });
     },
     toSignUp() {
       this.$router.push({
@@ -145,6 +139,7 @@ export default {
 </script>
 <style scoped>
 .main-bg {
+  background: white;
   //background: rgb(34,195,110);
   //background: linear-gradient(236deg, rgba(34,195,110,1) 0%, rgba(253,187,45,1) 100%);
 }

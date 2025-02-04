@@ -13,11 +13,12 @@ import '@/assets/css/style.css';
 import 'izitoast/dist/css/iziToast.min.css';
 import helperMixins from '@/mixins/helperMixins';
 import VuePhoneNumberInput from 'vue-phone-number-input';
-// import VueApexCharts from 'vue-apexcharts';
 import Avatar from 'vue-avatar';
-import './plugins/vuetify-money';
 import router from './router';
+
 import vuetify from './plugins/vuetify';
+import './plugins/vuetify-money';
+
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import App from './App';
 
@@ -29,11 +30,9 @@ Vue.use(VueCookies);
 Vue.$cookies.config('7d', null, null, true, 'Strict');
 
 Vue.component('phone-number-input', VuePhoneNumberInput);
-// Vue.use(VueApexCharts);
-// Vue.component('apexchart', VueApexCharts);
-
 Vue.use(VueIziToast, { position: 'topRight', timeout: 5000 });
 Vue.use(InfiniteLoading);
+
 Vue.use(Avatar);
 Auth.configure(AuthConfig);
 

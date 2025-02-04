@@ -32,6 +32,10 @@
             disabled
         >
         </v-text-field>
+        <router-link :to="{
+          name: 'Profile',
+          params: {farmerId: getCurrentUserId },
+        }" class="c-light-blue-text tw-py-4 tw-underline">Advanced Details update</router-link>
         <v-card-actions class="col-sm-6 offset-sm-3">
           <v-btn block small
                  id="userUpdate"
@@ -50,6 +54,7 @@
 <script>
 import validations from '@/utils/validations';
 import { mapGetters, mapState } from 'vuex';
+import { getCurrentUserId } from '@/utils/roles';
 
 export default {
   name: 'UserForm',
@@ -69,6 +74,7 @@ export default {
       user: (state) => state.auth.user,
     }),
     ...mapGetters('auth', ['hasAuthenticationStatus', 'authenticationStatus']),
+    getCurrentUserId,
   },
   mounted() {
     this.fullname = this.user.name;

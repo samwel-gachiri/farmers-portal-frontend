@@ -1,12 +1,15 @@
 <template>
   <div>
     <v-list dense>
-      <div class="tw-px-4 tw-py-3 md:tw-py-5 tw-mb-8">
-        <router-link :to="{ name: 'Dashboard'}">
-<!--          <img width="80" style="rotate: -17deg" :src="require('@/assets/images/samwel.png')" alt="Profile Logo" class="tw-rounded-full tw-object-cover tw-border-4 tw-border-teal-500 tw-shadow-md" />-->
-          <avatar
-          >samwel gachiri</avatar>
-        </router-link>
+      <div class="tw-mx-8 tw-py-3 md:tw-py-5 tw-mb-8">
+          <div v-if="isAuthenticated">
+            <avatar/>
+          </div>
+          <div v-else>
+            <router-link to="SignIn">Login
+              <v-icon>mdi-login</v-icon>
+            </router-link>
+          </div>
       </div>
       <template v-for="item in items">
         <v-list-item
@@ -33,17 +36,22 @@
 
 <script>
 import avatar from '@/components/layout/partials/nav/Avatar';
+import { isAuthenticated } from '@/utils/roles';
 
 export default {
   name: 'Drawer',
   components: { avatar },
   data: () => ({
     items: [
-      { icon: 'mdi-apps', text: 'Dashboard', link: { name: 'Dashboard' } },
-      { icon: 'mdi-account', text: 'Students', link: { name: 'Students' } },
-      // { icon: 'mdi-library-shelves', text: 'My Sales', link: { name: '' } },
+      { icon: 'mdi-account-group', text: 'Dashboard', link: { name: 'Dashboard' } },
+      // { icon: 'mdi-tractor', text: 'Sell produce', link: { name: 'sales', query: { toSamwel: true } } },
+      { icon: 'mdi-library-shelves', text: 'My Sales', link: { name: 'Listings' } },
+      { icon: 'mdi-account-multiple', text: 'Buyers Requests', link: { name: 'Requests' } },
     ],
   }),
+  computed: {
+    isAuthenticated,
+  },
 };
 </script>
 

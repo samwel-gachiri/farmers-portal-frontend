@@ -1,77 +1,61 @@
-<template>
-  <Default>
-    <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen">
-      <h2 class="blue--text">Class Balances</h2>
-      <v-select
-          label="Select school"
-          v-model="selectedDatabase"
-          :items="databases"
-          @change="fetchClassBalances">
-      </v-select>
-      <apexchart class="" type="line" :options="chartOptions" :series="chartSeries"></apexchart>
-    </div>
-  </Default>
-</template>
-
 <script>
-import axios from 'axios';
-import VueApexCharts from 'vue-apexcharts';
+
 import Default from '@/components/layout/Default';
+import { viewPermissions, getCurrentUserRole, getCurrentUserId } from '@/utils/roles';
 
 export default {
-  components: {
-    Default,
-    apexchart: VueApexCharts,
-  },
-  data() {
-    return {
-      selectedDatabase: 'mainschool',
-      databases: ['mainschool', 'kimorori'],
-      classBalances: [],
-      chartOptions: {
-        chart: {
-          id: 'class-balance-chart',
-        },
-        xaxis: {
-          categories: [],
-        },
-      },
-      chartSeries: [
-        {
-          name: 'Balance',
-          data: [],
-        },
-      ],
-    };
+  components: { Default },
+  computed: {
+    getCurrentUserId,
+    getCurrentUserRole,
   },
   methods: {
-    fetchClassBalances() {
-      axios.get(`/${this.selectedDatabase}/classes/balance`)
-        .then((response) => {
-          this.classBalances = response.data.data;
-          this.updateChart();
-        })
-        .catch((error) => {
-          console.error('Error fetching class balances:', error);
-        });
-    },
-    updateChart() {
-      this.chartOptions = {
-        ...this.chartOptions,
-        xaxis: {
-          categories: this.classBalances.map((c) => c.name),
-        },
-      };
-      this.chartSeries = [
-        {
-          name: 'Balance',
-          data: this.classBalances.map((c) => c.balance),
-        },
-      ];
-    },
+    viewPermissions,
   },
   mounted() {
-    this.fetchClassBalances();
   },
 };
 </script>
+
+<template>
+<Default>
+<!--  <img-->
+<!--      src="../assets/images/logo.png"-->
+<!--      alt="Company Logo"-->
+<!--      class="tw-border tw-rounded-lg tw-pl-5"-->
+<!--      loading="lazy"-->
+<!--  />-->
+  <div
+      class="full-width tw-flex md:tw-flex-row tw-flex-col tw-justify-center tw-items-start tw-w-full tw-min-w-full"
+  >
+    <div v-if="viewPermissions(['Buyer'])">
+      <h2>What is my name</h2>
+      <div>user: {{ getCurrentUserId }}</div>
+      <div>role: {{ getCurrentUserRole }}</div>
+    </div>
+  </div>
+</Default>
+</template>
+
+<style scoped>
+.produce-list {
+  max-height: 100vh;
+  overflow: scroll;
+}
+.full-width {
+  width: 90vw;
+}
+
+@media (min-width: 768px) {
+  .full-width {
+    width: 100vw;
+  }
+}
+
+@media (min-width: 1300px) {
+  .full-width {
+    width: 80vw;
+  }
+}
+
+</style>

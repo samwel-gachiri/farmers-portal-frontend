@@ -44,6 +44,21 @@ const routes = [
     beforeEnter: ifNotAuthenticated,
     component: () => import('../views/auth/SignUp'),
   },
+  {
+    path: '/profile/:farmerId',
+    name: 'Profile',
+    component: () => import('../views/profile'),
+  },
+  {
+    path: '/requests',
+    name: 'Requests',
+    component: () => import('../views/requests'),
+  },
+  {
+    path: '/listings',
+    name: 'Listings',
+    component: () => import('../views/Listings'),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',
@@ -73,11 +88,6 @@ const routes = [
     name: 'Dashboard',
     // beforeEnter: ifAuthenticated,
     component: () => import('../views/Dashboard'),
-  },
-  {
-    path: '/students',
-    name: 'Students',
-    component: () => import('../views/StudentsDetails'),
   },
   // {
   //   path: '/buy-cover',

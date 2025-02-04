@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('fs');
 
 /**
  * We to configure the service-worker to cache calls to both the API and the
@@ -14,7 +14,7 @@ const fs = require('fs')
 
 module.exports = class DumpVueEnvVarsWebpackPlugin {
   constructor(opts) {
-    this.filename = opts.filename || 'env-vars-dump.js'
+    this.filename = opts.filename || 'env-vars-dump.js';
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -22,11 +22,11 @@ module.exports = class DumpVueEnvVarsWebpackPlugin {
     const fileContent = Object.keys(process.env)
       .filter((k) => k.startsWith('EX_'))
       .reduce((accum, currKey) => {
-        const val = process.env[currKey]
+        const val = process.env[currKey];
         // eslint-disable-next-line no-param-reassign
-        accum += `const ${currKey} = '${val}'\n`
-        return accum
-      }, '')
-    fs.writeFileSync(`./public/${this.filename}`, fileContent)
+        accum += `const ${currKey} = '${val}'\n`;
+        return accum;
+      }, '');
+    fs.writeFileSync(`./public/${this.filename}`, fileContent);
   }
-}
+};

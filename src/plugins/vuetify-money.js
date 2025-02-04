@@ -1,5 +1,10 @@
 import Vue from 'vue';
-import VuetifyMoney from 'vuetify-money';
+import vuetifyMoney from 'vuetify-money';
 
-Vue.use(VuetifyMoney);
-export default VuetifyMoney;
+Vue.use(vuetifyMoney, {
+  locale: 'en-US',
+  prefix: 'Ksh. ',
+  precision: 2,
+});
+
+Vue.component('v-money', vuetifyMoney);
