@@ -1,40 +1,180 @@
 <script>
 
 import Default from '@/components/layout/Default';
-import { viewPermissions, getCurrentUserRole, getCurrentUserId } from '@/utils/roles';
+import googleMapsLoader from '@/components/GoogleMapsLoader';
+import axios from 'axios';
 
 export default {
   components: { Default },
-  computed: {
-    getCurrentUserId,
-    getCurrentUserRole,
+  data() {
+    return {
+      farmersLocation: [
+        {
+          id: 'string',
+          latitude: 0,
+          longitude: 0,
+          customName: 'string',
+          farmer: {
+            id: 'string',
+            name: 'string',
+            email: 'string',
+            phoneNumber: 'string',
+            createdAt: '2025-02-05T14:07:32.072Z',
+            farmerProduces: [
+              {
+                id: 'string',
+                farmProduce: {
+                  id: 'string',
+                  name: 'string',
+                  description: 'string',
+                  farmingType: 'string',
+                  status: 'INACTIVE',
+                },
+                status: 'INACTIVE',
+              },
+            ],
+          },
+        },
+      ],
+    };
   },
   methods: {
-    viewPermissions,
+    loadMap() {
+      googleMapsLoader.load()
+        .then((google) => {
+          navigator.geolocation.getCurrentPosition((position) => {
+            console.log(position);
+            const map = new google.maps.Map(this.$refs.map, {
+              center: { lat: position.coords.latitude, lng: position.coords.longitude },
+              zoom: 16,
+              heading: 320,
+              tilt: 47.5,
+              mapId: '8fafea89cad68455',
+              rotateControl: true,
+            });
+            const marker = new google.maps.Marker({
+              position: { lat: position.coords.latitude, lng: position.coords.longitude },
+              map,
+              // icon: {
+              //   url: '../assets/images/buyer_map_icon.png',
+              //   scaledSize: new google.maps.Size(40, 40),
+              // },
+            });
+
+            marker.addListener('click', (event) => {
+              this.$toast.success(event.latLng);
+            });
+            this.farmersLocation.forEach((farmerLocation) => {
+              // eslint-disable-next-line no-new
+              const newMarker = new google.maps.Marker({
+                position: { lat: farmerLocation.latitude, lng: farmerLocation.longitude },
+                map,
+                icon: {
+                  // eslint-disable-next-line global-require
+                  url: require('@/assets/images/buyer_map_icon.png'),
+                  scaledSize: new google.maps.Size(40, 40),
+                },
+              });
+              newMarker.addListener('click', () => {
+                this.$toast.success('marker clicked');
+              });
+            });
+          },
+          (error) => {
+            console.log(error);
+            this.$toast.error(error.message);
+          },
+          {
+            enableHighAccuracy: true,
+          });
+        })
+        .catch((err) => {
+          this.$toast.error(err.message);
+        });
+    },
   },
   mounted() {
+    this.loadMap();
+    axios.get('/location/farmers')
+      .then((response) => {
+        if (response.data.success === true) {
+          this.farmersLocation = response.data.data;
+        } else {
+          this.$toast.error('farmers locatiosn could not be loaded', response.data.msg);
+        }
+      })
+      .catch((reason) => this.$toast.error(reason.message));
   },
 };
 </script>
 
 <template>
-<Default>
-<!--  <img-->
-<!--      src="../assets/images/logo.png"-->
-<!--      alt="Company Logo"-->
-<!--      class="tw-border tw-rounded-lg tw-pl-5"-->
-<!--      loading="lazy"-->
-<!--  />-->
-  <div
-      class="full-width tw-flex md:tw-flex-row tw-flex-col tw-justify-center tw-items-start tw-w-full tw-min-w-full"
-  >
-    <div v-if="viewPermissions(['Buyer'])">
-      <h2>What is my name</h2>
-      <div>user: {{ getCurrentUserId }}</div>
-      <div>role: {{ getCurrentUserRole }}</div>
+  <Default>
+    <!--  <img-->
+    <!--      src="../assets/images/logo.png"-->
+    <!--      alt="Company Logo"-->
+    <!--      class="tw-border tw-rounded-lg tw-pl-5"-->
+    <!--      loading="lazy"-->
+    <!--  />-->
+    <div
+        class="full-width tw-flex md:tw-flex-row tw-flex-col tw-justify-center tw-items-start tw-w-full tw-min-w-full"
+    >
+      <!--    nearby farmers and buyers selection pane-->
+      <div class="tw-flex tw-flex-col tw-w-full">
+        <div class="tw-flex tw-justify-center tw-items-center tw-px-10">
+          <v-text-field
+              label="Looking for requests?"
+              placeholder="Input the name of the farm produce,"
+              dense
+              class="tw-bg-gray-100 tw-w-2/3"
+          >
+          </v-text-field>
+        </div>
+        <div class="tw-border-8 tw-rounded-md" ref="map" style="width: 100%; height: 400px;"></div>
+      </div>
+      <!--    Produce requests-->
+      <div class="tw-w-full">
+        <h2 class="title-font tw-font-bold">
+          <v-icon>mdi-cash-marker</v-icon>
+          BUYERS Requests
+        </h2>
+        <v-divider/>
+        <div>
+          <div
+              class="produce-list tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-w-full tw-gap-5 tw-bg-gray-100"
+          >
+            <div
+                v-for="(farmerLocation, i) in farmersLocation"
+                v-bind:key="i"
+                class="tw-m-4 tw-p-4 tw-shadow-lg tw-border-4 tw-rounded-lg tw-bg-white"
+            >
+              <div
+                  class="tw-my-3 tw-flex tw-flex-row"
+              >
+                <v-icon
+                    size="100px"
+                >mdi mdi-image</v-icon>
+                <div class="tw-flex tw-flex-col tw-justify-center tw-items-start">
+                  <h1>{{ farmerLocation.farmer.name }}</h1>
+                  <h2>
+                    <v-icon>mdi-google-maps</v-icon>
+                    {{ farmerLocation.customName }}</h2>
+                </div>
+              </div>
+              <h2
+                  class="tw-mb-3 tw-ml-4"
+              > ⭐⭐⭐ </h2>
+              <v-btn
+                  class="tw-ml-4"
+              >
+                View
+              </v-btn>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</Default>
+  </Default>
 </template>
 
 <style scoped>

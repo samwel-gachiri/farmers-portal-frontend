@@ -20,7 +20,7 @@ export default {
     },
     icon: {
       type: String,
-      default: 'mdi-school',
+      default: 'mdi-corn',
     },
   },
 };

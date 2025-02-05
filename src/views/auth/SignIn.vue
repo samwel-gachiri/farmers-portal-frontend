@@ -3,18 +3,12 @@
     <v-main>
       <div class="main-bg tw-flex md:tw-flex-row tw-flex-col tw-h-full tw-gap-5 tw-rounded-lg">
         <!--Ad part-->
-        <div class="tw-flex tw-flex-row tw-justify-center tw-items-center tw-w-full tw-p-4">
-          <logo-title class="tw-w-1/2">
+        <div class="tw-flex tw-justify-center tw-items-center tw-w-full tw-p-4">
+          <logo-title class="">
             <div>
               <v-icon color="green">mdi-map-marker-radius</v-icon><h2></h2>
             </div>
           </logo-title>
-          <div class="tw-mt-5 tw-flex tw-flex-col tw-justify-start tw-items-center md:tw-items-start">
-            <v-img
-                class="tw-rounded-lg tw-my-4 md:tw-h-0"
-                sizes="500x500"
-                src="@/assets/images/sisal_basket.png"></v-img>
-          </div>
         </div>
 <!--        form part-->
         <div class="tw-flex md:tw-justify-start tw-justify-center tw-items-center tw-w-full">
