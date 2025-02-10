@@ -44,7 +44,8 @@
                 range
                 no-title
                 :max="new Date().toISOString()"
-                @input="dateMenu = false"
+                @input="dateMenu = !(selectedDateRange.length>1)"
+                @change="generateReport"
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -56,7 +57,7 @@
       </v-row>
 
       <!-- Detailed Report with Chart -->
-      <v-row class="tw-mb-8" v-if="showReport">
+      <v-row class="tw-mb-8" v-if="showReport && (selectedReportType === 'all' || selectedReportType === 'detailed')">
         <v-col cols="12">
           <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
@@ -73,7 +74,7 @@
       </v-row>
 
       <!-- Filtered Report with Chart -->
-      <v-row class="tw-mb-8" v-if="showReport">
+      <v-row class="tw-mb-8" v-if="showReport && (selectedReportType === 'all' || selectedReportType === 'filtered')">
         <v-col cols="12">
           <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
@@ -90,7 +91,7 @@
       </v-row>
 
       <!-- Parameterized Report with Chart -->
-      <v-row class="tw-mb-8" v-if="showReport">
+      <v-row class="tw-mb-8" v-if="showReport && (selectedReportType === 'all' || selectedReportType === 'parameterized')">
         <v-col cols="12">
           <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
@@ -122,12 +123,21 @@ export default {
   },
   data() {
     return {
-      selectedReportType: 'detailed',
-      reportTypes: ['detailed', 'filtered', 'parameterized'],
+      selectedReportType: 'all',
+      reportTypes: ['all', 'detailed', 'filtered', 'parameterized'],
       selectedDateRange: [new Date().toISOString().substr(0, 10), new Date().toISOString().substr(0, 10)],
       dateMenu: false,
       showReport: false,
-      data: [
+      groupedOrders: [
+        {
+          date: '2025-02-10T06:15:27.644Z',
+          product: 'string',
+          quantitySold: 0,
+          currency: 'string',
+          revenue: 0,
+        },
+      ],
+      ordersHistory: [
         {
           date: '2025-02-10T06:15:27.644Z',
           product: 'string',
@@ -246,14 +256,24 @@ export default {
         startDateTime.setHours(0, 0, 0, 0);
         const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
         endDateTime.setHours(23, 59, 59, 999);
-        const response = await axios.get('/api/reports', {
+        await axios.get('/api/reports/orders/grouped', {
           params: {
             farmerId: getCurrentUserId(), // Replace with actual farmer ID
             startDateTime: startDateTime.toISOString(),
             endDateTime: endDateTime.toISOString(),
           },
+        }).then((response) => {
+          this.groupedOrders = response.data.data;
         });
-        this.data = response.data.data;
+        await axios.get('/api/reports/orders/history', {
+          params: {
+            farmerId: getCurrentUserId(), // Replace with actual farmer ID
+            startDateTime: startDateTime.toISOString(),
+            endDateTime: endDateTime.toISOString(),
+          },
+        }).then((response) => {
+          this.ordersHistory = response.data.data;
+        });
       } catch (error) {
         console.error('Error fetching listings:', error);
       } finally {
@@ -264,19 +284,18 @@ export default {
       await this.fetchReport();
       this.showReport = true;
       // Update Detailed Chart Data
-      console.log('Detailed:');
-      console.log(this.data);
-      this.detailedChartOptions.xaxis.categories = this.data.map((item) => item.product);
-      this.detailedChartSeries[0].data = this.data.map((item) => item.quantitySold);
-      this.detailedChartSeries[1].data = this.data.map((item) => item.revenue);
+      console.log('Data:');
+      this.detailedChartOptions.xaxis.categories = this.groupedOrders.map((item) => item.product);
+      this.detailedChartSeries[0].data = this.groupedOrders.map((item) => item.quantitySold);
+      this.detailedChartSeries[1].data = this.groupedOrders.map((item) => item.revenue);
 
       // Update Filtered Chart Data
-      this.filteredChartOptions.labels = this.filteredReport.map((item) => item.product);
-      this.filteredChartSeries = this.filteredReport.map((item) => item.totalRevenue);
+      this.filteredChartOptions.labels = this.groupedOrders.map((item) => item.product);
+      this.filteredChartSeries = this.groupedOrders.map((item) => item.revenue);
 
       // Update Parameterized Chart Data
-      this.parameterizedChartOptions.xaxis.categories = this.parameterizedReport.map((item) => item.date);
-      this.parameterizedChartSeries[0].data = this.parameterizedReport.map((item) => item.revenue);
+      this.parameterizedChartOptions.xaxis.categories = this.ordersHistory.map((item) => item.date);
+      this.parameterizedChartSeries[0].data = this.ordersHistory.map((item) => item.revenue);
     },
   },
   computed: {
