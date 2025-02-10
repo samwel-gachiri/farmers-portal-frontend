@@ -112,6 +112,8 @@
 <script>
 import VueApexCharts from 'vue-apexcharts';
 import Default from '@/components/layout/Default';
+import axios from 'axios';
+import { getCurrentUserId } from '@/utils/roles';
 
 export default {
   components: {
@@ -125,21 +127,29 @@ export default {
       selectedDateRange: [new Date().toISOString().substr(0, 10), new Date().toISOString().substr(0, 10)],
       dateMenu: false,
       showReport: false,
-
-      // Detailed Report Data
-      detailedReport: [
+      data: [
         {
-          // eslint-disable-next-line sonarjs/no-duplicate-string
-          product: 'Organic Tomatoes', quantitySold: 120, revenue: 600, buyerFeedback: 4,
-        },
-        {
-          // eslint-disable-next-line sonarjs/no-duplicate-string
-          product: 'Fresh Strawberries', quantitySold: 80, revenue: 400, buyerFeedback: 5,
-        },
-        {
-          product: 'Free-Range Eggs', quantitySold: 200, revenue: 300, buyerFeedback: 3,
+          date: '2025-02-10T06:15:27.644Z',
+          product: 'string',
+          quantitySold: 0,
+          currency: 'string',
+          revenue: 0,
         },
       ],
+      // // Detailed Report Data
+      // detailedReport: [
+      //   {
+      //     // eslint-disable-next-line sonarjs/no-duplicate-string
+      //     product: 'Organic Tomatoes', quantitySold: 120, revenue: 600, buyerFeedback: 4,
+      //   },
+      //   {
+      //     // eslint-disable-next-line sonarjs/no-duplicate-string
+      //     product: 'Fresh Strawberries', quantitySold: 80, revenue: 400, buyerFeedback: 5,
+      //   },
+      //   {
+      //     product: 'Free-Range Eggs', quantitySold: 200, revenue: 300, buyerFeedback: 3,
+      //   },
+      // ],
 
       // Filtered Report Data
       filteredReport: [
@@ -229,13 +239,36 @@ export default {
     };
   },
   methods: {
-    generateReport() {
-      console.log(this.selectedDateRange);
+    async fetchReport() {
+      this.loading = true;
+      try {
+        const startDateTime = new Date(this.selectedDateRange[0]);
+        startDateTime.setHours(0, 0, 0, 0);
+        const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
+        endDateTime.setHours(23, 59, 59, 999);
+        const response = await axios.get('/api/reports', {
+          params: {
+            farmerId: getCurrentUserId(), // Replace with actual farmer ID
+            startDateTime: startDateTime.toISOString(),
+            endDateTime: endDateTime.toISOString(),
+          },
+        });
+        this.data = response.data.data;
+      } catch (error) {
+        console.error('Error fetching listings:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async generateReport() {
+      await this.fetchReport();
       this.showReport = true;
       // Update Detailed Chart Data
-      this.detailedChartOptions.xaxis.categories = this.detailedReport.map((item) => item.product);
-      this.detailedChartSeries[0].data = this.detailedReport.map((item) => item.quantitySold);
-      this.detailedChartSeries[1].data = this.detailedReport.map((item) => item.revenue);
+      console.log('Detailed:');
+      console.log(this.data);
+      this.detailedChartOptions.xaxis.categories = this.data.map((item) => item.product);
+      this.detailedChartSeries[0].data = this.data.map((item) => item.quantitySold);
+      this.detailedChartSeries[1].data = this.data.map((item) => item.revenue);
 
       // Update Filtered Chart Data
       this.filteredChartOptions.labels = this.filteredReport.map((item) => item.product);
@@ -244,6 +277,17 @@ export default {
       // Update Parameterized Chart Data
       this.parameterizedChartOptions.xaxis.categories = this.parameterizedReport.map((item) => item.date);
       this.parameterizedChartSeries[0].data = this.parameterizedReport.map((item) => item.revenue);
+    },
+  },
+  computed: {
+    getCurrentUserId,
+    detailedReport() {
+      return this.data.map((item) => ({
+        product: item.product,
+        quantitySold: item.quantitySold,
+        revenue: item.revenue,
+        buyerFeedback: 0,
+      }));
     },
   },
 };
