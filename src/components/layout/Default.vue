@@ -41,11 +41,11 @@
 
     <v-main>
       <v-container
-          class="fill-height tw-min-h-full c-bg-gray tw-bg-bottom tw-pb-40 lg:tw-pb-16"
+          class="tw-min-h-full c-bg-gray tw-h-full tw-bg-bottom tw-pb-40 lg:tw-pb-16"
           fluid
       >
 
-        <div class="tw-pb-10 md:tw-pb-48 ">
+        <div class="tw-pb-10 md:tw-pb-48 tw-h-full tw-w-full">
           <slot></slot>
         </div>
 
@@ -67,6 +67,7 @@ export default {
   components: { ScreenIdle, Avatar, Drawer },
   data: () => ({
     drawer: null,
+    isAppIdle: false,
   }),
   computed: {
     ...mapGetters('auth', ['authenticatedUser']),

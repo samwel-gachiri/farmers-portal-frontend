@@ -43,10 +43,12 @@ export default {
   components: { avatar },
   data: () => ({
     items: [
-      { icon: 'mdi-account-group', text: 'Dashboard', link: { name: 'Dashboard' } },
+      { icon: 'mdi-apps', text: 'Dashboard', link: { name: 'Dashboard' } },
+      { icon: 'mdi-account-group', text: 'Community', link: { name: 'Community' } },
       // { icon: 'mdi-tractor', text: 'Sell produce', link: { name: 'sales', query: { toSamwel: true } } },
-      { icon: 'mdi-library-shelves', text: 'My Sales', link: { name: 'Listings' } },
-      { icon: 'mdi-account-multiple', text: 'Buyers Requests', link: { name: 'Requests' } },
+      { icon: 'mdi-cash-multiple', text: 'My Sales', link: { name: 'Listings' } },
+      { icon: 'mdi-corn', text: 'Requests', link: { name: 'Requests' } },
+      { icon: 'mdi-chart-pie', text: 'Reports', link: { name: 'Report' } },
     ],
   }),
   computed: {

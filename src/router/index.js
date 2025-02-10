@@ -89,6 +89,17 @@ const routes = [
     // beforeEnter: ifAuthenticated,
     component: () => import('../views/Dashboard'),
   },
+  {
+    path: '/community',
+    name: 'Community',
+    // beforeEnter: ifAuthenticated,
+    component: () => import('../views/Community'),
+  },
+  {
+    path: '/report',
+    name: 'Report',
+    component: () => import('../views/report/reports'),
+  },
   // {
   //   path: '/buy-cover',
   //   name: 'BuyCover',

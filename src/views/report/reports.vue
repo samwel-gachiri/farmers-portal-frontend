@@ -1,44 +1,117 @@
 <template>
   <Default>
-    <v-card class="p-6 shadow-lg rounded-lg">
-      <v-card-title class="text-2xl font-bold mb-4">
-        Farmer sales report
-      </v-card-title>
-      <v-card-text>
-        <apexchart
-            type="bar"
-            :options="chartOptions"
-            :series="series"
-        ></apexchart>
+    <v-container class="tw-bg-gray-50 tw-min-h-screen tw-p-8">
+      <!-- Reports Header -->
+      <v-row class="tw-mb-8">
+        <v-col cols="12">
+          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Reports</h1>
+          <p class="tw-text-gray-600">Gain insights into your farming operations.</p>
+        </v-col>
+      </v-row>
 
-        <v-simple-table class="mt-6">
-          <template v-slot:default>
-            <thead>
-            <tr>
-              <th class="text-left">Produce</th>
-              <th class="text-left">Quantity sold</th>
-              <th class="text-left">Total sales</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(item, index) in salesData" :key="index">
-              <td>{{ item.produce }}</td>
-              <td>{{ item.quantity }}</td>
-              <td>{{ item.sales }}</td>
-            </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
-      </v-card-text>
-    </v-card>
+      <!-- Filter and Parameter Controls -->
+      <v-row class="tw-mb-8">
+        <v-col cols="12" md="4">
+          <v-select
+              v-model="selectedReportType"
+              :items="reportTypes"
+              label="Select Report Type"
+              outlined
+              dense
+          ></v-select>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-menu
+              v-model="dateMenu"
+              :close-on-content-click="false"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                  v-model="selectedDateRange"
+                  label="Select Date Range"
+                  readonly
+                  outlined
+                  dense
+                  v-bind="attrs"
+                  v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+                v-model="selectedDateRange"
+                range
+                no-title
+                :max="new Date().toISOString()"
+                @input="dateMenu = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-btn color="primary" class="tw-w-full" @click="generateReport">
+            Generate Report
+          </v-btn>
+        </v-col>
+      </v-row>
+
+      <!-- Detailed Report with Chart -->
+      <v-row class="tw-mb-8" v-if="showReport">
+        <v-col cols="12">
+          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
+              Detailed Report
+            </h2>
+            <apexchart
+                type="bar"
+                height="350"
+                :options="detailedChartOptions"
+                :series="detailedChartSeries"
+            ></apexchart>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- Filtered Report with Chart -->
+      <v-row class="tw-mb-8" v-if="showReport">
+        <v-col cols="12">
+          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
+              Filtered Report (Top Performers)
+            </h2>
+            <apexchart
+                type="pie"
+                height="350"
+                :options="filteredChartOptions"
+                :series="filteredChartSeries"
+            ></apexchart>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- Parameterized Report with Chart -->
+      <v-row class="tw-mb-8" v-if="showReport">
+        <v-col cols="12">
+          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
+              Parameterized Report (Custom Date Range)
+            </h2>
+            <apexchart
+                type="line"
+                height="350"
+                :options="parameterizedChartOptions"
+                :series="parameterizedChartSeries"
+            ></apexchart>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </Default>
 </template>
 
 <script>
-
-import Default from '@/components/layout/Default';
-import { viewPermissions, getCurrentUserRole, getCurrentUserId } from '@/utils/roles';
 import VueApexCharts from 'vue-apexcharts';
+import Default from '@/components/layout/Default';
 
 export default {
   components: {
@@ -47,94 +120,135 @@ export default {
   },
   data() {
     return {
-      salesData: [
-        { produce: 'Tomatoes', quantity: 120, sales: 600 },
-        { produce: 'Potatoes', quantity: 200, sales: 800 },
-        { produce: 'Carrots', quantity: 150, sales: 750 },
-        { produce: 'Onions', quantity: 100, sales: 500 },
-        { produce: 'Cabbage', quantity: 80, sales: 400 },
+      selectedReportType: 'detailed',
+      reportTypes: ['detailed', 'filtered', 'parameterized'],
+      selectedDateRange: [new Date().toISOString().substr(0, 10), new Date().toISOString().substr(0, 10)],
+      dateMenu: false,
+      showReport: false,
+
+      // Detailed Report Data
+      detailedReport: [
+        {
+          // eslint-disable-next-line sonarjs/no-duplicate-string
+          product: 'Organic Tomatoes', quantitySold: 120, revenue: 600, buyerFeedback: 4,
+        },
+        {
+          // eslint-disable-next-line sonarjs/no-duplicate-string
+          product: 'Fresh Strawberries', quantitySold: 80, revenue: 400, buyerFeedback: 5,
+        },
+        {
+          product: 'Free-Range Eggs', quantitySold: 200, revenue: 300, buyerFeedback: 3,
+        },
       ],
-      chartOptions: {
+
+      // Filtered Report Data
+      filteredReport: [
+        { product: 'Organic Tomatoes', totalRevenue: 600, profitMargin: 25 },
+        { product: 'Fresh Strawberries', totalRevenue: 400, profitMargin: 30 },
+      ],
+
+      // Parameterized Report Data
+      parameterizedReport: [
+        {
+          date: '2023-10-01', product: 'Organic Tomatoes', quantitySold: 50, revenue: 250,
+        },
+        {
+          date: '2023-10-02', product: 'Fresh Strawberries', quantitySold: 30, revenue: 150,
+        },
+        {
+          date: '2023-10-03', product: 'Free-Range Eggs', quantitySold: 100, revenue: 200,
+        },
+      ],
+
+      // Chart Options and Series
+      detailedChartOptions: {
         chart: {
           type: 'bar',
-          height: 350,
         },
         xaxis: {
           categories: [],
         },
-        colors: ['#4CAF50'],
-        plotOptions: {
-          bar: {
-            horizontal: false,
-            columnWidth: '70%',
-            endingShape: 'rounded',
-          },
-        },
-        dataLabels: {
-          enabled: false,
-        },
         title: {
-          text: 'Sales by produce',
+          text: 'Product Sales and Revenue',
           align: 'center',
           style: {
-            fontSize: '18px',
+            fontSize: '16px',
             fontWeight: 'bold',
           },
         },
       },
-      series: [
+      detailedChartSeries: [
         {
-          name: 'Total Sales',
+          name: 'Quantity Sold',
+          data: [],
+        },
+        {
+          name: 'Revenue ($)',
+          data: [],
+        },
+      ],
+
+      filteredChartOptions: {
+        chart: {
+          type: 'pie',
+        },
+        labels: [],
+        title: {
+          text: 'Top Performers by Revenue',
+          align: 'center',
+          style: {
+            fontSize: '16px',
+            fontWeight: 'bold',
+          },
+        },
+      },
+      filteredChartSeries: [],
+
+      parameterizedChartOptions: {
+        chart: {
+          type: 'line',
+        },
+        xaxis: {
+          categories: [],
+        },
+        title: {
+          text: 'Daily Sales Over Time',
+          align: 'center',
+          style: {
+            fontSize: '16px',
+            fontWeight: 'bold',
+          },
+        },
+      },
+      parameterizedChartSeries: [
+        {
+          name: 'Revenue ($)',
           data: [],
         },
       ],
     };
   },
-  computed: {
-    getCurrentUserId,
-    getCurrentUserRole,
-  },
   methods: {
-    viewPermissions,
-  },
-  mounted() {
-    this.chartOptions.xaxis.categories = this.salesData.map(
-        (item) => item.produce,
-    );
-    this.series = [
-      {
-        name: 'Total Sales',
-        data: this.salesData.map((item) => item.sales),
-      },
-    ];
-    const maxSales = Math.max(...this.salesData.map((item) => item.sales));
-    const bestProduce = this.salesData.find(
-        (item) => item.sales === maxSales,
-    ).produce;
-    this.$toast.success(`The produce making the highest sales is: ${bestProduce}`);
+    generateReport() {
+      console.log(this.selectedDateRange);
+      this.showReport = true;
+      // Update Detailed Chart Data
+      this.detailedChartOptions.xaxis.categories = this.detailedReport.map((item) => item.product);
+      this.detailedChartSeries[0].data = this.detailedReport.map((item) => item.quantitySold);
+      this.detailedChartSeries[1].data = this.detailedReport.map((item) => item.revenue);
+
+      // Update Filtered Chart Data
+      this.filteredChartOptions.labels = this.filteredReport.map((item) => item.product);
+      this.filteredChartSeries = this.filteredReport.map((item) => item.totalRevenue);
+
+      // Update Parameterized Chart Data
+      this.parameterizedChartOptions.xaxis.categories = this.parameterizedReport.map((item) => item.date);
+      this.parameterizedChartSeries[0].data = this.parameterizedReport.map((item) => item.revenue);
+    },
   },
 };
 </script>
 
 <style scoped>
-.produce-list {
-  max-height: 100vh;
-  overflow: scroll;
-}
-.full-width {
-  width: 90vw;
-}
-
-@media (min-width: 768px) {
-  .full-width {
-    width: 100vw;
-  }
-}
-
-@media (min-width: 1300px) {
-  .full-width {
-    width: 80vw;
-  }
-}
 
 </style>
