@@ -51,40 +51,7 @@
         <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
         <!-- Dialog for Listing Details -->
         <v-dialog v-model="dialog" max-width="600px">
-          <v-card>
-            <v-card-title>
-              <span class="text-xl font-bold">Listing Details</span>
-            </v-card-title>
-            <v-card-text>
-              <div v-if="selectedListing">
-                <p><strong>ID:</strong> {{ selectedListing.id }}</p>
-                <p><strong>Quantity:</strong> {{ selectedListing.quantity }}</p>
-                <p><strong>Price:</strong> {{ selectedListing.price.price }} {{ selectedListing.price.currency }}</p>
-                <p><strong>Unit:</strong> {{ selectedListing.unit }}</p>
-                <p><strong>Rating:</strong> {{ selectedListing.rating }}</p>
-                <p><strong>Status:</strong> {{ selectedListing.status }}</p>
-
-                <v-divider class="my-4"></v-divider>
-
-                <h3 class="text-lg font-bold mb-2">Orders</h3>
-                <v-data-table
-                    :headers="orderHeaders"
-                    :items="selectedListing.orders"
-                    class="elevation-1"
-                >
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn v-if="item.status === 'PENDING_ACCEPTANCE'" small color="success" @click="acceptOrder(item)">Accept</v-btn>
-                    <v-btn v-if="item.status === 'BOOKED_FOR_SUPPLY'" small color="success" disabled>confirm pay</v-btn>
-                    <v-btn v-if="item.status === 'SUPPLIED'" small color="success" @click="confirmPayment(item)">confirm pay</v-btn>
-                  </template>
-                </v-data-table>
-              </div>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
-            </v-card-actions>
-          </v-card>
+          <listing :listing-id="this.selectedListingId"></listing>
         </v-dialog>
       </div>
     </div>
@@ -109,9 +76,12 @@ import LogoTitle from '@/components/shared/LogoText';
 import CreateListing from '@/components/CreateListing';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles';
+import Listing from '@/components/Listing';
 
 export default {
-  components: { CreateListing, LogoTitle, Default },
+  components: {
+    Listing, CreateListing, LogoTitle, Default,
+  },
   data() {
     return {
       listingDialog: false,
@@ -124,15 +94,6 @@ export default {
         { text: 'Status', value: 'status' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      // Order headers
-      orderHeaders: [
-        { text: 'ID', value: 'id' },
-        { text: 'Buyer ID', value: 'buyerId' },
-        { text: 'Date Bought', value: 'dateBought' },
-        { text: 'Quantity', value: 'quantity' },
-        { text: 'Status', value: 'status' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
       // Data
       listings: [],
       totalElements: 0,
@@ -142,7 +103,7 @@ export default {
       loading: false,
       // Dialog
       dialog: false,
-      selectedListing: null,
+      selectedListingId: '',
     };
   },
   mounted() {
@@ -167,7 +128,7 @@ export default {
       try {
         const response = await axios.get('/listing/farmer', {
           params: {
-            farmerId: getCurrentUserId(), // Replace with actual farmer ID
+            farmerId: getCurrentUserId(),
             page: this.page,
             size: this.size,
           },
@@ -184,33 +145,8 @@ export default {
     },
     // View details of a listing
     viewDetails(item) {
-      this.selectedListing = item;
+      this.selectedListingId = item.id;
       this.dialog = true;
-    },
-    // Accept an order
-    acceptOrder(order) {
-      axios.put(`/listing/order/accept?orderId=${order.id}`).then((response) => {
-        if (response.data.success === true) {
-          this.$toast.success('Order accepted', order.id);
-        } else {
-          this.$toast.error(response.data.msg, 'Failed to accept');
-        }
-      })
-        .catch((error) => {
-          this.$toast.error(error.message);
-        });
-    },
-    confirmPayment(order) {
-      axios.put(`/listing/order/confirm-payment?orderId=${order.id}`).then((response) => {
-        if (response.data.success === true) {
-          this.$toast.success('Payment confirmed', order.id);
-        } else {
-          this.$toast.error(response.data.msg, 'Failed to confirm payment');
-        }
-      })
-        .catch((error) => {
-          this.$toast.error(error.message);
-        });
     },
   },
   watch: {

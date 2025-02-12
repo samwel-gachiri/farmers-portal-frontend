@@ -50,8 +50,9 @@
           </v-menu>
         </v-col>
         <v-col cols="12" md="4">
-          <v-btn color="primary" class="tw-w-full" @click="generateReport">
-            Generate Report
+          <v-btn color="primary" class="tw-w-full" :disabled="ordersHistory.length <= 0">
+            Generate Report PDF
+            <v-icon color="white">mdi-file-pdf</v-icon>
           </v-btn>
         </v-col>
       </v-row>
@@ -95,7 +96,7 @@
         <v-col cols="12">
           <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
-              Parameterized Report (Custom Date Range)
+              Parameterized Report <span class="tw-text-blue-600 hover:tw-underline" @click="dateMenu=true">({{ selectedDateRange[0] +' to '+ selectedDateRange[1] }})</span>
             </h2>
             <apexchart
                 type="line"
@@ -161,24 +162,24 @@ export default {
       //   },
       // ],
 
-      // Filtered Report Data
-      filteredReport: [
-        { product: 'Organic Tomatoes', totalRevenue: 600, profitMargin: 25 },
-        { product: 'Fresh Strawberries', totalRevenue: 400, profitMargin: 30 },
-      ],
+      // // Filtered Report Data
+      // filteredReport: [
+      //   { product: 'Organic Tomatoes', totalRevenue: 600, profitMargin: 25 },
+      //   { product: 'Fresh Strawberries', totalRevenue: 400, profitMargin: 30 },
+      // ],
 
-      // Parameterized Report Data
-      parameterizedReport: [
-        {
-          date: '2023-10-01', product: 'Organic Tomatoes', quantitySold: 50, revenue: 250,
-        },
-        {
-          date: '2023-10-02', product: 'Fresh Strawberries', quantitySold: 30, revenue: 150,
-        },
-        {
-          date: '2023-10-03', product: 'Free-Range Eggs', quantitySold: 100, revenue: 200,
-        },
-      ],
+      // // Parameterized Report Data
+      // parameterizedReport: [
+      //   {
+      //     date: '2023-10-01', product: 'Organic Tomatoes', quantitySold: 50, revenue: 250,
+      //   },
+      //   {
+      //     date: '2023-10-02', product: 'Fresh Strawberries', quantitySold: 30, revenue: 150,
+      //   },
+      //   {
+      //     date: '2023-10-03', product: 'Free-Range Eggs', quantitySold: 100, revenue: 200,
+      //   },
+      // ],
 
       // Chart Options and Series
       detailedChartOptions: {
@@ -248,10 +249,14 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.generateReport();
+  },
   methods: {
     async fetchReport() {
       this.loading = true;
       try {
+        console.log(this.selectedDateRange.sort((a, b) => b - a));
         const startDateTime = new Date(this.selectedDateRange[0]);
         startDateTime.setHours(0, 0, 0, 0);
         const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
@@ -283,19 +288,29 @@ export default {
     async generateReport() {
       await this.fetchReport();
       this.showReport = true;
+
       // Update Detailed Chart Data
-      console.log('Data:');
-      this.detailedChartOptions.xaxis.categories = this.groupedOrders.map((item) => item.product);
-      this.detailedChartSeries[0].data = this.groupedOrders.map((item) => item.quantitySold);
-      this.detailedChartSeries[1].data = this.groupedOrders.map((item) => item.revenue);
+      const detailedChartCategories = this.groupedOrders.map((item) => item.product);
+      const detailedChartSeriesData = [
+        { name: 'Quantity Sold', data: this.groupedOrders.map((item) => item.quantitySold) },
+        { name: 'Revenue', data: this.groupedOrders.map((item) => item.revenue) },
+      ];
+
+      this.detailedChartOptions.xaxis.categories = detailedChartCategories;
+      this.detailedChartSeries = detailedChartSeriesData;
 
       // Update Filtered Chart Data
       this.filteredChartOptions.labels = this.groupedOrders.map((item) => item.product);
       this.filteredChartSeries = this.groupedOrders.map((item) => item.revenue);
 
       // Update Parameterized Chart Data
-      this.parameterizedChartOptions.xaxis.categories = this.ordersHistory.map((item) => item.date);
-      this.parameterizedChartSeries[0].data = this.ordersHistory.map((item) => item.revenue);
+      const parameterizedChartCategories = this.ordersHistory.map((item) => item.date);
+      const parameterizedChartSeriesData = [
+        { name: 'Revenue', data: this.ordersHistory.map((item) => item.revenue) },
+      ];
+
+      this.parameterizedChartOptions.xaxis.categories = parameterizedChartCategories;
+      this.parameterizedChartSeries = parameterizedChartSeriesData;
     },
   },
   computed: {
