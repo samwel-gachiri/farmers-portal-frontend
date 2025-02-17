@@ -55,7 +55,8 @@ jobs:
             --build-arg VUE_APP_GOOGLE_MAPS_API_KEY=${VUE_APP_GOOGLE_MAPS_API_KEY} \
             --build-arg VUE_APP_USER_POOL_WEB_CLIENT_ID=${VUE_DEV_USER_POOL_WEB_CLIENT_ID} \
             --no-cache .
-            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${AWS_DEV_ECR_ENDPOINT}
+            login=$(aws ecr get-login --no-include-email --region us-east-1)
+            ${login}
             docker push ${AWS_DEV_ECR_ENDPOINT}:${CIRCLE_SHA1}
 
   dev-docker-deploy:
@@ -109,9 +110,9 @@ jobs:
             
             # Update the ECS service with the new task definition
             aws ecs update-service \
-              --cluster agriconnect-apis \
-              --service farmers-portal-apis-service \
-              --task-definition farmers-portal-apis-task-def:$NEW_REVISION \
+              --cluster agriconnectcluster \
+              --service agriconnect-service \
+              --task-definition agriconnect-frontend-task-def:$NEW_REVISION \
               --force-new-deployment \
               --region us-east-1
 # Orchestrate jobs using workflows
