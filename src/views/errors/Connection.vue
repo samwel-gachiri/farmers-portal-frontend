@@ -1,10 +1,11 @@
 <template>
-  <v-app content="center" class="bg-gradient-blue tw-h-screen tw-flex tw-items-center">
+  <v-app content="center" class="bg-gradient-green tw-h-screen tw-flex tw-items-center">
     <div class="tw-w-full tw-flex tw-justify-center tw-flex-col tw-py-10 md:tw-py-16">
       <h2 class="tw-text-center tw-py-3 tw-text-3xl md:tw-text-6xl c-white-text">Ooops!</h2>
       <h2 class="tw-text-center tw-py-2 tw-text-2xl md:tw-text-4xl c-white-text">Unable to connect to the internet</h2>
       <div class="tw-flex tw-justify-center">
-        <img width="500" src="/images/connection.svg" alt="no internet">
+<!--        <img width="50" src="../../assets/images/logo.png" alt="no internet">-->
+        <v-icon size="100px" class="mdi-access-point-network-off" color="white">mdi-network-off-outline</v-icon>
       </div>
       <div class="tw-flex tw-justify-center tw-flex-col tw-text-center">
         <h5 class="tw-py-6 tw-text-2xl md:tw-text-4xl c-white-text">Check your connection and try again !</h5>
@@ -21,7 +22,7 @@ export default {
 </script>
 
 <style scoped>
-.bg-gradient-blue {
-  background: linear-gradient(-180deg, rgb(17, 76, 172) 0%, rgb(6, 40, 96) 100%);
+.bg-gradient-green {
+  background: linear-gradient(-180deg, rgb(28, 142, 29) 0%, rgb(118, 152, 119) 100%);
 }
 </style>

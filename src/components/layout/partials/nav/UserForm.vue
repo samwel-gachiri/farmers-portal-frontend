@@ -12,16 +12,16 @@
             :rules="[required('Full Name')]"
         >
         </v-text-field>
-        <v-text-field
-            id="email"
-            type="email"
-            name="email"
-            v-model="email"
-            label="Email Address"
-            :rules="[required('Email'), emailFormat()]"
-            disabled
-        >
-        </v-text-field>
+<!--        <v-text-field-->
+<!--            id="email"-->
+<!--            type="email"-->
+<!--            name="email"-->
+<!--            v-model="email"-->
+<!--            label="Email Address"-->
+<!--            :rules="[required('Email'), emailFormat()]"-->
+<!--            disabled-->
+<!--        >-->
+<!--        </v-text-field>-->
         <v-text-field
             id="phone"
             type="text"
@@ -32,16 +32,10 @@
             disabled
         >
         </v-text-field>
-        <v-text-field
-            id="karPin"
-            type="text"
-            name="kraPin"
-            v-model="kra_pin"
-            label="KRA Pin"
-            :rules="[required('KRA PIN'), kraPinFormat()]"
-            disabled
-        >
-        </v-text-field>
+        <router-link :to="{
+          name: 'Profile',
+          params: {farmerId: getCurrentUserId },
+        }" class="c-light-blue-text tw-py-4 tw-underline">Advanced Details update</router-link>
         <v-card-actions class="col-sm-6 offset-sm-3">
           <v-btn block small
                  id="userUpdate"
@@ -60,6 +54,7 @@
 <script>
 import validations from '@/utils/validations';
 import { mapGetters, mapState } from 'vuex';
+import { getCurrentUserId } from '@/utils/roles';
 
 export default {
   name: 'UserForm',
@@ -79,12 +74,12 @@ export default {
       user: (state) => state.auth.user,
     }),
     ...mapGetters('auth', ['hasAuthenticationStatus', 'authenticationStatus']),
+    getCurrentUserId,
   },
   mounted() {
     this.fullname = this.user.name;
     this.email = this.user.email;
     this.phone_number = this.user.phone_number;
-    this.kra_pin = this.user['custom:kra-pin'];
   },
   methods: {
     async updateProfile() {

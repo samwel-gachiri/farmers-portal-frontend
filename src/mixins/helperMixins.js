@@ -19,6 +19,17 @@ const helperMixins = {
       return Array.isArray(value);
     },
   },
+  computed: {
+    vuetifyMoneyOptions() {
+      return {
+        locale: 'en-US',
+        prefix: 'Ksh. ',
+        suffix: '',
+        length: 11,
+        precision: 2,
+      };
+    },
+  },
 };
 
 export default helperMixins;

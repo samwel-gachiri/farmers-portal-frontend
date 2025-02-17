@@ -7,6 +7,8 @@ import NProgress from 'nprogress';
 
 export default {
   init(router, store) {
+    axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL;
+    console.log('Set the base URL');
     axios.interceptors.request.use(async (config) => {
       NProgress.configure({ showSpinner: false });
       NProgress.start();
@@ -35,9 +37,9 @@ export default {
 
     axios.interceptors.response.use((response) => {
       NProgress.done();
-      if (typeof response.data !== 'string' && ('success' in response.data && !response.data.success && response.config.method === 'get' && !response.config.url.includes('notification') && !response.config.url.includes('clientQuotes') && !response.config.url.includes('query-gis'))) {
-        router.push({ name: 'NotFound' });
-      }
+      // if (typeof response.data !== 'string' && ('success' in response.data && !response.data.success && response.config.method === 'get' && !response.config.url.includes('notification') && !response.config.url.includes('clientQuotes') && !response.config.url.includes('query-gis'))) {
+      //   router.push({ name: 'NotFound' });
+      // }
       return response;
     });
 

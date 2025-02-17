@@ -10,7 +10,7 @@
         <h5 class="tw-py-6 tw-text-xl md:tw-text-2xl c-white-text">An error has occurred and your request couldn't be completed.
           <br>
           Go back and try again and the If error persists, <br>
-          Either check the URL, <router-link class="tw-text-yellow-500" to="/">go home</router-link>, or feel free to report the issue to <strong>0709912777</strong>.
+          Either check the URL, <router-link class="tw-text-yellow-500" to="/">go home</router-link>, or feel free to report the issue to <strong>0705644805</strong>.
         </h5>
         <v-btn @click="$router.go(-1)" class="tw-w-48 tw-self-center tw-mt-6" color="secondary"><v-icon color="#fff">mdi-chevron-left</v-icon> Go Back</v-btn>
       </div>

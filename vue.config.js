@@ -1,12 +1,13 @@
 const CompressionPlugin = require('compression-webpack-plugin');
-// eslint-disable-next-line import/extensions
-const DumpVueEnvVarsWebpackPlugin = require('./DumpVueEnvVarsWebpackPlugin.js');
+const DumpVueEnvVarsWebpackPlugin = require('./DumpVueEnvVarsWebpackPlugin');
 
 const manifestJSON = require('./public/manifest.json');
 
 module.exports = {
   transpileDependencies: [
     'vuetify',
+    'vue-apexcharts',
+    'apexcharts',
   ],
   devServer: {
     proxy: process.env.VUE_APP_API_BASE_URL,

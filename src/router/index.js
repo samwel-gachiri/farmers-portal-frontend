@@ -17,19 +17,19 @@ const ifNotAuthenticated = (_to, _from, next) => {
   next('/dashboard');
 };
 //
-const ifAuthenticated = (_to, _from, next) => {
-  if (store.getters['auth/isAuthenticated']) {
-    next();
-    return;
-  }
-  next(`/signin?r=${btoa(window.location.href)}`);
-};
+// const ifAuthenticated = (_to, _from, next) => {
+//   if (store.getters['auth/isAuthenticated']) {
+//     next();
+//     return;
+//   }
+//   next(`/signin?r=${btoa(window.location.href)}`);
+// };
 
 const routes = [
   {
     path: '/',
     name: 'Landing',
-    beforeEnter: ifAuthenticated,
+    // beforeEnter: ifAuthenticated,
     component: Landing,
   },
   {
@@ -43,6 +43,21 @@ const routes = [
     name: 'SignUp',
     beforeEnter: ifNotAuthenticated,
     component: () => import('../views/auth/SignUp'),
+  },
+  {
+    path: '/profile/:farmerId',
+    name: 'Profile',
+    component: () => import('../views/profile'),
+  },
+  {
+    path: '/requests',
+    name: 'Requests',
+    component: () => import('../views/requests'),
+  },
+  {
+    path: '/listings',
+    name: 'Listings',
+    component: () => import('../views/Listings'),
   },
   // {
   //   path: '/confirm-otp',
@@ -73,6 +88,17 @@ const routes = [
     name: 'Dashboard',
     // beforeEnter: ifAuthenticated,
     component: () => import('../views/Dashboard'),
+  },
+  {
+    path: '/community',
+    name: 'Community',
+    // beforeEnter: ifAuthenticated,
+    component: () => import('../views/Community'),
+  },
+  {
+    path: '/report',
+    name: 'Report',
+    component: () => import('../views/report/reports'),
   },
   // {
   //   path: '/buy-cover',
