@@ -138,7 +138,7 @@ export default {
         this.totalElements = data.totalElements;
         this.totalPages = data.totalPages;
       } catch (error) {
-        console.error('Error fetching listings:', error);
+        this.$toast.error('Error fetching listings:', error.message);
       } finally {
         this.loading = false;
       }

@@ -137,7 +137,7 @@ export default {
       };
 
       eventSource.onerror = (error) => {
-        console.error('SSE error:', error);
+        this.$toast.error('SSE error:', error.message);
         eventSource.close();
       };
     },

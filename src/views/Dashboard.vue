@@ -172,7 +172,7 @@ export default {
         });
         if (response.data.success === true) this.liveCount = response.data.data;
       } catch (error) {
-        console.error('Error fetching listings:', error);
+        this.$toast.error('Error fetching listings:', error.message);
       } finally {
         this.loading = false;
       }
@@ -192,7 +192,7 @@ export default {
         this.totalElements = data.totalElements;
         this.totalPages = data.totalPages;
       } catch (error) {
-        console.error('Error fetching listings:', error);
+        this.$toast.error('Error fetching listings:', error.message);
       } finally {
         this.loading = false;
       }

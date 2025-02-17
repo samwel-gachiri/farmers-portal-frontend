@@ -12,6 +12,7 @@ jobs:
     docker:
       - image: circleci/node:14.16.0
     working_directory: ~/repo
+    executor:
     steps:
       # Checkout the code as the first step.
       - checkout
@@ -116,7 +117,7 @@ jobs:
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  farmers-portal-apis-pipeline: # This is the name of the workflow, feel free to change it to better match your workflow.
+  farmers-portal-frontend-pipeline: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build
