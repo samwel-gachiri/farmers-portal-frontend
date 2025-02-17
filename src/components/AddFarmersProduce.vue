@@ -86,7 +86,7 @@ export default {
         const response = await axios.get('/produce');
         this.produceList = response.data.data;
       } catch (error) {
-        console.error('Error fetching produces:', error);
+        this.$toast.error('Error fetching produces:', error.message);
       }
     },
     // Handles selection of produce from v-select
@@ -108,7 +108,7 @@ export default {
           this.produceList.push(newProduce); // Add new produce to local list
           this.addFarmerProduce(newProduce.id); // Add new produce to farmer's produces
         } catch (error) {
-          console.error('Error adding new produce:', error);
+          this.$toast.error('Error adding new produce:', error.message);
         }
       }
     },

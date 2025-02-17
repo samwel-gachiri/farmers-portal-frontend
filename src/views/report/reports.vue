@@ -283,7 +283,7 @@ export default {
           this.ordersHistory = response.data.data;
         });
       } catch (error) {
-        console.error('Error fetching listings:', error);
+        this.$toast.error('Error fetching listings:', error.message);
       } finally {
         this.loading = false;
       }
@@ -351,8 +351,7 @@ export default {
           window.URL.revokeObjectURL(url);
         })
         .catch((err) => {
-          this.$toast.error('error');
-          console.error(err);
+          this.$toast.error('error', err.message);
         })
         // eslint-disable-next-line no-return-assign
         .finally(() => (this.isDownloading = false));

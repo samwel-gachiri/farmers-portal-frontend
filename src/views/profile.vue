@@ -250,7 +250,6 @@ export default {
             });
           })
           .catch((error) => {
-            console.error('Error fetching location:', error);
             this.$toast.error('Error fetching location name');
           });
       },
@@ -298,7 +297,7 @@ export default {
         .catch((err) => {
           this.snackbarMessage = 'Failed to copy URL.';
           this.showSnackbar = true;
-          console.error('Failed to copy URL: ', err);
+          this.$toast.error('Failed to copy URL: ', err.message);
         });
     },
 
