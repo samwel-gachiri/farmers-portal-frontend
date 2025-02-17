@@ -5,12 +5,16 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package*.json ./
+
 RUN apt-get update && apt-get install -y libnss3-dev libcups2-dev \
     libgconf-2-4 libxss1 libasound2 libatk1.0-0 libatk-bridge2.0-0 \
     libpangocairo-1.0-0 libgtk-3-0
 
 RUN npm install
 
+RUN npm audit fix
+
+RUN npm install -g @vue/cli
 COPY ./ .
 
 # the list of the env variables that we will have
