@@ -3,7 +3,7 @@
     <div class="tw-w-full tw-min-h-full c-bg-gray" >
       <r-f-q-nav />
 
-      <div class="tw-flex tw-min-h-screen tw-bg-bottom" style="background-image: url(/images/rfq.png)">
+      <div class="tw-flex tw-min-h-screen tw-bg-bottom">
         <div class="tw-container tw-mx-auto">
 
           <slot></slot>

@@ -52,77 +52,77 @@ export default {
       dialog: false,
     };
   },
-  mounted() {
-    if (firebase.messaging.isSupported()) {
-      const messaging = firebase.messaging();
-      messaging.usePublicVapidKey(process.env.VUE_APP_FIREBASE_PUBLIC_KEY);
-
-      if (Notification.permission === 'granted') {
-        messaging.getToken().then((token) => {
-          this.sendTokenToServer(token);
-        });
-      } else if (Notification.permission === 'blocked' || Notification.permission === 'denied') {
-        /* the user has previously denied push. Can't reprompt. */
-      } else if (Notification.permission === 'default' && !this.isTokenSentToServer()) {
-        this.toggleModal();
-      }
-      // Callback fired if Instance ID token is updated.
-      messaging.onTokenRefresh(() => {
-        messaging.getToken()
-          .then((refreshedToken) => {
-            // to the app server.
-            this.setTokenSentToServer(false);
-            // Send Instance ID token to app server.
-            this.sendTokenToServer(refreshedToken);
-          })
-          .catch((err) => {
-            this.setTokenSentToServer(false);
-          });
-      });
-
-      // eslint-disable-next-line arrow-body-style
-      messaging.onMessage((payload) => {
-        let title = '';
-        let body = '';
-        this.$analytics.logEvent(FB_PUSH_NOTIFICATION);
-        if ('data' in payload) {
-          try {
-            title = payload.data.title;
-            const data = JSON.parse(payload.data.payload);
-            if (data.notification_type === 'quoteSuccessPayment') {
-              this.policy = data.notification_body;
-              this.dialog = true;
-              body = `Your Payment for quote No. ${data.notification_body.quote_id} is successful, Your Policy No is ${data.notification_body.policy_number}`;
-              this.$root.$emit('successful-payment');
-              this.$analytics.logEvent(FB_PUSH_NOTIFICATION_PAY);
-            } else if (data.notification_type === 'RESUME_QUOTE') {
-              body = data.notification_body.title;
-            } else {
-              body = data.notification_body;
-            }
-          } catch (e) {
-            body = payload.data.payload;
-            this.$toast.info(body, 'Info');
-            if (body.includes('Your transaction for quote')) {
-              this.$root.$emit('failed-payment');
-            }
-          }
-        } else {
-          body = payload.notification.body;
-          title = payload.notification.title || 'APA Insurance';
-        }
-        return new Notification(title, { body, icon: `${window.location.origin}/logo.svg` });
-      });
-    }
-
-    // request  notification from the MakePayment.vue
-    this.$root.$on('request-notification', () => {
-      this.promptNotifications(false);
-    });
-
-    // retrieve notifications count
-    this.$store.dispatch('getNotificationCount');
-  },
+  // mounted() {
+  //   if (firebase.messaging.isSupported()) {
+  //     const messaging = firebase.messaging();
+  //     messaging.usePublicVapidKey(process.env.VUE_APP_FIREBASE_PUBLIC_KEY);
+  //
+  //     if (Notification.permission === 'granted') {
+  //       messaging.getToken().then((token) => {
+  //         this.sendTokenToServer(token);
+  //       });
+  //     } else if (Notification.permission === 'blocked' || Notification.permission === 'denied') {
+  //       /* the user has previously denied push. Can't reprompt. */
+  //     } else if (Notification.permission === 'default' && !this.isTokenSentToServer()) {
+  //       this.toggleModal();
+  //     }
+  //     // Callback fired if Instance ID token is updated.
+  //     messaging.onTokenRefresh(() => {
+  //       messaging.getToken()
+  //         .then((refreshedToken) => {
+  //           // to the app server.
+  //           this.setTokenSentToServer(false);
+  //           // Send Instance ID token to app server.
+  //           this.sendTokenToServer(refreshedToken);
+  //         })
+  //         .catch((err) => {
+  //           this.setTokenSentToServer(false);
+  //         });
+  //     });
+  //
+  //     // eslint-disable-next-line arrow-body-style
+  //     messaging.onMessage((payload) => {
+  //       let title = '';
+  //       let body = '';
+  //       this.$analytics.logEvent(FB_PUSH_NOTIFICATION);
+  //       if ('data' in payload) {
+  //         try {
+  //           title = payload.data.title;
+  //           const data = JSON.parse(payload.data.payload);
+  //           if (data.notification_type === 'quoteSuccessPayment') {
+  //             this.policy = data.notification_body;
+  //             this.dialog = true;
+  //             body = `Your Payment for quote No. ${data.notification_body.quote_id} is successful, Your Policy No is ${data.notification_body.policy_number}`;
+  //             this.$root.$emit('successful-payment');
+  //             this.$analytics.logEvent(FB_PUSH_NOTIFICATION_PAY);
+  //           } else if (data.notification_type === 'RESUME_QUOTE') {
+  //             body = data.notification_body.title;
+  //           } else {
+  //             body = data.notification_body;
+  //           }
+  //         } catch (e) {
+  //           body = payload.data.payload;
+  //           this.$toast.info(body, 'Info');
+  //           if (body.includes('Your transaction for quote')) {
+  //             this.$root.$emit('failed-payment');
+  //           }
+  //         }
+  //       } else {
+  //         body = payload.notification.body;
+  //         title = payload.notification.title || 'APA Insurance';
+  //       }
+  //       return new Notification(title, { body, icon: `${window.location.origin}/logo.svg` });
+  //     });
+  //   }
+  //
+  //   // request  notification from the MakePayment.vue
+  //   this.$root.$on('request-notification', () => {
+  //     this.promptNotifications(false);
+  //   });
+  //
+  //   // retrieve notifications count
+  //   this.$store.dispatch('getNotificationCount');
+  // },
   methods: {
     toggleModal() {
       const body = document.querySelector('body');
@@ -160,27 +160,27 @@ export default {
         this.setTokenToTopic(currentToken);
       }
     },
-    promptNotifications(t = true) {
-      const messaging = firebase.messaging();
-      // messaging.usePublicVapidKey(process.env.FIREBASE_PUBLIC_KEY)
-
-      if (!('Notification' in window)) {
-        this.toggleModal();
-        this.setTokenSentToServer(true);
-      } else {
-        Notification.requestPermission().then((permission) => {
-          if (t) this.toggleModal();
-          // Get Token
-          if (permission === 'granted') {
-            messaging.getToken().then((token) => {
-              this.sendTokenToServer(token);
-            });
-          } else if (permission === 'denied') {
-            this.$toast.error('Notifications from APA won\'t be sent to you');
-          }
-        });
-      }
-    },
+    // promptNotifications(t = true) {
+    //   const messaging = firebase.messaging();
+    //   // messaging.usePublicVapidKey(process.env.FIREBASE_PUBLIC_KEY)
+    //
+    //   if (!('Notification' in window)) {
+    //     this.toggleModal();
+    //     this.setTokenSentToServer(true);
+    //   } else {
+    //     Notification.requestPermission().then((permission) => {
+    //       if (t) this.toggleModal();
+    //       // Get Token
+    //       if (permission === 'granted') {
+    //         messaging.getToken().then((token) => {
+    //           this.sendTokenToServer(token);
+    //         });
+    //       } else if (permission === 'denied') {
+    //         this.$toast.error('Notifications from APA won\'t be sent to you');
+    //       }
+    //     });
+    //   }
+    // },
     rejectPrompt() {
       this.toggleModal();
       this.setTokenSentToServer(true);

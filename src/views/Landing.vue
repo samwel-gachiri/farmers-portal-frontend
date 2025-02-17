@@ -1,25 +1,4 @@
-<script>
-// import Navigation from '@/components/navigation';
-
-// import Default from '@/components/layout/Default';
-
-import LogoTitle from '@/components/shared/LogoText';
-
-export default {
-  name: 'Landing',
-  components: { LogoTitle },
-  methods: {
-    openSignIn() {
-      this.$router.push({ name: 'SignIn', query: { r: btoa(window.location.href) } });
-    },
-  },
-  // components: { Default },
-  // components: {
-  //   Navigation,
-  // },
-};
-</script>
-
+/* eslint-disable */
 <template>
   <v-app id="inspire" class=" tw-bg-white">
     <div class="tw-w-full tw-flex tw-flex-col tw-justify-center tw-items-center tw-px-4">
@@ -52,6 +31,28 @@ export default {
   </v-app>
 </template>
 
+<script>
+// import Navigation from '@/components/navigation';
+
+// import Default from '@/components/layout/Default';
+
+import LogoTitle from '@/components/shared/LogoText';
+
+export default {
+  name: 'Landing',
+  components: { LogoTitle },
+  methods: {
+    openSignIn() {
+      this.$router.push({ name: 'SignIn', query: { r: btoa(window.location.href) } });
+    },
+  },
+  // components: { Default },
+  // components: {
+  //   Navigation,
+  // },
+};
+</script>
+
 <style scoped>
 
 h1 {
@@ -64,7 +65,7 @@ h1, h2, a{
   background: #0f0f0f;
   border-radius: 15px;
   min-height: 90vh;
-  //box-shadow: 9.91px 9.91px 15px #D9DADE, -9.91px -9.91px 15px #FFFFFF;
+  box-shadow: 9.91px 9.91px 15px #D9DADE, -9.91px -9.91px 15px #FFFFFF;
 }
 .lifted {
   background: #EEF0F4;

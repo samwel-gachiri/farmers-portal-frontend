@@ -1,63 +1,3 @@
-<script>
-
-import Default from '@/components/layout/Default';
-import googleMapsLoader from '@/components/GoogleMapsLoader';
-// import axios from 'axios';
-
-export default {
-  components: { Default },
-  methods: {
-    loadMap() {
-      googleMapsLoader.load()
-        .then((google) => {
-          navigator.geolocation.getCurrentPosition((position) => {
-            const map = new google.maps.Map(this.$refs.map, {
-              center: { lat: position.coords.latitude, lng: position.coords.longitude },
-              zoom: 16,
-              heading: 320,
-              tilt: 47.5,
-              mapId: '8fafea89cad68455',
-              rotateControl: true,
-            });
-            // eslint-disable-next-line no-new
-            const marker = new google.maps.Marker({
-              position: { lat: position.coords.latitude, lng: position.coords.longitude },
-              map,
-              // icon: {
-              //   url: '../assets/images/buyer_map_icon.png',
-              //   scaledSize: new google.maps.Size(40, 40),
-              // },
-            });
-
-            marker.addListener('click', (event) => {
-              this.$toast.success(event.latLng);
-            });
-          },
-          (error) => {
-            this.$toast.error(error.message);
-          },
-          {
-            enableHighAccuracy: true,
-          });
-        })
-        .catch((err) => {
-          this.$toast.error(err.message);
-        });
-    },
-  },
-  mounted() {
-    this.loadMap();
-    // axios.get('http://localhost:8080/farmers-service/farmers')
-    //   .then((value) => console.log(value))
-    //   .catch((reason) => console.error(reason));
-    // axios.get('https://jsonplaceholder.typicode.com/posts/1')
-    //   .then((response) => this.$toast.error(response.data))
-    //   .catch((error) => console.error(error));
-    // Scene
-  },
-};
-</script>
-
 <template>
   <Default>
     <!--  <img-->
@@ -127,6 +67,66 @@ export default {
     </div>
   </Default>
 </template>
+
+<script>
+
+import Default from '@/components/layout/Default';
+import googleMapsLoader from '@/components/GoogleMapsLoader';
+// import axios from 'axios';
+
+export default {
+  components: { Default },
+  methods: {
+    loadMap() {
+      googleMapsLoader.load()
+        .then((google) => {
+          navigator.geolocation.getCurrentPosition((position) => {
+            const map = new google.maps.Map(this.$refs.map, {
+              center: { lat: position.coords.latitude, lng: position.coords.longitude },
+              zoom: 16,
+              heading: 320,
+              tilt: 47.5,
+              mapId: '8fafea89cad68455',
+              rotateControl: true,
+            });
+            // eslint-disable-next-line no-new
+            const marker = new google.maps.Marker({
+              position: { lat: position.coords.latitude, lng: position.coords.longitude },
+              map,
+              // icon: {
+              //   url: '../assets/images/buyer_map_icon.png',
+              //   scaledSize: new google.maps.Size(40, 40),
+              // },
+            });
+
+            marker.addListener('click', (event) => {
+              this.$toast.success(event.latLng);
+            });
+          },
+          (error) => {
+            this.$toast.error(error.message);
+          },
+          {
+            enableHighAccuracy: true,
+          });
+        })
+        .catch((err) => {
+          this.$toast.error(err.message);
+        });
+    },
+  },
+  mounted() {
+    this.loadMap();
+    // axios.get('http://localhost:8080/farmers-service/farmers')
+    //   .then((value) => console.log(value))
+    //   .catch((reason) => console.error(reason));
+    // axios.get('https://jsonplaceholder.typicode.com/posts/1')
+    //   .then((response) => this.$toast.error(response.data))
+    //   .catch((error) => console.error(error));
+    // Scene
+  },
+};
+</script>
 
 <style scoped>
 .produce-list {

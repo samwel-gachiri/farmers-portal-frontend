@@ -110,7 +110,9 @@ import CreateListing from '@/components/CreateListing';
 import Listing from '@/components/Listing';
 
 export default {
-  components: { Listing, CreateListing, Default },
+  components: {
+    Listing, CreateListing, Default,
+  },
   data() {
     return {
       loading: false,
