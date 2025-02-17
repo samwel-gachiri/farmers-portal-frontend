@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y libnss3-dev libcups2-dev \
 
 RUN npm install
 
-RUN npm audit fix
+#RUN npm audit fix
 
 RUN npm install -g @vue/cli
 COPY ./ .
