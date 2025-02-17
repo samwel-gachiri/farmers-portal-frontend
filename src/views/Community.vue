@@ -1,66 +1,74 @@
 <template>
   <Default>
-    <div class="tw-w-full tw-h-screen tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-pb-24">
-      <v-tabs
-          v-model="tab"
-          centered
-          icons-and-text
-          class="tw-w-full tw-h-full tw-rounded-tl-lg tw-rounded-bl-lg tw-border tw-shadow-xl"
-      >
-        <v-tab href="#farmers">
-          Farmers
-        </v-tab>
-        <v-tab href="#buyers">
-          Buyers
-        </v-tab>
-        <v-tabs-items
-            v-model="tab"
+    <div class="tw-w-full tw-h-screen tw-grid tw-pb-24">
+      <div class="tw-w-full tw-h-full tw-flex tw-flex-row">
+        <div class="tw-flex tw-flex-col">
+          <h2 class="tw-text-green-800 tw-font-extrabold">Farmers</h2>
+          <div
+            v-for="(farmerLocation, i) in farmersLocation"
+            v-bind:key="i"
+            class="tw-m-4 tw-p-4 tw-shadow-lg tw-border-4 tw-rounded-lg tw-bg-white"
         >
-          <v-tab-item value="farmers">
-            <div>
-              <div
-                  class="produce-list tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-w-full tw-gap-5 tw-bg-gray-100"
-              >
-                <div
-                    v-for="(farmerLocation, i) in farmersLocation"
-                    v-bind:key="i"
-                    class="tw-m-4 tw-p-4 tw-shadow-lg tw-border-4 tw-rounded-lg tw-bg-white"
-                >
-                  <div
-                      class="tw-my-3 tw-flex tw-flex-row"
-                  >
-                    <v-icon
-                        size="100px"
-                    >mdi mdi-image</v-icon>
-                    <div class="tw-flex tw-flex-col tw-justify-center tw-items-start">
-                      <h1>{{ farmerLocation.farmer.name }}</h1>
-                      <h2>
-                        <v-icon>mdi-google-maps</v-icon>
-                        {{ farmerLocation.customName }}</h2>
-                    </div>
-                  </div>
-                  <h2
-                      class="tw-mb-3 tw-ml-4"
-                  > ⭐⭐⭐ </h2>
-                  <v-btn
-                      class="tw-ml-4"
-                      @click="()=>{
+          <div
+              class="tw-my-3 tw-flex tw-flex-row"
+          >
+            <v-icon
+                size="100px"
+            >mdi mdi-image</v-icon>
+            <div class="tw-flex tw-flex-col tw-justify-center tw-items-start">
+              <h1>{{ farmerLocation.farmer.name }}</h1>
+              <h2>
+                <v-icon>mdi-google-maps</v-icon>
+                {{ farmerLocation.customName }}</h2>
+            </div>
+          </div>
+          <h2
+              class="tw-mb-3 tw-ml-4"
+          > ⭐⭐⭐ </h2>
+          <v-btn
+              class="tw-ml-4"
+              @click="()=>{
                         setFocusToLocation(farmerLocation.latitude, farmerLocation.longitude);
                       }"
-                  >
-                    View
-                  </v-btn>
-                </div>
+          >
+            View
+          </v-btn>
+        </div>
+        </div>
+        <div class="tw-w-full tw-rounded-lg tw-shadow-xl  tw-border-4" style="width: 100%; height: 100%;" ref="map"></div>
+        <div class="tw-flex tw-flex-col">
+          <h2 class="tw-text-green-800 tw-font-extrabold">Farmers</h2>
+          <div
+              v-for="(farmerLocation, i) in farmersLocation"
+              v-bind:key="i"
+              class="tw-m-4 tw-p-4 tw-shadow-lg tw-border-4 tw-rounded-lg tw-bg-white"
+          >
+            <div
+                class="tw-my-3 tw-flex tw-flex-row"
+            >
+              <v-icon
+                  size="100px"
+              >mdi mdi-image</v-icon>
+              <div class="tw-flex tw-flex-col tw-justify-center tw-items-start">
+                <h1>{{ farmerLocation.farmer.name }}</h1>
+                <h2>
+                  <v-icon>mdi-google-maps</v-icon>
+                  {{ farmerLocation.customName }}</h2>
               </div>
             </div>
-          </v-tab-item>
-          <v-tab-item value="buyers">
-            <h2>Under development</h2>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-tabs>
-      <div class="tw-w-full tw-h-full md:tw-p-10 tw-p-5">
-        <div class="tw-rounded-lg tw-shadow-xl  tw-border-4" style="width: 100%; height: 100%;" ref="map"></div>
+            <h2
+                class="tw-mb-3 tw-ml-4"
+            > ⭐⭐⭐ </h2>
+            <v-btn
+                class="tw-ml-4"
+                @click="()=>{
+                        setFocusToLocation(farmerLocation.latitude, farmerLocation.longitude);
+                      }"
+            >
+              View
+            </v-btn>
+          </div>
+        </div>
       </div>
     </div>
   </Default>
@@ -183,7 +191,7 @@ export default {
             });
           },
           (error) => {
-            console.log(error);
+            this.$toast.show(error);
             this.$toast.error(error.message);
           },
           {
@@ -200,8 +208,8 @@ export default {
       const center = this.map.getCenter();
 
       if (bounds && center) {
-        console.log('Current Bounds:', bounds.toJSON());
-        console.log('Current Center:', center.toJSON());
+        this.$toast.show('Current Bounds:', bounds.toJSON());
+        this.$toast.show('Current Center:', center.toJSON());
         alert(`Current Center: ${center.lat()}, ${center.lng()}`);
       } else {
         alert('Map bounds are not available yet.');

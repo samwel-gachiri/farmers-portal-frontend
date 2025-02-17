@@ -8,7 +8,6 @@ import NProgress from 'nprogress';
 export default {
   init(router, store) {
     axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL;
-    console.log('Set the base URL');
     axios.interceptors.request.use(async (config) => {
       NProgress.configure({ showSpinner: false });
       NProgress.start();

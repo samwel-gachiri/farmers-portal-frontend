@@ -128,12 +128,12 @@ export default {
       });
 
       eventSource.onmessage = (event) => {
-        console.log('Received event:', event.data);
+        this.$toast.error('Received event:', event.data);
         this.fetchListing();
       };
 
       eventSource.onopen = () => {
-        console.log('SSE connection opened');
+        this.$toast.show('SSE connection opened');
       };
 
       eventSource.onerror = (error) => {

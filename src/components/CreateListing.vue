@@ -158,7 +158,7 @@ export default {
           this.$toast.error(response.data.msg, 'Error creating listing!');
         }
       }).catch((error) => {
-        console.log(error);
+        this.$toast.error(error);
       });
     },
   },
