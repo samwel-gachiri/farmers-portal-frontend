@@ -76,7 +76,7 @@ jobs:
             export ECR_IMAGE=${AWS_DEV_ECR_ENDPOINT}:${CIRCLE_SHA1}
 
             # Fetch the current task definition
-            export TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition farmers-portal-apis-task-def --region us-east-1)
+            export TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition agriconnect-frontend-task-def  --region us-east-1)
             echo "Task Definition:"
             echo $TASK_DEFINITION | jq .
             
