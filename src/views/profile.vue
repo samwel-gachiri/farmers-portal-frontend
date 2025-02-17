@@ -250,7 +250,7 @@ export default {
             });
           })
           .catch((error) => {
-            this.$toast.error('Error fetching location name');
+            this.$toast.error('Error fetching location name', error.message);
           });
       },
       (positionError) => {
