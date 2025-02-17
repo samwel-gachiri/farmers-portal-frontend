@@ -21,6 +21,7 @@
     "crypto-js": "^4.0.0",
     "date-fns": "^2.16.1",
     "eslint-import-resolver-webpack": "^0.13.8",
+    "file-saver": "^2.0.5",
     "firebase": "^7.24.0",
     "flag-icons": "^7.2.3",
     "google-maps": "^4.3.2",

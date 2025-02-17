@@ -50,7 +50,10 @@
           </v-menu>
         </v-col>
         <v-col cols="12" md="4">
-          <v-btn color="primary" class="tw-w-full" :disabled="ordersHistory.length <= 0">
+          <v-btn color="primary" class="tw-w-full"
+                 :loading="isDownloading"
+                 @click="downloadPdf"
+                 :disabled="ordersHistory.length <= 0">
             Generate Report PDF
             <v-icon color="white">mdi-file-pdf</v-icon>
           </v-btn>
@@ -129,6 +132,7 @@ export default {
       selectedDateRange: [new Date().toISOString().substr(0, 10), new Date().toISOString().substr(0, 10)],
       dateMenu: false,
       showReport: false,
+      isDownloading: false,
       groupedOrders: [
         {
           date: '2025-02-10T06:15:27.644Z',
@@ -256,7 +260,6 @@ export default {
     async fetchReport() {
       this.loading = true;
       try {
-        console.log(this.selectedDateRange.sort((a, b) => b - a));
         const startDateTime = new Date(this.selectedDateRange[0]);
         startDateTime.setHours(0, 0, 0, 0);
         const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
@@ -312,17 +315,51 @@ export default {
       this.parameterizedChartOptions.xaxis.categories = parameterizedChartCategories;
       this.parameterizedChartSeries = parameterizedChartSeriesData;
     },
+    async downloadPdf() {
+      this.isDownloading = true;
+      const startDateTime = new Date(this.selectedDateRange[0]);
+      startDateTime.setHours(0, 0, 0, 0);
+      const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
+      endDateTime.setHours(23, 59, 59, 999);
+      await axios.get('/api/reports/orders/pdf', {
+        params: {
+          farmerId: getCurrentUserId(), // Replace with actual farmer ID
+          startDateTime: startDateTime.toISOString(),
+          endDateTime: endDateTime.toISOString(),
+        },
+        responseType: 'arraybuffer',
+      })
+        .then((res) => {
+          const contentDisposition = res.headers['content-disposition'];
+          const fileNameRegex = /filename="(.+?)"/;
+          const fileNameMatch = contentDisposition?.match(fileNameRegex);
+          const fileName = fileNameMatch ? fileNameMatch[1] : 'REPORT.pdf';
+
+          // Create a Blob from the byte array
+          const blob = new Blob([res.data], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+
+          // Create a temporary link to trigger the download
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', fileName);
+          document.body.appendChild(link);
+          link.click();
+
+          // Cleanup
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((err) => {
+          this.$toast.error('error');
+          console.error(err);
+        })
+        // eslint-disable-next-line no-return-assign
+        .finally(() => (this.isDownloading = false));
+    },
   },
   computed: {
     getCurrentUserId,
-    detailedReport() {
-      return this.data.map((item) => ({
-        product: item.product,
-        quantitySold: item.quantitySold,
-        revenue: item.revenue,
-        buyerFeedback: 0,
-      }));
-    },
   },
 };
 </script>

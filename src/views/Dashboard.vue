@@ -12,6 +12,9 @@
           Close
         </v-btn>
       </v-dialog>
+      <v-dialog v-model="dialog">
+        <listing :listing-id="selectedListingId"></listing>
+      </v-dialog>
     <!-- Dashboard Header -->
     <v-row class="tw-mb-8">
       <v-col cols="12">
@@ -68,42 +71,6 @@
 
           <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
           <!-- Dialog for Listing Details -->
-          <v-dialog v-model="dialog" max-width="600px">
-            <v-card>
-              <v-card-title>
-                <span class="text-xl font-bold">Listing Details</span>
-              </v-card-title>
-              <v-card-text>
-                <div v-if="selectedListing">
-                  <p><strong>ID:</strong> {{ selectedListing.id }}</p>
-                  <p><strong>Quantity:</strong> {{ selectedListing.quantity }}</p>
-                  <p><strong>Price:</strong> {{ selectedListing.price.price }} {{ selectedListing.price.currency }}</p>
-                  <p><strong>Unit:</strong> {{ selectedListing.unit }}</p>
-                  <p><strong>Rating:</strong> {{ selectedListing.rating }}</p>
-                  <p><strong>Status:</strong> {{ selectedListing.status }}</p>
-
-                  <v-divider class="my-4"></v-divider>
-
-                  <h3 class="text-lg font-bold mb-2">Orders</h3>
-                  <v-data-table
-                      :headers="orderHeaders"
-                      :items="selectedListing.orders"
-                      class="elevation-1"
-                  >
-                    <template v-slot:item.actions="{ item }">
-                      <v-btn v-if="item.status === 'PENDING_ACCEPTANCE'" small color="success" @click="acceptOrder(item)">Accept</v-btn>
-                      <v-btn v-if="item.status === 'BOOKED_FOR_SUPPLY'" small color="success" disabled>confirm pay</v-btn>
-                      <v-btn v-if="item.status === 'SUPPLIED'" small color="success" @click="confirmPayment(item)">confirm pay</v-btn>
-                    </template>
-                  </v-data-table>
-                </div>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-card>
       </v-col>
     </v-row>
@@ -140,9 +107,10 @@ import { mapState } from 'vuex';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles';
 import CreateListing from '@/components/CreateListing';
+import Listing from '@/components/Listing';
 
 export default {
-  components: { CreateListing, Default },
+  components: { Listing, CreateListing, Default },
   data() {
     return {
       loading: false,
@@ -156,17 +124,10 @@ export default {
         { text: 'Status', value: 'status' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      // Order headers
-      orderHeaders: [
-        { text: 'ID', value: 'id' },
-        { text: 'Buyer ID', value: 'buyerId' },
-        { text: 'Date Bought', value: 'dateBought' },
-        { text: 'Quantity', value: 'quantity' },
-        { text: 'Status', value: 'status' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
       // Data
       listings: [],
+      selectedListingId: '',
+      dialog: false,
       liveCount: {
         activeListings: 3,
         buyersInteraction: 1,
@@ -238,7 +199,7 @@ export default {
     },
     // View details of a listing
     viewDetails(item) {
-      this.selectedListing = item;
+      this.selectedListingId = item.id;
       this.dialog = true;
     },
     // Accept an order

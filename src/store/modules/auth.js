@@ -206,7 +206,7 @@ const actions = {
     cookie.set(USER_OTP, data);
     await axios.post('/customer/otp/generate', data)
       .then((response) => {
-        // console.log({ response });
+        // this.$toast.error({ response });
         if (response.data.data === 'succeeded') {
           context.commit('setUserConfirmed', false);
           context.commit('auth/setAuthenticationSuccess', 'Confirmation sent to Email Address /Phone, enter OTP to proceed', { root: true });

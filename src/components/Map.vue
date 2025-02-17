@@ -99,7 +99,7 @@ export default {
             });
           },
           (error) => {
-            console.log(error);
+            this.$toast.error(error);
             this.$toast.error(error.message);
           },
           {
@@ -116,8 +116,8 @@ export default {
       const center = this.map.getCenter();
 
       if (bounds && center) {
-        console.log('Current Bounds:', bounds.toJSON());
-        console.log('Current Center:', center.toJSON());
+        this.$toast.show('Current Bounds:', bounds.toJSON());
+        this.$toast.show('Current Center:', center.toJSON());
         alert(`Current Center: ${center.lat()}, ${center.lng()}`);
       } else {
         alert('Map bounds are not available yet.');

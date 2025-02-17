@@ -11,7 +11,6 @@ export default {
       googleMapsLoader.load()
         .then((google) => {
           navigator.geolocation.getCurrentPosition((position) => {
-            console.log(position);
             const map = new google.maps.Map(this.$refs.map, {
               center: { lat: position.coords.latitude, lng: position.coords.longitude },
               zoom: 16,
@@ -35,7 +34,6 @@ export default {
             });
           },
           (error) => {
-            console.log(error);
             this.$toast.error(error.message);
           },
           {
@@ -53,7 +51,7 @@ export default {
     //   .then((value) => console.log(value))
     //   .catch((reason) => console.error(reason));
     // axios.get('https://jsonplaceholder.typicode.com/posts/1')
-    //   .then((response) => console.log(response.data))
+    //   .then((response) => this.$toast.error(response.data))
     //   .catch((error) => console.error(error));
     // Scene
   },
