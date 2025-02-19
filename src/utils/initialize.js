@@ -7,7 +7,6 @@ import NProgress from 'nprogress';
 
 export default {
   init(router, store) {
-    axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL;
     axios.interceptors.request.use(async (config) => {
       NProgress.configure({ showSpinner: false });
       NProgress.start();
@@ -30,7 +29,8 @@ export default {
           config.headers.auth = token;
         }
       }
-      if (process.env.NODE_ENV === 'production') config.baseURL = '/api';
+      // if (process.env.NODE_ENV === 'production') config.baseURL = '/api';
+      config.baseURL = process.env.VUE_APP_API_BASE_URL;
       return config;
     });
 

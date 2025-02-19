@@ -30,10 +30,17 @@ ENV VUE_APP_USER_POOL_ID $VUE_APP_USER_POOL_ID
 ARG VUE_APP_USER_POOL_WEB_CLIENT_ID
 ENV VUE_APP_USER_POOL_WEB_CLIENT_ID $VUE_APP_USER_POOL_WEB_CLIENT_ID
 
+# Debug: Print environment variables
+RUN echo "VUE_APP_API_BASE_URL=${VUE_APP_API_BASE_URL}" && \
+    echo "VUE_APP_AWS_REGION=${VUE_APP_AWS_REGION}" && \
+    echo "VUE_APP_USER_POOL_ID=${VUE_APP_USER_POOL_ID}" && \
+    echo "VUE_APP_USER_POOL_WEB_CLIENT_ID=${VUE_APP_USER_POOL_WEB_CLIENT_ID}"
+
 RUN npm run build
 
-# we can use nginx here
+# Install serve for production
+RUN npm install -g serve
 
 EXPOSE 8080
 
-CMD ["npm", "run", "serve"]
+CMD ["serve", "-s", "dist", "-l", "8080"]
