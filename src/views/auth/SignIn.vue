@@ -16,7 +16,7 @@
                 class="md:tw-p-5 tw-p-2 md:tw-mr-10 tw-mb-8 tw-border tw-rounded"
                 draggable="true"
             >
-              <card-title class="tw--mt-20">Sign in</card-title>
+              <card-title class="tw--mt-5">Sign in</card-title>
               <v-form v-model="isValid" @submit.prevent="onSubmit">
                 <phone-number-input
                     class="tw-my-5 tw-border-4 tw-rounded"
