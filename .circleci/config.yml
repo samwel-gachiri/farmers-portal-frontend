@@ -123,14 +123,12 @@ workflows:
     jobs:
       - build
       - dev-docker-build:
-          context: AWS
           requires:
             - build
           filters:
             branches:
               only: master
       - dev-docker-deploy:
-          context: AWS
           requires:
             - dev-docker-build
           filters:
