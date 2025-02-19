@@ -139,29 +139,6 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
 }
-.ad-part {
-  position: relative;
-  background-image: url("../../assets/images/pexels-enginakyurt-1435904.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: white; /* Makes text bright */
-}
-
-.ad-part::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6); /* Dark overlay */
-}
-
-.ad-part > * {
-  position: relative;
-  z-index: 1; /* Ensures text stays above the overlay */
-}
 
 @media (min-width: 768px) {     .h-80 {         height: 70vh     } }
 .neumorphism {
