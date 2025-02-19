@@ -7,7 +7,7 @@ import axios from 'axios';
 /* eslint import/named:0 */
 import {
   ACCESS_TOKEN, APP_CODE, CR_KEY, USER, USER_EMAIL, USER_OTP,
-} from '@/utils/const';
+} from '@/utils/const.js';
 
 // await context.dispatch('auth/generateOtp', { email: params.attributes.email, mobile: params.attributes.phone_number }, { root: true });
 // keep user cred

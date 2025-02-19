@@ -112,13 +112,13 @@
   </v-app>
 </template>
 <script>
-import validations from '@/utils/validations';
-import CardTitle from '@/components/shared/CardTitle';
-import { FB_SIGNUP } from '@/utils/const';
-import AuthMixins from '@/mixins/AuthMixins';
+import validations from '@/utils/validations.js';
+import CardTitle from '@/components/shared/CardTitle.vue';
+import { FB_SIGNUP } from '@/utils/const.js';
+import AuthMixins from '@/mixins/AuthMixins.js';
 import axios from 'axios';
-import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles';
-import LogoTitle from '@/components/shared/LogoText';
+import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
+import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
   components: { LogoTitle, CardTitle },

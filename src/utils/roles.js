@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/extensions
 import store from '@/store';
 
 const getUser = () => store.getters['auth/authenticatedUser'];

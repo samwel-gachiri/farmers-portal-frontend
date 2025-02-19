@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import RFQNav from '@/components/layout/partials/RFQNav';
+import RFQNav from '@/components/layout/partials/RFQNav.vue';
 
 export default {
   name: 'Rfq',

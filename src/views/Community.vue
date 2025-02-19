@@ -75,8 +75,8 @@
 </template>
 
 <script>
-import Default from '@/components/layout/Default';
-import googleMapsLoader from '@/components/GoogleMapsLoader';
+import Default from '@/components/layout/Default.vue';
+import googleMapsLoader from '@/components/GoogleMapsLoader.js';
 import axios from 'axios';
 
 export default {

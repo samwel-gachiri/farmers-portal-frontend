@@ -32,11 +32,11 @@
 </template>
 
 <script>
-// import Navigation from '@/components/navigation';
+// import Navigation from '@/components/navigation.vue';
 
-// import Default from '@/components/layout/Default';
+// import Default from '@/components/layout/Default.vue';
 
-import LogoTitle from '@/components/shared/LogoText';
+import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
   name: 'Landing',

@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import avatar from '@/components/layout/partials/nav/Avatar';
-import { isAuthenticated } from '@/utils/roles';
+import avatar from '@/components/layout/partials/nav/Avatar.vue';
+import { isAuthenticated } from '@/utils/roles.js';
 
 export default {
   name: 'Drawer',

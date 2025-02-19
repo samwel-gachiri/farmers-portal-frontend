@@ -166,11 +166,11 @@
 
 <script>
 
-import { getCurrentUserId } from '@/utils/roles';
+import { getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
-import CreateListing from '@/components/CreateListing';
-import AddFarmerProduce from '@/components/AddFarmersProduce';
-import Default from '@/components/layout/Default';
+import CreateListing from '@/components/CreateListing.vue';
+import AddFarmerProduce from '@/components/AddFarmersProduce.vue';
+import Default from '@/components/layout/Default.vue';
 
 export default {
   components: { Default, AddFarmerProduce, CreateListing },

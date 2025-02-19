@@ -26,21 +26,21 @@
     <!-- Stats Cards -->
     <v-row class="tw-mb-8">
       <v-col cols="12" md="4">
-        <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+        <v-card rounded class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
           <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>
           <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
           <p class="tw-text-gray-500">Active listings</p>
         </v-card>
       </v-col>
       <v-col cols="12" md="4">
-        <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+        <v-card rounded class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
           <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>
           <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
           <p class="tw-text-gray-500">This month</p>
         </v-card>
       </v-col>
       <v-col cols="12" md="4">
-        <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+        <v-card rounded class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
           <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Revenue</h2>
           <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
           <p class="tw-text-gray-500">Last 30 days</p>
@@ -102,12 +102,12 @@
 </template>
 
 <script>
-import Default from '@/components/layout/Default';
+import Default from '@/components/layout/Default.vue';
 import { mapState } from 'vuex';
 import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles';
-import CreateListing from '@/components/CreateListing';
-import Listing from '@/components/Listing';
+import { getCurrentUserId } from '@/utils/roles.js';
+import CreateListing from '@/components/CreateListing.vue';
+import Listing from '@/components/Listing.vue';
 
 export default {
   components: {

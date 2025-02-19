@@ -1,10 +1,10 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-// import rfq from '@/store/modules/rfq';
+// import rfq from '@/store/modules/rfq.vue';
 import axios from 'axios';
-// import renewal from '@/store/modules/renewal';
-import auth from './modules/auth';
+// import renewal from '@/store/modules/renewal.vue';
+import auth from './modules/auth.js';
 // import variables from './modules/variables';
 
 Vue.use(Vuex);

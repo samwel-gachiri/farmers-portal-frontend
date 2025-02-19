@@ -53,9 +53,9 @@
 </template>
 
 <script>
-import validations from '@/utils/validations';
+import validations from '@/utils/validations.js';
 import { mapGetters } from 'vuex';
-import helpers from '@/utils/helpers';
+import helpers from '@/utils/helpers.js';
 
 export default {
   name: 'PasswordForm',

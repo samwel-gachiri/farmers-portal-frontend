@@ -116,9 +116,9 @@
 
 <script>
 import VueApexCharts from 'vue-apexcharts';
-import Default from '@/components/layout/Default';
+import Default from '@/components/layout/Default.vue';
 import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   components: {

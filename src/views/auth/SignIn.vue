@@ -74,12 +74,12 @@
   </v-app>
 </template>
 <script>
-import validations from '@/utils/validations';
+import validations from '@/utils/validations.js';
 // import PhoneInput from '@/components/layout/components/PhoneInput';
-import CardTitle from '@/components/shared/CardTitle';
-import AuthMixins from '@/mixins/AuthMixins';
-import LogoTitle from '@/components/shared/LogoText';
-import { isAuthenticated } from '@/utils/roles';
+import CardTitle from '@/components/shared/CardTitle.vue';
+import AuthMixins from '@/mixins/AuthMixins.js';
+import LogoTitle from '@/components/shared/LogoText.vue';
+import { isAuthenticated } from '@/utils/roles.js';
 
 export default {
   components: { LogoTitle, CardTitle },
