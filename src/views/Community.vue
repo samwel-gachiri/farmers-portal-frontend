@@ -108,7 +108,7 @@ export default {
               tilt: 70.0,
               mapId: '8fafea89cad68455',
               rotateControl: true,
-              disableDefaultUI: true,
+              disableDefaultUI: false,
             });
             this.center.lat = position.coords.latitude;
             this.center.lng = position.coords.longitude;
