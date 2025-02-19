@@ -1,5 +1,5 @@
-import AddFarmerProduce from '@/components/AddFarmersProduce';
-import CreateListing from '@/components/CreateListing';
+import AddFarmerProduce from '@/components/AddFarmersProduce.vue';
+import CreateListing from '@/components/CreateListing.vue';
 import { __VLS_internalComponent, __VLS_componentsOption, __VLS_name } from './profile.vue';
 
 function __VLS_template() {

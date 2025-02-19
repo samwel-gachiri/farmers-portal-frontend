@@ -24,8 +24,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import Avatar from '@/components/layout/partials/nav/Avatar';
-import ScreenIdle from '@/components/shared/ScreenIdle';
+import Avatar from '@/components/layout/partials/nav/Avatar.vue';
+import ScreenIdle from '@/components/shared/ScreenIdle.vue';
 
 export default {
   name: 'RFQNav',

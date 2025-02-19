@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+// eslint-disable-next-line import/extensions
 import store from '@/store';
 import VueMeta from 'vue-meta';
-import Landing from '@/views/Landing';
-import Connection from '@/views/errors/Connection';
+import Landing from '@/views/Landing.vue';
+import Connection from '@/views/errors/Connection.vue';
 
 Vue.use(VueMeta);
 
@@ -36,28 +37,28 @@ const routes = [
     path: '/signin',
     name: 'SignIn',
     beforeEnter: ifNotAuthenticated,
-    component: () => import('../views/auth/SignIn'),
+    component: () => import('../views/auth/SignIn.vue'),
   },
   {
     path: '/signup',
     name: 'SignUp',
     beforeEnter: ifNotAuthenticated,
-    component: () => import('../views/auth/SignUp'),
+    component: () => import('../views/auth/SignUp.vue'),
   },
   {
     path: '/profile/:farmerId',
     name: 'Profile',
-    component: () => import('../views/profile'),
+    component: () => import('../views/profile.vue'),
   },
   {
     path: '/requests',
     name: 'Requests',
-    component: () => import('../views/requests'),
+    component: () => import('../views/requests.vue'),
   },
   {
     path: '/listings',
     name: 'Listings',
-    component: () => import('../views/Listings'),
+    component: () => import('../views/Listings.vue'),
   },
   // {
   //   path: '/confirm-otp',
@@ -87,18 +88,18 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     // beforeEnter: ifAuthenticated,
-    component: () => import('../views/Dashboard'),
+    component: () => import('../views/Dashboard.vue'),
   },
   {
     path: '/community',
     name: 'Community',
     // beforeEnter: ifAuthenticated,
-    component: () => import('../views/Community'),
+    component: () => import('../views/Community.vue'),
   },
   {
     path: '/report',
     name: 'Report',
-    component: () => import('../views/report/reports'),
+    component: () => import('../views/report/reports.vue'),
   },
   // {
   //   path: '/buy-cover',
@@ -164,7 +165,7 @@ const routes = [
   {
     path: '/error',
     name: 'ServerError',
-    component: () => import('../views/errors/Error50x'),
+    component: () => import('../views/errors/Error50x.vue'),
   },
   {
     path: '/no-internet',
@@ -174,7 +175,7 @@ const routes = [
   {
     path: '*',
     name: 'NotFound',
-    component: () => import('../views/errors/Error404'),
+    component: () => import('../views/errors/Error404.vue'),
   },
 ];
 

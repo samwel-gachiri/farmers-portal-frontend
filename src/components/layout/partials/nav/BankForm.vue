@@ -56,9 +56,9 @@
 <script>
 /* eslint-disable no-unused-expressions */
 
-import validations from '@/utils/validations';
+import validations from '@/utils/validations.js';
 import axios from 'axios';
-import helpers from '@/utils/helpers';
+import helpers from '@/utils/helpers.js';
 import { mapState } from 'vuex';
 
 export default {

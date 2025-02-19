@@ -42,8 +42,8 @@
 
 <script>
 import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles';
-import LogoTitle from '@/components/shared/LogoText';
+import { getCurrentUserId } from '@/utils/roles.js';
+import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
   name: 'add-farmer-produce',

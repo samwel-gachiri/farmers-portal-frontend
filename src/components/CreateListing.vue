@@ -64,13 +64,13 @@
 
 <script >
 
-import LogoTitle from '@/components/shared/LogoText';
-import HelperMixins from '@/mixins/helperMixins';
+import LogoTitle from '@/components/shared/LogoText.vue';
+import HelperMixins from '@/mixins/helperMixins.js';
 import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles';
+import { getCurrentUserId } from '@/utils/roles.js';
 import Pluralize from 'pluralize';
-import NumberInput from '@/components/shared/NumberInput';
-import validations from '@/utils/validations';
+import NumberInput from '@/components/shared/NumberInput.vue';
+import validations from '@/utils/validations.js';
 
 export default {
   name: 'CreateListing',

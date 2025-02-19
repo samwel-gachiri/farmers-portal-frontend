@@ -31,9 +31,9 @@
 </template>
 
 <script>
-import { NOTIFICATIONS } from '@/utils/const';
+import { NOTIFICATIONS } from '@/utils/const.js';
 
-import CardTitle from '@/components/shared/CardTitle';
+import CardTitle from '@/components/shared/CardTitle.vue';
 
 export default {
   name: 'ScreenIdle',

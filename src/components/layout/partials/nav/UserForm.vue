@@ -52,9 +52,9 @@
 </template>
 
 <script>
-import validations from '@/utils/validations';
+import validations from '@/utils/validations.js';
 import { mapGetters, mapState } from 'vuex';
-import { getCurrentUserId } from '@/utils/roles';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'UserForm',

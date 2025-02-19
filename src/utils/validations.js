@@ -1,6 +1,6 @@
 /* eslint no-mixed-operators:0 */
 /* eslint no-shadow:0 */
-import helpers from '@/utils/helpers';
+import helpers from '@/utils/helpers.js';
 
 const required = (propertyType) => (v) => v && v.length > 0 || `${propertyType} field is required`;
 

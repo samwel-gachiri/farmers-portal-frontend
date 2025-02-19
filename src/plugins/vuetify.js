@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import '@mdi/font/css/materialdesignicons.css';
 import Vue from 'vue';
+// eslint-disable-next-line import/extensions
 import Vuetify from 'vuetify/lib';
 
 Vue.use(Vuetify);

@@ -71,12 +71,12 @@
 
 <script>
 
-import Default from '@/components/layout/Default';
-import LogoTitle from '@/components/shared/LogoText';
-import CreateListing from '@/components/CreateListing';
+import Default from '@/components/layout/Default.vue';
+import LogoTitle from '@/components/shared/LogoText.vue';
+import CreateListing from '@/components/CreateListing.vue';
 import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles';
-import Listing from '@/components/Listing';
+import { getCurrentUserId } from '@/utils/roles.js';
+import Listing from '@/components/Listing.vue';
 
 export default {
   components: {

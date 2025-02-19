@@ -45,8 +45,8 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 import AvatarIcon from 'vue-avatar';
-import UpdateProfile from '@/components/layout/partials/nav/UpdateProfile';
-import { NOTIFICATIONS } from '@/utils/const';
+import UpdateProfile from '@/components/layout/partials/nav/UpdateProfile.vue';
+import { NOTIFICATIONS } from '@/utils/const.js';
 
 export default {
   name: 'Avatar',

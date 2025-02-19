@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import helpers from '@/utils/helpers';
+import helpers from '@/utils/helpers.js';
 
 export default {
   name: 'FileUploads',

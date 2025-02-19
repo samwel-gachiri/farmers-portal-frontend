@@ -56,11 +56,11 @@
 </template>
 
 <script>
-import Drawer from '@/components/layout/partials/Drawer';
-import Avatar from '@/components/layout/partials/nav/Avatar';
+import Drawer from '@/components/layout/partials/Drawer.vue';
+import Avatar from '@/components/layout/partials/nav/Avatar.vue';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
-import ScreenIdle from '@/components/shared/ScreenIdle';
+import ScreenIdle from '@/components/shared/ScreenIdle.vue';
 
 export default {
   name: 'Default',

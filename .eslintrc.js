@@ -17,7 +17,14 @@ module.exports = {
     'linebreak-style': 0,
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'import/extensions': 'off',
+    'import/extensions': ['error', 'always', { // Enforce extensions
+      js: 'always', // .js files don't need extensions
+      mjs: 'never',
+      jsx: 'never',
+      ts: 'never',
+      tsx: 'never',
+      vue: 'always', // .vue files must have extensions
+    }],
     'max-len': 0,
     // "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     'sonarjs/cognitive-complexity': 'off',

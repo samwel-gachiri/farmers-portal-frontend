@@ -1,5 +1,5 @@
 const CompressionPlugin = require('compression-webpack-plugin');
-const DumpVueEnvVarsWebpackPlugin = require('./DumpVueEnvVarsWebpackPlugin');
+const DumpVueEnvVarsWebpackPlugin = require('./DumpVueEnvVarsWebpackPlugin.js');
 
 const manifestJSON = require('./public/manifest.json');
 

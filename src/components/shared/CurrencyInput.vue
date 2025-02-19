@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import HelperMixins from '@/mixins/helperMixins';
+import HelperMixins from '@/mixins/helperMixins.js';
 
 export default {
   name: 'currency-field',

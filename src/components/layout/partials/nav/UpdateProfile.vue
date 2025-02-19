@@ -66,9 +66,9 @@
 <script>
 import { mapState } from 'vuex';
 import AvatarIcon from 'vue-avatar';
-import UserForm from '@/components/layout/partials/nav/UserForm';
-import BankForm from '@/components/layout/partials/nav/BankForm';
-import PasswordForm from '@/components/layout/partials/nav/PasswordForm';
+import UserForm from '@/components/layout/partials/nav/UserForm.vue';
+import BankForm from '@/components/layout/partials/nav/BankForm.vue';
+import PasswordForm from '@/components/layout/partials/nav/PasswordForm.vue';
 
 export default {
   name: 'UpdateProfile',
