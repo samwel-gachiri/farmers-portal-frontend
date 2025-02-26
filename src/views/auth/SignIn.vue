@@ -1,19 +1,16 @@
 <template>
   <v-app id="inspire">
     <v-main>
-      <div class="main-bg tw-w-full tw-h-full tw-p-5">
+      <div class="tw-w-full tw-h-full tw-flex  md:tw-flex-row tw-flex-col-reverse">
           <!--Ad part-->
-          <div class="tw-flex tw-justify-center tw-items-center tw-w-full">
-            <logo-title class="">
-              <div>
-                <v-icon color="green">mdi-map-marker-radius</v-icon><h2></h2>
-              </div>
-            </logo-title>
+          <div class="ad-gradient tw-flex tw-justify-center tw-items-center  md:tw-visible tw-invisible">
           </div>
           <!--        form part-->
-          <div class="form-part tw-bg-blue tw-flex md:tw-justify-center tw-justify-center tw-items-center tw-w-full tw-h-full">
+          <div class="form-part tw-bg-blue tw-flex tw-flex-col tw-gap-8  tw-justify-center tw-items-center tw-w-full tw-h-full">
+            <logo-title class="">
+            </logo-title>
             <div
-                class="md:tw-p-5 tw-p-2 md:tw-mr-10 tw-mb-8 tw-border tw-rounded"
+                class="md:tw-p-5 tw-p-2 md:tw-mr-10 tw-mb-8 tw-border-4" style="border-radius: 20px;"
                 draggable="true"
             >
               <card-title class="tw--mt-5">Sign in</card-title>
@@ -64,6 +61,12 @@
                       type="submit"
                       :disabled="!isValid"
                   >Login</v-btn>
+                  <div class="tw-flex tw-flex-row tw-w-full tw-justify-center tw-items-center">
+                    <v-divider />
+                    <h2 class="tw-text-xl">OR</h2>
+                    <v-divider/>
+                  </div>
+                  <GoogleSignIn/>
                 </div>
               </v-form>
             </div>
@@ -80,9 +83,10 @@ import CardTitle from '@/components/shared/CardTitle.vue';
 import AuthMixins from '@/mixins/AuthMixins.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import { isAuthenticated } from '@/utils/roles.js';
+import GoogleSignIn from '@/components/auth/GoogleSignIn.vue';
 
 export default {
-  components: { LogoTitle, CardTitle },
+  components: { GoogleSignIn, LogoTitle, CardTitle },
   data() {
     return {
       form: {
@@ -132,6 +136,13 @@ export default {
 };
 </script>
 <style scoped>
+.ad-gradient {
+  background-image: url("../../assets/images/futuristic_city.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 500px;
+}
 .main-bg {
   position: relative;
   background-image: url("../../assets/images/pexels-enginakyurt-1435904.svg");
