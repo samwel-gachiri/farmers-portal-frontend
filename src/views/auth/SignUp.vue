@@ -1,34 +1,6 @@
 <template>
   <v-app id="inspire">
     <terms-and-conditions ref="termsDialog"/>
-    <v-dialog
-        v-model="showUserTypeDialog"
-        max-width="500"
-        class="dialog-container"
-    >
-      <v-card class="dialog-card">
-        <div class="dialog-header">
-          <logo-title >
-            <h2 class="tw-mt-4">Create which type of account:</h2>
-          </logo-title>
-        </div>
-        <div class="dialog-content">
-          <div
-              v-for="(user, index) in userTypes"
-              :key="index"
-              class="user-type-item"
-              @click="selectUserType(user)"
-          >
-            <h2 class="user-type-text">{{ user }} account</h2>
-            <v-icon
-                size="30"
-                color="black"
-                class="arrow-icon"
-            >mdi-arrow-right</v-icon>
-          </div>
-        </div>
-      </v-card>
-    </v-dialog>
     <v-main class="">
       <div class="tw-w-full tw-h-full tw-flex md:tw-flex-row tw-flex-col-reverse">
         <!--Ad part-->
@@ -153,7 +125,6 @@ export default {
         terms: '',
         isValid: false,
       },
-      showUserTypeDialog: true,
       farmer: {
         id: 'string',
         name: 'string',
@@ -190,10 +161,6 @@ export default {
     getCurrentUserRole,
   },
   methods: {
-    selectUserType(user) {
-      this.form.userType = user;
-      this.showUserTypeDialog = false;
-    },
     openTermsDialog() {
       this.$refs.termsDialog.openDialog();
     },
