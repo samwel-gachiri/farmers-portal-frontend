@@ -47,34 +47,6 @@
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- Recent Listings -->
-    <v-row class="tw-mb-8">
-      <v-col cols="12">
-        <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
-          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">Recent Listings</h2>
-          <v-data-table
-              :headers="headers"
-              :items="listings"
-              :loading="loading"
-              :items-per-page="size"
-              :page.sync="page"
-              @update:page="fetchListings"
-              class="elevation-1"
-          >
-            <!--            :server-items-length="totalElements"-->
-            <!-- Custom Row Template -->
-            <template v-slot:item.actions="{ item }">
-              <v-btn small color="primary" @click="viewDetails(item)">View</v-btn>
-            </template>
-          </v-data-table>
-
-          <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
-          <!-- Dialog for Listing Details -->
-        </v-card>
-      </v-col>
-    </v-row>
-
     <!-- Quick Actions -->
     <v-row>
       <v-col cols="12">
@@ -117,18 +89,6 @@ export default {
     return {
       loading: false,
       listingDialog: false,
-      headers: [
-        // { text: 'ID', value: 'id' },
-        { text: 'Quantity', value: 'quantity' },
-        { text: 'Price', value: 'price.price' },
-        { text: 'Unit', value: 'unit' },
-        { text: 'Rating', value: 'rating' },
-        { text: 'Status', value: 'status' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
-      // Data
-      listings: [],
-      selectedListingId: '',
       dialog: false,
       liveCount: {
         activeListings: 3,
@@ -138,10 +98,6 @@ export default {
           currency: 'KSH',
         },
       },
-      totalElements: 0,
-      totalPages: 0,
-      size: 10,
-      page: 0,
     };
   },
   computed: {
@@ -150,8 +106,7 @@ export default {
     }),
   },
   mounted() {
-    this.fetchLiveCount();
-    this.fetchListings();
+    // this.fetchLiveCount();
   },
   methods: {
     // fetchListings() {
@@ -174,60 +129,10 @@ export default {
         });
         if (response.data.success === true) this.liveCount = response.data.data;
       } catch (error) {
-        this.$toast.error('Error fetching listings:', error.message);
+        this.$toast.error('Error fetching live count', error.message);
       } finally {
         this.loading = false;
       }
-    },
-    async fetchListings() {
-      this.loading = true;
-      try {
-        const response = await axios.get('/listing/farmer', {
-          params: {
-            farmerId: getCurrentUserId(), // Replace with actual farmer ID
-            page: this.page,
-            size: this.size,
-          },
-        });
-        const data = response.data.data;
-        this.listings = data.content;
-        this.totalElements = data.totalElements;
-        this.totalPages = data.totalPages;
-      } catch (error) {
-        this.$toast.error('Error fetching listings:', error.message);
-      } finally {
-        this.loading = false;
-      }
-    },
-    // View details of a listing
-    viewDetails(item) {
-      this.selectedListingId = item.id;
-      this.dialog = true;
-    },
-    // Accept an order
-    acceptOrder(order) {
-      axios.put(`/listing/order/accept?orderId=${order.id}`).then((response) => {
-        if (response.data.success === true) {
-          this.$toast.success('Order accepted', order.id);
-        } else {
-          this.$toast.error(response.data.msg, 'Failed to accept');
-        }
-      })
-        .catch((error) => {
-          this.$toast.error(error.message);
-        });
-    },
-    confirmPayment(order) {
-      axios.put(`/listing/order/confirm-payment?orderId=${order.id}`).then((response) => {
-        if (response.data.success === true) {
-          this.$toast.success('Payment confirmed', order.id);
-        } else {
-          this.$toast.error(response.data.msg, 'Failed to confirm payment');
-        }
-      })
-        .catch((error) => {
-          this.$toast.error(error.message);
-        });
     },
   },
   watch: {

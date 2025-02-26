@@ -1,34 +1,44 @@
 /* eslint-disable */
 <template>
-  <v-app id="inspire" class=" tw-bg-white">
-    <div class="tw-w-full tw-flex tw-flex-col tw-justify-center tw-items-center tw-px-4">
+  <v-app id="inspire">
+    <div class="tw-w-full tw-flex tw-flex-col tw-justify-center tw-items-start tw-py-5 md:tw-border-t-2 tw-border-t-0 tw-border-black md:tw-shadow-none tw-shadow-md">
       <logo-title class=""></logo-title>
-      <h2 style="color: #13361C;" class="tw-mt-4 tw-font-bold">A place where farmers and buyers meet and trade</h2>
     </div>
 
-    <div class="tw-w-full tw-flex tw-h-full lg:tw-h-full tw-items-center tw-justify-center tw-px-2 lg:tw-px-4">
-      <router-link id="community" :to="{ name: 'Community' }" class="tw-flex tw-flex-col tw-justify-center tw-mx-4">
-        <v-icon
-            size="120"
-            color="primary"
-            class=""
-        >mdi-truck</v-icon>
-        <v-icon
-            class="tw--mt-20 tw-mb-16 mr-8"
-            size="30"
-            color="white"
-        >mdi-cow</v-icon>
-        <div class="c-green-text tw-ml-4">Community <v-icon color="primary">mdi-flower</v-icon></div>
-      </router-link>
-      <v-btn
-          color="primary"
-          rounded
-          @click="openSignIn()"
-      >
-        get started
-      </v-btn>
+    <div class="tw-w-full tw-flex tw-flex-col tw-h-full lg:tw-h-full md:tw-items-center tw-items-start tw-justify-center md:tw-bg-white tw-bg-gray-100">
+      <h2 style="color: #13361C;" class="md:tw-text-6xl tw-text-3xl  md:tw-mt-0 tw-mt-8 md:tw-mx-0 tw-mx-10">Agriconnect Portals</h2>
+      <h2 style="color: #13361C;" class="tw-mt-4 md:tw-font-bold  md:tw-mx-0 tw-mx-10">A place where farmers and buyers meet, interact and trade</h2>
+      <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-8 tw-m-10">
+        <v-card
+            v-for="(user, index) in userTypes"
+            :key="index"
+            class="user-type-item tw-py-8 tw-px-10 tw-w-full"
+            rounded
+            @click="openSignIn(user.name)"
+        >
+          <v-img
+              v-if="user.name === 'Buyer'"
+              src="@/assets/images/buyer.png"
+              width="150"
+              height="150"
+          ></v-img>
+          <v-img
+              v-if="user.name === 'Farmer'"
+              src="@/assets/images/farmer.png"
+              width="150"
+              height="150"
+          ></v-img>
+          <v-img
+              v-if="user.name === 'Admin'"
+              src="@/assets/images/admin.png"
+              width="150"
+              height="150"
+          ></v-img>
+          <h2 class="user-type-text tw-text-2xl">{{ user.name }} Portal</h2>
+          <h2 style="color: #0f497d;" class="c-blue-text tw-font-light tw-text-lg">{{user.name }} Start Here</h2>
+        </v-card>
+      </div>
     </div>
-
   </v-app>
 </template>
 
@@ -41,10 +51,28 @@ import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
   name: 'Landing',
+  data() {
+    return {
+      userTypes: [
+        {
+          name: 'Farmer',
+          icon: '',
+        },
+        {
+          name: 'Buyer',
+          icon: '',
+        },
+        {
+          name: 'Admin',
+          icon: '',
+        },
+      ],
+    };
+  },
   components: { LogoTitle },
   methods: {
-    openSignIn() {
-      this.$router.push({ name: 'SignIn', query: { r: btoa(window.location.href) } });
+    openSignIn(name) {
+      this.$router.push({ name: 'SignIn', query: { r: btoa(window.location.href), role: name } });
     },
   },
   // components: { Default },
@@ -61,6 +89,9 @@ h1 {
 }
 h1, h2, a{
   color: white;
+}
+.user-type-text{
+  color: #13361C;
 }
 .lifted-neu {
   background: #0f0f0f;
