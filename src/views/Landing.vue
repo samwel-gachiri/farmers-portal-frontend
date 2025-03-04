@@ -7,13 +7,13 @@
 
     <div class="tw-w-full tw-flex tw-flex-col tw-h-full lg:tw-h-full md:tw-items-center tw-items-start tw-justify-center md:tw-bg-white tw-bg-gray-100">
       <h2 style="color: #13361C;" class="md:tw-text-6xl tw-text-3xl  md:tw-mt-0 tw-mt-8 md:tw-mx-0 tw-mx-10">Agriconnect Portals</h2>
-      <h2 style="color: #13361C;" class="tw-mt-4 md:tw-font-bold  md:tw-mx-0 tw-mx-10">A place where farmers and buyers meet, interact and trade</h2>
+      <h2 style="color: #13361C;" class="tw-mt-3 md:tw-font-bold  md:tw-mx-0 tw-mx-10">A place where farmers and buyers meet, interact and trade</h2>
       <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-8 tw-m-10">
         <v-card
             v-for="(user, index) in userTypes"
             :key="index"
             class="user-type-item tw-py-8 tw-px-10 tw-w-full"
-            rounded
+            style="border-radius: 20px;"
             @click="openSignIn(user.name)"
         >
           <v-img
@@ -34,8 +34,8 @@
               width="150"
               height="150"
           ></v-img>
-          <h2 class="user-type-text tw-text-2xl">{{ user.name }} Portal</h2>
-          <h2 style="color: #0f497d;" class="c-blue-text tw-font-light tw-text-lg">{{user.name }} Start Here</h2>
+          <h2 class="user-type-text tw-text-lg tw-font-extrabold tw-mt-2">{{ user.name }} Portal</h2>
+          <h2 style="color: #7a7a7a;" class="c-blue-text tw-font-light tw-text-md"> {{ user.name }} Start Here</h2>
         </v-card>
       </div>
     </div>

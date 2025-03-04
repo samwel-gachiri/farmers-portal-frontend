@@ -1,22 +1,23 @@
+/* eslint-disable */
 <template>
   <v-app id="inspire">
     <v-main>
-      <div class="tw-w-full tw-h-full tw-flex  md:tw-flex-row tw-flex-col-reverse">
+      <div class="tw-w-full tw-flex  md:tw-flex-row tw-flex-col-reverse">
           <!--Ad part-->
-          <div class="ad-gradient tw-flex tw-justify-center tw-items-center  md:tw-visible tw-invisible">
+          <div style="height: 100vh;" class="ad-gradient tw-flex tw-justify-center tw-items-center  md:tw-visible tw-invisible">
           </div>
           <!--        form part-->
-          <div class="form-part tw-bg-blue tw-flex tw-flex-col tw-gap-8  tw-justify-center tw-items-center tw-w-full tw-h-full">
-            <logo-title class="">
+          <div style="height: 100vh;" class="tw-border-4 tw-bg-blue tw-flex tw-flex-col  tw-justify-center tw-items-center tw-w-full tw-h-full">
+            <logo-title class="tw-my-8">
             </logo-title>
-            <div
-                class="md:tw-p-5 tw-p-2 md:tw-mr-10 tw-mb-8 tw-border-4" style="border-radius: 20px;"
+            <v-card
+                 style="border-radius: 20px;"
                 draggable="true"
             >
-              <card-title class="tw--mt-5">Sign in</card-title>
+              <card-title>Sign in</card-title>
               <v-form v-model="isValid" @submit.prevent="onSubmit">
                 <phone-number-input
-                    class="tw-my-5 tw-border-4 tw-rounded"
+                    class="tw-my-5 tw-mx-3 tw-border-4 tw-rounded"
                     v-model="form.phoneNumber"
                     default-country-code="KE"
                     :no-country-selector="false"
@@ -29,7 +30,7 @@
                 <!--              >-->
                 <!--                <v-icon slot="prepend">mdi-email</v-icon>-->
                 <!--              </v-text-field>-->
-                <div class="tw-flex tw-flex-row tw-gap-3 tw-mr-3">
+                <div class="tw-flex tw-flex-row tw-gap-3 tw-mx-5">
                   <v-icon slot="prepend" color="primary">mdi-lock</v-icon>
                   <v-text-field
                       id="password"
@@ -44,15 +45,15 @@
                   </v-text-field>
                 </div>
                 <div
-                    class="tw-mx-5 tw-pl-4 tw-my-6 tw-justify-end"
+                    class="tw-flex tw-justify-center tw-items-center tw-mt-2"
                 >
                   <div
-                      class="tw-border-0 tw-font-bold"
+                      class="tw-border-0 tw-font-bold tw-text-white"
                       @click="toSignUp"
-                  >Don't have an account? Sign up
+                  ><h2 class="tw-text-sm">Don't have an account? Sign up</h2>
                   </div>
                 </div>
-                <div class="tw-my-6 tw-mx-3">
+                <div class="tw-mx-3">
                   <v-btn
                       block
                       rounded
@@ -69,7 +70,7 @@
                   <GoogleSignIn/>
                 </div>
               </v-form>
-            </div>
+            </v-card>
             <div></div>
           </div>
       </div>
@@ -136,6 +137,9 @@ export default {
 };
 </script>
 <style scoped>
+* {
+  color: black  ;
+}
 .ad-gradient {
   background-image: url("../../assets/images/futuristic_city.webp");
   background-size: cover;

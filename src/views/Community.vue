@@ -1,25 +1,46 @@
 <template>
   <Default>
-    <v-container class="tw-bg-gray-500 tw-text-white tw-min-h-screen p-8">
+    <div class="tw-pl-4">
       <!-- Header -->
-      <v-row class="tw-mb-8">
-        <v-col cols="12" class="tw-text-center">
-          <h1 class="tw-text-4xl font-bold tw-text-green-800">Farmers & Buyers Community</h1>
-          <p class="tw-text-gray-400">Connecting farmers and buyers in real-time</p>
-        </v-col>
-      </v-row>
-
+      <h1 class="tw-text-4xl font-bold tw-text-green-800">Farmers & Buyers</h1>
+      <p class="">Connecting farmers and buyers in real-time</p>
+      <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5 tw-my-5">
+          <v-combobox
+              label="Search farmer"
+              dense
+              success
+              class="tw-bg-white tw-shadow-md"
+          ></v-combobox>
+          <v-select
+              label="Category of Farmer"
+              dense
+              :items="['ALL', 'SELLING']"
+              class="tw-bg-white tw-shadow-md"
+          ></v-select>
+          <v-combobox
+              label="Search Buyer"
+              dense
+              success
+              class="tw-bg-white tw-shadow-md"
+          ></v-combobox>
+          <v-select
+              label="Category of Buyer"
+              dense
+              :items="['ALL', 'REQUESTING']"
+              class="tw-bg-white tw-shadow-md"
+          ></v-select>
+      </div>
       <!-- Map Section -->
       <v-row class="tw-h-full">
         <v-col cols="12" md="8" class="rounded-lg overflow-hidden tw-shadow-2xl tw-bg-white">
-          <div ref="map" class="tw-h-full tw-w-full" style="height: 600px;"></div>
+          <div ref="map" class="tw-h-full tw-w-full" style="height: 500px;"></div>
         </v-col>
 
         <!-- Sidebar for Farmers/Buyers List -->
         <v-col cols="12" md="4" class="tw-space-y-4">
-          <v-card class="tw-bg-gray-800 p-4 rounded-lg tw-shadow-lg">
+          <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
             <h2 class="tw-text-xl font-semibold tw-text-green-400 tw-mb-4">Farmers Nearby</h2>
-            <v-list class="tw-bg-gray-700 rounded-lg">
+            <v-list class="tw-bg-gray-700 tw-rounded-lg">
               <v-list-item
                   v-for="farmer in farmersLocation"
                   :key="farmer.id"
@@ -36,9 +57,9 @@
             </v-list>
           </v-card>
 
-          <v-card class="tw-bg-gray-800 p-4 rounded-lg tw-shadow-lg">
+          <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
             <h2 class="tw-text-xl font-semibold tw-text-green-400 tw-mb-4">Buyers Nearby</h2>
-            <v-list class="tw-bg-gray-700 rounded-lg">
+            <v-list class="tw-bg-gray-700 tw-rounded-lg">
               <v-list-item
                   v-for="buyer in buyersLocation"
                   :key="buyer.id"
@@ -60,17 +81,17 @@
       <!-- Route Calculation Section -->
       <v-row class="tw-mt-8">
         <v-col cols="12" class="tw-text-center">
-          <v-btn
-              color="green"
-              class="tw-text-white"
-              @click="calculateRoute(center, farmersLocation[0])"
-          >
-            Calculate Route to Nearest Farmer
-          </v-btn>
+<!--          <v-btn-->
+<!--              color="green"-->
+<!--              class="tw-text-white"-->
+<!--              @click="calculateRoute(center, farmersLocation[0])"-->
+<!--          >-->
+<!--            -->
+<!--          </v-btn>-->
           <p v-if="distance" class="tw-text-gray-400 tw-mt-2">Distance: {{ (distance / 1000).toFixed(2) }} km</p>
         </v-col>
       </v-row>
-    </v-container>
+    </div>
   </Default>
 </template>
 
@@ -103,9 +124,9 @@ export default {
           navigator.geolocation.getCurrentPosition((position) => {
             this.map = new google.maps.Map(this.$refs.map, {
               center: { lat: position.coords.latitude, lng: position.coords.longitude },
-              zoom: 16,
+              zoom: 8,
               heading: 320,
-              tilt: 70.0,
+              tilt: 0.0,
               mapId: '8fafea89cad68455',
               rotateControl: true,
               disableDefaultUI: false,

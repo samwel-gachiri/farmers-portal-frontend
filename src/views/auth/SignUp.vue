@@ -17,8 +17,7 @@
             </div>
             <!--Form part-->
             <div class="tw-flex tw-flex-col tw-m-3 tw-w-full tw-items-center tw-justify-center">
-              <div
-                  class="md:tw-p-5 tw-p-2 tw-mx-5 tw-border-4"
+              <v-card
                   style="border-radius: 25px;"
               >
                 <card-title
@@ -93,7 +92,7 @@
                     >Sign up</v-btn>
                   </div>
                 </v-form>
-              </div>
+              </v-card>
               <div/>
             </div>
           </div>

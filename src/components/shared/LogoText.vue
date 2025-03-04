@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-  <div class="tw-flex tw-justify-center md:tw-justify-start tw-flex-row">
+  <div class="tw-flex tw-justify-center md:tw-justify-start tw-flex-row tw-cursor-pointer" @click="()=>this.$router.push({path: '/'})">
     <img
         src="@/assets/images/logo.png"
         alt="Company Logo"

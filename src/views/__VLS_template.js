@@ -1,6 +1,6 @@
 import AddFarmerProduce from '@/components/AddFarmersProduce.vue';
 import CreateListing from '@/components/CreateListing.vue';
-import { __VLS_internalComponent, __VLS_componentsOption, __VLS_name } from './profile.vue';
+import { __VLS_internalComponent, __VLS_componentsOption, __VLS_name } from './Produces.vue';
 
 function __VLS_template() {
 let __VLS_ctx!: InstanceType<__VLS_PickNotAny<typeof __VLS_internalComponent, new () => {}>> & {};

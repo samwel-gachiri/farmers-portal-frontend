@@ -68,7 +68,6 @@ import LogoTitle from '@/components/shared/LogoText.vue';
 import HelperMixins from '@/mixins/helperMixins.js';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
-import Pluralize from 'pluralize';
 import NumberInput from '@/components/shared/NumberInput.vue';
 import validations from '@/utils/validations.js';
 
@@ -78,7 +77,7 @@ export default {
   mixins: [HelperMixins],
   data() {
     return {
-      units: ['KG', 'litres'],
+      units: ['KG', 'L'],
       farmer: {
         id: 'string',
         name: 'string',
@@ -139,13 +138,13 @@ export default {
   },
   methods: {
     farmProduceListingChanged(farmProduce) {
-      const farmProduceTense = Pluralize(farmProduce.name);
+      const farmProduceTense = farmProduce.name;
       this.units = [farmProduceTense, 'KG', 'L'];
-      this.listing.unit = farmProduceTense;
+      this.listing.unit = 'KG';
       this.listing.farmerProduceId = farmProduce.id;
     },
     postListing() {
-      this.$toast.show('This is posting', this.listing.farmerProduceId);
+      this.loading = true;
       axios.post('/listing', {
         farmerProduceId: this.listing.farmerProduceId,
         price: this.listing.price,
@@ -159,7 +158,7 @@ export default {
         }
       }).catch((error) => {
         this.$toast.error(error);
-      });
+      }).finally(() => this.loading === false);
     },
   },
 };

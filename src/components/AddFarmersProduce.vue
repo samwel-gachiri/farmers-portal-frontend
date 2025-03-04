@@ -1,42 +1,40 @@
 <template>
-  <div class="flex justify-center mt-8">
-    <v-app>
-      <v-container>
-        <logo-title>
-          <h2>Andika unachouza</h2>
-        </logo-title>
-        <v-row align="center" justify="center" class="tw-gap-0">
-          <v-col cols="12" class="tw-m-0 tw-p-0 tw-border">
-            <v-combobox
-                v-model="selectedProduce"
-                :items="produceList"
-                item-text="name"
-                item-value="id"
-                label="Select Produce"
-                outlined
-                @change="handleProduceSelection"
-            ></v-combobox>
-          </v-col>
-          <v-col cols="12" class="tw-border">
-            <v-list-item-group class="tw-overflow-y-scroll tw-grid tw-grid-cols-4">
-              <v-list-item class="tw-flex tw-justify-between tw-rounded-lg tw-bg-green-800 tw-m-2 tw-p-0" v-for="(farmerProduce, i) in farmerProduces" :key="i">{{farmerProduce.farmProduce.name}}
-                <v-icon class="hover:tw-visible tw-invisible" size="20" color="error">mdi-close-circle</v-icon>
-              </v-list-item>
-            </v-list-item-group>
-          </v-col>
-          <v-col cols="12" class="">
-            <v-text-field
-                v-model="newProduceName"
-                label="New Produce Name"
-                outlined
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12">
-            <v-btn color="primary" @click="addNewProduce">Add New Produce</v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-app>
+  <div class="tw-flex tw-flex-col tw-justify-center tw-px-3">
+    <logo-title class="tw-mb-3">
+    </logo-title>
+    <div class="tw-gap-0">
+          <v-combobox
+              v-model="selectedProduce"
+              :items="produceList"
+              item-text="name"
+              item-value="id"
+              label="Select Produce"
+              outlined
+              @change="handleProduceSelection"
+          ></v-combobox>
+<!--          <v-list-item-group class="tw-overflow-y-scroll tw-grid tw-grid-cols-4">-->
+<!--            <v-list-item class="tw-flex tw-justify-between tw-m-2 tw-p-0" v-for="(farmerProduce, i) in farmerProduces" :key="i">{{farmerProduce.farmProduce.name}}-->
+<!--              <v-icon class="hover:tw-visible tw-invisible" size="20" color="error">mdi-close-circle</v-icon>-->
+<!--            </v-list-item>-->
+<!--          </v-list-item-group>-->
+          <v-textarea
+              v-model="newProduceDesc"
+              label="Input Produce description"
+              outlined
+          ></v-textarea>
+          <v-combobox
+              v-model="newProduceFarmingType"
+              label="Farming type"
+              :items="farmingTypes"
+              outlined
+          ></v-combobox>
+          <div class="tw-flex tw-justify-center tw-items-center">
+            <v-btn color="primary" @click="addNewProduce">
+              <v-icon>mdi-leaf</v-icon>
+              Add My Produce
+            </v-btn>
+          </div>
+  </div>
   </div>
 </template>
 
@@ -44,6 +42,7 @@
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
+import { farmingTypes } from '@/assets/data/farmingTypes.js';
 
 export default {
   name: 'add-farmer-produce',
@@ -53,6 +52,9 @@ export default {
       produceList: [], // To store list of produces fetched from '/produce'
       selectedProduce: null, // To store the selected produce by user
       newProduceName: '', // To store the name of new produce entered by user
+      newProduceDesc: '',
+      newProduceFarmingType: '',
+      farmingTypes,
     };
   },
   props: {
@@ -101,8 +103,8 @@ export default {
         try {
           const response = await axios.post('/produce', {
             name: this.newProduceName,
-            description: '', // Add description if needed
-            farmingType: '', // Add farmingType if needed
+            description: this.newProduceDesc, // Add description if needed
+            farmingType: this.newProduceFarmingType, // Add farmingType if needed
           });
           const newProduce = response.data.data;
           this.produceList.push(newProduce); // Add new produce to local list
@@ -114,6 +116,10 @@ export default {
     },
     // Adds selected produce to farmer's produces using '/farmer/add-farmer-produce'
     async addFarmerProduce(produceId) {
+      if (produceId == null) {
+        this.newProduceName = this.selectedProduce;
+        await this.addNewProduce(this.selectedProduce);
+      }
       let farmerHasProduce = false;
       this.farmerProduces.forEach((farmerProduce) => {
         if (farmerProduce.farmProduce.id === produceId) {

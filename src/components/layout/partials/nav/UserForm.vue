@@ -22,20 +22,32 @@
 <!--            disabled-->
 <!--        >-->
 <!--        </v-text-field>-->
+        <div
+            class="tw-flex tw-w-full tw-flex-row tw-justify-center tw-items-center"
+        >
+          <div
+              class="tw-flex tw-flex-col tw-justify-center tw-items-center"
+          >
+            <span class="tw-font-bold">{{ farmer.location.customName }}</span>
+            <h2>({{ farmer.location.latitude }}, {{ farmer.location.longitude }})</h2>
+          </div>
+          <v-btn
+              v-if="getCurrentUserId === farmer.id"
+              @click="getLocation"
+          >
+            <v-icon color="linear-gradient(green, red)" >mdi-google-maps</v-icon>
+          </v-btn>
+        </div>
         <v-text-field
             id="phone"
             type="text"
             name="phone"
             v-model="phone_number"
             label="Phone Number"
-            :rules="[required('Mobile No.'), mobileFormat()]"
+            :rules="[required('Mobile No.')]"
             disabled
         >
         </v-text-field>
-        <router-link :to="{
-          name: 'Profile',
-          params: {farmerId: getCurrentUserId },
-        }" class="c-light-blue-text tw-py-4 tw-underline">Advanced Details update</router-link>
         <v-card-actions class="col-sm-6 offset-sm-3">
           <v-btn block small
                  id="userUpdate"
@@ -55,6 +67,7 @@
 import validations from '@/utils/validations.js';
 import { mapGetters, mapState } from 'vuex';
 import { getCurrentUserId } from '@/utils/roles.js';
+import axios from 'axios';
 
 export default {
   name: 'UserForm',
@@ -67,6 +80,13 @@ export default {
       isValid: false,
       ...validations,
       loading: false,
+      farmer: {
+        location: {
+          latitude: 0.0,
+          longitude: 0.0,
+          customName: '',
+        },
+      },
     };
   },
   computed: {
@@ -80,6 +100,16 @@ export default {
     this.fullname = this.user.name;
     this.email = this.user.email;
     this.phone_number = this.user.phone_number;
+    axios.get(`/location/farmer?farmerId=${this.$route.params.farmerId}`).then((response) => {
+      if (response.data.success === true) {
+        const data = response.data.data;
+        this.farmer.location.latitude = data?.latitude;
+        this.farmer.location.longitude = data?.longitude;
+        this.farmer.location.customName = data?.customName;
+      }
+    }).catch((e) => {
+      this.$toast.error(e.message);
+    });
   },
   methods: {
     async updateProfile() {
@@ -94,6 +124,45 @@ export default {
             this.$toast.success(this.authenticationStatus.message, 'Success');
           }
         }
+      });
+    },
+    getLocation() {
+      this.$toast.show('Collecting location infor');
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        this.farmer.location.latitude = position.coords.latitude;
+        this.farmer.location.longitude = position.coords.longitude;
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.farmer.location.latitude},${this.farmer.location.longitude}
+&location_type=ROOFTOP&result_type=street_address&key=${process.env.VUE_APP_GOOGLE_MAPS_API_KEY}`;
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) {
+              this.$toast.error(`Network response was not ok ${response.statusText}`);
+            }
+            return response.json(); // or response.text(), response.blob(), etc.
+          })
+          .then((data) => {
+            this.farmer.location.customName = data.plus_code.compound_code;
+            axios.put('/location/farmer', {
+              farmerId: getCurrentUserId(),
+              locationRequestDto: {
+                latitude: this.farmer.location.latitude,
+                longitude: this.farmer.location.longitude,
+                customName: this.farmer.location.customName,
+              },
+            }).then((response) => {
+              if (response.data.success === true) {
+                this.$toast.success('Location updated successfully!');
+              } else {
+                this.$toast.error('Failed to update location', response.data.msg);
+              }
+            });
+          })
+          .catch((error) => {
+            this.$toast.error('Error fetching location name', error.message);
+          });
+      },
+      (positionError) => {
+        this.$toast.error(positionError.message);
       });
     },
   },
