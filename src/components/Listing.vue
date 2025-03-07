@@ -111,7 +111,7 @@ export default {
   methods: {
     connectToSSE() {
       const eventSource = new EventSource(
-        `${process.env.VUE_APP_API_BASE_URL}/listing/stream?listingId=${this.listing.produceListing.id}`,
+        `${process.env.VUE_APP_API_BASE_URL}farmers-service/listing/stream?listingId=${this.listing.produceListing.id}`,
         // `${process.env.VUE_APP_API_BASE_URL}/listing/stream-sse`,
       );
 
@@ -144,7 +144,7 @@ export default {
     async fetchListing() {
       this.loading = true;
       try {
-        const response = await axios.get('/listing', {
+        const response = await axios.get('/farmers-service/listing', {
           params: {
             listingId: this.listingId,
           },
@@ -158,7 +158,7 @@ export default {
     },
     // Accept an order
     acceptOrder(order) {
-      axios.put(`/listing/order/accept?orderId=${order.id}&listingId=${this.listing.produceListing.id}`).then((response) => {
+      axios.put(`/farmers-service/listing/order/accept?orderId=${order.id}&listingId=${this.listing.produceListing.id}`).then((response) => {
         if (response.data.success === true) {
           this.$toast.success('Order accepted');
         } else {
@@ -173,7 +173,7 @@ export default {
         });
     },
     confirmPayment(order) {
-      axios.put(`/listing/order/confirm-payment?orderId=${order.id}&listingId=${this.listing.produceListing.id}`).then((response) => {
+      axios.put(`/farmers-service/listing/order/confirm-payment?orderId=${order.id}&listingId=${this.listing.produceListing.id}`).then((response) => {
         if (response.data.success === true) {
           this.$toast.success('Payment confirmed', order.id);
         } else {

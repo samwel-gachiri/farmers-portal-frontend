@@ -134,7 +134,7 @@ export default {
     async fetchListings() {
       this.loading = true;
       try {
-        const response = await axios.get('/listing/farmer', {
+        const response = await axios.get('/farmers-service/listing/farmer', {
           params: {
             farmerId: getCurrentUserId(),
             page: this.page,

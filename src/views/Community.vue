@@ -9,25 +9,25 @@
               label="Search farmer"
               dense
               success
-              class="tw-bg-white tw-shadow-md"
+              class="tw-bg-white tw-shadow-md tw-font-semibold"
           ></v-combobox>
           <v-select
               label="Category of Farmer"
               dense
               :items="['ALL', 'SELLING']"
-              class="tw-bg-white tw-shadow-md"
+              class="tw-bg-white tw-shadow-md tw-font-semibold"
           ></v-select>
           <v-combobox
               label="Search Buyer"
               dense
               success
-              class="tw-bg-white tw-shadow-md"
+              class="tw-bg-white tw-shadow-md tw-font-semibold"
           ></v-combobox>
           <v-select
               label="Category of Buyer"
               dense
               :items="['ALL', 'REQUESTING']"
-              class="tw-bg-white tw-shadow-md"
+              class="tw-bg-white tw-shadow-md tw-font-semibold"
           ></v-select>
       </div>
       <!-- Map Section -->
@@ -39,7 +39,7 @@
         <!-- Sidebar for Farmers/Buyers List -->
         <v-col cols="12" md="4" class="tw-space-y-4">
           <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
-            <h2 class="tw-text-xl font-semibold tw-text-green-400 tw-mb-4">Farmers Nearby</h2>
+            <h2 class="tw-text-xl tw-font-semibold tw-text-green-900 tw-mb-4">Farmers Nearby</h2>
             <v-list class="tw-bg-gray-700 tw-rounded-lg">
               <v-list-item
                   v-for="farmer in farmersLocation"
@@ -58,7 +58,7 @@
           </v-card>
 
           <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
-            <h2 class="tw-text-xl font-semibold tw-text-green-400 tw-mb-4">Buyers Nearby</h2>
+            <h2 class="tw-text-xl tw-font-semibold tw-text-green-900 tw-mb-4">Buyers Nearby</h2>
             <v-list class="tw-bg-gray-700 tw-rounded-lg">
               <v-list-item
                   v-for="buyer in buyersLocation"
@@ -203,7 +203,7 @@ export default {
     },
   },
   mounted() {
-    axios.get('/location/farmers')
+    axios.get('/farmers-service/location/farmers')
       .then((response) => {
         if (response.data.success) {
           this.farmersLocation = response.data.data;
@@ -214,7 +214,7 @@ export default {
       })
       .catch((reason) => this.$toast.error(reason.message));
 
-    axios.get('/location/farmers')
+    axios.get('/farmers-service/location/farmers')
       .then((response) => {
         if (response.data.success) {
           this.buyersLocation = response.data.data;

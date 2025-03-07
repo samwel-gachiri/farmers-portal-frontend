@@ -23,16 +23,31 @@
 <!--        >-->
 <!--        </v-text-field>-->
         <div
-            class="tw-flex tw-w-full tw-flex-row tw-justify-center tw-items-center"
+            class="tw-flex tw-w-full tw-flex-row tw-justify-start tw-items-start"
         >
           <div
-              class="tw-flex tw-flex-col tw-justify-center tw-items-center"
+              class="tw-flex tw-flex-col"
           >
-            <span class="tw-font-bold">{{ farmer.location.customName }}</span>
-            <h2>({{ farmer.location.latitude }}, {{ farmer.location.longitude }})</h2>
+            <v-text-field
+                label="My Location"
+                v-model="farmer.location.customName"
+                class="tw-font-bold"
+            ></v-text-field>
+            <div class="tw-flex tw-flex-row">
+              <v-text-field
+                  label="latitude"
+                  prefix="("
+                  suffix=","
+                  v-model="farmer.location.latitude"
+              ></v-text-field>
+              <v-text-field
+                  label="longitude"
+                  suffix=")"
+                  v-model="farmer.location.longitude"
+              ></v-text-field>
+            </div>
           </div>
           <v-btn
-              v-if="getCurrentUserId === farmer.id"
               @click="getLocation"
           >
             <v-icon color="linear-gradient(green, red)" >mdi-google-maps</v-icon>
@@ -66,7 +81,7 @@
 <script>
 import validations from '@/utils/validations.js';
 import { mapGetters, mapState } from 'vuex';
-import { getCurrentUserId } from '@/utils/roles.js';
+import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
 
 export default {
@@ -80,6 +95,7 @@ export default {
       isValid: false,
       ...validations,
       loading: false,
+      role: '',
       farmer: {
         location: {
           latitude: 0.0,
@@ -95,12 +111,14 @@ export default {
     }),
     ...mapGetters('auth', ['hasAuthenticationStatus', 'authenticationStatus']),
     getCurrentUserId,
+    getCurrentUserRole,
   },
   mounted() {
+    this.role = getCurrentUserRole();
     this.fullname = this.user.name;
     this.email = this.user.email;
     this.phone_number = this.user.phone_number;
-    axios.get(`/location/farmer?farmerId=${this.$route.params.farmerId}`).then((response) => {
+    axios.get(`${getCurrentUserRole()}s-service/location/${this.role}?${this.role}Id=${getCurrentUserId()}`).then((response) => {
       if (response.data.success === true) {
         const data = response.data.data;
         this.farmer.location.latitude = data?.latitude;
@@ -142,7 +160,7 @@ export default {
           })
           .then((data) => {
             this.farmer.location.customName = data.plus_code.compound_code;
-            axios.put('/location/farmer', {
+            axios.put(`/${this.role}s-service/location/${this.role}`, {
               farmerId: getCurrentUserId(),
               locationRequestDto: {
                 latitude: this.farmer.location.latitude,

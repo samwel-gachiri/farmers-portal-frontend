@@ -143,7 +143,7 @@ export default {
   },
   methods: {
     fetchFarmerDetails() {
-      axios.get(`/farmer?farmerId=${this.$route.params.farmerId}`)
+      axios.get(`/farmers-service/farmer?farmerId=${this.$route.params.farmerId}`)
         .then(async (response) => {
           if (response.data.data == null) {
             const user = await Auth.currentAuthenticatedUser();
@@ -156,7 +156,7 @@ export default {
                 createdAt: '',
                 farmerProduces: [],
               };
-              axios.post('/farmer', this.farmer).then((res) => {
+              axios.post('/farmers-service/farmer', this.farmer).then((res) => {
                 if (res.data.success === true) {
                   this.$toast.success('User added to database');
                 }

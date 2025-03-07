@@ -85,7 +85,7 @@ export default {
     // Fetches list of produces from '/produce' endpoint
     async fetchProduces() {
       try {
-        const response = await axios.get('/produce');
+        const response = await axios.get('/farmers-service/produce');
         this.produceList = response.data.data;
       } catch (error) {
         this.$toast.error('Error fetching produces:', error.message);
@@ -101,7 +101,7 @@ export default {
     async addNewProduce() {
       if (this.newProduceName) {
         try {
-          const response = await axios.post('/produce', {
+          const response = await axios.post('/farmers-service/produce', {
             name: this.newProduceName,
             description: this.newProduceDesc, // Add description if needed
             farmingType: this.newProduceFarmingType, // Add farmingType if needed
@@ -129,7 +129,7 @@ export default {
       });
       if (!farmerHasProduce) {
         try {
-          await axios.post('/farmer/add-farmer-produce', {
+          await axios.post('/farmers-service/farmer/add-farmer-produce', {
             farmerId: getCurrentUserId(),
             farmerProducesId: [produceId],
           }).then((response) => {

@@ -3,8 +3,6 @@ import VueCookies from 'vue-cookies';
 // eslint-disable-next-line import/extensions
 import store from '@/store';
 import initialize from '@/utils/initialize.js';
-import Auth from '@aws-amplify/auth';
-import AuthConfig from '@/utils/aws-exports.js';
 import VueIziToast from 'vue-izitoast';
 import InfiniteLoading from 'vue-infinite-loading';
 import '@/assets/css/tailwind.css';
@@ -14,6 +12,7 @@ import '@/assets/css/style.css';
 import 'izitoast/dist/css/iziToast.min.css';
 import helperMixins from '@/mixins/helperMixins.js';
 import VuePhoneNumberInput from 'vue-phone-number-input';
+
 import Avatar from 'vue-avatar';
 // eslint-disable-next-line import/extensions
 import router from './router';
@@ -22,6 +21,7 @@ import vuetify from './plugins/vuetify.js';
 import './plugins/vuetify-money.js';
 
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+
 import App from './App.vue';
 
 Vue.config.productionTip = false;
@@ -36,7 +36,6 @@ Vue.use(VueIziToast, { position: 'topRight', timeout: 5000 });
 Vue.use(InfiniteLoading);
 
 Vue.use(Avatar);
-Auth.configure(AuthConfig);
 
 initialize.init(router, store);
 new Vue({

@@ -5,9 +5,14 @@
       <logo-title class=""></logo-title>
     </div>
 
-    <div class="tw-w-full tw-flex tw-flex-col tw-h-full lg:tw-h-full md:tw-items-center tw-items-start tw-justify-center md:tw-bg-white tw-bg-gray-100">
+    <div class="tw-w-full tw-flex tw-flex-col tw-h-full lg:tw-h-full md:tw-items-center tw-items-start tw-justify-center tw-bg-gray-100">
       <h2 style="color: #13361C;" class="md:tw-text-6xl tw-text-3xl  md:tw-mt-0 tw-mt-8 md:tw-mx-0 tw-mx-10">Agriconnect Portals</h2>
       <h2 style="color: #13361C;" class="tw-mt-3 md:tw-font-bold  md:tw-mx-0 tw-mx-10">A place where farmers and buyers meet, interact and trade</h2>
+      <v-divider
+          :thickness="20"
+          class="border-opacity-100 tw-w-64 tw-h-4"
+          color="primary"
+      ></v-divider>
       <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-8 tw-m-10">
         <v-card
             v-for="(user, index) in userTypes"
@@ -46,8 +51,12 @@
 // import Navigation from '@/components/navigation.vue';
 
 // import Default from '@/components/layout/Default.vue';
+import Auth from '@aws-amplify/auth';
+import AuthConfig from '@/utils/aws-exports.js';
 
 import LogoTitle from '@/components/shared/LogoText.vue';
+import { NOTIFICATIONS } from '@/utils/const.js';
+import { getCurrentUserRole } from '@/utils/roles.js';
 
 export default {
   name: 'Landing',
@@ -71,8 +80,32 @@ export default {
   },
   components: { LogoTitle },
   methods: {
-    openSignIn(name) {
-      this.$router.push({ name: 'SignIn', query: { r: btoa(window.location.href), role: name } });
+    async openSignIn(name) {
+      const userName = name.toString().toLowerCase();
+      if (userName === 'farmer') {
+        Auth.configure(AuthConfig.FarmerAuth);
+      }
+      if (userName === 'buyer') {
+        Auth.configure(AuthConfig.BuyerAuth);
+      }
+      if (userName === 'buyer') {
+        Auth.configure(AuthConfig.AdminAuth);
+      }
+      console.log(getCurrentUserRole());
+      console.log(userName);
+      if (getCurrentUserRole() !== userName) {
+        await this.$store.dispatch('auth/signOut');
+        localStorage.removeItem(NOTIFICATIONS);
+        if (caches) {
+          caches.keys().then((arr) => {
+            arr.forEach((key) => {
+              caches.delete(key);
+            });
+          });
+        }
+      }
+      await this.$store.dispatch('auth/setViewRole', userName);
+      await this.$router.push({ name: 'SignIn', query: { r: btoa(window.location.href) } });
     },
   },
   // components: { Default },

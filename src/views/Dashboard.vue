@@ -61,7 +61,7 @@
 <!--        </v-card>-->
 <!--      </v-col>-->
       <v-col cols="12">
-        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+        <v-card :loading="loading" rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
           <apexchart
               type="line"
               height="350"
@@ -222,7 +222,7 @@ export default {
     async fetchLiveCount() {
       this.loading = true;
       try {
-        const response = await axios.get('/api/dashboard/live/count', {
+        const response = await axios.get('/farmers-service/api/dashboard/live/count', {
           params: {
             farmerId: getCurrentUserId(),
           },

@@ -120,7 +120,7 @@ export default {
     };
   },
   mounted() {
-    axios.get(`/farmer?farmerId=${getCurrentUserId()}`).then((response) => {
+    axios.get(`/farmers-service/farmer?farmerId=${getCurrentUserId()}`).then((response) => {
       if (response.data.data == null) throw Error('User not found');
       this.farmer = { ...this.farmer, ...response.data.data };
     }).catch((e) => {
@@ -145,7 +145,7 @@ export default {
     },
     postListing() {
       this.loading = true;
-      axios.post('/listing', {
+      axios.post('/farmers-service/listing', {
         farmerProduceId: this.listing.farmerProduceId,
         price: this.listing.price,
         quantity: this.listing.quantity,

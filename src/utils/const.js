@@ -3,6 +3,7 @@ export const MINIMUM_COMP_PREMIUM = 37500;
 export const USER_EMAIL = '823458teduuf334';
 export const ACCESS_TOKEN = '12wedfh3wdfhedvtre8';
 export const USER = 'g1kdk-damedoja-p';
+export const ROLE = 'AF2-3999-SAND-PEACH';
 export const APP_CODE = '2Rp99UAjqVA';
 export const USER_OTP = 'usr-otp';
 export const CR_KEY = 'tywrtr25cf';

@@ -11,6 +11,7 @@
       </div>
       <template v-for="item in items">
         <v-list-item
+            v-if="viewPermissions((item.roles))"
             :key="item.text"
             link
             :to="item.link"
@@ -33,19 +34,33 @@
 </template>
 
 <script>
-import { getCurrentUserId, isAuthenticated } from '@/utils/roles.js';
+import { getCurrentUserId, isAuthenticated, viewPermissions } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
   name: 'Drawer',
+  methods: { viewPermissions },
   components: { LogoTitle },
   data: () => ({
     items: [
-      { icon: 'mdi-apps', text: 'Dashboard', link: { name: 'Dashboard' } },
-      { icon: 'mdi-account-group', text: 'Community', link: { name: 'Community' } },
-      // { icon: 'mdi-tractor', text: 'Sell produce', link: { name: 'sales', query: { toSamwel: true } } },
-      { icon: 'mdi-cash-multiple', text: 'Listings', link: { name: 'Listings' } },
-      // { icon: 'mdi-phone', text: 'Requests', link: { name: 'Requests' } },
+      {
+        icon: 'mdi-apps',
+        text: 'Dashboard',
+        link: { name: 'Dashboard' },
+        roles: ['farmer', 'buyer'],
+      },
+      {
+        icon: 'mdi-account-group',
+        text: 'Community',
+        link: { name: 'Community' },
+        roles: ['farmer', 'buyer'],
+      },
+      {
+        icon: 'mdi-cash-multiple',
+        text: 'Listings',
+        link: { name: 'Listings' },
+        roles: ['farmer'],
+      },
       {
         icon: 'mdi-corn',
         text: 'My Produces',
@@ -53,8 +68,16 @@ export default {
           name: 'Produces',
           params: { farmerId: getCurrentUserId() },
         },
+        roles: ['farmer'],
       },
-      { icon: 'mdi-chart-pie', text: 'Reports', link: { name: 'Report' } },
+      {
+        icon: 'mdi-chart-pie',
+        text: 'Reports',
+        link: { name: 'Report' },
+        roles: ['farmer'],
+      },
+      // { icon: 'mdi-phone', text: 'Requests', link: { name: 'Requests' } },
+      // { icon: 'mdi-tractor', text: 'Sell produce', link: { name: 'sales', query: { toSamwel: true } } },
     ],
   }),
   computed: {

@@ -8,10 +8,11 @@
         </div>
         <!--  FORM part       -->
         <div class="tw-flex tw-flex-col tw-gap-8  tw-justify-center tw-items-center tw-w-full tw-h-full">
+          <div>Signing in as {{ form.userType }}</div>
           <div class="tw-flex md:tw-justify-center tw-justify-start tw-items-center tw-h-full tw-flex-col tw-rounded-lg">
             <div class="tw-flex tw-flex-row-reverse tw-justify-center tw-items-center tw-w-full tw-p-4">
               <logo-title
-                  :text="`Welcome ${form.userType}`"
+                  :text="`Welcome`"
                   class="">
               </logo-title>
             </div>
@@ -31,8 +32,8 @@
                       class="tw-my-3"
                       v-model="form.phoneNumber"
                       default-country-code="KE"
-                      :no-country-selector="false"
                       :preferred-countries="['KE', 'US', 'UG', 'TZ']"
+                      @input="onPhoneNumberInput"
                   />
                   <v-text-field
                       label="Full names"
@@ -84,6 +85,7 @@
                       to="SignIn"
                   >Already have an account? Sign in</router-link>
                   <div class="tw-my-6 tw-mx tw-w-full">
+                    <h2>{{form.phoneNumber}}</h2>
                     <v-btn
                         block
                         color="primary"
@@ -120,7 +122,7 @@ export default {
         password: '',
         confirmPassword: '',
         phoneNumber: '',
-        userType: '',
+        userType: getCurrentUserRole(),
         terms: '',
         isValid: false,
       },
@@ -145,7 +147,6 @@ export default {
           },
         ],
       },
-      userTypes: ['Farmer', 'Buyer'],
       ...validations,
       selectedCountry: 'KE',
       passwordField: 'password',
@@ -163,6 +164,10 @@ export default {
     openTermsDialog() {
       this.$refs.termsDialog.openDialog();
     },
+    onPhoneNumberInput(phoneData) {
+      console.log(phoneData);
+      this.form.phoneNumber = phoneData?.formattedNumber; // This ensures the international format is stored
+    },
     async onSignUp() {
       const payload = {
         username: `+254${this.form.phoneNumber.slice(1)}`,
@@ -170,7 +175,6 @@ export default {
         attributes: {
           picture: 'https://images.app.goo.gl/CS3uJKWnP61jdUNQ7',
           name: this.form.fullName,
-          'custom:role': this.form.userType, // Custom attribute for user type
         },
       };
       await this.$store.dispatch('auth/signUp', payload)
@@ -197,10 +201,8 @@ export default {
                     createdAt: '',
                     farmerProduces: [],
                   };
-                  axios.post(
-                    '/farmer',
-                    this.farmer,
-                  );
+                  axios.post(`/${this.form.userType}-service/farmer`,
+                    this.farmer);
                   this.$router.push({
                     name: 'Profile',
                     params: { farmerId: getCurrentUserId() },
@@ -209,7 +211,7 @@ export default {
                 }
               }, 1000);
             });
-          this.$toast.success(`${this.form.fullName} signed up successfully!`, 'Success');
+          this.$toast.success(`${this.form.fullName} signed up successfully as ${this.form.userType}!`, 'Success');
         })
         .catch((reason) => {
           this.$toast.error(reason.message);

@@ -6,7 +6,7 @@ import cookie from 'vue-cookies';
 import axios from 'axios';
 /* eslint import/named:0 */
 import {
-  ACCESS_TOKEN, APP_CODE, CR_KEY, USER, USER_EMAIL, USER_OTP,
+  ACCESS_TOKEN, APP_CODE, CR_KEY, ROLE, USER, USER_EMAIL, USER_OTP,
 } from '@/utils/const.js';
 
 // await context.dispatch('auth/generateOtp', { email: params.attributes.email, mobile: params.attributes.phone_number }, { root: true });
@@ -20,6 +20,7 @@ const logger = new Logger('store:auth');
 const data = {
   user: cookie.get(USER) || null,
   token: cookie.get(ACCESS_TOKEN) || '',
+  role: cookie.get(ROLE) || '',
   authenticationStatus: null,
   userConfirmed: false,
 };
@@ -29,6 +30,7 @@ const getters = {
   isConfirmed: (state) => state.userConfirmed,
   isAuthenticated: (state) => !!state.token,
   accessToken: (state) => state.token,
+  role: (state) => state.role,
   authenticationStatus: (state) => (state.authenticationStatus
     ? state.authenticationStatus
     : { variant: 'secondary' }),
@@ -36,6 +38,9 @@ const getters = {
 };
 
 const mutations = {
+  setUserRole(state, text) {
+    state.role = text;
+  },
   setAuthenticationError(state, err) {
     logger.debug('auth error: {}', err);
     state.authenticationStatus = {
@@ -57,6 +62,7 @@ const mutations = {
   setUserAuthenticated(state, user) {
     const token = user.signInUserSession.idToken.jwtToken;
     cookie.set(USER, user.attributes);
+    cookie.set(ROLE, state.role);
     cookie.set(ACCESS_TOKEN, token);
     state.user = user.attributes;
     state.token = token;
@@ -78,6 +84,9 @@ const mutations = {
 };
 
 const actions = {
+  setViewRole: async (context, text) => {
+    context.commit('setUserRole', text);
+  },
   clearAuthenticationStatus: (context) => {
     context.commit('clearAuthenticationStatus', null);
   },
