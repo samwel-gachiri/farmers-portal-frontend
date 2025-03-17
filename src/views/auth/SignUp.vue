@@ -8,7 +8,9 @@
         </div>
         <!--  FORM part       -->
         <div class="tw-flex tw-flex-col tw-gap-8  tw-justify-center tw-items-center tw-w-full tw-h-full">
-          <div>Signing in as {{ form.userType }}</div>
+          <div class="tw-w-full tw-pt-4">
+            <router-link class="tw-ml-4 tw-bg-yellow-400 tw-rounded-none tw-p-2 tw-mt-4" :to="{name: 'Landing'}">Go Home</router-link>
+          </div>
           <div class="tw-flex md:tw-justify-center tw-justify-start tw-items-center tw-h-full tw-flex-col tw-rounded-lg">
             <div class="tw-flex tw-flex-row-reverse tw-justify-center tw-items-center tw-w-full tw-p-4">
               <logo-title
@@ -23,24 +25,24 @@
               >
                 <card-title
                     icon="mdi-cow"
-                >Sign up</card-title>
+                >Sign Up As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>
                 <v-form
                     v-model="form.isValid"
                     class="tw-px-4 tw-fex tw-flex-col"
                 >
                   <phone-number-input
-                      class="tw-my-3"
+                      class="tw-mt-6 tw-ml-3"
                       v-model="form.phoneNumber"
                       default-country-code="KE"
                       :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                      @input="onPhoneNumberInput"
+                      @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"
                   />
                   <v-text-field
                       label="Full names"
                       class="tw-my-5"
                       dense
                       v-model="form.fullName"
-                      :rules="[required('Name')]"
+                      :rules="[required('Name'), noDigitFormat()]"
                   >
                     <v-icon slot="prepend" color="primary">mdi-account</v-icon>
                   </v-text-field>
@@ -85,7 +87,6 @@
                       to="SignIn"
                   >Already have an account? Sign in</router-link>
                   <div class="tw-my-6 tw-mx tw-w-full">
-                    <h2>{{form.phoneNumber}}</h2>
                     <v-btn
                         block
                         color="primary"
@@ -112,6 +113,8 @@ import axios from 'axios';
 import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
+import Auth from '@aws-amplify/auth';
+import AuthConfig from '@/utils/aws-exports.js';
 
 export default {
   components: { TermsAndConditions, LogoTitle, CardTitle },
@@ -160,13 +163,28 @@ export default {
     getCurrentUserId,
     getCurrentUserRole,
   },
+  mounted() {
+    const userRole = getCurrentUserRole();
+    if (userRole === '' || userRole == null) {
+      this.$router.push({ name: 'Landing' });
+    }
+    if (userRole === 'farmer') {
+      Auth.configure(AuthConfig.FarmerAuth);
+    }
+    if (userRole === 'buyer') {
+      Auth.configure(AuthConfig.BuyerAuth);
+    }
+    if (userRole === 'admin') {
+      Auth.configure(AuthConfig.AdminAuth);
+    }
+  },
   methods: {
     openTermsDialog() {
       this.$refs.termsDialog.openDialog();
     },
     onPhoneNumberInput(phoneData) {
       console.log(phoneData);
-      this.form.phoneNumber = phoneData?.formattedNumber; // This ensures the international format is stored
+      this.form.phoneNumber = phoneData;
     },
     async onSignUp() {
       const payload = {
@@ -204,8 +222,7 @@ export default {
                   axios.post(`/${this.form.userType}-service/farmer`,
                     this.farmer);
                   this.$router.push({
-                    name: 'Profile',
-                    params: { farmerId: getCurrentUserId() },
+                    name: 'Dashboard',
                   });
                   clearInterval(this.intervalId);
                 }

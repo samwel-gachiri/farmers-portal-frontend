@@ -30,7 +30,7 @@
           >
             <v-text-field
                 label="My Location"
-                v-model="farmer.location.customName"
+                v-model="userLocation.location.customName"
                 class="tw-font-bold"
             ></v-text-field>
             <div class="tw-flex tw-flex-row">
@@ -38,12 +38,12 @@
                   label="latitude"
                   prefix="("
                   suffix=","
-                  v-model="farmer.location.latitude"
+                  v-model="userLocation.location.latitude"
               ></v-text-field>
               <v-text-field
                   label="longitude"
                   suffix=")"
-                  v-model="farmer.location.longitude"
+                  v-model="userLocation.location.longitude"
               ></v-text-field>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default {
       ...validations,
       loading: false,
       role: '',
-      farmer: {
+      userLocation: {
         location: {
           latitude: 0.0,
           longitude: 0.0,
@@ -121,9 +121,9 @@ export default {
     axios.get(`${getCurrentUserRole()}s-service/location/${this.role}?${this.role}Id=${getCurrentUserId()}`).then((response) => {
       if (response.data.success === true) {
         const data = response.data.data;
-        this.farmer.location.latitude = data?.latitude;
-        this.farmer.location.longitude = data?.longitude;
-        this.farmer.location.customName = data?.customName;
+        this.userLocation.location.latitude = data?.latitude;
+        this.userLocation.location.longitude = data?.longitude;
+        this.userLocation.location.customName = data?.customName;
       }
     }).catch((e) => {
       this.$toast.error(e.message);
@@ -147,9 +147,9 @@ export default {
     getLocation() {
       this.$toast.show('Collecting location infor');
       navigator.geolocation.getCurrentPosition(async (position) => {
-        this.farmer.location.latitude = position.coords.latitude;
-        this.farmer.location.longitude = position.coords.longitude;
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.farmer.location.latitude},${this.farmer.location.longitude}
+        this.userLocation.location.latitude = position.coords.latitude;
+        this.userLocation.location.longitude = position.coords.longitude;
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.userLocation.location.latitude},${this.userLocation.location.longitude}
 &location_type=ROOFTOP&result_type=street_address&key=${process.env.VUE_APP_GOOGLE_MAPS_API_KEY}`;
         fetch(url)
           .then((response) => {
@@ -159,13 +159,13 @@ export default {
             return response.json(); // or response.text(), response.blob(), etc.
           })
           .then((data) => {
-            this.farmer.location.customName = data.plus_code.compound_code;
+            this.userLocation.location.customName = data.plus_code.compound_code;
             axios.put(`/${this.role}s-service/location/${this.role}`, {
-              farmerId: getCurrentUserId(),
-              locationRequestDto: {
-                latitude: this.farmer.location.latitude,
-                longitude: this.farmer.location.longitude,
-                customName: this.farmer.location.customName,
+              [`${this.role}Id`]: getCurrentUserId(),
+              locationDto: {
+                latitude: this.userLocation.location.latitude,
+                longitude: this.userLocation.location.longitude,
+                customName: this.userLocation.location.customName,
               },
             }).then((response) => {
               if (response.data.success === true) {

@@ -11,7 +11,7 @@ import '@/assets/css/nprogress.css';
 import '@/assets/css/style.css';
 import 'izitoast/dist/css/iziToast.min.css';
 import helperMixins from '@/mixins/helperMixins.js';
-import VuePhoneNumberInput from 'vue-phone-number-input';
+import VuePhoneNumberInput from '@/components/layout/components/PhoneNumberInput.vue';
 
 import Avatar from 'vue-avatar';
 // eslint-disable-next-line import/extensions

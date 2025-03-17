@@ -8,28 +8,24 @@
           </div>
           <!--        form part-->
           <div style="height: 100vh;" class="tw-border-4 tw-bg-blue tw-flex tw-flex-col  tw-justify-center tw-items-center tw-w-full tw-h-full">
+            <div class="tw-w-full">
+              <router-link class="tw-ml-4 tw-bg-yellow-400 tw-rounded-none tw-p-2 tw-mt-4" :to="{name: 'Landing'}">Go Home</router-link>
+            </div>
             <logo-title class="tw-my-8">
             </logo-title>
             <v-card
                  style="border-radius: 20px;"
                 draggable="true"
             >
-              <card-title>Sign in</card-title>
+              <card-title>Sign In As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>
               <v-form v-model="isValid" @submit.prevent="onSubmit">
                 <phone-number-input
-                    class="tw-my-5 tw-mx-3 tw-border-4 tw-rounded"
+                    class="tw-mt-6 tw-mb-3 tw-mx-5"
                     v-model="form.phoneNumber"
                     default-country-code="KE"
-                    :no-country-selector="false"
                     :preferred-countries="['KE', 'US', 'UG', 'TZ']"
+                    @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"
                 />
-                <!--              <v-text-field-->
-                <!--                  label="email"-->
-                <!--                  v-model="form.email"-->
-                <!--                  dense-->
-                <!--              >-->
-                <!--                <v-icon slot="prepend">mdi-email</v-icon>-->
-                <!--              </v-text-field>-->
                 <div class="tw-flex tw-flex-row tw-gap-3 tw-mx-5">
                   <v-icon slot="prepend" color="primary">mdi-lock</v-icon>
                   <v-text-field
@@ -48,7 +44,7 @@
                     class="tw-flex tw-justify-center tw-items-center tw-mt-2"
                 >
                   <div
-                      class="tw-border-0 tw-font-bold tw-text-white"
+                      class="tw-border-0 tw-w-full tw-mx-5 tw-mt-3 tw-mb-1 tw-text-white"
                       @click="toSignUp"
                   ><h2 class="tw-text-sm">Don't have an account? Sign up</h2>
                   </div>
@@ -83,8 +79,10 @@ import validations from '@/utils/validations.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
 import AuthMixins from '@/mixins/AuthMixins.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
-import { isAuthenticated } from '@/utils/roles.js';
+import { getCurrentUserRole, isAuthenticated } from '@/utils/roles.js';
 import GoogleSignIn from '@/components/auth/GoogleSignIn.vue';
+import Auth from '@aws-amplify/auth';
+import AuthConfig from '@/utils/aws-exports.js';
 
 export default {
   components: { GoogleSignIn, LogoTitle, CardTitle },
@@ -94,9 +92,8 @@ export default {
         password: '',
         phoneNumber: '',
         email: '',
-        userType: null,
+        userType: getCurrentUserRole(),
       },
-      userTypes: ['Farmer', 'Buyer'],
       ...validations,
       selectedCountry: 'KE',
       passwordField: 'password',
@@ -109,6 +106,21 @@ export default {
   mixins: [AuthMixins],
   computed: {
     isAuthenticated,
+  },
+  mounted() {
+    const userRole = getCurrentUserRole();
+    if (userRole === '' || userRole == null) {
+      this.$router.push({ name: 'Landing' });
+    }
+    if (userRole === 'farmer') {
+      Auth.configure(AuthConfig.FarmerAuth);
+    }
+    if (userRole === 'buyer') {
+      Auth.configure(AuthConfig.BuyerAuth);
+    }
+    if (userRole === 'admin') {
+      Auth.configure(AuthConfig.AdminAuth);
+    }
   },
   methods: {
     async onSubmit() {

@@ -24,20 +24,20 @@
           <v-img
               v-if="user.name === 'Buyer'"
               src="@/assets/images/buyer.png"
-              width="150"
-              height="150"
+              width="100"
+              height="100"
           ></v-img>
           <v-img
               v-if="user.name === 'Farmer'"
               src="@/assets/images/farmer.png"
-              width="150"
-              height="150"
+              width="100"
+              height="100"
           ></v-img>
           <v-img
               v-if="user.name === 'Admin'"
               src="@/assets/images/admin.png"
-              width="150"
-              height="150"
+              width="100"
+              height="100"
           ></v-img>
           <h2 class="user-type-text tw-text-lg tw-font-extrabold tw-mt-2">{{ user.name }} Portal</h2>
           <h2 style="color: #7a7a7a;" class="c-blue-text tw-font-light tw-text-md"> {{ user.name }} Start Here</h2>
@@ -51,8 +51,6 @@
 // import Navigation from '@/components/navigation.vue';
 
 // import Default from '@/components/layout/Default.vue';
-import Auth from '@aws-amplify/auth';
-import AuthConfig from '@/utils/aws-exports.js';
 
 import LogoTitle from '@/components/shared/LogoText.vue';
 import { NOTIFICATIONS } from '@/utils/const.js';
@@ -82,17 +80,6 @@ export default {
   methods: {
     async openSignIn(name) {
       const userName = name.toString().toLowerCase();
-      if (userName === 'farmer') {
-        Auth.configure(AuthConfig.FarmerAuth);
-      }
-      if (userName === 'buyer') {
-        Auth.configure(AuthConfig.BuyerAuth);
-      }
-      if (userName === 'buyer') {
-        Auth.configure(AuthConfig.AdminAuth);
-      }
-      console.log(getCurrentUserRole());
-      console.log(userName);
       if (getCurrentUserRole() !== userName) {
         await this.$store.dispatch('auth/signOut');
         localStorage.removeItem(NOTIFICATIONS);

@@ -61,15 +61,15 @@
             <h2 class="tw-text-xl tw-font-semibold tw-text-green-900 tw-mb-4">Buyers Nearby</h2>
             <v-list class="tw-bg-gray-700 tw-rounded-lg">
               <v-list-item
-                  v-for="buyer in buyersLocation"
-                  :key="buyer.id"
+                  v-for="buyerLocation in buyersLocation"
+                  :key="buyerLocation.id"
                   class="tw-mb-2 hover:tw-bg-gray-600 tw-cursor-pointer"
-                  @click="setFocusToLocation(buyer.latitude, buyer.longitude)"
+                  @click="setFocusToLocation(buyerLocation.latitude, buyerLocation.longitude)"
               >
                 <v-list-item-content>
-                  <v-list-item-title class="tw-text-green-900 tw-font-extrabold">{{ buyer.farmer.name }}</v-list-item-title>
+                  <v-list-item-title class="tw-text-green-900 tw-font-extrabold">{{ buyerLocation.buyer.name }}</v-list-item-title>
                   <v-list-item-subtitle class="tw-text-gray-400">
-                    Interested in: {{ buyer.farmer.farmerProduces.map(p => p.farmProduce.name).join(', ') || 'None' }}
+                    Interested in: {{ buyerLocation.buyer.preferredProduces.map(p => p.bsfarmProduce.name).join(', ') || 'None' }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -162,6 +162,25 @@ export default {
                 newMarker.setTitle(`${farmerLocation.farmer.name}\n\n\bPRODUCES\n${farmerLocation.farmer.farmerProduces.length > 0 ? farmerLocation.farmer.farmerProduces.map((farmerProduce) => farmerProduce.farmProduce.name).join('\n') : 'none'}`);
               });
             });
+            this.buyersLocation.forEach((buyerLocation) => {
+              const newMarker = new google.maps.Marker({
+                position: { lat: buyerLocation.latitude, lng: buyerLocation.longitude },
+                map: this.map,
+                icon: {
+                  // eslint-disable-next-line global-require
+                  url: require('@/assets/images/buyer_map_icon.png'),
+                  scaledSize: new google.maps.Size(50, 50),
+                },
+              });
+
+              newMarker.addListener('click', () => {
+                this.$toast.success(`Buyer: ${buyerLocation.buyer.name}`);
+              });
+
+              newMarker.addListener('mouseover', () => {
+                newMarker.setTitle(`${buyerLocation.farmer.name}\n\n\bPRODUCES\n${buyerLocation.buyer.preferredProduces.length > 0 ? buyerLocation.farmer.farmerProduces.map((farmerProduce) => farmerProduce.farmProduce.name).join('\n') : 'none'}`);
+              });
+            });
           }, (error) => {
             this.$toast.error(error.message);
           }, { enableHighAccuracy: true });
@@ -214,7 +233,7 @@ export default {
       })
       .catch((reason) => this.$toast.error(reason.message));
 
-    axios.get('/farmers-service/location/farmers')
+    axios.get('/buyers-service/location/buyers')
       .then((response) => {
         if (response.data.success) {
           this.buyersLocation = response.data.data;
