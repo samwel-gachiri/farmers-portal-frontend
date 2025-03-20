@@ -97,7 +97,7 @@
 <script>
 import { getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
-import CreateListing from '@/components/CreateListing.vue';
+import CreateListing from '@/components/listing/CreateListing.vue';
 import AddFarmerProduce from '@/components/AddFarmersProduce.vue';
 import Default from '@/components/layout/Default.vue';
 import Auth from '@aws-amplify/auth';

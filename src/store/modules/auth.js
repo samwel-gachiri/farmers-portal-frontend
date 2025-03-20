@@ -86,6 +86,7 @@ const mutations = {
 const actions = {
   setViewRole: async (context, text) => {
     context.commit('setUserRole', text);
+    cookie.set(ROLE, text);
   },
   clearAuthenticationStatus: (context) => {
     context.commit('clearAuthenticationStatus', null);

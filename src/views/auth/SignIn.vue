@@ -44,9 +44,14 @@
                     class="tw-flex tw-justify-center tw-items-center tw-mt-2"
                 >
                   <div
-                      class="tw-border-0 tw-w-full tw-mx-5 tw-mt-3 tw-mb-1 tw-text-white"
+                      class="tw-border-0 tw-w-full tw-ml-5 tw-mt-3 tw-mb-1 tw-text-white"
                       @click="toSignUp"
-                  ><h2 class="tw-text-sm">Don't have an account? Sign up</h2>
+                  ><h2 class="tw-text-sm">Don't have an account?</h2>
+                  </div>
+                  <div
+                      class="tw-border-0 tw-w-full tw-ml-3 tw-mt-3 tw-mb-1 tw-text-white"
+                      @click="toForgotPassword"
+                  ><h2 class="tw-text-sm">Forgot password?</h2>
                   </div>
                 </div>
                 <div class="tw-mx-3">
@@ -143,6 +148,11 @@ export default {
     toSignUp() {
       this.$router.push({
         name: 'SignUp',
+      });
+    },
+    toForgotPassword() {
+      this.$router.push({
+        name: 'ForgotPassword',
       });
     },
   },

@@ -3,11 +3,6 @@
     <v-list dense>
       <div class="tw-mx-4 tw-py-3 md:tw-py-5 tw-mb-8">
           <logo-title></logo-title>
-          <div v-if="!isAuthenticated">
-            <router-link to="SignIn">Login
-              <v-icon>mdi-login</v-icon>
-            </router-link>
-          </div>
       </div>
       <template v-for="item in items">
         <v-list-item

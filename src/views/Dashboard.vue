@@ -102,7 +102,7 @@ import Default from '@/components/layout/Default.vue';
 import { mapState } from 'vuex';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
-import CreateListing from '@/components/CreateListing.vue';
+import CreateListing from '@/components/listing/CreateListing.vue';
 import VueApexCharts from 'vue-apexcharts';
 
 export default {
@@ -202,7 +202,7 @@ export default {
   },
   computed: {
     ...mapState({
-      user: (state) => state.auth.user,
+      // user: (state) => state.auth.user,
     }),
   },
   mounted() {

@@ -5,30 +5,43 @@
       <h1 class="tw-text-4xl font-bold tw-text-green-800">Farmers & Buyers</h1>
       <p class="">Connecting farmers and buyers in real-time</p>
       <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5 tw-my-5">
-          <v-combobox
-              label="Search farmer"
-              dense
-              success
-              class="tw-bg-white tw-shadow-md tw-font-semibold"
-          ></v-combobox>
-          <v-select
-              label="Category of Farmer"
-              dense
-              :items="['ALL', 'SELLING']"
-              class="tw-bg-white tw-shadow-md tw-font-semibold"
-          ></v-select>
-          <v-combobox
-              label="Search Buyer"
-              dense
-              success
-              class="tw-bg-white tw-shadow-md tw-font-semibold"
-          ></v-combobox>
-          <v-select
-              label="Category of Buyer"
-              dense
-              :items="['ALL', 'REQUESTING']"
-              class="tw-bg-white tw-shadow-md tw-font-semibold"
-          ></v-select>
+        <v-select
+            v-model="farmerFilter"
+            :items="['All Farmers', 'Selling Farmers', 'None']"
+            @change="loadMap"
+            label="Select Farmers to View"
+        ></v-select>
+
+        <v-combobox
+            v-model="selectedFarmer"
+            :items="filteredFarmers"
+            item-text="farmer.name"
+            item-value=""
+            return-object
+            label="Search Farmers"
+            :disabled="filteredFarmers.length === 0"
+            clearable
+        ></v-combobox>
+
+        <!-- Filter Selection for Buyers -->
+        <v-select
+            v-model="buyerFilter"
+            :items="['All Buyers', 'Requesting Buyers', 'None']"
+            @change="loadMap"
+            label="Select Buyers to View"
+        ></v-select>
+
+        <v-combobox
+            v-model="selectedBuyer"
+            :items="filteredBuyers"
+            return-object
+            item-text="buyer.name"
+            label="Search Buyers"
+            :disabled="filteredBuyers.length === 0"
+            clearable
+        >
+        </v-combobox>
+
       </div>
       <!-- Map Section -->
       <v-row class="tw-h-full">
@@ -92,6 +105,23 @@
         </v-col>
       </v-row>
     </div>
+    <!-- Dialog for Marker Info -->
+    <v-dialog v-model="userDialog" v-if="false" max-width="400">
+      <v-card v-if="selectedUserFromMap?.role === 'farmer'">
+        <v-card-title>{{ selectedUserFromMap?.name }}</v-card-title>
+        <v-card-actions>
+          <v-btn @click="toggleConnection">
+            <v-icon v-if="isConnected">mdi-check-circle</v-icon>
+            {{ isConnected ? "Disconnect" : "Connect" }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <FarmerListingsDialog
+        :selected-farmer="selectedUserFromMap"
+        :buyer-id="getCurrentUserId()"
+        @close="selectedUserFromMap = null"
+    />
   </Default>
 </template>
 
@@ -99,22 +129,138 @@
 import Default from '@/components/layout/Default.vue';
 import googleMapsLoader from '@/components/GoogleMapsLoader.js';
 import axios from 'axios';
+import { mapGetters, mapState } from 'vuex';
+import FarmerListingsDialog from '@/components/listing/FarmerListingsDialog.vue';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
-  components: { Default },
+  components: { FarmerListingsDialog, Default },
   data() {
     return {
       map: null,
       center: { lat: null, lng: null },
-      farmersLocation: [],
-      buyersLocation: [],
+      farmersLocation: [
+        {
+          id: 'string',
+          latitude: 0,
+          longitude: 0,
+          customName: 'string',
+          farmer: {
+            id: 'string',
+            name: 'string',
+            email: 'string',
+            phoneNumber: 'string',
+            createdAt: '2025-03-20T13:25:27.356Z',
+            farmerProduces: [
+              {
+                id: 'string',
+                farmProduce: {
+                  id: 'string',
+                  name: 'string',
+                  description: 'string',
+                  farmingType: 'string',
+                  status: 'INACTIVE',
+                },
+                status: 'SELLING',
+              },
+            ],
+          },
+        },
+      ],
+      selectedFarmersLocations: [],
+      buyersLocation: [
+        {
+          id: 'string',
+          latitude: 0,
+          longitude: 0,
+          customName: 'string',
+          buyer: {
+            id: 'string',
+            name: 'string',
+            email: 'string',
+            phoneNumber: 'string',
+            createdAt: '2025-03-20T13:19:20.714Z',
+            preferredProduces: [
+              {
+                id: 'string',
+                status: 'INACTIVE',
+                bsfarmProduce: {
+                  id: 'string',
+                  name: 'string',
+                  description: 'string',
+                  farmingType: 'string',
+                  status: 'REQUESTING',
+                },
+              },
+            ],
+          },
+        },
+      ],
+      selectedBuyersLocations: [],
+      farmerFilter: 'All Farmers',
+      buyerFilter: 'All Buyers',
+      selectedFarmer: null,
+      selectedBuyer: null,
       directionsService: null,
       directionsRenderer: null,
       distance: null,
+      userDialog: false,
+      selectedUserFromMap: null,
+      isConnected: false,
     };
   },
+  computed: {
+    ...mapState({
+      user: (state) => state.auth.user,
+      role: (state) => state.auth.role,
+    }),
+    ...mapGetters('auth', ['isAuthenticated']),
+    filteredFarmers() {
+      if (this.farmerFilter === 'Selling Farmers') {
+        return this.farmersLocation.filter((farmer) => farmer.farmer.farmerProduces.some((produce) => produce.status === 'ON_SALE'));
+      }
+      if (this.farmerFilter === 'None') {
+        return [];
+      }
+      return this.farmersLocation;
+    },
+    filteredBuyers() {
+      if (this.buyerFilter === 'Requesting Buyers') {
+        return this.buyersLocation.filter((buyer) => buyer.buyer.preferredProduces.some((preferred) => preferred.bsfarmProduce.status === 'REQUESTING'));
+      }
+      if (this.buyerFilter === 'None') return [];
+      return this.buyersLocation;
+    },
+  },
+  watch: {
+    selectedFarmer(newFarmerLocation) {
+      if (newFarmerLocation != null) {
+        this.setFocusToLocation(newFarmerLocation.latitude, newFarmerLocation.longitude);
+      }
+    },
+    selectedBuyer(newBuyerLocation, oldBuyerLocation) {
+      this.$toast.show('Seleted buyer');
+      console.log(`new ${newBuyerLocation}`);
+      console.log(`old ${oldBuyerLocation}`);
+      if (newBuyerLocation != null) {
+        console.log('setting focus');
+        // this.setFocusToLocation(newBuyerLocation.latitude, newBuyerLocation.longitude);
+      }
+    },
+  },
   methods: {
+    getCurrentUserId,
+    checkConnectionStatus(role, id) {
+      this.$toast.success(`Checking ${id} from ${role}s`);
+      return false;
+    },
+    buyFarmProduce(productId, productName) {
+      this.$toast.success(`Buy ${productId} - ${productName}`);
+    },
+    toggleConnection() {
+    },
     loadMap() {
+      this.$toast.show('loading map');
       googleMapsLoader.load()
         .then((google) => {
           this.directionsService = new google.maps.DirectionsService();
@@ -143,8 +289,8 @@ export default {
               this.$toast.success('You clicked your location!');
             });
 
-            this.farmersLocation.forEach((farmerLocation) => {
-              const newMarker = new google.maps.Marker({
+            this.filteredFarmers.forEach((farmerLocation) => {
+              const farmerMarker = new google.maps.Marker({
                 position: { lat: farmerLocation.latitude, lng: farmerLocation.longitude },
                 map: this.map,
                 icon: {
@@ -154,16 +300,53 @@ export default {
                 },
               });
 
-              newMarker.addListener('click', () => {
-                this.$toast.success(`Farmer: ${farmerLocation.farmer.name}`);
-              });
+              // Create an InfoWindow instance (used for popups)
+              const infoWindow = new google.maps.InfoWindow();
 
-              newMarker.addListener('mouseover', () => {
-                newMarker.setTitle(`${farmerLocation.farmer.name}\n\n\bPRODUCES\n${farmerLocation.farmer.farmerProduces.length > 0 ? farmerLocation.farmer.farmerProduces.map((farmerProduce) => farmerProduce.farmProduce.name).join('\n') : 'none'}`);
+              farmerMarker.addListener('mouseover', () => {
+                const isConnected = this.checkConnectionStatus('farmer', farmerLocation.farmer.id);
+                const productsHtml = farmerLocation.farmer.farmerProduces.map((product) => `
+                    <div>${product.farmProduce.name} - ${product.status}
+                    ${
+  product.status === 'ON_SALE'
+    ? `<button style="background-color: green; color: white;" onclick="buyFarmProduce(${product.id}, '${product.farmProduce.name}')">>Buy</button>`
+    : ''
+}</div>`);
+
+                const content = `
+                    <div style="max-width: 250px;">
+                      <h3>${farmerLocation.farmer.name}</h3>
+                      <div>${productsHtml}</div>
+                      <button id="connect-btn" style="margin-top: 10px;">
+                        ${isConnected ? 'Disconnect ✅' : 'Connect'}
+                      </button>
+                    </div>
+                  `;
+                // Set content and open InfoWindow at the marker
+                infoWindow.setContent(content);
+                infoWindow.open(this.map, farmerMarker);
+
+                // Wait for DOM to be ready before adding click events
+                setTimeout(() => {
+                  document.getElementById('connect-btn').addEventListener('click', () => {
+                    // toggleConnection(); // Handle connection toggle
+                  });
+                }, 100);
+              });
+              //
+              farmerMarker.addListener('click', () => {
+                this.selectedUserFromMap = { ...farmerLocation, role: 'farmer' };
+                this.userDialog = true;
+              });
+              farmerMarker.addListener('mouseout', () => {
+                // Wait for DOM to be ready before adding click events
+                setTimeout(() => {
+                  infoWindow.close();
+                }, 500);
               });
             });
-            this.buyersLocation.forEach((buyerLocation) => {
-              const newMarker = new google.maps.Marker({
+            this.filteredBuyers.forEach((buyerLocation) => {
+              const buyerMarker = new google.maps.Marker({
                 position: { lat: buyerLocation.latitude, lng: buyerLocation.longitude },
                 map: this.map,
                 icon: {
@@ -173,12 +356,36 @@ export default {
                 },
               });
 
-              newMarker.addListener('click', () => {
+              buyerMarker.addListener('click', () => {
                 this.$toast.success(`Buyer: ${buyerLocation.buyer.name}`);
+                this.selectedUserFromMap = { ...buyerLocation, role: 'buyer' };
+                this.userDialog = true;
               });
 
-              newMarker.addListener('mouseover', () => {
-                newMarker.setTitle(`${buyerLocation.farmer.name}\n\n\bPRODUCES\n${buyerLocation.buyer.preferredProduces.length > 0 ? buyerLocation.farmer.farmerProduces.map((farmerProduce) => farmerProduce.farmProduce.name).join('\n') : 'none'}`);
+              const infoWindow = new google.maps.InfoWindow();
+              buyerMarker.addListener('mouseover', () => {
+                const isConnected = this.checkConnectionStatus('buyer', buyerLocation.buyer.id);
+                // Set content and open InfoWindow at the marker
+                infoWindow.setContent(`<div style="max-width: 250px;">
+                  <h3>${buyerLocation.buyer.name}</h3>
+                  <div>${buyerLocation.buyer.preferredProduces.map((product) => `
+                    <div>${product.bsfarmProduce.name} - ${product.status}
+                    ${
+  product.status === 'REQUESTING'
+    ? `<button style="background-color: green; color: white;" onclick="buyFarmProduce(${product.id}, '${product.farmProduce.name}')">>Buy</button>`
+    : ''
+}</div>`)}</div>
+                  <button id="connect-btn" style="margin-top: 10px;">
+                    ${isConnected ? 'Disconnect ✅' : 'Connect'}
+                  </button>
+                </div>`);
+                infoWindow.open(this.map, buyerMarker);
+              });
+              buyerMarker.addListener('mouseout', () => {
+                // Wait for DOM to be ready before adding click events
+                setTimeout(() => {
+                  infoWindow.close();
+                }, 500);
               });
             });
           }, (error) => {
@@ -215,18 +422,19 @@ export default {
           if (status === google.maps.DirectionsStatus.OK) {
             this.directionsRenderer.setDirections(response);
           } else {
-            alert(`Directions request failed due to ${status}`);
+            this.$toast.error(`Directions request failed due to ${status}`);
           }
         },
       );
     },
   },
   mounted() {
+    console.log(this.user);
     axios.get('/farmers-service/location/farmers')
       .then((response) => {
         if (response.data.success) {
           this.farmersLocation = response.data.data;
-          this.loadMap();
+          this.selectedFarmersLocations = response.data.data;
         } else {
           this.$toast.error('Failed to load farmers locations');
         }
@@ -237,9 +445,11 @@ export default {
       .then((response) => {
         if (response.data.success) {
           this.buyersLocation = response.data.data;
+          this.selectedBuyersLocations = response.data.data;
         } else {
           this.$toast.error('Failed to load buyers locations');
         }
+        this.loadMap();
       })
       .catch((reason) => this.$toast.error(reason.message));
   },
@@ -247,5 +457,4 @@ export default {
 </script>
 
 <style scoped>
-/* Add Tailwind CSS classes or custom styles here */
 </style>

@@ -129,26 +129,12 @@ export default {
         terms: '',
         isValid: false,
       },
-      farmer: {
+      user: {
         id: 'string',
         name: 'string',
         email: 'string',
         phoneNumber: 'string',
         createdAt: '2025-01-25T09:38:38.536Z',
-        produces: [
-          {
-            id: 'string',
-            farmer: 'string',
-            farmProduce: {
-              id: 'string',
-              name: 'string',
-              description: 'string',
-              farmingType: 'string',
-              status: 'INACTIVE',
-            },
-            status: 'INACTIVE',
-          },
-        ],
       },
       ...validations,
       selectedCountry: 'KE',
@@ -182,13 +168,9 @@ export default {
     openTermsDialog() {
       this.$refs.termsDialog.openDialog();
     },
-    onPhoneNumberInput(phoneData) {
-      console.log(phoneData);
-      this.form.phoneNumber = phoneData;
-    },
     async onSignUp() {
       const payload = {
-        username: `+254${this.form.phoneNumber.slice(1)}`,
+        username: this.form.phoneNumber,
         password: this.form.password,
         attributes: {
           picture: 'https://images.app.goo.gl/CS3uJKWnP61jdUNQ7',
@@ -211,16 +193,16 @@ export default {
             .then(() => {
               this.intervalId = setInterval(() => {
                 if (getCurrentUserId() != null) {
-                  this.farmer = {
+                  this.user = {
                     id: getCurrentUserId(),
                     name: this.form.fullName,
                     email: '',
                     phoneNumber: this.form.phoneNumber,
                     createdAt: '',
-                    farmerProduces: [],
+                    [`${getCurrentUserRole() === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
                   };
-                  axios.post(`/${this.form.userType}-service/farmer`,
-                    this.farmer);
+                  axios.post(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}`,
+                    this.user);
                   this.$router.push({
                     name: 'Dashboard',
                   });

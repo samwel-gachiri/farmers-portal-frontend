@@ -46,6 +46,11 @@ const routes = [
     component: () => import('../views/auth/SignUp.vue'),
   },
   {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('../views/auth/ForgotPassword.vue'),
+  },
+  {
     path: '/produces/:farmerId',
     name: 'Produces',
     component: () => import('../views/Produces.vue'),

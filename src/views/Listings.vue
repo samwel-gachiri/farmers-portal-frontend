@@ -80,10 +80,10 @@
 
 import Default from '@/components/layout/Default.vue';
 import LogoTitle from '@/components/shared/LogoText.vue';
-import CreateListing from '@/components/CreateListing.vue';
+import CreateListing from '@/components/listing/CreateListing.vue';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
-import Listing from '@/components/Listing.vue';
+import Listing from '@/components/listing/Listing.vue';
 import pluralize from 'pluralize';
 
 export default {
