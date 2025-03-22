@@ -19,7 +19,7 @@
         <h3 class="text-lg font-bold mb-2">Orders</h3>
         <v-data-table
             :headers="orderHeaders"
-            :items="listing.produceListing.orders"
+            :items="listing.produceListing.listingOrders"
             class="elevation-1"
         >
           <template v-slot:item.actions="{ item }">
@@ -76,7 +76,7 @@ export default {
             },
             status: 'ON_SALE',
           },
-          orders: [
+          listingOrders: [
             {
               id: '3f4e3ba6-ab11-4ee2-9b27-cff10420aac6',
               buyerId: '8dd3971f-b1b8-45c7-aedd-15f33e5b6cbf',

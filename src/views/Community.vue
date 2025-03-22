@@ -119,7 +119,6 @@
     </v-dialog>
     <FarmerListingsDialog
         :selected-farmer="selectedUserFromMap"
-        :buyer-id="getCurrentUserId()"
         @close="selectedUserFromMap = null"
     />
   </Default>
@@ -250,10 +249,6 @@ export default {
   },
   methods: {
     getCurrentUserId,
-    checkConnectionStatus(role, id) {
-      this.$toast.success(`Checking ${id} from ${role}s`);
-      return false;
-    },
     buyFarmProduce(productId, productName) {
       this.$toast.success(`Buy ${productId} - ${productName}`);
     },
@@ -304,7 +299,6 @@ export default {
               const infoWindow = new google.maps.InfoWindow();
 
               farmerMarker.addListener('mouseover', () => {
-                const isConnected = this.checkConnectionStatus('farmer', farmerLocation.farmer.id);
                 const productsHtml = farmerLocation.farmer.farmerProduces.map((product) => `
                     <div>${product.farmProduce.name} - ${product.status}
                     ${
@@ -317,9 +311,6 @@ export default {
                     <div style="max-width: 250px;">
                       <h3>${farmerLocation.farmer.name}</h3>
                       <div>${productsHtml}</div>
-                      <button id="connect-btn" style="margin-top: 10px;">
-                        ${isConnected ? 'Disconnect ✅' : 'Connect'}
-                      </button>
                     </div>
                   `;
                 // Set content and open InfoWindow at the marker
@@ -364,7 +355,6 @@ export default {
 
               const infoWindow = new google.maps.InfoWindow();
               buyerMarker.addListener('mouseover', () => {
-                const isConnected = this.checkConnectionStatus('buyer', buyerLocation.buyer.id);
                 // Set content and open InfoWindow at the marker
                 infoWindow.setContent(`<div style="max-width: 250px;">
                   <h3>${buyerLocation.buyer.name}</h3>
@@ -375,9 +365,6 @@ export default {
     ? `<button style="background-color: green; color: white;" onclick="buyFarmProduce(${product.id}, '${product.farmProduce.name}')">>Buy</button>`
     : ''
 }</div>`)}</div>
-                  <button id="connect-btn" style="margin-top: 10px;">
-                    ${isConnected ? 'Disconnect ✅' : 'Connect'}
-                  </button>
                 </div>`);
                 infoWindow.open(this.map, buyerMarker);
               });
@@ -435,21 +422,21 @@ export default {
         if (response.data.success) {
           this.farmersLocation = response.data.data;
           this.selectedFarmersLocations = response.data.data;
+          // now let's get buyer's locations
+          axios.get('/buyers-service/location/buyers')
+            .then((buyersLocationRes) => {
+              if (buyersLocationRes.data.success) {
+                this.buyersLocation = buyersLocationRes.data.data;
+                this.selectedBuyersLocations = buyersLocationRes.data.data;
+              } else {
+                this.$toast.error('Failed to load buyers locations');
+              }
+              this.loadMap();
+            })
+            .catch((reason) => this.$toast.error(reason.message));
         } else {
           this.$toast.error('Failed to load farmers locations');
         }
-      })
-      .catch((reason) => this.$toast.error(reason.message));
-
-    axios.get('/buyers-service/location/buyers')
-      .then((response) => {
-        if (response.data.success) {
-          this.buyersLocation = response.data.data;
-          this.selectedBuyersLocations = response.data.data;
-        } else {
-          this.$toast.error('Failed to load buyers locations');
-        }
-        this.loadMap();
       })
       .catch((reason) => this.$toast.error(reason.message));
   },
