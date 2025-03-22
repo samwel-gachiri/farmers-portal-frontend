@@ -30,13 +30,22 @@
                     v-model="form.isValid"
                     class="tw-px-4 tw-fex tw-flex-col"
                 >
-                  <phone-number-input
-                      class="tw-mt-6 tw-ml-3"
-                      v-model="form.phoneNumber"
-                      default-country-code="KE"
-                      :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                      @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"
-                  />
+<!--                  <phone-number-input-->
+<!--                      class="tw-mt-6 tw-ml-3"-->
+<!--                      v-model="form.phoneNumber"-->
+<!--                      default-country-code="KE"-->
+<!--                      :preferred-countries="['KE', 'US', 'UG', 'TZ']"-->
+<!--                      @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"-->
+<!--                  />-->
+                  <v-text-field
+                      label="Input email"
+                      class="tw-mt-6"
+                      v-model="form.email"
+                      placeholder="email@example.com"
+                      :rules="[emailFormat()]"
+                  >
+                    <v-icon slot="prepend" color="primary">mdi-email</v-icon>
+                  </v-text-field>
                   <v-text-field
                       label="Full names"
                       class="tw-my-5"
@@ -90,6 +99,7 @@
                     <v-btn
                         block
                         color="primary"
+                        :loading="loading"
                         @click="onSignUp"
                         :disabled="!form.isValid"
                     >Sign up</v-btn>
@@ -107,14 +117,15 @@
 <script>
 import validations from '@/utils/validations.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
-import { FB_SIGNUP } from '@/utils/const.js';
+// import { FB_SIGNUP } from '@/utils/const.js';
 import AuthMixins from '@/mixins/AuthMixins.js';
-import axios from 'axios';
 import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
 import Auth from '@aws-amplify/auth';
 import AuthConfig from '@/utils/aws-exports.js';
+import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 export default {
   components: { TermsAndConditions, LogoTitle, CardTitle },
@@ -124,6 +135,7 @@ export default {
         fullName: '',
         password: '',
         confirmPassword: '',
+        email: '',
         phoneNumber: '',
         userType: getCurrentUserRole(),
         terms: '',
@@ -141,13 +153,14 @@ export default {
       passwordField: 'password',
       passwordConfirmField: 'password',
       show: false,
-      intervalId: null,
+      loading: false,
     };
   },
   mixins: [AuthMixins],
   computed: {
     getCurrentUserId,
     getCurrentUserRole,
+    ...mapGetters('auth', ['hasAuthenticationStatus', 'authenticationStatus']),
   },
   mounted() {
     const userRole = getCurrentUserRole();
@@ -169,51 +182,57 @@ export default {
       this.$refs.termsDialog.openDialog();
     },
     async onSignUp() {
+      this.loading = true;
       const payload = {
-        username: this.form.phoneNumber,
+        username: this.form.email,
         password: this.form.password,
         attributes: {
-          picture: 'https://images.app.goo.gl/CS3uJKWnP61jdUNQ7',
           name: this.form.fullName,
         },
       };
       await this.$store.dispatch('auth/signUp', payload)
-        .then(async () => {
+        .then(async (response) => {
           if (this.hasAuthenticationStatus) {
             if (this.authenticationStatus.variant === 'error') {
               this.$toast.error(this.authenticationStatus.message, 'Error');
             } else {
-              this.$analytics.logEvent(FB_SIGNUP, {
-                name: this.form.fullname,
-                // email: this.form.email,
-              });
-            }
-          }
-          await this.signInUser(this.form.phoneNumber, this.form.password)
-            .then(() => {
-              this.intervalId = setInterval(() => {
-                if (getCurrentUserId() != null) {
-                  this.user = {
-                    id: getCurrentUserId(),
-                    name: this.form.fullName,
-                    email: '',
-                    phoneNumber: this.form.phoneNumber,
-                    createdAt: '',
-                    [`${getCurrentUserRole() === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
-                  };
-                  axios.post(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}`,
-                    this.user);
-                  this.$router.push({
-                    name: 'Dashboard',
-                  });
-                  clearInterval(this.intervalId);
+              // this.$analytics.logEvent(FB_SIGNUP, {
+              //   name: this.form.fullname,
+              //   // email: this.form.email,
+              // });
+              this.user = {
+                id: response.userSub,
+                name: this.form.fullName,
+                email: this.form.email,
+                phoneNumber: '',
+                createdAt: '',
+                [`${getCurrentUserRole() === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
+              };
+              await axios.post(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}`,
+                this.user).then(async (saveResponse) => {
+                if (saveResponse.data.success === true) {
+                  await this.signInUser(this.form.email, this.form.password)
+                    .then(() => {
+                      this.$router.push({
+                        name: 'Dashboard',
+                      });
+                      this.$toast.success(`${this.form.fullName} signed up successfully as ${this.form.userType}!`, 'Success');
+                    })
+                    .catch((reason) => {
+                      this.$toast.error(reason.message, 'Error');
+                    });
+                } else {
+                  this.$toast.error(saveResponse.data.msg, 'Error');
                 }
-              }, 1000);
-            });
-          this.$toast.success(`${this.form.fullName} signed up successfully as ${this.form.userType}!`, 'Success');
+              }).catch((e) => this.$toast.error(e.message, 'Error'));
+            }
+          } else {
+            this.$toast.error('Authentication status not found!');
+          }
         })
-        .catch((reason) => {
-          this.$toast.error(reason.message);
+        .catch((e) => this.$toast.error(e.message, 'Error'))
+        .finally(() => {
+          this.loading = false;
         });
     },
   },

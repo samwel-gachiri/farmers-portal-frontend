@@ -6,13 +6,22 @@
         <v-card-title class="tw-text-center tw-text-xl tw-font-bold">Forgot Password</v-card-title>
         <v-card-text>
           <v-form v-model="isValid">
-            <phone-number-input
-                class="tw-mt-6 tw-mb-3 tw-mx-5"
+<!--            <phone-number-input-->
+<!--                class="tw-mt-6 tw-mb-3 tw-mx-5"-->
+<!--                v-model="phoneNumber"-->
+<!--                default-country-code="KE"-->
+<!--                :preferred-countries="['KE', 'US', 'UG', 'TZ']"-->
+<!--                @update:phoneNumber="(newValue) => (phoneNumber = newValue)"-->
+<!--            />-->
+            <v-text-field
+                label="Input email"
+                class="tw-mt-6"
                 v-model="phoneNumber"
-                default-country-code="KE"
-                :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                @update:phoneNumber="(newValue) => (phoneNumber = newValue)"
-            />
+                placeholder="email@example.com"
+                :rules="[emailFormat()]"
+            >
+              <v-icon slot="prepend" color="primary">mdi-email</v-icon>
+            </v-text-field>
             <div class="tw-w-full tw-flex tw-flex-row-reverse">
               <router-link :to="{name: 'SignIn' }" class="tw-my-3">Back to Log In</router-link>
             </div>
@@ -27,6 +36,7 @@
 <script>
 import Auth from '@aws-amplify/auth';
 import LogoTitle from '@/components/shared/LogoText.vue';
+import Validations from '@/utils/validations.js';
 
 export default {
   components: { LogoTitle },
@@ -35,13 +45,16 @@ export default {
       loading: false,
       phoneNumber: '',
       isValid: false,
+      ...Validations,
     };
   },
   methods: {
     async sendCode() {
       this.loading = true;
       try {
-        await Auth.forgotPassword(this.phoneNumber);
+        const data = await Auth.forgotPassword(this.phoneNumber);
+        console.log('data');
+        console.log(data);
         this.$emit('codeSent', this.phoneNumber);
       } catch (error) {
         this.$toast.error('Error sending reset code', error.message);

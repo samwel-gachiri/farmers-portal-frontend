@@ -115,12 +115,16 @@ const actions = {
   },
   signUp: async (context, params) => {
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
-    context.commit('setUserConfirmed', false);
     try {
-      await Auth.signUp(params);
+      const {
+        userConfirmed, userSub, user,
+      } = await Auth.signUp(params);
+      context.commit('setAuthenticationSuccess', `${params.attributes.name} signed up successfully!`);
+      context.commit('setUserConfirmed', userConfirmed);
       const creds = CryptoJS.AES.encrypt(JSON.stringify({ username: params.username, password: params.password }), CR_KEY).toString();
       cookie.set(CR_KEY, creds);
       context.commit('auth/clearAuthentication', null, { root: true });
+      return { user, userSub };
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
       throw err;

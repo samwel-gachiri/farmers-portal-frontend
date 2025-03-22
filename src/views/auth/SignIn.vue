@@ -19,13 +19,22 @@
             >
               <card-title>Sign In As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>
               <v-form v-model="isValid" @submit.prevent="onSubmit">
-                <phone-number-input
-                    class="tw-mt-6 tw-mb-3 tw-mx-5"
+<!--                <phone-number-input-->
+<!--                    class="tw-mt-6 tw-mb-3 tw-mx-5"-->
+<!--                    v-model="form.phoneNumber"-->
+<!--                    default-country-code="KE"-->
+<!--                    :preferred-countries="['KE', 'US', 'UG', 'TZ']"-->
+<!--                    @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"-->
+<!--                />-->
+                <v-text-field
+                    label="Input email"
+                    class="tw-mt-6 tw-mx-5"
                     v-model="form.phoneNumber"
-                    default-country-code="KE"
-                    :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                    @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"
-                />
+                    placeholder="email@example.com"
+                    :rules="[emailFormat()]"
+                >
+                  <v-icon slot="prepend" color="primary">mdi-email</v-icon>
+                </v-text-field>
                 <div class="tw-flex tw-flex-row tw-gap-3 tw-mx-5">
                   <v-icon slot="prepend" color="primary">mdi-lock</v-icon>
                   <v-text-field
@@ -46,13 +55,13 @@
                   <div
                       class="tw-border-0 tw-w-full tw-ml-5 tw-mt-3 tw-mb-1 tw-text-white"
                       @click="toSignUp"
-                  ><h2 class="tw-text-sm">Don't have an account?</h2>
+                  ><h2 class="tw-text-sm">Don't have an account? Sign Up</h2>
                   </div>
-                  <div
-                      class="tw-border-0 tw-w-full tw-ml-3 tw-mt-3 tw-mb-1 tw-text-white"
-                      @click="toForgotPassword"
-                  ><h2 class="tw-text-sm">Forgot password?</h2>
-                  </div>
+<!--                  <div-->
+<!--                      class="tw-border-0 tw-w-full tw-ml-3 tw-mt-3 tw-mb-1 tw-text-white"-->
+<!--                      @click="toForgotPassword"-->
+<!--                  ><h2 class="tw-text-sm">Forgot password?</h2>-->
+<!--                  </div>-->
                 </div>
                 <div class="tw-mx-3">
                   <v-btn
