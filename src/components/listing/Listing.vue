@@ -92,6 +92,7 @@ export default {
       },
       loading: false,
       intervalId: null,
+      eventSource: null,
     };
   },
   props: {
@@ -103,42 +104,51 @@ export default {
   mounted() {
     // this.intervalId = setInterval(() => {
     // }, 3000);
-    this.fetchListing().then(() => this.connectToSSE());
+    this.fetchListing();
   },
   beforeDestroy() {
     clearInterval(this.intervalId);
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
   },
   methods: {
     connectToSSE() {
-      const eventSource = new EventSource(
+      this.eventSource = new EventSource(
         `${process.env.VUE_APP_API_BASE_URL}farmers-service/listing/stream?listingId=${this.listing.produceListing.id}`,
         // `${process.env.VUE_APP_API_BASE_URL}/listing/stream-sse`,
       );
 
       // Listen for custom event types
-      eventSource.addEventListener('supply-confirmed', (event) => {
-        this.$toast.success('Supply confirmed for an order you made', `Supply for ${event.data}`);
+      this.eventSource.addEventListener('order-added-to-listing', () => {
+        this.$toast.success('Order has been made to one of your listing', 'New order!!!');
         this.fetchListing();
       });
 
       // Listen for custom event types
-      eventSource.addEventListener('order-added-to-listing', () => {
-        this.$toast.success('Order has been made', 'New order!!!');
+      this.eventSource.addEventListener('supply-confirmed', (event) => {
+        this.fetchListing();
+        this.$toast.success('Supply confirmed for an order', `Supply for ${event.data}`);
+      });
+
+      // Listen for custom event types
+      this.eventSource.addEventListener('payment-confirmed', () => {
+        this.$toast.success('Payment has been confirmed to one of your listing orders', 'Finished!!');
         this.fetchListing();
       });
 
-      eventSource.onmessage = (event) => {
+      this.eventSource.onmessage = (event) => {
         this.$toast.error('Received event:', event.data);
         this.fetchListing();
       };
 
-      eventSource.onopen = () => {
+      this.eventSource.onopen = () => {
         this.$toast.show('SSE connection opened');
       };
 
-      eventSource.onerror = (error) => {
+      this.eventSource.onerror = (error) => {
         this.$toast.error('SSE error:', error.message);
-        eventSource.close();
+        this.eventSource.close();
       };
     },
     async fetchListing() {
@@ -154,6 +164,9 @@ export default {
         this.$toast.error('Error fetching listing');
       } finally {
         this.loading = false;
+        if (!this.eventSource) {
+          this.connectToSSE();
+        }
       }
     },
     // Accept an order

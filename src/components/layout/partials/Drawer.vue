@@ -66,6 +66,14 @@ export default {
         roles: ['farmer'],
       },
       {
+        icon: 'mdi-corn',
+        text: 'My Orders',
+        link: {
+          name: 'BuyerOrders',
+        },
+        roles: ['buyer'],
+      },
+      {
         icon: 'mdi-chart-pie',
         text: 'Reports',
         link: { name: 'Report' },
