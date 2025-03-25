@@ -112,9 +112,14 @@ const routes = [
     component: () => import('../views/Community.vue'),
   },
   {
-    path: '/report',
-    name: 'Report',
-    component: () => import('../views/report/reports.vue'),
+    path: '/farmer-report',
+    name: 'FarmerReport',
+    component: () => import('../views/report/farmer_reports.vue'),
+  },
+  {
+    path: '/buyer-report',
+    name: 'BuyerReport',
+    component: () => import('../views/report/buyer_report.vue'),
   },
   // {
   //   path: '/buy-cover',

@@ -237,13 +237,10 @@ export default {
         this.setFocusToLocation(newFarmerLocation.latitude, newFarmerLocation.longitude);
       }
     },
-    selectedBuyer(newBuyerLocation, oldBuyerLocation) {
+    selectedBuyer(newBuyerLocation) {
       this.$toast.show('Seleted buyer');
-      console.log(`new ${newBuyerLocation}`);
-      console.log(`old ${oldBuyerLocation}`);
       if (newBuyerLocation != null) {
-        console.log('setting focus');
-        // this.setFocusToLocation(newBuyerLocation.latitude, newBuyerLocation.longitude);
+        this.setFocusToLocation(newBuyerLocation.latitude, newBuyerLocation.longitude);
       }
     },
   },
@@ -416,7 +413,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.user);
     axios.get('/farmers-service/location/farmers')
       .then((response) => {
         if (response.data.success) {

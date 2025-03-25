@@ -84,8 +84,14 @@ export default {
       {
         icon: 'mdi-chart-pie',
         text: 'Reports',
-        link: { name: 'Report' },
+        link: { name: 'FarmerReport' },
         roles: ['farmer'],
+      },
+      {
+        icon: 'mdi-chart-pie',
+        text: 'Reports',
+        link: { name: 'BuyerReport' },
+        roles: ['buyer'],
       },
       // { icon: 'mdi-phone', text: 'Requests', link: { name: 'Requests' } },
       // { icon: 'mdi-tractor', text: 'Sell produce', link: { name: 'sales', query: { toSamwel: true } } },

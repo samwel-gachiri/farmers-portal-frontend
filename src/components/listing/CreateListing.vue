@@ -42,32 +42,15 @@
               :items="units"
           ></v-combobox>
           <!-- Image Upload Section -->
-          <div>
+          <div v-if="false">
             <label class="tw-font-medium">Upload Images (Min: 1, Max: 3)</label>
-            <v-file-input
-                v-model="listing.images"
-                accept="image/*"
-                multiple
-                chips
-                counter
-                :rules="[validateImages]"
-                @change="previewImages"
-            ></v-file-input>
+            <vuetify-money
+                label="Total"
+                readonly
+                :value="listing.price.price * listing.quantity"
+                :options="vuetifyMoneyOptions"
+            ></vuetify-money>
           </div>
-          <div v-if="listing.images.length > 0">
-            <h2 class="blue--text">{{listing.images.length > 1 ? 'Images': 'Image'}} Preview</h2>
-            <v-row>
-              <v-col v-for="(image, index) in imagePreviews" :key="index" cols="4">
-                <v-img :src="image" aspect-ratio="1" contain></v-img>
-              </v-col>
-            </v-row>
-          </div>
-          <vuetify-money
-              label="Total"
-              readonly
-              :value="listing.price.price * listing.quantity"
-              :options="vuetifyMoneyOptions"
-          ></vuetify-money>
           <v-btn
               style="background-color: darkgreen; color: white;"
               :disabled="!isValid || listing.farmerProduceId === '' || listing.price.price <= 0"
@@ -179,46 +162,46 @@ export default {
       return value.length >= 1 && value.length <= 3 || 'You must upload between 1 and 3 images';
     },
     postListing() {
-      // this.loading = true;
-      // axios.post('/farmers-service/listing', {
-      //   farmerProduceId: this.listing.farmerProduceId,
-      //   price: this.listing.price,
-      //   quantity: this.listing.quantity,
-      //   unit: this.listing.unit,
-      // }).then((response) => {
-      //   if (response.data.success === true) {
-      //     this.$toast.success('Listing posted successfully');
-      //   } else {
-      //     this.$toast.error(response.data.msg, 'Error creating listing!');
-      //   }
-      // }).catch((error) => {
-      //   this.$toast.error(error);
-      // }).finally(() => this.loading === false);
       this.loading = true;
-      const formData = new FormData();
-      formData.append('farmerProduceId', this.listing.farmerProduceId);
-      formData.append('price', JSON.stringify(this.listing.price));
-      formData.append('quantity', this.listing.quantity);
-      formData.append('unit', this.listing.unit);
-      this.listing.images.forEach((file, index) => {
-        formData.append(`images[${index}]`, file);
-      });
-      axios.post('/farmers-service/listing', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-        .then((response) => {
-          if (response.data.success === true) {
-            this.$toast.success('Listing posted successfully');
-          } else {
-            this.$toast.error(response.data.msg, 'Error creating listing!');
-          }
-        })
-        .catch((error) => {
-          this.$toast.error('Error creating listing!', error.message);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+      axios.post('/farmers-service/listing', {
+        farmerProduceId: this.listing.farmerProduceId,
+        price: this.listing.price,
+        quantity: this.listing.quantity,
+        unit: this.listing.unit,
+      }).then((response) => {
+        if (response.data.success === true) {
+          this.$toast.success('Listing posted successfully');
+        } else {
+          this.$toast.error(response.data.msg, 'Error creating listing!');
+        }
+      }).catch((error) => {
+        this.$toast.error(error);
+      }).finally(() => this.loading === false);
+      // this.loading = true;
+      // const formData = new FormData();
+      // formData.append('farmerProduceId', this.listing.farmerProduceId);
+      // formData.append('price', JSON.stringify(this.listing.price));
+      // formData.append('quantity', this.listing.quantity);
+      // formData.append('unit', this.listing.unit);
+      // this.listing.images.forEach((file, index) => {
+      //   formData.append(`images[${index}]`, file);
+      // });
+      // axios.post('/farmers-service/listing', formData, {
+      //   headers: { 'Content-Type': 'multipart/form-data' },
+      // })
+      //   .then((response) => {
+      //     if (response.data.success === true) {
+      //       this.$toast.success('Listing posted successfully');
+      //     } else {
+      //       this.$toast.error(response.data.msg, 'Error creating listing!');
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     this.$toast.error('Error creating listing!', error.message);
+      //   })
+      //   .finally(() => {
+      //     this.loading = false;
+      //   });
     },
   },
 };

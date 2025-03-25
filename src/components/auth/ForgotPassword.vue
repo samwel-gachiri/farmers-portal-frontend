@@ -53,8 +53,6 @@ export default {
       this.loading = true;
       try {
         const data = await Auth.forgotPassword(this.phoneNumber);
-        console.log('data');
-        console.log(data);
         this.$emit('codeSent', this.phoneNumber);
       } catch (error) {
         this.$toast.error('Error sending reset code', error.message);
