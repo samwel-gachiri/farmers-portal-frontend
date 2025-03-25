@@ -141,7 +141,7 @@ export default {
         });
         this.listings = response.data.data.content || [];
       } catch (error) {
-        console.error('Error fetching listings:', error.message);
+        this.$toast.error('Error fetching listings:', error.message);
       }
     },
     //
