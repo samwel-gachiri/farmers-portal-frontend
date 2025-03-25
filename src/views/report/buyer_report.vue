@@ -264,7 +264,7 @@ export default {
         startDateTime.setHours(0, 0, 0, 0);
         const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
         endDateTime.setHours(23, 59, 59, 999);
-        await axios.get('/api/reports/orders/grouped', {
+        await axios.get('/farmers-service/api/reports/orders/grouped', {
           params: {
             farmerId: getCurrentUserId(), // Replace with actual farmer ID
             startDateTime: startDateTime.toISOString(),
@@ -273,7 +273,7 @@ export default {
         }).then((response) => {
           this.groupedOrders = response.data.data;
         });
-        await axios.get('/api/reports/orders/history', {
+        await axios.get('/farmers-service/api/reports/orders/history', {
           params: {
             farmerId: getCurrentUserId(), // Replace with actual farmer ID
             startDateTime: startDateTime.toISOString(),
@@ -321,7 +321,7 @@ export default {
       startDateTime.setHours(0, 0, 0, 0);
       const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
       endDateTime.setHours(23, 59, 59, 999);
-      await axios.get('/api/reports/orders/pdf', {
+      await axios.get('/farmers-service/api/reports/orders/pdf', {
         params: {
           farmerId: getCurrentUserId(), // Replace with actual farmer ID
           startDateTime: startDateTime.toISOString(),

@@ -65,10 +65,13 @@ const isObjectField = () => (v) => v && typeof v === 'object' || 'Must be valid 
 
 const check = () => (v) => v === true || 'You must agree to continue!';
 
-const phoneRules = [
+const phoneRules = () => [
   (value) => !!value || 'Phone number is required.',
   (value) => /^\d{10}$/.test(value) || 'Invalid phone number format.',
 ];
+
+const noDigitFormat = () => (v) => !/\d/.test(v) || 'Name should not contain numbers';
+
 export default {
   required,
   minLength,
@@ -89,4 +92,5 @@ export default {
   digitFormat,
   specialCharFormat,
   phoneRules,
+  noDigitFormat,
 };

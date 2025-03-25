@@ -8,39 +8,50 @@
         </div>
         <!--  FORM part       -->
         <div class="tw-flex tw-flex-col tw-gap-8  tw-justify-center tw-items-center tw-w-full tw-h-full">
+          <div class="tw-w-full tw-pt-4">
+            <router-link class="tw-ml-4 tw-bg-yellow-400 tw-rounded-none tw-p-2 tw-mt-4" :to="{name: 'Landing'}">Go Home</router-link>
+          </div>
           <div class="tw-flex md:tw-justify-center tw-justify-start tw-items-center tw-h-full tw-flex-col tw-rounded-lg">
             <div class="tw-flex tw-flex-row-reverse tw-justify-center tw-items-center tw-w-full tw-p-4">
               <logo-title
-                  :text="`Welcome ${form.userType}`"
+                  :text="`Welcome`"
                   class="">
               </logo-title>
             </div>
             <!--Form part-->
             <div class="tw-flex tw-flex-col tw-m-3 tw-w-full tw-items-center tw-justify-center">
-              <div
-                  class="md:tw-p-5 tw-p-2 tw-mx-5 tw-border-4"
+              <v-card
                   style="border-radius: 25px;"
               >
                 <card-title
                     icon="mdi-cow"
-                >Sign up</card-title>
+                >Sign Up As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>
                 <v-form
                     v-model="form.isValid"
                     class="tw-px-4 tw-fex tw-flex-col"
                 >
-                  <phone-number-input
-                      class="tw-my-3"
-                      v-model="form.phoneNumber"
-                      default-country-code="KE"
-                      :no-country-selector="false"
-                      :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                  />
+<!--                  <phone-number-input-->
+<!--                      class="tw-mt-6 tw-ml-3"-->
+<!--                      v-model="form.phoneNumber"-->
+<!--                      default-country-code="KE"-->
+<!--                      :preferred-countries="['KE', 'US', 'UG', 'TZ']"-->
+<!--                      @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"-->
+<!--                  />-->
+                  <v-text-field
+                      label="Input email"
+                      class="tw-mt-6"
+                      v-model="form.email"
+                      placeholder="email@example.com"
+                      :rules="[emailFormat()]"
+                  >
+                    <v-icon slot="prepend" color="primary">mdi-email</v-icon>
+                  </v-text-field>
                   <v-text-field
                       label="Full names"
                       class="tw-my-5"
                       dense
                       v-model="form.fullName"
-                      :rules="[required('Name')]"
+                      :rules="[required('Name'), noDigitFormat()]"
                   >
                     <v-icon slot="prepend" color="primary">mdi-account</v-icon>
                   </v-text-field>
@@ -88,12 +99,13 @@
                     <v-btn
                         block
                         color="primary"
+                        :loading="loading"
                         @click="onSignUp"
                         :disabled="!form.isValid"
                     >Sign up</v-btn>
                   </div>
                 </v-form>
-              </div>
+              </v-card>
               <div/>
             </div>
           </div>
@@ -105,12 +117,15 @@
 <script>
 import validations from '@/utils/validations.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
-import { FB_SIGNUP } from '@/utils/const.js';
+// import { FB_SIGNUP } from '@/utils/const.js';
 import AuthMixins from '@/mixins/AuthMixins.js';
-import axios from 'axios';
 import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
+import Auth from '@aws-amplify/auth';
+import AuthConfig from '@/utils/aws-exports.js';
+import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 export default {
   components: { TermsAndConditions, LogoTitle, CardTitle },
@@ -120,100 +135,104 @@ export default {
         fullName: '',
         password: '',
         confirmPassword: '',
+        email: '',
         phoneNumber: '',
-        userType: '',
+        userType: getCurrentUserRole(),
         terms: '',
         isValid: false,
       },
-      farmer: {
+      user: {
         id: 'string',
         name: 'string',
         email: 'string',
         phoneNumber: 'string',
         createdAt: '2025-01-25T09:38:38.536Z',
-        produces: [
-          {
-            id: 'string',
-            farmer: 'string',
-            farmProduce: {
-              id: 'string',
-              name: 'string',
-              description: 'string',
-              farmingType: 'string',
-              status: 'INACTIVE',
-            },
-            status: 'INACTIVE',
-          },
-        ],
       },
-      userTypes: ['Farmer', 'Buyer'],
       ...validations,
       selectedCountry: 'KE',
       passwordField: 'password',
       passwordConfirmField: 'password',
       show: false,
-      intervalId: null,
+      loading: false,
     };
   },
   mixins: [AuthMixins],
   computed: {
     getCurrentUserId,
     getCurrentUserRole,
+    ...mapGetters('auth', ['hasAuthenticationStatus', 'authenticationStatus']),
+  },
+  mounted() {
+    const userRole = getCurrentUserRole();
+    if (userRole === '' || userRole == null) {
+      this.$router.push({ name: 'Landing' });
+    }
+    if (userRole === 'farmer') {
+      Auth.configure(AuthConfig.FarmerAuth);
+    }
+    if (userRole === 'buyer') {
+      Auth.configure(AuthConfig.BuyerAuth);
+    }
+    if (userRole === 'admin') {
+      Auth.configure(AuthConfig.AdminAuth);
+    }
   },
   methods: {
     openTermsDialog() {
       this.$refs.termsDialog.openDialog();
     },
     async onSignUp() {
+      this.loading = true;
       const payload = {
-        username: `+254${this.form.phoneNumber.slice(1)}`,
+        username: this.form.email,
         password: this.form.password,
         attributes: {
-          picture: 'https://images.app.goo.gl/CS3uJKWnP61jdUNQ7',
           name: this.form.fullName,
-          'custom:role': this.form.userType, // Custom attribute for user type
         },
       };
       await this.$store.dispatch('auth/signUp', payload)
-        .then(async () => {
+        .then(async (response) => {
           if (this.hasAuthenticationStatus) {
             if (this.authenticationStatus.variant === 'error') {
               this.$toast.error(this.authenticationStatus.message, 'Error');
             } else {
-              this.$analytics.logEvent(FB_SIGNUP, {
-                name: this.form.fullname,
-                // email: this.form.email,
-              });
-            }
-          }
-          await this.signInUser(this.form.phoneNumber, this.form.password)
-            .then(() => {
-              this.intervalId = setInterval(() => {
-                if (getCurrentUserId() != null) {
-                  this.farmer = {
-                    id: getCurrentUserId(),
-                    name: this.form.fullName,
-                    email: '',
-                    phoneNumber: this.form.phoneNumber,
-                    createdAt: '',
-                    farmerProduces: [],
-                  };
-                  axios.post(
-                    '/farmer',
-                    this.farmer,
-                  );
-                  this.$router.push({
-                    name: 'Profile',
-                    params: { farmerId: getCurrentUserId() },
-                  });
-                  clearInterval(this.intervalId);
+              // this.$analytics.logEvent(FB_SIGNUP, {
+              //   name: this.form.fullname,
+              //   // email: this.form.email,
+              // });
+              this.user = {
+                id: response.userSub,
+                name: this.form.fullName,
+                email: this.form.email,
+                phoneNumber: '',
+                createdAt: '',
+                [`${getCurrentUserRole() === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
+              };
+              await axios.post(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}`,
+                this.user).then(async (saveResponse) => {
+                if (saveResponse.data.success === true) {
+                  await this.signInUser(this.form.email, this.form.password)
+                    .then(() => {
+                      this.$router.push({
+                        name: 'Dashboard',
+                      });
+                      this.$toast.success(`${this.form.fullName} signed up successfully as ${this.form.userType}!`, 'Success');
+                    })
+                    .catch((reason) => {
+                      this.$toast.error(reason.message, 'Error');
+                    });
+                } else {
+                  this.$toast.error(saveResponse.data.msg, 'Error');
                 }
-              }, 1000);
-            });
-          this.$toast.success(`${this.form.fullName} signed up successfully!`, 'Success');
+              }).catch((e) => this.$toast.error(e.message, 'Error'));
+            }
+          } else {
+            this.$toast.error('Authentication status not found!');
+          }
         })
-        .catch((reason) => {
-          this.$toast.error(reason.message);
+        .catch((e) => this.$toast.error(e.message, 'Error'))
+        .finally(() => {
+          this.loading = false;
         });
     },
   },

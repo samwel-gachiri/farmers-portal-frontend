@@ -1,35 +1,41 @@
+/* eslint-disable */
 <template>
   <v-app id="inspire">
     <v-main>
-      <div class="tw-w-full tw-h-full tw-flex  md:tw-flex-row tw-flex-col-reverse">
+      <div class="tw-w-full tw-flex  md:tw-flex-row tw-flex-col-reverse">
           <!--Ad part-->
-          <div class="ad-gradient tw-flex tw-justify-center tw-items-center  md:tw-visible tw-invisible">
+          <div style="height: 100vh;" class="ad-gradient tw-flex tw-justify-center tw-items-center  md:tw-visible tw-invisible">
           </div>
           <!--        form part-->
-          <div class="form-part tw-bg-blue tw-flex tw-flex-col tw-gap-8  tw-justify-center tw-items-center tw-w-full tw-h-full">
-            <logo-title class="">
+          <div style="height: 100vh;" class="tw-border-4 tw-bg-blue tw-flex tw-flex-col  tw-justify-center tw-items-center tw-w-full tw-h-full">
+            <div class="tw-w-full">
+              <router-link class="tw-ml-4 tw-bg-yellow-400 tw-rounded-none tw-p-2 tw-mt-4" :to="{name: 'Landing'}">Go Home</router-link>
+            </div>
+            <logo-title class="tw-my-8">
             </logo-title>
-            <div
-                class="md:tw-p-5 tw-p-2 md:tw-mr-10 tw-mb-8 tw-border-4" style="border-radius: 20px;"
+            <v-card
+                 style="border-radius: 20px;"
                 draggable="true"
             >
-              <card-title class="tw--mt-5">Sign in</card-title>
+              <card-title>Sign In As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>
               <v-form v-model="isValid" @submit.prevent="onSubmit">
-                <phone-number-input
-                    class="tw-my-5 tw-border-4 tw-rounded"
+<!--                <phone-number-input-->
+<!--                    class="tw-mt-6 tw-mb-3 tw-mx-5"-->
+<!--                    v-model="form.phoneNumber"-->
+<!--                    default-country-code="KE"-->
+<!--                    :preferred-countries="['KE', 'US', 'UG', 'TZ']"-->
+<!--                    @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"-->
+<!--                />-->
+                <v-text-field
+                    label="Input email"
+                    class="tw-mt-6 tw-mx-5"
                     v-model="form.phoneNumber"
-                    default-country-code="KE"
-                    :no-country-selector="false"
-                    :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                />
-                <!--              <v-text-field-->
-                <!--                  label="email"-->
-                <!--                  v-model="form.email"-->
-                <!--                  dense-->
-                <!--              >-->
-                <!--                <v-icon slot="prepend">mdi-email</v-icon>-->
-                <!--              </v-text-field>-->
-                <div class="tw-flex tw-flex-row tw-gap-3 tw-mr-3">
+                    placeholder="email@example.com"
+                    :rules="[emailFormat()]"
+                >
+                  <v-icon slot="prepend" color="primary">mdi-email</v-icon>
+                </v-text-field>
+                <div class="tw-flex tw-flex-row tw-gap-3 tw-mx-5">
                   <v-icon slot="prepend" color="primary">mdi-lock</v-icon>
                   <v-text-field
                       id="password"
@@ -44,15 +50,20 @@
                   </v-text-field>
                 </div>
                 <div
-                    class="tw-mx-5 tw-pl-4 tw-my-6 tw-justify-end"
+                    class="tw-flex tw-justify-center tw-items-center tw-mt-2"
                 >
                   <div
-                      class="tw-border-0 tw-font-bold"
+                      class="tw-border-0 tw-w-full tw-ml-5 tw-mt-3 tw-mb-1 tw-text-white"
                       @click="toSignUp"
-                  >Don't have an account? Sign up
+                  ><h2 class="tw-text-sm">Don't have an account? Sign Up</h2>
                   </div>
+<!--                  <div-->
+<!--                      class="tw-border-0 tw-w-full tw-ml-3 tw-mt-3 tw-mb-1 tw-text-white"-->
+<!--                      @click="toForgotPassword"-->
+<!--                  ><h2 class="tw-text-sm">Forgot password?</h2>-->
+<!--                  </div>-->
                 </div>
-                <div class="tw-my-6 tw-mx-3">
+                <div class="tw-mx-3">
                   <v-btn
                       block
                       rounded
@@ -69,7 +80,7 @@
                   <GoogleSignIn/>
                 </div>
               </v-form>
-            </div>
+            </v-card>
             <div></div>
           </div>
       </div>
@@ -82,8 +93,10 @@ import validations from '@/utils/validations.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
 import AuthMixins from '@/mixins/AuthMixins.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
-import { isAuthenticated } from '@/utils/roles.js';
+import { getCurrentUserRole, isAuthenticated } from '@/utils/roles.js';
 import GoogleSignIn from '@/components/auth/GoogleSignIn.vue';
+import Auth from '@aws-amplify/auth';
+import AuthConfig from '@/utils/aws-exports.js';
 
 export default {
   components: { GoogleSignIn, LogoTitle, CardTitle },
@@ -93,9 +106,8 @@ export default {
         password: '',
         phoneNumber: '',
         email: '',
-        userType: null,
+        userType: getCurrentUserRole(),
       },
-      userTypes: ['Farmer', 'Buyer'],
       ...validations,
       selectedCountry: 'KE',
       passwordField: 'password',
@@ -108,6 +120,21 @@ export default {
   mixins: [AuthMixins],
   computed: {
     isAuthenticated,
+  },
+  mounted() {
+    const userRole = getCurrentUserRole();
+    if (userRole === '' || userRole == null) {
+      this.$router.push({ name: 'Landing' });
+    }
+    if (userRole === 'farmer') {
+      Auth.configure(AuthConfig.FarmerAuth);
+    }
+    if (userRole === 'buyer') {
+      Auth.configure(AuthConfig.BuyerAuth);
+    }
+    if (userRole === 'admin') {
+      Auth.configure(AuthConfig.AdminAuth);
+    }
   },
   methods: {
     async onSubmit() {
@@ -132,10 +159,18 @@ export default {
         name: 'SignUp',
       });
     },
+    toForgotPassword() {
+      this.$router.push({
+        name: 'ForgotPassword',
+      });
+    },
   },
 };
 </script>
 <style scoped>
+* {
+  color: black  ;
+}
 .ad-gradient {
   background-image: url("../../assets/images/futuristic_city.webp");
   background-size: cover;

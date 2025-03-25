@@ -46,9 +46,14 @@ const routes = [
     component: () => import('../views/auth/SignUp.vue'),
   },
   {
-    path: '/profile/:farmerId',
-    name: 'Profile',
-    component: () => import('../views/profile.vue'),
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('../views/auth/ForgotPassword.vue'),
+  },
+  {
+    path: '/produces/:farmerId',
+    name: 'Produces',
+    component: () => import('../views/Produces.vue'),
   },
   {
     path: '/requests',
@@ -59,6 +64,16 @@ const routes = [
     path: '/listings',
     name: 'Listings',
     component: () => import('../views/Listings.vue'),
+  },
+  {
+    path: '/my-orders',
+    name: 'BuyerOrders',
+    component: () => import('../views/buyers/BuyerOrders.vue'),
+  },
+  {
+    path: '/browse',
+    name: 'BrowseListings',
+    component: () => import('../views/buyers/BrowseListings.vue'),
   },
   // {
   //   path: '/confirm-otp',
@@ -97,9 +112,14 @@ const routes = [
     component: () => import('../views/Community.vue'),
   },
   {
-    path: '/report',
-    name: 'Report',
-    component: () => import('../views/report/reports.vue'),
+    path: '/farmer-report',
+    name: 'FarmerReport',
+    component: () => import('../views/report/farmer_reports.vue'),
+  },
+  {
+    path: '/buyer-report',
+    name: 'BuyerReport',
+    component: () => import('../views/report/buyer_report.vue'),
   },
   // {
   //   path: '/buy-cover',

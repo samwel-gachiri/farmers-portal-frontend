@@ -41,12 +41,16 @@
               label="Give in measurement"
               :items="units"
           ></v-combobox>
-          <vuetify-money
-              label="Total"
-              readonly
-              :value="listing.price.price * listing.quantity"
-              :options="vuetifyMoneyOptions"
-          ></vuetify-money>
+          <!-- Image Upload Section -->
+          <div v-if="false">
+            <label class="tw-font-medium">Upload Images (Min: 1, Max: 3)</label>
+            <vuetify-money
+                label="Total"
+                readonly
+                :value="listing.price.price * listing.quantity"
+                :options="vuetifyMoneyOptions"
+            ></vuetify-money>
+          </div>
           <v-btn
               style="background-color: darkgreen; color: white;"
               :disabled="!isValid || listing.farmerProduceId === '' || listing.price.price <= 0"
@@ -68,7 +72,6 @@ import LogoTitle from '@/components/shared/LogoText.vue';
 import HelperMixins from '@/mixins/helperMixins.js';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
-import Pluralize from 'pluralize';
 import NumberInput from '@/components/shared/NumberInput.vue';
 import validations from '@/utils/validations.js';
 
@@ -78,7 +81,7 @@ export default {
   mixins: [HelperMixins],
   data() {
     return {
-      units: ['KG', 'litres'],
+      units: ['KG', 'L'],
       farmer: {
         id: 'string',
         name: 'string',
@@ -114,14 +117,16 @@ export default {
           currency: 'KSH',
         },
         unit: '',
+        images: [],
       },
+      imagePreviews: [],
       isValid: false,
       ...validations,
       loading: false,
     };
   },
   mounted() {
-    axios.get(`/farmer?farmerId=${getCurrentUserId()}`).then((response) => {
+    axios.get(`/farmers-service/farmer?farmerId=${getCurrentUserId()}`).then((response) => {
       if (response.data.data == null) throw Error('User not found');
       this.farmer = { ...this.farmer, ...response.data.data };
     }).catch((e) => {
@@ -139,14 +144,26 @@ export default {
   },
   methods: {
     farmProduceListingChanged(farmProduce) {
-      const farmProduceTense = Pluralize(farmProduce.name);
+      const farmProduceTense = farmProduce.name;
       this.units = [farmProduceTense, 'KG', 'L'];
-      this.listing.unit = farmProduceTense;
+      this.listing.unit = 'KG';
       this.listing.farmerProduceId = farmProduce.id;
     },
+    previewImages() {
+      this.imagePreviews = []; // Clear previous previews
+      if (this.listing.images) {
+        this.listing.images.forEach((file) => {
+          this.imagePreviews.push(URL.createObjectURL(file));
+        });
+      }
+    },
+    validateImages(value) {
+      // eslint-disable-next-line no-mixed-operators
+      return value.length >= 1 && value.length <= 3 || 'You must upload between 1 and 3 images';
+    },
     postListing() {
-      this.$toast.show('This is posting', this.listing.farmerProduceId);
-      axios.post('/listing', {
+      this.loading = true;
+      axios.post('/farmers-service/listing', {
         farmerProduceId: this.listing.farmerProduceId,
         price: this.listing.price,
         quantity: this.listing.quantity,
@@ -159,7 +176,32 @@ export default {
         }
       }).catch((error) => {
         this.$toast.error(error);
-      });
+      }).finally(() => this.loading === false);
+      // this.loading = true;
+      // const formData = new FormData();
+      // formData.append('farmerProduceId', this.listing.farmerProduceId);
+      // formData.append('price', JSON.stringify(this.listing.price));
+      // formData.append('quantity', this.listing.quantity);
+      // formData.append('unit', this.listing.unit);
+      // this.listing.images.forEach((file, index) => {
+      //   formData.append(`images[${index}]`, file);
+      // });
+      // axios.post('/farmers-service/listing', formData, {
+      //   headers: { 'Content-Type': 'multipart/form-data' },
+      // })
+      //   .then((response) => {
+      //     if (response.data.success === true) {
+      //       this.$toast.success('Listing posted successfully');
+      //     } else {
+      //       this.$toast.error(response.data.msg, 'Error creating listing!');
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     this.$toast.error('Error creating listing!', error.message);
+      //   })
+      //   .finally(() => {
+      //     this.loading = false;
+      //   });
     },
   },
 };

@@ -36,6 +36,11 @@
         </v-btn>
         <span class="tw-h-6 tw-border-r-2 tw-border-gray-600"></span>
         <avatar />
+        <div v-if="!isAuthenticated()">
+          <router-link to="SignIn" class="tw-ml-4 tw-font-bold tw-bg-yellow-400 tw-px-3 tw-py-2 tw-underline">Login
+            <v-icon>mdi-login</v-icon>
+          </router-link>
+        </div>
       </div>
     </v-app-bar>
 
@@ -61,6 +66,7 @@ import Avatar from '@/components/layout/partials/nav/Avatar.vue';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
 import ScreenIdle from '@/components/shared/ScreenIdle.vue';
+import { isAuthenticated } from '@/utils/roles.js';
 
 export default {
   name: 'Default',
@@ -76,6 +82,7 @@ export default {
     // this.getClient();
   },
   methods: {
+    isAuthenticated,
     getClient() {
       axios.get(`/customer/gis/clients/validateclient?pin=${this.authenticatedUser['custom:kra-pin']}&email=${this.authenticatedUser.email}`)
         .then((response) => {

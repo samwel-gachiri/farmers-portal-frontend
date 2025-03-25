@@ -1,6 +1,6 @@
 <template>
   <Default>
-    <v-container class="tw-bg-gray-50 tw-min-h-screen p-8">
+    <v-container class="tw-bg-gray-50">
       <v-dialog v-model="listingDialog" max-width="500px">
         <create-listing/>
         <v-btn
@@ -12,11 +12,8 @@
           Close
         </v-btn>
       </v-dialog>
-      <v-dialog v-model="dialog">
-        <listing :listing-id="selectedListingId"></listing>
-      </v-dialog>
     <!-- Dashboard Header -->
-    <v-row class="tw-mb-8">
+    <v-row class="tw-mb-3">
       <v-col cols="12">
         <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>
         <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>
@@ -26,24 +23,51 @@
     <!-- Stats Cards -->
     <v-row class="tw-mb-8">
       <v-col cols="12" md="4">
-        <v-card rounded class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
           <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>
           <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
           <p class="tw-text-gray-500">Active listings</p>
         </v-card>
       </v-col>
       <v-col cols="12" md="4">
-        <v-card rounded class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
           <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>
           <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
           <p class="tw-text-gray-500">This month</p>
         </v-card>
       </v-col>
       <v-col cols="12" md="4">
-        <v-card rounded class="tw-p-6 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
           <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Revenue</h2>
           <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
           <p class="tw-text-gray-500">Last 30 days</p>
+        </v-card>
+      </v-col>
+    </v-row>
+    <!-- Stats Cards -->
+    <v-row class="tw-mb-8">
+<!--      <v-col cols="12" md="4">-->
+<!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
+<!--          <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>-->
+<!--          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>-->
+<!--          <p class="tw-text-gray-500">Active listings</p>-->
+<!--        </v-card>-->
+<!--      </v-col>-->
+<!--      <v-col cols="12" md="4">-->
+<!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
+<!--          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>-->
+<!--          <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>-->
+<!--          <p class="tw-text-gray-500">This month</p>-->
+<!--        </v-card>-->
+<!--      </v-col>-->
+      <v-col cols="12">
+        <v-card :loading="loading" rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+          <apexchart
+              type="line"
+              height="350"
+              :options="revenueChartOptions"
+              :series="revenueChartOptions.series"
+            ></apexchart>
         </v-card>
       </v-col>
     </v-row>
@@ -78,12 +102,14 @@ import Default from '@/components/layout/Default.vue';
 import { mapState } from 'vuex';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
-import CreateListing from '@/components/CreateListing.vue';
-import Listing from '@/components/Listing.vue';
+import CreateListing from '@/components/listing/CreateListing.vue';
+import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
-    Listing, CreateListing, Default,
+    CreateListing,
+    Default,
+    apexchart: VueApexCharts,
   },
   data() {
     return {
@@ -98,6 +124,80 @@ export default {
           currency: 'KSH',
         },
       },
+      revenueChartOptions: {
+        forecastDataPoints: {
+          count: 0,
+          fillOpacity: 0.5,
+          strokeWidth: undefined,
+          dashArray: 4,
+        },
+        series: [{
+          name: 'Pineapple',
+          type: 'bar',
+          data: [44, 55, 41, 37, 22, 43, 21],
+        }, {
+          name: 'Sales made',
+          type: 'line',
+          data: [23, 42, 35, 27, 43, 22, 17],
+        }, {
+          name: 'Mango',
+          type: 'bar',
+          data: [53, 32, 33, 52, 13, 43, 32],
+        }, {
+          name: 'Orange',
+          type: 'bar',
+          data: [12, 17, 11, 9, 15, 11, 20],
+        }, {
+          name: 'Sukuma wiki',
+          type: 'bar',
+          data: [9, 7, 5, 8, 6, 9, 4],
+        }, {
+          name: 'Cabbage',
+          type: 'bar',
+          data: [25, 12, 19, 32, 25, 24, 10],
+        }],
+        chart: {
+          height: 350,
+          type: 'line',
+        },
+        stroke: {
+          width: [0, 4],
+        },
+        title: {
+          text: 'Sales Over Time',
+          align: 'left',
+          margin: 10,
+          offsetX: 0,
+          offsetY: 0,
+          floating: false,
+          style: {
+            fontSize: '14px',
+            fontWeight: 'bold',
+            fontFamily: 'Trebuc',
+            color: '#263238',
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          enabledOnSeries: [1],
+        },
+        labels: ['Jan 2001', 'Feb 2001', 'March 2001', 'April 2001', 'May 2001', 'Jun 2001', 'Jul 2001', 'Aug 2001', 'Sep 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'],
+        yaxis: [{
+          title: {
+            text: 'Revenue Generated',
+          },
+          labels: {
+            formatter(value) {
+              return `Ksh ${value}`;
+            },
+          },
+        }, {
+          opposite: true,
+          title: {
+            text: 'Sales made',
+          },
+        }],
+      },
     };
   },
   computed: {
@@ -106,7 +206,7 @@ export default {
     }),
   },
   mounted() {
-    // this.fetchLiveCount();
+    this.fetchLiveCount();
   },
   methods: {
     // fetchListings() {
@@ -122,7 +222,7 @@ export default {
     async fetchLiveCount() {
       this.loading = true;
       try {
-        const response = await axios.get('/api/dashboard/live/count', {
+        const response = await axios.get('/farmers-service/api/dashboard/live/count', {
           params: {
             farmerId: getCurrentUserId(),
           },

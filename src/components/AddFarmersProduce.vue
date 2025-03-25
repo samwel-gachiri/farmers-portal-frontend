@@ -1,58 +1,88 @@
 <template>
-  <div class="flex justify-center mt-8">
-    <v-app>
-      <v-container>
-        <logo-title>
-          <h2>Andika unachouza</h2>
-        </logo-title>
-        <v-row align="center" justify="center" class="tw-gap-0">
-          <v-col cols="12" class="tw-m-0 tw-p-0 tw-border">
-            <v-combobox
-                v-model="selectedProduce"
-                :items="produceList"
-                item-text="name"
-                item-value="id"
-                label="Select Produce"
-                outlined
-                @change="handleProduceSelection"
-            ></v-combobox>
-          </v-col>
-          <v-col cols="12" class="tw-border">
-            <v-list-item-group class="tw-overflow-y-scroll tw-grid tw-grid-cols-4">
-              <v-list-item class="tw-flex tw-justify-between tw-rounded-lg tw-bg-green-800 tw-m-2 tw-p-0" v-for="(farmerProduce, i) in farmerProduces" :key="i">{{farmerProduce.farmProduce.name}}
-                <v-icon class="hover:tw-visible tw-invisible" size="20" color="error">mdi-close-circle</v-icon>
-              </v-list-item>
-            </v-list-item-group>
-          </v-col>
-          <v-col cols="12" class="">
-            <v-text-field
-                v-model="newProduceName"
-                label="New Produce Name"
-                outlined
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12">
-            <v-btn color="primary" @click="addNewProduce">Add New Produce</v-btn>
+  <div class="tw-flex tw-flex-col tw-justify-center tw-mt-4">
+    <v-form v-model="newProduce.isValid" class="tw-gap-0">
+      <v-row>
+        <v-col>
+          <v-combobox
+              v-model="selectedProduce"
+              :items="produceList.map((produce)=>produce.name)"
+              label="Select or Enter Produce"
+              outlined
+              clearable
+              hide-no-data
+              :rules="[required('Produce Name')]"
+              :filter="() => true"
+          >
+<!--              @change="handleProduceInput"-->
+<!--            <v-icon slot="prepend" color="primary" >mdi-text-search</v-icon>-->
+          </v-combobox>
+        </v-col>
+        <v-col>
+          <v-combobox
+              v-model="newProduce.farmingType"
+              label="Farming type"
+              :items="farmingTypes"
+              outlined
+          ></v-combobox>
+        </v-col>
+      </v-row>
+      <v-textarea
+          v-model="newProduce.desc"
+          dense
+          outlined
+          label="Input produce description"
+      ></v-textarea>
+      <v-file-input
+          label="Provide Produce Image(s)"
+          v-model="newProduce.images"
+          accept="image/*"
+          multiple
+          outlined
+          chips
+          counter
+          :rules="[validateImages]"
+          @change="previewImages"
+      ></v-file-input>
+      <div v-if="newProduce.images.length > 0">
+        <h2 class="blue--text">{{newProduce.images.length > 1 ? 'Images': 'Image'}} Preview</h2>
+        <v-row>
+          <v-col v-for="(image, index) in imagePreviews" :key="index" cols="4">
+            <v-img :src="image" aspect-ratio="1" contain></v-img>
           </v-col>
         </v-row>
-      </v-container>
-    </v-app>
+      </div>
+      <div class="tw-flex tw-justify-center tw-items-center">
+        <v-btn :loading="loading" :disabled="!newProduce.isValid" color="secondary" @click="addFarmerProduce">
+          Add Produce
+        </v-btn>
+      </div>
+    </v-form>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
-import LogoTitle from '@/components/shared/LogoText.vue';
+import { farmingTypes } from '@/assets/data/farmingTypes.js';
+import validations from '@/utils/validations.js';
 
 export default {
   name: 'add-farmer-produce',
-  components: { LogoTitle },
   data() {
     return {
       produceList: [], // To store list of produces fetched from '/produce'
       selectedProduce: null, // To store the selected produce by user
-      newProduceName: '', // To store the name of new produce entered by user
+      newProduce: {
+        isValid: false,
+        name: '',
+        desc: '',
+        farmingType: '',
+        images: [],
+      },
+      imagePreviews: [],
+      farmingTypes,
+      ...validations,
+      loading: false,
     };
   },
   props: {
@@ -82,61 +112,90 @@ export default {
   methods: {
     // Fetches list of produces from '/produce' endpoint
     async fetchProduces() {
+      this.loading = true;
       try {
-        const response = await axios.get('/produce');
+        const response = await axios.get('/farmers-service/produce');
         this.produceList = response.data.data;
       } catch (error) {
         this.$toast.error('Error fetching produces:', error.message);
+      } finally {
+        this.loading = false;
       }
     },
-    // Handles selection of produce from v-select
-    handleProduceSelection() {
-      if (this.selectedProduce) {
-        this.addFarmerProduce(this.selectedProduce.id);
+    previewImages() {
+      this.imagePreviews = []; // Clear previous previews
+      if (this.newProduce.images) {
+        this.newProduce.images.forEach((file) => {
+          this.imagePreviews.push(URL.createObjectURL(file));
+        });
       }
+    },
+    validateImages(value) {
+      // eslint-disable-next-line no-mixed-operators
+      return value.length >= 1 && value.length <= 3 || 'You must upload between 1 and 3 images';
+    },
+    // Handles selection of produce from v-select
+    handleProduceInput() {
     },
     // Adds a new produce based on user input
     async addNewProduce() {
-      if (this.newProduceName) {
-        try {
-          const response = await axios.post('/produce', {
-            name: this.newProduceName,
-            description: '', // Add description if needed
-            farmingType: '', // Add farmingType if needed
-          });
-          const newProduce = response.data.data;
-          this.produceList.push(newProduce); // Add new produce to local list
-          this.addFarmerProduce(newProduce.id); // Add new produce to farmer's produces
-        } catch (error) {
-          this.$toast.error('Error adding new produce:', error.message);
-        }
+      this.loading = true;
+      try {
+        const response = await axios.post('/farmers-service/produce', {
+          name: this.newProduce.name,
+          description: this.newProduce.desc,
+          farmingType: this.newProduce.farmingType,
+        });
+        const newProduce = response.data.data;
+        this.produceList.push(newProduce); // Add new produce to local list
+      } catch (error) {
+        this.$toast.error('Error adding new produce:', error.message);
+      } finally {
+        this.loading = false;
       }
     },
     // Adds selected produce to farmer's produces using '/farmer/add-farmer-produce'
-    async addFarmerProduce(produceId) {
-      let farmerHasProduce = false;
-      this.farmerProduces.forEach((farmerProduce) => {
-        if (farmerProduce.farmProduce.id === produceId) {
-          this.$toast.error('Farmer already has produce');
-          farmerHasProduce = true;
+    async addFarmerProduce() {
+      this.newProduce.name = this.selectedProduce;
+      this.loading = true;
+      let produceId = '';
+      this.produceList.forEach((produce) => {
+        if (produce.name.toLowerCase() === this.newProduce.name.toLowerCase()) {
+          produceId = produce.id;
         }
       });
-      if (!farmerHasProduce) {
-        try {
-          await axios.post('/farmer/add-farmer-produce', {
-            farmerId: getCurrentUserId(),
-            farmerProducesId: [produceId],
-          }).then((response) => {
-            if (response.data.success === true) {
-              this.farmerProduces = response.data.data;
-              this.$toast.success('Added successfully to farmer!');
-            } else {
-              this.$toast.error('Addition failed!', response.data.msg);
-            }
-          });
-        } catch (error) {
-          this.$toast.error('Error adding produce to farmer!', `${error}`);
+      if (produceId === '') {
+        produceId = await this.addNewProduce();
+      }
+      this.$toast.success('posting');
+      const formData = new FormData();
+      formData.append('farmerId', getCurrentUserId());
+      formData.append('name', this.newProduce.name);
+      formData.append('farmProduceId', produceId);
+      formData.append('description', this.newProduce.desc);
+      formData.append('farmingType', this.newProduce.farmingType);
+
+      if (this.newProduce.images.length) {
+        this.newProduce.images.forEach((file) => {
+          formData.append('images', file);
+        });
+      }
+
+      try {
+        const response = await axios.post('/farmers-service/farmer/add-farmer-produce', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (response.data.success) {
+          this.farmerProduces = response.data.data;
+          this.$toast.success('Added successfully to farmer!');
+        } else {
+          this.$toast.error('Addition failed!', response.data.msg);
         }
+      } catch (error) {
+        this.$toast.error('Error adding produce to farmer!', `${error}`);
+      } finally {
+        this.loading = false;
       }
     },
   },

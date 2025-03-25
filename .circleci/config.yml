@@ -51,9 +51,13 @@ jobs:
             docker build -t ${AWS_DEV_ECR_ENDPOINT}:${CIRCLE_SHA1} \
             --build-arg VUE_APP_API_BASE_URL=${VUE_APP_API_BASE_URL} \
             --build-arg VUE_APP_AWS_REGION=${AWS_DEFAULT_REGION} \
-            --build-arg VUE_APP_USER_POOL_ID=${VUE_APP_USER_POOL_ID} \
+            --build-arg VUE_APP_USER_POOL_ID_FARMER=${VUE_APP_USER_POOL_ID_FARMER} \
+            --build-arg VUE_APP_USER_POOL_WEB_CLIENT_ID_FARMER=${VUE_APP_USER_POOL_WEB_CLIENT_ID_FARMER} \
+            --build-arg VUE_APP_USER_POOL_ID_BUYER=${VUE_APP_USER_POOL_ID_BUYER} \
+            --build-arg VUE_APP_USER_POOL_WEB_CLIENT_ID_BUYER=${VUE_APP_USER_POOL_WEB_CLIENT_ID_BUYER} \
+            --build-arg VUE_APP_USER_POOL_ID_ADMIN=${VUE_APP_USER_POOL_ID_ADMIN} \
+            --build-arg VUE_APP_USER_POOL_WEB_CLIENT_ID_ADMIN=${VUE_APP_USER_POOL_WEB_CLIENT_ID_ADMIN} \
             --build-arg VUE_APP_GOOGLE_MAPS_API_KEY=${VUE_APP_GOOGLE_MAPS_API_KEY} \
-            --build-arg VUE_APP_USER_POOL_WEB_CLIENT_ID=${VUE_APP_USER_POOL_WEB_CLIENT_ID} \
             --no-cache .
             login=$(aws ecr get-login --no-include-email --region us-east-1)
             ${login}
