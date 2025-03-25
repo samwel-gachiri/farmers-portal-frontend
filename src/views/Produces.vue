@@ -3,8 +3,10 @@
     <div v-if="!loading" class="tw-w-full tw-h-screen">
       <!-- Dialogs -->
       <v-dialog v-model="addProduceDialog" max-width="500px">
-        <v-card rounded="xl">
-          <v-card-title class="headline">Add Farmer Produce</v-card-title>
+        <v-card>
+          <div class="tw-mt-4">
+            <LogoTitle>Add Farmer Produce</LogoTitle>
+          </div>
           <v-card-text>
             <add-farmer-produce :farmer-produces="farmer.farmerProduces"></add-farmer-produce>
           </v-card-text>
@@ -30,7 +32,7 @@
               color="primary"
               @click="addProduceDialog = true"
           >
-            <v-icon class="mdi" left>mdi-leaf</v-icon>
+            <v-icon left>mdi-leaf</v-icon>
             Add Produce
           </v-btn>
         </div>
@@ -44,8 +46,32 @@
         >
           <!--            :server-items-length="totalElements"-->
           <!-- Custom Row Template -->
-          <template v-slot:item.actions="{ item }">
-            <v-btn small color="primary" @click="listingDialog = true">Market {{item.farmProduce.name}}</v-btn>
+
+<!--          <template v-slot:item.actions="{ item }">-->
+<!--                :src="item.imageUrls.length > 0 ? item.imageUrls[0]: ''"-->
+          <template v-slot:item.images="{ item }">
+            <v-img
+                v-for="(imageUrl, i) in item.imageUrls"
+                :key="i"
+                :src="imageUrl"
+                width="100px"
+                height="100px"
+            />
+          </template>
+          <template v-slot:item.edit="{  }">
+            <v-btn small @click="listingDialog = true">
+              <v-icon color="mdi-edit">mdi-pencil</v-icon>
+              Edit
+            </v-btn>
+          </template>
+          <template v-slot:item.delete="{  }">
+            <v-btn small @click="listingDialog = true">
+              <v-icon color="red">mdi-trash-can</v-icon>
+              Delete
+            </v-btn>
+          </template>
+          <template v-slot:item.actions="{  }">
+            <v-btn small color="secondary" @click="listingDialog = true">sell</v-btn>
           </template>
         </v-data-table>
       </div>
@@ -101,17 +127,27 @@ import CreateListing from '@/components/listing/CreateListing.vue';
 import AddFarmerProduce from '@/components/AddFarmersProduce.vue';
 import Default from '@/components/layout/Default.vue';
 import Auth from '@aws-amplify/auth';
+// import CardTitle from '@/components/shared/CardTitle.vue';
+import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
-  components: { Default, AddFarmerProduce, CreateListing },
+  components: {
+    LogoTitle,
+    Default,
+    AddFarmerProduce,
+    CreateListing,
+  },
   data() {
     return {
       produceTableHeaders: [
+        { text: 'Image', value: 'images' },
         { text: 'Produce', value: 'farmProduce.name' },
         { text: 'Description', value: 'farmProduce.description' },
         { text: 'Farming Type', value: 'farmProduce.farmingType' },
         { text: 'Status', value: 'status' },
         { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'Edit', value: 'edit', sortable: false },
+        { text: 'Delete', value: 'delete', sortable: false },
       ],
       farmer: {
         id: '',

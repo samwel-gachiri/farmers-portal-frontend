@@ -70,6 +70,11 @@ const routes = [
     name: 'BuyerOrders',
     component: () => import('../views/buyers/BuyerOrders.vue'),
   },
+  {
+    path: '/browse',
+    name: 'BrowseListings',
+    component: () => import('../views/buyers/BrowseListings.vue'),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',

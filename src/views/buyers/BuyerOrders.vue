@@ -17,6 +17,12 @@
               Confirm Supply
             </v-btn>
           </template>
+          <template v-slot:item.view="{}">
+            <v-btn color="secondary">
+              <v-icon color="primary">mdi-notebook</v-icon>
+              view
+            </v-btn>
+          </template>
         </v-data-table>
       </v-card-text>
 </v-card>
@@ -41,6 +47,7 @@ export default {
         { text: 'Quantity', value: 'quantity' },
         { text: 'Status', value: 'status' },
         { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'View', value: 'view', sortable: false },
       ],
       snackbar: false,
       snackbarMessage: '',

@@ -74,6 +74,14 @@ export default {
         roles: ['buyer'],
       },
       {
+        icon: 'mdi-web',
+        text: 'Browse Listings',
+        link: {
+          name: 'BrowseListings',
+        },
+        roles: ['buyer'],
+      },
+      {
         icon: 'mdi-chart-pie',
         text: 'Reports',
         link: { name: 'Report' },

@@ -116,7 +116,6 @@ export default {
     connectToSSE() {
       this.eventSource = new EventSource(
         `${process.env.VUE_APP_API_BASE_URL}farmers-service/listing/stream?listingId=${this.listing.produceListing.id}`,
-        // `${process.env.VUE_APP_API_BASE_URL}/listing/stream-sse`,
       );
 
       // Listen for custom event types
