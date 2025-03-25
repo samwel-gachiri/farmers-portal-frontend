@@ -52,7 +52,7 @@ export default {
     async sendCode() {
       this.loading = true;
       try {
-        const data = await Auth.forgotPassword(this.phoneNumber);
+        await Auth.forgotPassword(this.phoneNumber);
         this.$emit('codeSent', this.phoneNumber);
       } catch (error) {
         this.$toast.error('Error sending reset code', error.message);
