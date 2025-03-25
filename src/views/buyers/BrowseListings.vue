@@ -133,7 +133,7 @@ export default {
         const response = await axios.get('/farmers-service/listing/list');
         this.listings = response.data.data;
       } catch (error) {
-        console.error('Error fetching listings:', error);
+        this.$toast.error('Error fetching listings:', error);
       }
     },
     openDetails(listing) {
