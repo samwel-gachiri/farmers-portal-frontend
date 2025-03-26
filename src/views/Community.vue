@@ -106,21 +106,27 @@
       </v-row>
     </div>
     <!-- Dialog for Marker Info -->
-    <v-dialog v-model="userDialog" v-if="false" max-width="400">
-      <v-card v-if="selectedUserFromMap?.role === 'farmer'">
+    <v-dialog v-model="userDialog" max-width="400">
+      <v-card>
         <v-card-title>{{ selectedUserFromMap?.name }}</v-card-title>
-        <v-card-actions>
-          <v-btn @click="toggleConnection">
-            <v-icon v-if="isConnected">mdi-check-circle</v-icon>
-            {{ isConnected ? "Disconnect" : "Connect" }}
-          </v-btn>
-        </v-card-actions>
+        <FarmerListingsDialog
+            v-if="selectedUserFromMap?.role === 'farmer'"
+            :selected-farmer="selectedUserFromMap"
+            @close="selectedUserFromMap = null"
+        />
+        <BuyerRequestsDialog
+          v-if="selectedUserFromMap?.role === 'buyer'"
+          :selected-buyer="selectedUserFromMap"
+          @close="selectedUserFromMap = null"
+        />
+<!--        <v-card-actions>-->
+<!--          <v-btn @click="toggleConnection">-->
+<!--            <v-icon v-if="isConnected">mdi-check-circle</v-icon>-->
+<!--            {{ isConnected ? "Disconnect" : "Connect" }}-->
+<!--          </v-btn>-->
+<!--        </v-card-actions>-->
       </v-card>
     </v-dialog>
-    <FarmerListingsDialog
-        :selected-farmer="selectedUserFromMap"
-        @close="selectedUserFromMap = null"
-    />
   </Default>
 </template>
 
@@ -131,9 +137,10 @@ import axios from 'axios';
 import { mapGetters, mapState } from 'vuex';
 import FarmerListingsDialog from '@/components/listing/FarmerListingsDialog.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
+import BuyerRequestsDialog from '@/components/request/BuyerRequestsDialog.vue';
 
 export default {
-  components: { FarmerListingsDialog, Default },
+  components: { BuyerRequestsDialog, FarmerListingsDialog, Default },
   data() {
     return {
       map: null,

@@ -1,18 +1,18 @@
 <template>
   <v-dialog v-model="isOpen" max-width="800px">
-    <v-card v-if="selectedFarmer">
+    <v-card v-if="selectedBuyer">
       <v-card-title>
-        <span class="text-h5">{{ selectedFarmer.farmer?.name }}</span>
+        <span class="text-h5">{{ selectedBuyer.buyer.name }}</span>
       </v-card-title>
 
       <v-card-subtitle>
-        Location: {{ selectedFarmer.customName }}
+        Location: {{ selectedBuyer.customName }}
       </v-card-subtitle>
 
       <v-card-text>
         <v-row class="tw-mb-4">
           <v-col cols="6">
-            <v-btn :color="isConnected ? 'white' : 'green'" @click="toggleConnection" :disabled="getCurrentUserRole() !== 'buyer'">
+            <v-btn :color="isConnected ? 'white' : 'green'" @click="toggleConnection" :disabled="getCurrentUserRole() !== 'farmer'">
               {{ isConnected ? "Connected" : "Connect" }}
               <v-icon v-if="isConnected" color="primary"> mdi-check-circle</v-icon>
             </v-btn>
@@ -22,19 +22,19 @@
         <v-divider></v-divider>
 
         <h3 class="mt-4">Products</h3>
-        <v-chip-group v-if="selectedFarmer.farmer.farmerProduces.length > 0">
-          <v-chip v-for="product in selectedFarmer.farmer.farmerProduces" :key="product.id" color="primary">
-            {{ product.farmProduce.name }}
+        <v-chip-group v-if="selectedBuyer.buyer.preferredProduces.length > 0">
+          <v-chip v-for="product in selectedBuyer.buyer.preferredProduces" :key="product.id" color="primary">
+            {{ product.bsfarmProduce.name }}
           </v-chip>
         </v-chip-group>
         <p v-else>No products available</p>
 
         <v-divider class="my-4"></v-divider>
 
-        <h3>Listings</h3>
+        <h3>Requests</h3>
         <v-data-table
             :headers="headers"
-            :items="listings.filter((listing) => listing.status === 'ACTIVE')"
+            :items="requests.filter((request) => request.status === 'ACTIVE')"
             item-value="id"
             class="elevation-1"
         >
@@ -50,20 +50,20 @@
       </v-card-actions>
     </v-card>
     <v-dialog v-model="orderDialog" max-width="500px">
-      <v-card v-if="listingToOrder">
+      <v-card v-if="requestToOrder">
         <v-card-title>
-          <span class="text-h5">Order Listing</span>
+          <span class="text-h5">Order Request</span>
         </v-card-title>
 
         <v-card-subtitle>
-          Produce: {{ listingToOrder.farmerProduce.farmProduce.name }}
+          Produce: {{ requestToOrder.preferredProduce.bsfarmProduce.name }}
         </v-card-subtitle>
 
         <v-card-text>
           <v-row class="tw-mb-4">
             <v-col cols="6">
               <number-input
-                  :label="`Quantity (in ${listingToOrder.unit})`"
+                  :label="`Quantity (in ${requestToOrder.unit})`"
                   v-model="orderQuantity"
                   :min="1"
                   :initial-value="1"
@@ -72,7 +72,7 @@
           </v-row>
           <v-row class="tw-mb-4">
             <v-col cols="6">
-              <v-btn color="primary" :loading="loading" @click="orderListing" :disabled="getCurrentUserRole() !== 'buyer'">
+              <v-btn color="primary" :loading="loading" @click="orderRequest" :disabled="getCurrentUserRole() !== 'farmer'">
                 Order Now
               </v-btn>
             </v-col>
@@ -96,22 +96,20 @@ import NumberInput from '@/components/shared/NumberInput.vue';
 export default {
   components: { NumberInput },
   props: {
-    selectedFarmer: {
-      type: Object,
-    },
+    selectedBuyer: Object,
   },
   data() {
     return {
       loading: false,
       isOpen: false,
-      listings: [],
-      farmerProducts: [],
+      requests: [],
+      buyerProducts: [],
       isConnected: false,
-      listingToOrder: null,
+      requestToOrder: null,
       orderDialog: false,
       orderQuantity: 0,
       headers: [
-        { text: 'Produce', value: 'farmerProduce.farmProduce.name' },
+        { text: 'Produce', value: 'preferredProduce.bsfarmProduce.name' },
         { text: 'Quantity', value: 'quantity' },
         { text: 'Unit', value: 'unit' },
         { text: 'Price', value: 'price.price' },
@@ -120,13 +118,13 @@ export default {
     };
   },
   watch: {
-    selectedFarmer: {
+    selectedBuyer: {
       immediate: true,
-      handler(newFarmer) {
-        if (newFarmer) {
+      handler(newBuyer) {
+        if (newBuyer) {
           this.isOpen = true;
-          this.fetchListings();
-          if (getCurrentUserRole() === 'buyer') {
+          this.fetchRequests();
+          if (getCurrentUserRole() === 'farmer') {
             this.checkConnection();
           }
         }
@@ -136,25 +134,25 @@ export default {
   methods: {
     getCurrentUserId,
     getCurrentUserRole,
-    async fetchListings() {
+    async fetchRequests() {
       try {
-        const response = await axios.get('/farmers-service/listing/farmer', {
-          params: { farmerId: this.selectedFarmer.farmer.id, pageable: { page: 0, size: 10 } },
+        const response = await axios.get('/buyers-service/request/buyer', {
+          params: { buyerId: this.selectedBuyer.buyer.id, pageable: { page: 0, size: 10 } },
         });
-        this.listings = response.data.data.content || [];
+        this.requests = response.data.data.content || [];
       } catch (error) {
-        this.$toast.error('Error fetching listings:', error.message);
+        this.$toast.error('Error fetching requests:', error.message);
       }
     },
     //
-    // async fetchFarmerProducts() {
+    // async fetchBuyerProducts() {
     //   try {
-    //     const response = await axios.get('/farmers-service/products', {
-    //       params: { farmerId: this.selectedFarmer.farmer.id },
+    //     const response = await axios.get('/buyers-service/products', {
+    //       params: { buyerId: this.selectedBuyer.buyer.id },
     //     });
-    //     this.farmerProducts = response.data.data || [];
+    //     this.buyerProducts = response.data.data || [];
     //   } catch (error) {
-    //     console.error('Error fetching farmer products:', error.message);
+    //     console.error('Error fetching buyer products:', error.message);
     //   }
     // },
 
@@ -164,8 +162,8 @@ export default {
         if (response.data.success === false) {
           this.$toast.error('Error checking connection:', response.data.msg);
         }
-        const connectedFarmers = response.data.data || [];
-        this.isConnected = connectedFarmers.some((f) => f.farmerId === this.selectedFarmer.farmer.id);
+        const connectedBuyers = response.data.data || [];
+        this.isConnected = connectedBuyers.some((f) => f.buyerId === this.selectedBuyer.buyer.id);
       } catch (error) {
         this.$toast.error('Error checking connection:', error.message);
       }
@@ -177,7 +175,7 @@ export default {
         const response = await axios({
           method: this.isConnected ? 'DELETE' : 'POST',
           url,
-          params: { farmerId: this.selectedFarmer.farmer.id, buyerId: getCurrentUserId() },
+          params: { buyerId: this.selectedBuyer.buyer.id, farmerId: getCurrentUserId() },
         });
         if (response.data.success) {
           this.isConnected = !this.isConnected;
@@ -188,11 +186,11 @@ export default {
         this.$toast.error('Error updating connection:', error.message);
       }
     },
-    popUpOrderDialog(listing) {
-      this.listingToOrder = listing;
+    popUpOrderDialog(request) {
+      this.requestToOrder = request;
       this.orderDialog = true;
     },
-    async orderListing() {
+    async orderRequest() {
       this.loading = true;
       const quantity = Number(this.orderQuantity);
       if (!Number.isFinite(quantity) || quantity <= 0) {
@@ -201,15 +199,15 @@ export default {
       }
 
       try {
-        const response = await axios.post('/farmers-service/listing/order', {
-          listingId: this.listingToOrder.id,
+        const response = await axios.post('/buyers-service/request/order', {
+          requestId: this.requestToOrder.id,
           buyerId: getCurrentUserId(),
           quantity,
         });
         if (response.data.success) {
           this.$toast.success('Order placed successfully!');
           this.orderDialog = false;
-          this.listingToOrder = null;
+          this.requestToOrder = null;
         } else {
           this.$toast.error(response.data.msg);
         }

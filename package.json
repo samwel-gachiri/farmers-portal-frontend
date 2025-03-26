@@ -29,6 +29,7 @@
     "google-maps": "^4.3.2",
     "idle-vue": "^2.0.5",
     "jwt-decode": "^3.0.0",
+    "leaflet": "^1.9.4",
     "moment": "^2.29.0",
     "nprogress": "^0.2.0",
     "pluralize": "^8.0.0",

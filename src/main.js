@@ -10,6 +10,8 @@ import '@/assets/css/color/default.css';
 import '@/assets/css/nprogress.css';
 import '@/assets/css/style.css';
 import 'izitoast/dist/css/iziToast.min.css';
+import 'leaflet/dist/leaflet.css';
+
 import helperMixins from '@/mixins/helperMixins.js';
 import VuePhoneNumberInput from '@/components/layout/components/PhoneNumberInput.vue';
 

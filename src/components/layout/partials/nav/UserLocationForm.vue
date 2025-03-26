@@ -1,35 +1,38 @@
 <template>
   <v-card class="tw-px-4 md:tw-px-8 tw-flex tw-justify-center tw-w-full" flat>
     <v-form v-model="isValid" class="tw-w-full tw-mt-5">
-        <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">
-          <div class="tw-w-full tw-flex tw-flex-col tw-justify-between">
-            <v-text-field
-                id="name"
-                type="text"
-                name="name"
-                v-model="fullname"
-                label="Full Name"
-                class="my-1"
-                :rules="[required('Full Name')]"
-            >
-            </v-text-field>
-    <!--        <v-text-field-->
-    <!--            id="email"-->
-    <!--            type="email"-->
-    <!--            name="email"-->
-    <!--            v-model="email"-->
-    <!--            label="Email Address"-->
-    <!--            :rules="[required('Email'), emailFormat()]"-->
-    <!--            disabled-->
-    <!--        >-->
-    <!--        </v-text-field>-->
+      <div class="tw-flex tw-flex-row tw-gap-5">
+        <div class="tw-w-full">
+          <v-text-field
+              id="name"
+              type="text"
+              name="name"
+              v-model="fullname"
+              label="Full Name"
+              class="my-1"
+              :rules="[required('Full Name')]"
+          >
+          </v-text-field>
+          <!--        <v-text-field-->
+          <!--            id="email"-->
+          <!--            type="email"-->
+          <!--            name="email"-->
+          <!--            v-model="email"-->
+          <!--            label="Email Address"-->
+          <!--            :rules="[required('Email'), emailFormat()]"-->
+          <!--            disabled-->
+          <!--        >-->
+          <!--        </v-text-field>-->
+          <div
+              class="tw-flex tw-w-full tw-flex-row tw-justify-start tw-items-start"
+          >
             <div
-                class="tw-flex tw-w-full tw-flex-col tw-justify-start tw-items-start"
+                class="tw-flex tw-flex-col"
             >
               <v-text-field
                   label="My Location"
                   v-model="userLocation.location.customName"
-                  class="tw-font-bold tw-w-full"
+                  class="tw-font-bold"
               ></v-text-field>
               <div class="tw-flex tw-flex-row">
                 <v-text-field
@@ -44,47 +47,40 @@
                     v-model="userLocation.location.longitude"
                 ></v-text-field>
               </div>
-              <v-btn
-                  @click="getLocation"
-                  class="tw-mb-4"
-              >
-                Use Device Location
-                <v-icon color="linear-gradient(green, red)" >mdi-google-maps</v-icon>
-              </v-btn>
             </div>
-<!--            <v-text-field-->
-<!--                id="phone"-->
-<!--                type="text"-->
-<!--                name="phone"-->
-<!--                v-model="phone_number"-->
-<!--                label="Phone Number"-->
-<!--                :rules="[required('Mobile No.')]"-->
-<!--            >-->
-<!--            </v-text-field>-->
-            <phone-number-input
-                class="tw-mt-8"
-                v-model="phone_number"
-                default-country-code="KE"
-                :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                @update:phoneNumber="(newValue) => (phone_number = newValue)"
-            />
           </div>
-          <div class="tw-w-full">
-            <strong>Pinpoint Your Location Here <v-icon>mdi-gesture-two-tap</v-icon></strong>
-            <!-- Leaflet Map -->
-            <div id="map" class="map-container"></div>
-          </div>
+          <v-text-field
+              id="phone"
+              type="text"
+              name="phone"
+              v-model="phone_number"
+              label="Phone Number"
+              :rules="[required('Mobile No.')]"
+              disabled
+          >
+          </v-text-field>
         </div>
-        <v-card-actions class="col-sm-6 offset-sm-3">
-          <v-btn block small
-                 id="userUpdate"
-                 color="secondary"
-                 @click="updateProfile"
-                 :disabled="!isValid"
-                 :loading="loading">
-            Update Details
+        <div class="tw-w-full tw-border-4">
+          <v-btn
+              @click="getLocation"
+          >
+            Get Location
+            <v-icon color="linear-gradient(green, red)" >mdi-google-maps</v-icon>
           </v-btn>
-        </v-card-actions>
+          <!-- Leaflet Map -->
+          <div id="map" class="map-container"></div>
+        </div>
+      </div>
+      <v-card-actions class="col-sm-6 offset-sm-3">
+        <v-btn block small
+               id="userUpdate"
+               color="secondary"
+               @click="updateProfile"
+               :disabled="!isValid"
+               :loading="loading">
+          Update Details
+        </v-btn>
+      </v-card-actions>
     </v-form>
   </v-card>
 </template>
@@ -135,7 +131,6 @@ export default {
     getCurrentUserRole,
   },
   mounted() {
-    this.initMap();
     this.role = getCurrentUserRole();
     this.fullname = this.user.name;
     this.email = this.user.email;
@@ -146,10 +141,6 @@ export default {
         this.userLocation.location.latitude = data?.latitude;
         this.userLocation.location.longitude = data?.longitude;
         this.userLocation.location.customName = data?.customName;
-        if (data.latitude) {
-          this.map.panTo([data?.latitude, data?.longitude]);
-          this.marker = L.marker([data?.latitude, data?.longitude]).addTo(this.map);
-        }
       }
     }).catch((e) => {
       this.$toast.error(e.message);
@@ -162,6 +153,7 @@ export default {
         phoneNumber: this.phone_number,
       };
     });
+    this.initMap();
   },
   methods: {
     // Initialize the Leaflet map
@@ -214,18 +206,28 @@ export default {
             this.$toast.success(this.authenticationStatus.message, 'Success');
           }
         }
-      }).finally(() => this.saveLocation());
+      });
     },
     getLocation() {
+      this.$toast.show('Collecting location infor');
       navigator.geolocation.getCurrentPosition(async (position) => {
         this.userLocation.location.latitude = position.coords.latitude;
         this.userLocation.location.longitude = position.coords.longitude;
-        this.getLocationName(this.userLocation.location.latitude, this.userLocation.location.longitude);
-        if (this.marker) {
-          this.marker.setLatLng([position.coords.latitude, position.coords.longitude]);
-        } else {
-          this.marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(this.map);
-        }
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.userLocation.location.latitude},${this.userLocation.location.longitude}
+&location_type=ROOFTOP&result_type=street_address&key=${process.env.VUE_APP_GOOGLE_MAPS_API_KEY}`;
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) {
+              this.$toast.error(`Network response was not ok ${response.statusText}`);
+            }
+            return response.json(); // or response.text(), response.blob(), etc.
+          })
+          .then((data) => {
+            this.userLocation.location.customName = data.plus_code.compound_code;
+          })
+          .catch((error) => {
+            this.$toast.error('Error fetching location name', error.message);
+          });
       },
       (positionError) => {
         this.$toast.error(positionError.message);

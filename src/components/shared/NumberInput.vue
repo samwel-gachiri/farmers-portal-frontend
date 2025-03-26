@@ -1,10 +1,10 @@
 <template>
-  <div class="tw--mt-5">
+  <div class="">
     <h2 class="grey--text" v-if="label !== ''">{{label}}</h2>
     <div class="number-input">
       <v-btn @click="decrement" :disabled="value <= 1">-</v-btn>
-      <input type="number" v-model.number="value" :min="1"/>
-      <v-btn @click="increment">+</v-btn>
+      <input type="number" v-model.number="value" :min="1" :max="maximumValue"/>
+      <v-btn @click="increment" :disabled="value >= maximumValue">+</v-btn>
     </div>
   </div>
 </template>
@@ -20,6 +20,10 @@ export default {
     label: {
       type: String,
       default: '',
+    },
+    maximumValue: {
+      type: Number,
+      default: 100000000000,
     },
   },
   data() {

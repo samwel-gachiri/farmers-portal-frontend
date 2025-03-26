@@ -51,6 +51,14 @@ export default {
         roles: ['farmer', 'buyer'],
       },
       {
+        icon: 'mdi-web',
+        text: 'Browse Listings',
+        link: {
+          name: 'BrowseListings',
+        },
+        roles: ['buyer'],
+      },
+      {
         icon: 'mdi-cash-multiple',
         text: 'Listings',
         link: { name: 'Listings' },
@@ -74,11 +82,9 @@ export default {
         roles: ['buyer'],
       },
       {
-        icon: 'mdi-web',
-        text: 'Browse Listings',
-        link: {
-          name: 'BrowseListings',
-        },
+        icon: 'mdi-cart-plus',
+        text: 'My Requests',
+        link: { name: 'Requests' },
         roles: ['buyer'],
       },
       {
@@ -93,7 +99,6 @@ export default {
         link: { name: 'BuyerReport' },
         roles: ['buyer'],
       },
-      // { icon: 'mdi-phone', text: 'Requests', link: { name: 'Requests' } },
       // { icon: 'mdi-tractor', text: 'Sell produce', link: { name: 'sales', query: { toSamwel: true } } },
     ],
   }),
@@ -111,6 +116,5 @@ export default {
   background-color: #a6a6a5;
   color: white;
   margin-right: 1.5rem;
-  margin-left: 1.5rem;
 }
 </style>

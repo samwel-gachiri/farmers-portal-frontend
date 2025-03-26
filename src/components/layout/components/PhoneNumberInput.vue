@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-flex tw-items-center">
+  <div class="tw-flex tw-rounded-lg tw-border-4 tw-w-full tw-items-center">
     <!-- Country Code Dropdown -->
     <v-select
         label="Country code"
