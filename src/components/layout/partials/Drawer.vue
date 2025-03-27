@@ -4,10 +4,10 @@
       <div class="tw-mx-4 tw-py-3 md:tw-py-5 tw-mb-8">
           <logo-title></logo-title>
       </div>
-      <template v-for="item in items">
+      <template v-for="(item, i) in items">
         <v-list-item
             v-if="viewPermissions((item.roles))"
-            :key="item.text"
+            :key="i"
             link
             :to="item.link"
             active-class="nav-active"
@@ -51,6 +51,12 @@ export default {
         roles: ['farmer', 'buyer'],
       },
       {
+        icon: 'mdi-cash',
+        text: 'My Listings',
+        link: { name: 'Listings' },
+        roles: ['farmer'],
+      },
+      {
         icon: 'mdi-web',
         text: 'Browse Listings',
         link: {
@@ -59,17 +65,10 @@ export default {
         roles: ['buyer'],
       },
       {
-        icon: 'mdi-cash-multiple',
-        text: 'Listings',
-        link: { name: 'Listings' },
-        roles: ['farmer'],
-      },
-      {
-        icon: 'mdi-corn',
-        text: 'My Produces',
+        icon: 'mdi-web',
+        text: 'Browse Requests',
         link: {
-          name: 'Produces',
-          params: { farmerId: getCurrentUserId() },
+          name: 'BrowseRequests',
         },
         roles: ['farmer'],
       },
@@ -80,6 +79,23 @@ export default {
           name: 'BuyerOrders',
         },
         roles: ['buyer'],
+      },
+      {
+        icon: 'mdi-package',
+        text: 'My Orders',
+        link: {
+          name: 'FarmerOrders',
+        },
+        roles: ['farmer'],
+      },
+      {
+        icon: 'mdi-corn',
+        text: 'My Produces',
+        link: {
+          name: 'Produces',
+          params: { farmerId: getCurrentUserId() },
+        },
+        roles: ['farmer'],
       },
       {
         icon: 'mdi-cart-plus',

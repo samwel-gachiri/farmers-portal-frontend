@@ -16,40 +16,40 @@
               @change="farmProduceListingChanged"
               return-object
           ></v-combobox>
-<!--              :rules="[required('produce')]"-->
-          <vuetify-money
-              v-model="listing.price.price"
-              :label="`Input the price`"
-              :options="{
-                locale: 'en-US',
-                prefix: 'Ksh. ',
-                suffix: `/${listing.unit}`,
-                length: 11,
-                precision: 2,
-              }"
-              :rules="[required('price')]"
-          ></vuetify-money>
-          <number-input
-              label="Quantity"
-              v-model="listing.quantity"
-              :min="1"
-              :initial-value="listing.quantity"
-          ></number-input>
           <v-combobox
               v-model="listing.unit"
               dense
               label="Give in measurement"
               :items="units"
           ></v-combobox>
+<!--              :rules="[required('produce')]"-->
+          <number-input
+              :label="`Quantity to sell in ${listing.unit}`"
+              v-model="listing.quantity"
+              :min="1"
+              :initial-value="listing.quantity"
+          ></number-input>
+          <vuetify-money
+              v-model="listing.price.price"
+              :label="`Input the price`"
+              :options="{
+                locale: 'en-US',
+                prefix: 'Ksh. ',
+                suffix: `per ${listing.unit}`,
+                length: 11,
+                precision: 2,
+              }"
+              :rules="[required('price')]"
+          ></vuetify-money>
           <!-- Image Upload Section -->
+          <vuetify-money
+              label="Total"
+              readonly
+              :value="listing.price.price * listing.quantity"
+              :options="vuetifyMoneyOptions"
+          ></vuetify-money>
           <div v-if="false">
             <label class="tw-font-medium">Upload Images (Min: 1, Max: 3)</label>
-            <vuetify-money
-                label="Total"
-                readonly
-                :value="listing.price.price * listing.quantity"
-                :options="vuetifyMoneyOptions"
-            ></vuetify-money>
           </div>
           <v-btn
               style="background-color: darkgreen; color: white;"

@@ -66,14 +66,24 @@ const routes = [
     component: () => import('../views/Requests.vue'),
   },
   {
-    path: '/my-orders',
+    path: '/buyer-orders',
     name: 'BuyerOrders',
     component: () => import('../views/buyers/BuyerOrders.vue'),
+  },
+  {
+    path: '/farmer-orders',
+    name: 'FarmerOrders',
+    component: () => import('../views/farmer/FarmerOrders.vue'),
   },
   {
     path: '/browse',
     name: 'BrowseListings',
     component: () => import('../views/buyers/BrowseListings.vue'),
+  },
+  {
+    path: '/browse-requests',
+    name: 'BrowseRequests',
+    component: () => import('../views/farmer/BrowseRequests.vue'),
   },
   // {
   //   path: '/confirm-otp',

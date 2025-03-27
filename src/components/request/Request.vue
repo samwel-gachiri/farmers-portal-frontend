@@ -10,7 +10,7 @@
         <p><strong>Earnings:</strong> {{ request.earnings }} {{request.produceRequest.price.currency}}</p>
         <p><strong>Rating:</strong> {{ request.produceRequest.rating }}</p>
         <p><strong>Status:</strong> {{ request.produceRequest.status }}</p>
-        <p><strong>Quantity Sold:</strong> {{ request.quantitySold }}/{{ request.quantityLeft }} {{ request.produceRequest.unit }}</p>
+        <p><strong>Quantity Sold:</strong> {{ request.quantitySold }} {{ request.produceRequest.unit }} out of {{ request.quantityLeft }} {{ request.produceRequest.unit }}</p>
         <p><strong>No of purchases:</strong> {{ request.noOfPurchases }} <v-icon>mdi-arrow-down</v-icon></p>
 
         <v-divider class="my-4"></v-divider>
@@ -23,8 +23,7 @@
         >
           <template v-slot:item.actions="{ item }">
             <v-btn v-if="item.status === 'PENDING_ACCEPTANCE'" small color="success" @click="acceptOrder(item)">Accept</v-btn>
-            <v-btn v-if="item.status === 'BOOKED_FOR_SUPPLY'" small color="success" disabled>confirm pay</v-btn>
-            <v-btn v-if="item.status === 'SUPPLIED'" small color="success" @click="confirmPayment(item)">confirm pay</v-btn>
+            <v-btn v-if="item.status === 'BOOKED_FOR_SUPPLY'" small color="success" @click="confirmSupply(item)">confirm supply</v-btn>
           </template>
         </v-data-table>
       </div>
@@ -183,12 +182,12 @@ export default {
           this.fetchRequest();
         });
     },
-    confirmPayment(order) {
-      axios.put(`/buyers-service/request/order/confirm-payment?orderId=${order.id}&requestId=${this.request.produceRequest.id}`).then((response) => {
+    confirmSupply(order) {
+      axios.put(`/buyers-service/request/order/confirm-supply?orderId=${order.id}&requestId=${this.request.produceRequest.id}`).then((response) => {
         if (response.data.success === true) {
-          this.$toast.success('Payment confirmed', order.id);
+          this.$toast.success('Supply confirmed', order.id);
         } else {
-          this.$toast.error(response.data.msg, 'Failed to confirm payment');
+          this.$toast.error(response.data.msg, 'Failed to confirm supply');
         }
       })
         .catch((error) => {

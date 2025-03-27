@@ -107,8 +107,6 @@
     </div>
     <!-- Dialog for Marker Info -->
     <v-dialog v-model="userDialog" max-width="400">
-      <v-card>
-        <v-card-title>{{ selectedUserFromMap?.name }}</v-card-title>
         <FarmerListingsDialog
             v-if="selectedUserFromMap?.role === 'farmer'"
             :selected-farmer="selectedUserFromMap"
@@ -125,7 +123,6 @@
 <!--            {{ isConnected ? "Disconnect" : "Connect" }}-->
 <!--          </v-btn>-->
 <!--        </v-card-actions>-->
-      </v-card>
     </v-dialog>
   </Default>
 </template>
@@ -248,6 +245,11 @@ export default {
       this.$toast.show('Seleted buyer');
       if (newBuyerLocation != null) {
         this.setFocusToLocation(newBuyerLocation.latitude, newBuyerLocation.longitude);
+      }
+    },
+    selectedUserFromMap(newValue) {
+      if (newValue == null) {
+        this.userDialog = false;
       }
     },
   },

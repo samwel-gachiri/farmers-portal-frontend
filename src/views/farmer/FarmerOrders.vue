@@ -13,11 +13,12 @@
             </v-chip>
           </template>
           <template v-slot:item.actions="{ item }">
+            <v-btn v-if="item.status === 'BOOKED_FOR_SUPPLY'" small color="success" disabled>confirm pay</v-btn>
             <v-btn
-                v-if="item.status === 'BOOKED_FOR_SUPPLY'"
+                v-if="item.status === 'SUPPLIED'"
                 color="primary"
-                @click="confirmSupply(item)">
-              Confirm Supply
+                @click="confirmPayment(item)">
+              Confirm Pay
             </v-btn>
           </template>
           <template v-slot:item.view="{ item }">
@@ -147,52 +148,52 @@ export default {
     },
     setUpEventSources() {
       this.orders.forEach((order) => {
-        const listingId = order.listingId;
-        if (!this.eventSources[listingId]) {
-          this.eventSources[listingId] = new EventSource(
-            `${process.env.VUE_APP_API_BASE_URL}farmers-service/listing/stream?listingId=${order.listingId}`,
-            // `${process.env.VUE_APP_API_BASE_URL}/listing/stream-sse`,
+        const requestId = order.requestId;
+        if (!this.eventSources[requestId]) {
+          this.eventSources[requestId] = new EventSource(
+            `${process.env.VUE_APP_API_BASE_URL}buyers-service/request/stream?requestId=${order.requestId}`,
+            // `${process.env.VUE_APP_API_BASE_URL}/request/stream-sse`,
           );
 
           // Listen for custom event types
-          this.eventSources[listingId].addEventListener('order-accepted', () => {
+          this.eventSources[requestId].addEventListener('order-accepted', () => {
             this.$toast.success('One of your orders has been accepted for supply!', 'Hurray!');
             this.fetchOrders();
           });
 
           // Listen for custom event types
-          this.eventSources[listingId].addEventListener('supply-confirmed', (event) => {
+          this.eventSources[requestId].addEventListener('supply-confirmed', (event) => {
             this.$toast.success('Supply confirmed for one of your orders', `Supply for ${event.data}`);
             this.fetchOrders();
           });
 
           // Listen for custom event types
-          this.eventSources[listingId].addEventListener('payment-confirmed', () => {
+          this.eventSources[requestId].addEventListener('payment-confirmed', () => {
             this.$toast.success('Payment has been confirmed to one of your orders', 'Finished!!');
             this.fetchOrders();
           });
 
-          this.eventSources[listingId].onmessage = (event) => {
+          this.eventSources[requestId].onmessage = (event) => {
             this.$toast.error('Received event:', event.data);
-            this.fetchListing();
+            this.fetchRequest();
           };
 
-          this.eventSources[listingId].onopen = () => {
+          this.eventSources[requestId].onopen = () => {
             this.$toast.show('SSE connection opened');
           };
 
-          this.eventSources[listingId].onerror = (error) => {
+          this.eventSources[requestId].onerror = (error) => {
             this.$toast.error('SSE error:', error.message);
-            this.eventSources[listingId].close();
-            delete this.eventSources[listingId];
+            this.eventSources[requestId].close();
+            delete this.eventSources[requestId];
           };
         }
       });
     },
     async fetchOrders() {
       try {
-        const buyerId = getCurrentUserId();
-        const response = await axios.get(`/farmers-service/listing-orders?buyerId=${buyerId}`);
+        const farmerId = getCurrentUserId();
+        const response = await axios.get(`/buyers-service/request-orders?farmerId=${farmerId}`);
         if (response.data.success) {
           this.orders = response.data.data;
           this.setUpEventSources();
@@ -201,9 +202,9 @@ export default {
         this.$toast.error('Error fetching orders:', error);
       }
     },
-    async confirmSupply(order) {
+    async confirmPayment(order) {
       try {
-        const response = await axios.put(`/farmers-service/listing/order/confirm-supply?orderId=${order.orderId}&listingId=${order.listingId}`);
+        const response = await axios.put(`/buyers-service/request/order/confirm-payment?orderId=${order.orderId}&requestId=${order.requestId}`);
         if (response.data.success) {
           this.fetchOrders();
         } else {

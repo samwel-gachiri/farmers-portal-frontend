@@ -20,6 +20,18 @@
         <create-listing></create-listing>
       </v-dialog>
 
+      <v-dialog v-model="editProduceDialog" max-width="500px">
+        <v-card>
+          <card-title>Edit Produce</card-title>
+          <v-card-text>
+            <edit-produce-form :selected-farmer-produce="selectedFarmerProduce"></edit-produce-form>
+          </v-card-text>
+          <v-card-actions class="tw-justify-end">
+            <v-btn color="primary" @click="editProduceDialog = false">Close</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <!-- Main Content -->
       <div class="tw-p-8">
         <!-- Header -->
@@ -58,8 +70,8 @@
                 height="100px"
             />
           </template>
-          <template v-slot:item.edit="{  }">
-            <v-btn small @click="listingDialog = true">
+          <template v-slot:item.edit="{ item }">
+            <v-btn small @click="()=>{editProduceDialog = true; selectedFarmerProduce = item}">
               <v-icon color="mdi-edit">mdi-pencil</v-icon>
               Edit
             </v-btn>
@@ -124,14 +136,18 @@
 import { getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
 import CreateListing from '@/components/listing/CreateListing.vue';
-import AddFarmerProduce from '@/components/AddFarmersProduce.vue';
+import AddFarmerProduce from '@/components/produce/AddFarmersProduce.vue';
 import Default from '@/components/layout/Default.vue';
 import Auth from '@aws-amplify/auth';
 // import CardTitle from '@/components/shared/CardTitle.vue';
 import LogoTitle from '@/components/shared/LogoText.vue';
+import EditProduceForm from '@/components/produce/EditProduceForm.vue';
+import CardTitle from '@/components/shared/CardTitle.vue';
 
 export default {
   components: {
+    CardTitle,
+    EditProduceForm,
     LogoTitle,
     Default,
     AddFarmerProduce,
@@ -162,8 +178,10 @@ export default {
         },
         farmerProduces: [],
       },
+      selectedFarmerProduce: null,
       addProduceDialog: false,
       listingDialog: false,
+      editProduceDialog: false,
       showDialog: false,
       showSnackbar: false,
       snackbarMessage: '',
