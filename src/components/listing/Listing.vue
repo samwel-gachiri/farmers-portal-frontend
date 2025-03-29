@@ -1,18 +1,81 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="text-xl font-bold">Listing Details</span>
+      <h2 class="text-xl font-bold">Listing Details</h2>
+      <logo-title></logo-title>
     </v-card-title>
     <v-card-text>
       <div v-if="listing">
-        <p><strong>ID:</strong> {{ listing.produceListing.id }}</p>
-        <p><strong>Price:</strong> {{ listing.produceListing.price.price.toLocaleString() }} {{ listing.produceListing.price.currency }} per {{listing.produceListing.unit}}</p>
-        <p><strong>Earnings:</strong> {{ listing.earnings }} {{listing.produceListing.price.currency}}</p>
-        <p><strong>Rating:</strong> {{ listing.produceListing.rating }}</p>
-        <p><strong>Status:</strong> {{ listing.produceListing.status }}</p>
-        <p><strong>Quantity Sold:</strong> {{ listing.quantitySold }} {{ listing.produceListing.unit }}</p>
-        <p><strong>Quantity Left:</strong> {{ listing.quantityLeft }} {{ listing.produceListing.unit }}</p>
-        <p><strong>No of purchases:</strong> {{ listing.noOfPurchases }} <v-icon>mdi-arrow-down</v-icon></p>
+        <div class="tw-flex md:tw-flex-row tw-flex-col-reverse">
+          <div class="tw-flex tw-flex-col tw-w-full">
+<!--            <p><strong>ID:</strong> {{ listing.produceListing.id }}</p>-->
+            <p><strong>Price:</strong> {{ listing.produceListing.price.price.toLocaleString() }} {{ listing.produceListing.price.currency }} per {{listing.produceListing.unit}}</p>
+            <p><strong>Earnings:</strong> {{ listing.earnings }} {{listing.produceListing.price.currency}}</p>
+            <p><strong>Rating:</strong> {{ listing.produceListing.rating }}</p>
+            <p><strong>Status:</strong> {{ listing.produceListing.status }}</p>
+            <p><strong>Quantity Sold:</strong> {{ listing.quantitySold }} {{ listing.produceListing.unit }}</p>
+            <p><strong>Quantity Left:</strong> {{ listing.quantityLeft }} {{ listing.produceListing.unit }}</p>
+            <p><strong>No of purchases:</strong> {{ listing.noOfPurchases }} <v-icon>mdi-arrow-down</v-icon></p>
+          </div>
+          <div class="tw-w-full">
+            <v-card class="tw-p-4">
+              <h1 class="tw-text-xs tw-uppercase tw-font-bold tw-mb-5">
+                Progress
+              </h1>
+
+              <div class="tw-flex tw-justify-between tw-items-center tw-mb-4">
+                <div class="tw-text-green-700 tw-text-3xl tw-font-bold">{{percentageSold}}% SOLD</div>
+                <div class="tw-text-gray-500 tw-text-lg tw-font-light">
+                  {{listing.produceListing.price.currency}} {{listing.earnings}} earned
+                </div>
+              </div>
+
+              <v-card-text>
+                <!-- Eligibility Review Label -->
+                <div
+                    :style="`right: calc(${review}px - 32px)`"
+                    class="tw-absolute tw-text-xs tw-text-green-700 tw-mt-[-1.5rem]"
+                >
+                  Review
+                </div>
+
+                <!-- Progress Bar -->
+                <v-progress-linear
+                    color="green darken-3"
+                    height="22"
+                    :value="percentageSold"
+                    class="tw-w-full"
+                    rounded
+                >
+                  <!-- Badge Indicator -->
+                  <v-badge
+                      :style="`right: ${review}px`"
+                      class="tw-absolute"
+                      color="white"
+                      dot
+                      inline
+                  ></v-badge>
+                </v-progress-linear>
+
+                <div class="tw-flex tw-justify-between tw-py-3">
+        <span class="tw-text-green-700 tw-font-medium">
+          {{listing.produceListing.price.currency}} {{listing.quantitySold * listing.produceListing.price.price}} earned
+        </span>
+                  <span class="tw-text-gray-500"> {{listing.produceListing.price.currency}} {{listing.produceListing.price.price * listing.produceListing.quantity}} Total</span>
+                </div>
+              </v-card-text>
+
+              <v-divider></v-divider>
+
+              <v-list-item
+                  append-icon="mdi-chevron-right"
+                  lines="two"
+                  subtitle="Details and agreement"
+                  link
+              ></v-list-item>
+            </v-card>
+          </div>
+        </div>
 
         <v-divider class="my-4"></v-divider>
 
@@ -23,21 +86,46 @@
             class="elevation-1"
         >
           <template v-slot:item.actions="{ item }">
-            <v-btn v-if="item.status === 'PENDING_ACCEPTANCE'" small color="success" @click="acceptOrder(item)">Accept</v-btn>
+            <div v-if="item.status === 'PENDING_ACCEPTANCE'" class="tw-flex tw-flex-row">
+              <v-btn  small color="success" @click="acceptOrder(item)">Accept</v-btn>
+              /
+              <v-btn  small color="red" @click="() => {declineOrderDialog = true; declinedOrder = item}">Decline</v-btn>
+            </div>
             <v-btn v-if="item.status === 'BOOKED_FOR_SUPPLY'" small color="success" disabled>confirm pay</v-btn>
             <v-btn v-if="item.status === 'SUPPLIED'" small color="success" @click="confirmPayment(item)">confirm pay</v-btn>
           </template>
         </v-data-table>
       </div>
     </v-card-text>
+    <v-dialog v-model="declineOrderDialog" max-width="300px">
+      <v-card type="warning">
+        <v-alert
+            type="warning"
+            text="text"
+        >
+          <h2 class="">You are about to decline an offer</h2>
+        </v-alert>
+        <v-card-text>
+          <h2>Please provide a reason for declining the offer so that the buyer can be notified.</h2>
+          <v-textarea
+              label="Give in reason here"
+              outlined
+              v-model="farmerComment"
+          ></v-textarea>
+          <v-btn @click="this.declineOrder">continue</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
 <script>
 import axios from 'axios';
+import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
   name: 'Listing',
+  components: { LogoTitle },
   data() {
     return {
       orderHeaders: [
@@ -93,6 +181,10 @@ export default {
       loading: false,
       intervalId: null,
       eventSource: null,
+      declineOrderDialog: false, // this is when the user declines to supply an order
+      declinedOrder: null,
+      farmerComment: '',
+      review: '100',
     };
   },
   props: {
@@ -111,6 +203,12 @@ export default {
     if (this.eventSource) {
       this.eventSource.close();
     }
+  },
+  computed: {
+    percentageSold() {
+      // eslint-disable-next-line no-mixed-operators
+      return this.listing.quantitySold / (this.listing.quantitySold + this.listing.quantityLeft) * 100;
+    },
   },
   methods: {
     connectToSSE() {
@@ -181,6 +279,22 @@ export default {
           this.$toast.error(error.message);
         })
         .finally(() => {
+          this.fetchListing();
+        });
+    },
+    declineOrder() {
+      axios.put(`/farmers-service/listing/order/decline?orderId=${this.declinedOrder.id}&listingId=${this.listing.produceListing.id}&farmerComment=${this.farmerComment}`).then((response) => {
+        if (response.data.success === true) {
+          this.$toast.success('Order accepted');
+        } else {
+          this.$toast.error(response.data.msg, 'Failed to accept order');
+        }
+      })
+        .catch((error) => {
+          this.$toast.error(error.message);
+        })
+        .finally(() => {
+          this.declineOrderDialog = false;
           this.fetchListing();
         });
     },

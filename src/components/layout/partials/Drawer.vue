@@ -42,13 +42,13 @@ export default {
         icon: 'mdi-apps',
         text: 'Dashboard',
         link: { name: 'Dashboard' },
-        roles: ['farmer', 'buyer'],
+        roles: ['farmer', 'buyer', 'admin'],
       },
       {
         icon: 'mdi-account-group',
         text: 'Community',
         link: { name: 'Community' },
-        roles: ['farmer', 'buyer'],
+        roles: ['farmer', 'buyer', 'anybody'],
       },
       {
         icon: 'mdi-cash',
@@ -62,7 +62,7 @@ export default {
         link: {
           name: 'BrowseListings',
         },
-        roles: ['buyer'],
+        roles: ['buyer', 'anybody'],
       },
       {
         icon: 'mdi-web',
@@ -82,7 +82,7 @@ export default {
       },
       {
         icon: 'mdi-package',
-        text: 'My Orders',
+        text: 'My Bids',
         link: {
           name: 'FarmerOrders',
         },

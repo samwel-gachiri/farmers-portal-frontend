@@ -1,204 +1,24 @@
 <template>
   <Default>
-    <v-container class="tw-bg-gray-50">
-      <v-dialog v-model="listingDialog" max-width="500px">
-        <create-listing/>
-        <v-btn
-            class="tw-bg-white"
-            color="error"
-            text
-            @click="listingDialog = false"
-        >
-          Close
-        </v-btn>
-      </v-dialog>
-    <!-- Dashboard Header -->
-    <v-row class="tw-mb-3">
-      <v-col cols="12">
-        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>
-        <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>
-      </v-col>
-    </v-row>
-
-    <!-- Stats Cards -->
-    <v-row class="tw-mb-8">
-      <v-col cols="12" md="4">
-        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>
-          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
-          <p class="tw-text-gray-500">Active listings</p>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>
-          <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
-          <p class="tw-text-gray-500">This month</p>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Revenue</h2>
-          <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
-          <p class="tw-text-gray-500">Last 30 days</p>
-        </v-card>
-      </v-col>
-    </v-row>
-    <!-- Stats Cards -->
-    <v-row class="tw-mb-8">
-<!--      <v-col cols="12" md="4">-->
-<!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
-<!--          <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>-->
-<!--          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>-->
-<!--          <p class="tw-text-gray-500">Active listings</p>-->
-<!--        </v-card>-->
-<!--      </v-col>-->
-<!--      <v-col cols="12" md="4">-->
-<!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
-<!--          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>-->
-<!--          <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>-->
-<!--          <p class="tw-text-gray-500">This month</p>-->
-<!--        </v-card>-->
-<!--      </v-col>-->
-      <v-col cols="12">
-        <v-card :loading="loading" rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-          <apexchart
-              type="line"
-              height="350"
-              :options="revenueChartOptions"
-              :series="revenueChartOptions.series"
-            ></apexchart>
-        </v-card>
-      </v-col>
-    </v-row>
-    <!-- Quick Actions -->
-    <v-row>
-      <v-col cols="12">
-        <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
-          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">Quick Actions</h2>
-          <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">
-            <v-btn color="primary" class="flex-1" @click="listingDialog = true">
-              <v-icon left>mdi-plus</v-icon>
-              Add New Listing
-            </v-btn>
-            <v-btn color="secondary" class="flex-1" @click="this.$router.push({name: 'Reports'})">
-              <v-icon left>mdi-chart-line</v-icon>
-              View Analytics
-            </v-btn>
-            <v-btn color="success" class="flex-1">
-              <v-icon left>mdi-email</v-icon>
-              Message Buyers
-            </v-btn>
-          </div>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+    <FarmerDashboard v-if="user && user['custom:role'] === 'farmer'"/>
+    <BuyerDashboard v-if="user && user['custom:role'] === 'buyer'"/>
+    <AdminDashboard v-if="user && user['custom:role'] === 'admin'"/>
   </Default>
 </template>
 
 <script>
 import Default from '@/components/layout/Default.vue';
 import { mapState } from 'vuex';
-import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles.js';
-import CreateListing from '@/components/listing/CreateListing.vue';
-import VueApexCharts from 'vue-apexcharts';
+import FarmerDashboard from '@/components/layout/dashboard/FarmerDashboard.vue';
+import AdminDashboard from '@/components/layout/dashboard/AdminDashboard.vue';
+import BuyerDashboard from '@/components/layout/dashboard/BuyerDashboard.vue';
 
 export default {
   components: {
-    CreateListing,
+    BuyerDashboard,
+    AdminDashboard,
+    FarmerDashboard,
     Default,
-    apexchart: VueApexCharts,
-  },
-  data() {
-    return {
-      loading: false,
-      listingDialog: false,
-      dialog: false,
-      liveCount: {
-        activeListings: 3,
-        buyersInteraction: 1,
-        revenue30Days: {
-          price: 100,
-          currency: 'KSH',
-        },
-      },
-      revenueChartOptions: {
-        forecastDataPoints: {
-          count: 0,
-          fillOpacity: 0.5,
-          strokeWidth: undefined,
-          dashArray: 4,
-        },
-        series: [{
-          name: 'Pineapple',
-          type: 'bar',
-          data: [44, 55, 41, 37, 22, 43, 21],
-        }, {
-          name: 'Sales made',
-          type: 'line',
-          data: [23, 42, 35, 27, 43, 22, 17],
-        }, {
-          name: 'Mango',
-          type: 'bar',
-          data: [53, 32, 33, 52, 13, 43, 32],
-        }, {
-          name: 'Orange',
-          type: 'bar',
-          data: [12, 17, 11, 9, 15, 11, 20],
-        }, {
-          name: 'Sukuma wiki',
-          type: 'bar',
-          data: [9, 7, 5, 8, 6, 9, 4],
-        }, {
-          name: 'Cabbage',
-          type: 'bar',
-          data: [25, 12, 19, 32, 25, 24, 10],
-        }],
-        chart: {
-          height: 350,
-          type: 'line',
-        },
-        stroke: {
-          width: [0, 4],
-        },
-        title: {
-          text: 'Sales Over Time',
-          align: 'left',
-          margin: 10,
-          offsetX: 0,
-          offsetY: 0,
-          floating: false,
-          style: {
-            fontSize: '14px',
-            fontWeight: 'bold',
-            fontFamily: 'Trebuc',
-            color: '#263238',
-          },
-        },
-        dataLabels: {
-          enabled: true,
-          enabledOnSeries: [1],
-        },
-        labels: ['Jan 2001', 'Feb 2001', 'March 2001', 'April 2001', 'May 2001', 'Jun 2001', 'Jul 2001', 'Aug 2001', 'Sep 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'],
-        yaxis: [{
-          title: {
-            text: 'Revenue Generated',
-          },
-          labels: {
-            formatter(value) {
-              return `Ksh ${value}`;
-            },
-          },
-        }, {
-          opposite: true,
-          title: {
-            text: 'Sales made',
-          },
-        }],
-      },
-    };
   },
   computed: {
     ...mapState({
@@ -206,42 +26,9 @@ export default {
     }),
   },
   mounted() {
-    this.fetchLiveCount();
-  },
-  methods: {
-    // fetchListings() {
-    //   axios.get(`/listing/farmer?farmerId=${getCurrentUserId()}`)
-    //     .then((response) => {
-    //       console.log(response.data.data);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // },
-    // Fetch listings from the API
-    async fetchLiveCount() {
-      this.loading = true;
-      try {
-        const response = await axios.get('/farmers-service/api/dashboard/live/count', {
-          params: {
-            farmerId: getCurrentUserId(),
-          },
-        });
-        if (response.data.success === true) this.liveCount = response.data.data;
-      } catch (error) {
-        this.$toast.error('Error fetching live count', error.message);
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-  watch: {
-    listingDialog(newValue) {
-      if (newValue !== true) {
-        this.fetchLiveCount();
-        this.fetchListings();
-      }
-    },
+    if (this.user == null || this.user === '') {
+      this.$router.push({ name: 'Landing' });
+    }
   },
 };
 </script>
@@ -299,7 +86,5 @@ export default {
 .space-x-4 > * + * {
   margin-left: 1rem;
 }
-.flex-1 {
-  flex: 1;
-}
+
 </style>

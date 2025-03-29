@@ -280,7 +280,7 @@ const actions = {
           context.commit('setUserAuthenticated', user);
           context.commit('auth/setAuthenticationSuccess', 'logged in', { root: true });
           cookie.remove(USER_OTP);
-          localStorage.removeItem('tempUser');
+          // localStorage.removeItem('tempUser');
         } else {
           context.commit('auth/setAuthenticationError', { message: 'Wrong OTP entered, try again !' }, { root: true });
         }

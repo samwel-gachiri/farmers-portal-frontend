@@ -107,8 +107,8 @@ export default {
       const formData = new FormData();
       formData.append('id', this.updatedProduce.id);
       formData.append('description', this.updatedProduce.desc);
-      formData.append('farmingType', this.updatedProduce.farmingType);
-      formData.append('removedImageUrls', this.updatedProduce.removedImages);
+      formData.append('farmingType', this.updatedProduce.farmingType == null ? '' : this.updatedProduce.farmingType);
+      formData.append('removeImageUrls', this.updatedProduce.removedImages);
       this.updatedProduce.newImages.forEach((file) => {
         formData.append('newImages', file);
       });

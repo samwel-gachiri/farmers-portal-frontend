@@ -65,16 +65,22 @@
               <p class="tw-text-gray-700"><span class="tw-font-bold">Farming Type:</span> {{ listingToOrder?.farmerProduce.farmingType }}</p>
             </div>
             <!-- Order Section -->
-            <div class="tw-bg-blue-50 tw-p-4 tw-rounded-lg tw-text-center">
+            <div class="tw-bg-blue-50 tw-p-4 tw-rounded-lg">
               <h3 class="tw-text-xl tw-font-bold tw-text-blue-700">Place Your Order</h3>
+              <v-fade-transition>
+                <v-alert
+                    rounded
+                    v-if="orderQuantity > this.listingToOrder?.quantity"
+                    type="warning"
+                >{{`You cannot order more than the required value! The maximum amount needed is: ${listingToOrder?.quantity} ${listingToOrder?.unit}`}}</v-alert>
+              </v-fade-transition>
               <number-input
                   v-model="orderQuantity"
                   :label=" listingToOrder? `Enter quantity in ${pluralize(listingToOrder?.unit)}`: ''"
                   class="tw-mt-2"
                   :initial-value="1"
-                  :maximum-value="listingToOrder?.quantity"
               ></number-input>
-              <v-btn color="primary" class="tw-w-full tw-mt-2" :loading="loading" @click="orderListing">
+              <v-btn color="primary" class="tw-w-full tw-mt-2" :loading="loading" @click="orderListing" :disabled="orderQuantity > listingToOrder?.quantity">
                 Order Now
               </v-btn>
             </div>

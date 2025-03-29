@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <terms-and-conditions ref="termsDialog"/>
-    <v-main class="">
+    <v-main v-if="!openUserForm" class="">
       <div class="tw-w-full tw-h-full tw-flex md:tw-flex-row tw-flex-col-reverse">
         <!--Ad part-->
         <div class="ad-gradient tw-flex tw-justify-center tw-items-center md:tw-visible tw-invisible">
@@ -28,7 +28,7 @@
                 >Sign Up As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>
                 <v-form
                     v-model="form.isValid"
-                    class="tw-px-4 tw-fex tw-flex-col"
+                    class="tw-px-4 tw-fex tw-flex-col tw-pt-5"
                 >
 <!--                  <phone-number-input-->
 <!--                      class="tw-mt-6 tw-ml-3"-->
@@ -38,6 +38,8 @@
 <!--                      @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"-->
 <!--                  />-->
                   <v-text-field
+                      dense
+                      outlined
                       label="Input email"
                       class="tw-mt-6"
                       v-model="form.email"
@@ -46,8 +48,44 @@
                   >
                     <v-icon slot="prepend" color="primary">mdi-email</v-icon>
                   </v-text-field>
+                  <div v-if="form.userType === 'buyer'" class="tw-flex tw-flex-row tw-justify-center tw-items-center" >
+                    <v-icon color="primary">mdi-city</v-icon>
+                    <div>
+                      <v-combobox
+                          v-model="selectedBusiness"
+                          :items="businessTypes"
+                          label="Select your business type"
+                          outlined
+                          clearable
+                          :rules="[required('Business Type')]"
+                          @update:search-input="handleSearchInput"
+                      >
+                        <template v-slot:no-data>
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                Press <kbd>Enter</kbd> to add "<strong>{{ searchInput }}</strong>" as a custom business type
+                              </v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </template>
+                      </v-combobox>
+                      <div v-if="selectedBusiness === 'Other'">
+                        <v-text-field
+                            v-model="customBusiness"
+                            label="Please specify your business type"
+                            outlined
+                            :rules="[required('Business Type')]"
+                        ></v-text-field>
+                      </div>
+                      <v-alert v-if="error" type="error" dense>
+                        {{ error }}
+                      </v-alert>
+                    </div>
+                  </div>
                   <v-text-field
-                      label="Full names"
+                      outlined
+                      :label="`Full Name ${form.userType === 'farmer'? '/Farm Name': '/Business Name'}`"
                       class="tw-my-5"
                       dense
                       v-model="form.fullName"
@@ -56,6 +94,7 @@
                     <v-icon slot="prepend" color="primary">mdi-account</v-icon>
                   </v-text-field>
                   <v-text-field
+                      outlined
                       class="tw-my-3"
                       dense
                       id="password"
@@ -68,6 +107,7 @@
                     <v-icon slot="append" color="primary" class="tw-cursor-pointer" @click="passwordField = passwordField === 'password' ? 'text' : 'password'">{{ passwordField === 'password' ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
                   </v-text-field>
                   <v-text-field
+                      outlined
                       class="tw-mb-5 my-3"
                       id="ConfirmPassword"
                       dense
@@ -112,6 +152,12 @@
         </div>
       </div>
     </v-main>
+    <Default v-else>
+      <div style="max-width: 1000px; min-height: 80vh;">
+        <h2 class="tw-font-extrabold tw-text-xl tw-my-5">Give in your location details</h2>
+        <UserForm/>
+      </div>
+    </Default>
   </v-app>
 </template>
 <script>
@@ -119,16 +165,20 @@ import validations from '@/utils/validations.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
 // import { FB_SIGNUP } from '@/utils/const.js';
 import AuthMixins from '@/mixins/AuthMixins.js';
-import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
+import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
 import Auth from '@aws-amplify/auth';
 import AuthConfig from '@/utils/aws-exports.js';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
+import Default from '@/components/layout/Default.vue';
+import UserForm from '@/components/layout/partials/nav/UserForm.vue';
 
 export default {
-  components: { TermsAndConditions, LogoTitle, CardTitle },
+  components: {
+    UserForm, Default, TermsAndConditions, LogoTitle, CardTitle,
+  },
   data() {
     return {
       form: {
@@ -153,7 +203,25 @@ export default {
       passwordField: 'password',
       passwordConfirmField: 'password',
       show: false,
+      openUserForm: false,
       loading: false,
+      selectedBusiness: null,
+      customBusiness: '',
+      searchInput: '',
+      error: '',
+      businessTypes: [
+        'Retailer',
+        'Wholesaler',
+        'Restaurant/Café',
+        'Food Processor',
+        'Exporter',
+        'Sole Proprietorship',
+        'School/University', // Specific
+        'Hospital/Healthcare', // Specific
+        'Government Agency', // Explicit
+        'Non-Profit/NGO', // Explicit
+        'Other',
+      ],
     };
   },
   mixins: [AuthMixins],
@@ -178,6 +246,9 @@ export default {
     }
   },
   methods: {
+    handleSearchInput(val) {
+      this.searchInput = val;
+    },
     openTermsDialog() {
       this.$refs.termsDialog.openDialog();
     },
@@ -188,11 +259,25 @@ export default {
         password: this.form.password,
         attributes: {
           name: this.form.fullName,
+          'custom:role': this.form.userType,
         },
       };
+      if (this.form.userType === 'buyer') {
+        this.error = '';
+        // Validate if "Other" is selected but no custom value provided
+        if (this.selectedBusiness === 'Other' && !this.customBusiness.trim()) {
+          this.error = 'Please specify your business type';
+          return;
+        }
+        // Determine the final business type
+        payload.attributes['custom:businessType'] = this.selectedBusiness === 'Other'
+          ? this.customBusiness
+          : this.selectedBusiness;
+      }
+      console.log(payload);
       await this.$store.dispatch('auth/signUp', payload)
         .then(async (response) => {
-          if (this.hasAuthenticationStatus) {
+          if (this.hasAuthenticationStatus && this.form.userType !== 'admin') {
             if (this.authenticationStatus.variant === 'error') {
               this.$toast.error(this.authenticationStatus.message, 'Error');
             } else {
@@ -213,10 +298,8 @@ export default {
                 if (saveResponse.data.success === true) {
                   await this.signInUser(this.form.email, this.form.password)
                     .then(() => {
-                      this.$router.push({
-                        name: 'Dashboard',
-                      });
-                      this.$toast.success(`${this.form.fullName} signed up successfully as ${this.form.userType}!`, 'Success');
+                      this.openUserForm = true;
+                      this.$toast.success(`${this.form.fullName} signed up successfully as ${this.form.userType}!`, 'Success', 'Give in location and phone number to continue');
                     })
                     .catch((reason) => {
                       this.$toast.error(reason.message, 'Error');
@@ -239,10 +322,6 @@ export default {
 };
 </script>
 <style scoped>
-* {
-  border-radius: 10px;
-  font-family: Arial,serif;
-}
 .ad-gradient {
   background-image: url("../../assets/images/futuristic_city.webp");
   background-size: cover;

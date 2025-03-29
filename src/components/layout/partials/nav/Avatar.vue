@@ -46,7 +46,7 @@
 import { mapGetters, mapState } from 'vuex';
 import AvatarIcon from 'vue-avatar';
 import UpdateProfile from '@/components/layout/partials/nav/UpdateProfile.vue';
-import { NOTIFICATIONS } from '@/utils/const.js';
+// import { NOTIFICATIONS } from '@/utils/const.js';
 
 export default {
   name: 'Avatar',
@@ -63,7 +63,7 @@ export default {
   methods: {
     async logout() {
       await this.$store.dispatch('auth/signOut').then(() => {
-        localStorage.removeItem(NOTIFICATIONS);
+        // localStorage.removeItem(NOTIFICATIONS);
         if (caches) {
           caches.keys().then((arr) => {
             arr.forEach((key) => {

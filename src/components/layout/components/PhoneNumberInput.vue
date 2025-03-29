@@ -1,7 +1,8 @@
 <template>
-  <div class="tw-flex tw-rounded-lg tw-border-4 tw-w-full tw-items-center">
+  <div class="tw-flex tw-rounded-lg tw-w-full tw-items-center">
     <!-- Country Code Dropdown -->
     <v-select
+        outlined
         label="Country code"
         v-model="selectedCountry"
         :items="filteredCountries"
@@ -28,9 +29,10 @@
 
     <!-- Phone Number Input -->
     <v-text-field
+        outlined
         v-model="phoneNumber"
         label="Phone number"
-        placeholder="Enter phone number"
+        placeholder="123456789"
         dense
         class="tw-flex-1 tw-border-l"
         variant="outlined"

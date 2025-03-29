@@ -65,7 +65,7 @@
         <v-col cols="12">
           <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
-              Detailed Report
+              Sales and Revenue
             </h2>
             <apexchart
                 type="bar"
@@ -82,7 +82,7 @@
         <v-col cols="12">
           <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
-              Filtered Report (Top Performers)
+              Top performing crops
             </h2>
             <apexchart
                 type="pie"
@@ -99,7 +99,9 @@
         <v-col cols="12">
           <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
-              Parameterized Report <span class="tw-text-blue-600 hover:tw-underline" @click="dateMenu=true">({{ selectedDateRange[0] +' to '+ selectedDateRange[1] }})</span>
+              Sales Over Time <span class="tw-text-blue-600 hover:tw-underline" @click="dateMenu=true">({{ selectedDateRange[0] +' to '+ selectedDateRange[1] }})</span>
+            </h2><h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
+              Total Revenue <span class="tw-text-green-600 hover:tw-underline">Ksh. {{this.ordersHistory.reduce((sum, item) => sum + item.revenue, 0)}}</span>
             </h2>
             <apexchart
                 type="line"
@@ -119,6 +121,7 @@ import VueApexCharts from 'vue-apexcharts';
 import Default from '@/components/layout/Default.vue';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
+import { formatToHumanWithTime } from '@/utils/time.js';
 
 export default {
   components: {
@@ -129,7 +132,10 @@ export default {
     return {
       selectedReportType: 'all',
       reportTypes: ['all', 'detailed', 'filtered', 'parameterized'],
-      selectedDateRange: [new Date().toISOString().substr(0, 10), new Date().toISOString().substr(0, 10)],
+      selectedDateRange: [
+        new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().substr(0, 10),
+        new Date().toISOString().substr(0, 10),
+      ],
       dateMenu: false,
       showReport: false,
       isDownloading: false,
@@ -191,7 +197,24 @@ export default {
           type: 'bar',
         },
         xaxis: {
+          title: {
+            text: 'Products',
+            style: {
+              fontSize: '14px',
+              fontWeight: 'bold',
+            },
+          },
           categories: [],
+        },
+        yaxis: {
+          title: {
+            text: 'Amount',
+          },
+          labels: {
+            formatter(value) {
+              return ` ${value}`;
+            },
+          },
         },
         title: {
           text: 'Product Sales and Revenue',
@@ -208,7 +231,7 @@ export default {
           data: [],
         },
         {
-          name: 'Revenue ($)',
+          name: 'Revenue',
           data: [],
         },
       ],
@@ -234,7 +257,20 @@ export default {
           type: 'line',
         },
         xaxis: {
+          title: {
+            text: 'Date And Time Of Sales',
+          },
           categories: [],
+        },
+        yaxis: {
+          title: {
+            text: 'Revenue Generated',
+          },
+          labels: {
+            formatter(value) {
+              return `Ksh ${value}`;
+            },
+          },
         },
         title: {
           text: 'Daily Sales Over Time',
@@ -296,7 +332,7 @@ export default {
       const detailedChartCategories = this.groupedOrders.map((item) => item.product);
       const detailedChartSeriesData = [
         { name: 'Quantity Sold', data: this.groupedOrders.map((item) => item.quantitySold) },
-        { name: 'Revenue', data: this.groupedOrders.map((item) => item.revenue) },
+        { name: 'Revenue (Ksh)', data: this.groupedOrders.map((item) => item.revenue) },
       ];
 
       this.detailedChartOptions.xaxis.categories = detailedChartCategories;
@@ -307,7 +343,7 @@ export default {
       this.filteredChartSeries = this.groupedOrders.map((item) => item.revenue);
 
       // Update Parameterized Chart Data
-      const parameterizedChartCategories = this.ordersHistory.map((item) => item.date);
+      const parameterizedChartCategories = this.ordersHistory.map((item) => formatToHumanWithTime(item.date));
       const parameterizedChartSeriesData = [
         { name: 'Revenue', data: this.ordersHistory.map((item) => item.revenue) },
       ];

@@ -4,11 +4,13 @@
         <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">
           <div class="tw-w-full tw-flex tw-flex-col tw-justify-between">
             <v-text-field
+                outlined
                 id="name"
                 type="text"
                 name="name"
                 v-model="fullname"
                 label="Full Name"
+                placeholder="..."
                 class="my-1"
                 :rules="[required('Full Name')]"
             >
@@ -26,7 +28,12 @@
             <div
                 class="tw-flex tw-w-full tw-flex-col tw-justify-start tw-items-start"
             >
+              <h2>{{ userLocation.location.customName === '' ? "Give in your location details": "Your Location Details"}}</h2>
+              <v-alert
+                type="info"
+              >This will be used by farmers, buyers and the public to notice you.</v-alert>
               <v-text-field
+                  outlined
                   label="My Location"
                   v-model="userLocation.location.customName"
                   class="tw-font-bold tw-w-full"
@@ -47,6 +54,7 @@
               <v-btn
                   @click="getLocation"
                   class="tw-mb-4"
+                  color="primary"
               >
                 Use Device Location
                 <v-icon color="linear-gradient(green, red)" >mdi-google-maps</v-icon>
@@ -61,13 +69,15 @@
 <!--                :rules="[required('Mobile No.')]"-->
 <!--            >-->
 <!--            </v-text-field>-->
-            <phone-number-input
-                class="tw-mt-8"
-                v-model="phone_number"
-                default-country-code="KE"
-                :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                @update:phoneNumber="(newValue) => (phone_number = newValue)"
-            />
+            <div class="tw-mt-8 tw-flex tw-flex-col tw-gap-5">
+              <h2 class="tw-bold">Input phone number</h2>
+              <phone-number-input
+                  v-model="phone_number"
+                  default-country-code="KE"
+                  :preferred-countries="['KE', 'US', 'UG', 'TZ']"
+                  @update:phoneNumber="(newValue) => (phone_number = newValue)"
+              />
+            </div>
           </div>
           <div class="tw-w-full">
             <strong>Pinpoint Your Location Here <v-icon>mdi-gesture-two-tap</v-icon></strong>
@@ -205,7 +215,7 @@ export default {
     async updateProfile() {
       this.loading = true;
       // { email: this.email, phone_number: this.phone_number, name: this.fullname }
-      await this.$store.dispatch('auth/updateUser', { name: this.fullname }).then(() => {
+      await this.$store.dispatch('auth/updateUser', { name: this.fullname, phone_number: this.phone_number }).then(() => {
         if (this.hasAuthenticationStatus) {
           this.loading = false;
           if (this.authenticationStatus.variant === 'error') {
@@ -214,7 +224,20 @@ export default {
             this.$toast.success(this.authenticationStatus.message, 'Success');
           }
         }
-      }).finally(() => this.saveLocation());
+      }).finally(async () => axios.put(`${getCurrentUserRole()}s-service/${getCurrentUserRole()}`, {
+        [`${this.role}Id`]: getCurrentUserId(),
+        name: this.fullname,
+        phone_number: this.phone_number ? this.phone_number : '',
+        email: this.email,
+      }).then((response) => {
+        if (response.data.success === true) {
+          this.$toast.success('Farmer Profile Updated successfully!');
+        } else {
+          this.$toast.error('Failed to update farmer profile', response.data.msg);
+        }
+      }).catch((error) => {
+        this.$toast.error(error.message);
+      }).finally(() => this.saveLocation()));
     },
     getLocation() {
       navigator.geolocation.getCurrentPosition(async (position) => {

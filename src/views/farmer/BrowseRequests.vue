@@ -66,7 +66,7 @@
             </div>
             <!-- Order Section -->
             <div class="tw-bg-blue-50 tw-p-4 tw-rounded-lg tw-text-center">
-              <h3 class="tw-text-xl tw-font-bold tw-text-blue-700">Place Your Order</h3>
+              <h3 class="tw-text-xl tw-font-bold tw-text-blue-700">Place Your Bid</h3>
               <number-input
                   v-model="orderQuantity"
                   :label=" requestToOrder? `Enter quantity in ${pluralize(requestToOrder?.unit)}`: ''"

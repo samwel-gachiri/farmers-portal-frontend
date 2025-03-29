@@ -4,8 +4,8 @@
       <!-- Reports Header -->
       <v-row class="tw-mb-8">
         <v-col cols="12">
-          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Reports</h1>
-          <p class="tw-text-gray-600">Gain insights into your farming operations.</p>
+          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Buyer Reports</h1>
+          <p class="tw-text-gray-600">Gain insights into your sales.</p>
         </v-col>
       </v-row>
 
@@ -264,18 +264,18 @@ export default {
         startDateTime.setHours(0, 0, 0, 0);
         const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
         endDateTime.setHours(23, 59, 59, 999);
-        await axios.get('/farmers-service/api/reports/orders/grouped', {
+        await axios.get('/buyers-service/api/reports/orders/grouped', {
           params: {
-            farmerId: getCurrentUserId(), // Replace with actual farmer ID
+            buyerId: getCurrentUserId(), // Replace with actual buyer ID
             startDateTime: startDateTime.toISOString(),
             endDateTime: endDateTime.toISOString(),
           },
         }).then((response) => {
           this.groupedOrders = response.data.data;
         });
-        await axios.get('/farmers-service/api/reports/orders/history', {
+        await axios.get('/buyers-service/api/reports/orders/history', {
           params: {
-            farmerId: getCurrentUserId(), // Replace with actual farmer ID
+            buyerId: getCurrentUserId(), // Replace with actual buyer ID
             startDateTime: startDateTime.toISOString(),
             endDateTime: endDateTime.toISOString(),
           },
@@ -321,9 +321,9 @@ export default {
       startDateTime.setHours(0, 0, 0, 0);
       const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
       endDateTime.setHours(23, 59, 59, 999);
-      await axios.get('/farmers-service/api/reports/orders/pdf', {
+      await axios.get('/buyers-service/api/reports/orders/pdf', {
         params: {
-          farmerId: getCurrentUserId(), // Replace with actual farmer ID
+          buyerId: getCurrentUserId(), // Replace with actual buyer ID
           startDateTime: startDateTime.toISOString(),
           endDateTime: endDateTime.toISOString(),
         },

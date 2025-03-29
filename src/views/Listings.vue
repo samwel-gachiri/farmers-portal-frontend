@@ -52,8 +52,11 @@
           </v-data-table>
           <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
           <!-- Dialog for Listing Details -->
-          <v-dialog v-model="dialog" max-width="600px">
-            <listing :listing-id="this.selectedListingId"></listing>
+          <v-dialog v-model="dialog">
+            <listing :key="this.selectedListingId" :listing-id="this.selectedListingId"></listing>
+            <div class="tw-justify-end tw-bg-white">
+              <v-btn color="red" @click="dialog = false">Close</v-btn>
+            </div>
           </v-dialog>
         </div>
       </div>

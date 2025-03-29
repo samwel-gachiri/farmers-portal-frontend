@@ -24,10 +24,12 @@
         <v-card>
           <card-title>Edit Produce</card-title>
           <v-card-text>
-            <edit-produce-form :selected-farmer-produce="selectedFarmerProduce"></edit-produce-form>
+            <edit-produce-form
+                :key="selectedFarmerProduce?.id"
+                :selected-farmer-produce="selectedFarmerProduce"></edit-produce-form>
           </v-card-text>
           <v-card-actions class="tw-justify-end">
-            <v-btn color="primary" @click="editProduceDialog = false">Close</v-btn>
+            <v-btn color="primary" @click="() => { editProduceDialog = false; fetchFarmerDetails();}">Close</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -158,12 +160,12 @@ export default {
       produceTableHeaders: [
         { text: 'Image', value: 'images' },
         { text: 'Produce', value: 'farmProduce.name' },
-        { text: 'Description', value: 'farmProduce.description' },
-        { text: 'Farming Type', value: 'farmProduce.farmingType' },
+        { text: 'Description', value: 'description' },
+        { text: 'Farming Type', value: 'farmingType' },
         { text: 'Status', value: 'status' },
         { text: 'Actions', value: 'actions', sortable: false },
         { text: 'Edit', value: 'edit', sortable: false },
-        { text: 'Delete', value: 'delete', sortable: false },
+        // { text: 'Delete', value: 'delete', sortable: false },
       ],
       farmer: {
         id: '',

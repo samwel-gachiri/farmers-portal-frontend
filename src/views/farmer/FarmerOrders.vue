@@ -1,7 +1,7 @@
 <template>
   <Default>
     <v-card>
-      <v-card-title>My Orders</v-card-title>
+      <v-card-title>My Bids</v-card-title>
       <v-card-text>
         <v-data-table :headers="headers" :items="orders" class="elevation-1">
           <template v-slot:item.dateCreated="{ item }">
@@ -35,7 +35,7 @@
     </v-snackbar>
     <v-dialog v-model="dialog" width="600px" persistent>
       <v-card rounded="none" class="tw-p-4">
-        <v-card-title class="tw-text-lg tw-font-bold">Order Details</v-card-title>
+        <v-card-title class="tw-text-lg tw-font-bold">Bidding Details</v-card-title>
         <v-card-text>
           <p class="text-gray-700">Produce: <span class="tw-font-bold">{{ selectedOrder.produceName }}</span></p>
           <p class="text-gray-700">Quantity: <span class="tw-font-bold">{{ selectedOrder.quantity }}</span></p>

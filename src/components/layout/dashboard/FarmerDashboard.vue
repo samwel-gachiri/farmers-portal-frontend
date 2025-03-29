@@ -1,0 +1,301 @@
+<template>
+  <v-container class="tw-bg-gray-50">
+      <v-dialog v-model="listingDialog" max-width="500px">
+        <create-listing/>
+        <v-btn
+            class="tw-bg-white"
+            color="error"
+            text
+            @click="listingDialog = false"
+        >
+          Close
+        </v-btn>
+      </v-dialog>
+      <!-- Dashboard Header -->
+      <v-row class="tw-mb-3">
+        <v-col cols="12">
+          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>
+          <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>
+        </v-col>
+      </v-row>
+
+      <!-- Stats Cards -->
+      <v-row class="tw-mb-8">
+        <v-col cols="12" md="4">
+          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+            <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>
+            <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
+            <p class="tw-text-gray-500">Active listings</p>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>
+            <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
+            <p class="tw-text-gray-500">This month</p>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Revenue</h2>
+            <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
+            <p class="tw-text-gray-500">Last 30 days</p>
+          </v-card>
+        </v-col>
+      </v-row>
+      <!-- Stats Cards -->
+      <v-row class="tw-mb-8">
+        <!--      <v-col cols="12" md="4">-->
+        <!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
+        <!--          <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>-->
+        <!--          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>-->
+        <!--          <p class="tw-text-gray-500">Active listings</p>-->
+        <!--        </v-card>-->
+        <!--      </v-col>-->
+        <!--      <v-col cols="12" md="4">-->
+        <!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
+        <!--          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>-->
+        <!--          <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>-->
+        <!--          <p class="tw-text-gray-500">This month</p>-->
+        <!--        </v-card>-->
+        <!--      </v-col>-->
+        <v-col cols="12">
+          <v-card :loading="loading" rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+            <apexchart
+                type="line"
+                height="350"
+                :options="revenueChartOptions"
+                :series="revenueChartOptions.series"
+            ></apexchart>
+          </v-card>
+        </v-col>
+      </v-row>
+      <!-- Quick Actions -->
+      <v-row>
+        <v-col cols="12">
+          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">Quick Actions</h2>
+            <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">
+              <v-btn color="primary" class="flex-1" @click="listingDialog = true">
+                <v-icon left>mdi-plus</v-icon>
+                Add New Listing
+              </v-btn>
+              <v-btn color="secondary" class="flex-1" @click="this.$router.push({name: 'Reports'})">
+                <v-icon left>mdi-chart-line</v-icon>
+                View Analytics
+              </v-btn>
+              <v-btn color="success" class="flex-1">
+                <v-icon left>mdi-email</v-icon>
+                Message Buyers
+              </v-btn>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+</template>
+
+<script>
+import { mapState } from 'vuex';
+import axios from 'axios';
+import { getCurrentUserId } from '@/utils/roles.js';
+import CreateListing from '@/components/listing/CreateListing.vue';
+import VueApexCharts from 'vue-apexcharts';
+
+export default {
+  components: {
+    CreateListing,
+    apexchart: VueApexCharts,
+  },
+  data() {
+    return {
+      loading: false,
+      listingDialog: false,
+      dialog: false,
+      liveCount: {
+        activeListings: 3,
+        buyersInteraction: 1,
+        revenue30Days: {
+          price: 100,
+          currency: 'KSH',
+        },
+      },
+      revenueChartOptions: {
+        forecastDataPoints: {
+          count: 0,
+          fillOpacity: 0.5,
+          strokeWidth: undefined,
+          dashArray: 4,
+        },
+        series: [{
+          name: 'Pineapple',
+          type: 'bar',
+          data: [44, 55, 41, 37, 22, 43, 21],
+        }, {
+          name: 'Sales made',
+          type: 'line',
+          data: [23, 42, 35, 27, 43, 22, 17],
+        }, {
+          name: 'Mango',
+          type: 'bar',
+          data: [53, 32, 33, 52, 13, 43, 32],
+        }, {
+          name: 'Orange',
+          type: 'bar',
+          data: [12, 17, 11, 9, 15, 11, 20],
+        }, {
+          name: 'Sukuma wiki',
+          type: 'bar',
+          data: [9, 7, 5, 8, 6, 9, 4],
+        }, {
+          name: 'Cabbage',
+          type: 'bar',
+          data: [25, 12, 19, 32, 25, 24, 10],
+        }],
+        chart: {
+          height: 350,
+          type: 'line',
+        },
+        stroke: {
+          width: [0, 4],
+        },
+        title: {
+          text: 'Sales Over Time',
+          align: 'left',
+          margin: 10,
+          offsetX: 0,
+          offsetY: 0,
+          floating: false,
+          style: {
+            fontSize: '14px',
+            fontWeight: 'bold',
+            fontFamily: 'Trebuc',
+            color: '#263238',
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          enabledOnSeries: [1],
+        },
+        labels: ['Jan 2001', 'Feb 2001', 'March 2001', 'April 2001', 'May 2001', 'Jun 2001', 'Jul 2001', 'Aug 2001', 'Sep 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'],
+        yaxis: [{
+          title: {
+            text: 'Revenue Generated',
+          },
+          labels: {
+            formatter(value) {
+              return `Ksh ${value}`;
+            },
+          },
+        }, {
+          opposite: true,
+          title: {
+            text: 'Sales made',
+          },
+        }],
+      },
+    };
+  },
+  computed: {
+    ...mapState({
+      user: (state) => state.auth.user,
+    }),
+  },
+  mounted() {
+    this.fetchLiveCount();
+  },
+  methods: {
+    // fetchListings() {
+    //   axios.get(`/listing/farmer?farmerId=${getCurrentUserId()}`)
+    //     .then((response) => {
+    //       console.log(response.data.data);
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // },
+    // Fetch listings from the API
+    async fetchLiveCount() {
+      this.loading = true;
+      try {
+        const response = await axios.get('/farmers-service/api/dashboard/live/count', {
+          params: {
+            farmerId: getCurrentUserId(),
+          },
+        });
+        if (response.data.success === true) this.liveCount = response.data.data;
+      } catch (error) {
+        this.$toast.error('Error fetching live count', error.message);
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+  watch: {
+    listingDialog(newValue) {
+      if (newValue !== true) {
+        this.fetchLiveCount();
+        this.fetchListings();
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* Tailwind-like utility classes */
+.bg-gray-50 {
+  background-color: #f9fafb;
+}
+.min-h-screen {
+  min-height: 100vh;
+}
+.p-8 {
+  padding: 2rem;
+}
+.mb-8 {
+  margin-bottom: 2rem;
+}
+.text-3xl {
+  font-size: 1.875rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.text-gray-800 {
+  color: #1f2937;
+}
+.text-gray-600 {
+  color: #4b5563;
+}
+.text-green-600 {
+  color: #16a34a;
+}
+.text-blue-600 {
+  color: #2563eb;
+}
+.text-purple-600 {
+  color: #9333ea;
+}
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+.transition-shadow {
+  transition: box-shadow 0.3s ease-in-out;
+}
+.flex {
+  display: flex;
+}
+.space-x-4 > * + * {
+  margin-left: 1rem;
+}
+.flex-1 {
+  flex: 1;
+}
+</style>
