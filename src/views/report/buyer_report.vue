@@ -104,7 +104,7 @@ export default {
           this.chartOptions.xaxis.categories = data.map((item) => item.produceName);
           this.chartSeries[0].data = data.map((item) => item.totalSpent);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => this.$toast.error(err.message));
     },
     printReport() {
       const printContent = document.getElementById('printSection').innerHTML;

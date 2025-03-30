@@ -221,7 +221,7 @@ export default {
         this.chartOptions.xaxis.categories = categories;
         this.series = [revenueSeries, soldSeries];
       } catch (error) {
-        console.error('Error fetching sales data:', error);
+        this.$toast.error('Error fetching sales data:', error.message);
       }
     },
     // fetchListings() {

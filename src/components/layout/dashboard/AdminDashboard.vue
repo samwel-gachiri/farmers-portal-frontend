@@ -110,7 +110,7 @@ export default {
           labels: data.map((item) => item.name), // Fix for correct produce names
         };
       } catch (error) {
-        console.error('Error fetching produce sales:', error);
+        this.$toast.error('Error fetching produce sales:', error.message);
       }
     },
     async fetchDailyListings() {
@@ -139,7 +139,7 @@ export default {
           },
         ];
       } catch (error) {
-        console.error('Error fetching daily listings:', error);
+        this.$toast.error('Error fetching daily listings:', error.message);
       }
     },
     formatDate(dateString) {

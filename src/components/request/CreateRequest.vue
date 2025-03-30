@@ -178,7 +178,6 @@ export default {
           this.$toast.error(error);
         }).finally(() => this.loading === false);
       } catch (e) {
-        console.error(e);
         this.$toast.error(e.message);
       } finally {
         this.loading = false;

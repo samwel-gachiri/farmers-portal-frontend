@@ -81,7 +81,7 @@ export default {
           response.data.totalSuppliedAndPaidOrders,
         ];
       } catch (error) {
-        console.error('Error fetching order report:', error);
+        this.$toast.error('Error fetching order report:', error.message);
       }
     },
   },

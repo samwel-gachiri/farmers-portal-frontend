@@ -112,9 +112,6 @@ export default {
         if (!Array.isArray(data)) {
           throw new Error('Invalid API response: Expected an array');
         }
-
-        console.log(data); // Debugging: Check the data structure
-
         const dates = data.map((item) => item.date);
         const farmersSignIn = data.map((item) => item.farmersSignedIn);
         const buyersSignIn = data.map((item) => item.buyersSignedIn);
@@ -124,7 +121,7 @@ export default {
           { name: 'Buyers Signed In', data: dates.map((d, i) => [new Date(d).getTime(), buyersSignIn[i]]) },
         ];
       } catch (error) {
-        console.error('Error fetching sign-in report:', error);
+        this.$toast.error('Error fetching sign-in report:', error.message);
       }
     },
   },

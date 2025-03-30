@@ -274,7 +274,6 @@ export default {
           ? this.customBusiness
           : this.selectedBusiness;
       }
-      console.log(payload);
       await this.$store.dispatch('auth/signUp', payload)
         .then(async (response) => {
           if (this.hasAuthenticationStatus && this.form.userType !== 'admin') {
