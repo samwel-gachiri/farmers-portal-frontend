@@ -1,12 +1,12 @@
 <template>
   <v-container class="tw-bg-gray-50">
-    <v-dialog v-model="listingDialog" max-width="500px">
-      <create-listing/>
+    <v-dialog v-model="requestDialog" max-width="500px">
+      <create-request/>
       <v-btn
           class="tw-bg-white"
           color="error"
           text
-          @click="listingDialog = false"
+          @click="requestDialog = false"
       >
         Close
       </v-btn>
@@ -14,7 +14,7 @@
     <!-- Dashboard Header -->
     <v-row class="tw-mb-3">
       <v-col cols="12">
-        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>
+        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Buyer Dashboard</h1>
         <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>
       </v-col>
     </v-row>
@@ -23,21 +23,21 @@
     <v-row class="tw-mb-8">
       <v-col cols="12" md="4">
         <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>
-          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
-          <p class="tw-text-gray-500">Active listings</p>
+          <h2 class="tw-text-xl font-semibold text-gray-800">Total Requests</h2>
+          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeRequests}}</p>
+          <p class="tw-text-gray-500">Active requests</p>
         </v-card>
       </v-col>
       <v-col cols="12" md="4">
         <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>
+          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Farmer Interactions</h2>
           <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
           <p class="tw-text-gray-500">This month</p>
         </v-card>
       </v-col>
       <v-col cols="12" md="4">
         <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Revenue</h2>
+          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Expenditure</h2>
           <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
           <p class="tw-text-gray-500">Last 30 days</p>
         </v-card>
@@ -47,14 +47,14 @@
     <v-row class="tw-mb-8">
       <!--      <v-col cols="12" md="4">-->
       <!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
-      <!--          <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>-->
-      <!--          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>-->
-      <!--          <p class="tw-text-gray-500">Active listings</p>-->
+      <!--          <h2 class="tw-text-xl font-semibold text-gray-800">Total Requests</h2>-->
+      <!--          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeRequests}}</p>-->
+      <!--          <p class="tw-text-gray-500">Active requests</p>-->
       <!--        </v-card>-->
       <!--      </v-col>-->
       <!--      <v-col cols="12" md="4">-->
       <!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
-      <!--          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>-->
+      <!--          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Farmer Interactions</h2>-->
       <!--          <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>-->
       <!--          <p class="tw-text-gray-500">This month</p>-->
       <!--        </v-card>-->
@@ -76,9 +76,9 @@
         <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
           <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">Quick Actions</h2>
           <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">
-            <v-btn color="primary" class="flex-1" @click="listingDialog = true">
+            <v-btn color="primary" class="flex-1" @click="requestDialog = true">
               <v-icon left>mdi-plus</v-icon>
-              Add New Listing
+              Add New Request
             </v-btn>
             <v-btn color="secondary" class="flex-1" @click="this.$router.push({name: 'Reports'})">
               <v-icon left>mdi-chart-line</v-icon>
@@ -86,7 +86,7 @@
             </v-btn>
             <v-btn color="success" class="flex-1">
               <v-icon left>mdi-email</v-icon>
-              Message Buyers
+              Message Farmers
             </v-btn>
           </div>
         </v-card>
@@ -99,21 +99,21 @@
 import { mapState } from 'vuex';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
-import CreateListing from '@/components/listing/CreateListing.vue';
+import CreateRequest from '@/components/request/CreateRequest.vue';
 import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
-    CreateListing,
+    CreateRequest,
     apexchart: VueApexCharts,
   },
   data() {
     return {
       loading: false,
-      listingDialog: false,
+      requestDialog: false,
       dialog: false,
       liveCount: {
-        activeListings: 3,
+        activeRequests: 3,
         buyersInteraction: 1,
         revenue30Days: {
           price: 100,
@@ -160,7 +160,7 @@ export default {
           width: [0, 4],
         },
         title: {
-          text: 'Sales Over Time',
+          text: 'Expenditure Over Time',
           align: 'left',
           margin: 10,
           offsetX: 0,
@@ -180,7 +180,7 @@ export default {
         labels: ['Jan 2001', 'Feb 2001', 'March 2001', 'April 2001', 'May 2001', 'Jun 2001', 'Jul 2001', 'Aug 2001', 'Sep 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'],
         yaxis: [{
           title: {
-            text: 'Revenue Generated',
+            text: 'Expenditure Over Time',
           },
           labels: {
             formatter(value) {
@@ -205,8 +205,8 @@ export default {
     this.fetchLiveCount();
   },
   methods: {
-    // fetchListings() {
-    //   axios.get(`/listing/farmer?farmerId=${getCurrentUserId()}`)
+    // fetchRequests() {
+    //   axios.get(`/request/buyer?buyerId=${getCurrentUserId()}`)
     //     .then((response) => {
     //       console.log(response.data.data);
     //     })
@@ -214,13 +214,13 @@ export default {
     //       console.log(error);
     //     });
     // },
-    // Fetch listings from the API
+    // Fetch requests from the API
     async fetchLiveCount() {
       this.loading = true;
       try {
-        const response = await axios.get('/farmers-service/api/dashboard/live/count', {
+        const response = await axios.get('/buyers-service/api/dashboard/live/count', {
           params: {
-            farmerId: getCurrentUserId(),
+            buyerId: getCurrentUserId(),
           },
         });
         if (response.data.success === true) this.liveCount = response.data.data;
@@ -232,10 +232,10 @@ export default {
     },
   },
   watch: {
-    listingDialog(newValue) {
+    requestDialog(newValue) {
       if (newValue !== true) {
         this.fetchLiveCount();
-        this.fetchListings();
+        this.fetchRequests();
       }
     },
   },

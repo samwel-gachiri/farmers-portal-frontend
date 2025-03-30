@@ -49,6 +49,12 @@
             <template v-slot:item.actions="{ item }">
               <v-btn small color="primary" @click="viewDetails(item)">View</v-btn>
             </template>
+            <template v-slot:item.file="{ item }">
+              <v-btn outlined small color="secondary" @click="downloadPdf(item)">
+                <v-icon color="maroon">mdi-file-pdf</v-icon>
+                <v-icon color="maroon">mdi-download</v-icon>
+              </v-btn>
+            </template>
           </v-data-table>
           <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
           <!-- Dialog for Listing Details -->
@@ -104,6 +110,7 @@ export default {
         { text: 'Status', value: 'status' },
         { text: 'Total Price', value: 'totalPrice' },
         { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'File', value: 'file', sortable: false },
       ],
       // Data
       listings: [],
@@ -164,6 +171,41 @@ export default {
     viewDetails(item) {
       this.selectedListingId = item.id;
       this.dialog = true;
+    },
+    async downloadPdf(item) {
+      this.isDownloading = true;
+      await axios.get('/farmers-service/api/reports/listing/pdf', {
+        params: {
+          listingId: item.id,
+        },
+        responseType: 'arraybuffer',
+      })
+        .then((res) => {
+          const contentDisposition = res.headers['content-disposition'];
+          const fileNameRegex = /filename="(.+?)"/;
+          const fileNameMatch = contentDisposition?.match(fileNameRegex);
+          const fileName = fileNameMatch ? fileNameMatch[1] : 'REPORT.pdf';
+
+          // Create a Blob from the byte array
+          const blob = new Blob([res.data], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+
+          // Create a temporary link to trigger the download
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', fileName);
+          document.body.appendChild(link);
+          link.click();
+
+          // Cleanup
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((err) => {
+          this.$toast.error('error', err.message);
+        })
+      // eslint-disable-next-line no-return-assign
+        .finally(() => (this.isDownloading = false));
     },
   },
   watch: {

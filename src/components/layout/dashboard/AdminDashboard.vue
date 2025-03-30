@@ -1,87 +1,160 @@
 <template>
-  <v-container>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <v-card class="p-4 text-center shadow-lg">
-        <h2 class="text-xl font-semibold">Total Users</h2>
-        <p class="text-3xl font-bold">1,245</p>
-      </v-card>
-      <v-card class="p-4 text-center shadow-lg">
-        <h2 class="text-xl font-semibold">Total Transactions</h2>
-        <p class="text-3xl font-bold">$45,230</p>
-      </v-card>
-      <v-card class="p-4 text-center shadow-lg">
-        <h2 class="text-xl font-semibold">Active Farmers</h2>
-        <p class="text-3xl font-bold">865</p>
-      </v-card>
-      <v-card class="p-4 text-center shadow-lg">
-        <h2 class="text-xl font-semibold">Active Buyers</h2>
-        <p class="text-3xl font-bold">380</p>
-      </v-card>
+  <v-container class="p-6">
+    <div class="tw-flex tw-flex-row tw-justify-between">
+      <h1 class="tw-text-xl tw-font-bold tw-mb-4">Admin Dashboard</h1>
+      <v-btn
+          @click="fetchData"
+          color="primary"
+          class="tw-border-4"
+          outlined
+      >
+        <v-icon color="primary">mdi-reload</v-icon>
+        Reload</v-btn>
     </div>
+    <v-row>
+      <!-- Produce Sales Pie Chart -->
+      <v-col cols="12" md="6">
+        <v-card class="tw-rounded-2xl tw-shadow-lg tw-p-4">
+          <h2 class="tw-text-lg tw-font-semibold tw-text-left">Total Sales per Produce</h2>
+          <apexchart
+              type="pie"
+              :options="pieChartOptions"
+              :series="pieChartSeries"
+              class="tw-mt-4"
+          />
+        </v-card>
+      </v-col>
 
-    <v-card class="mt-6 p-4">
-      <h2 class="text-xl font-semibold mb-4">Sales Overview</h2>
-      <apexchart type="line" height="350" :options="chartOptions" :series="chartSeries" />
-    </v-card>
-
-    <v-card class="mt-6 p-4">
-      <h2 class="text-xl font-semibold mb-4">Recent Orders</h2>
-      <v-simple-table>
-        <thead>
-        <tr>
-          <th class="text-left">Buyer</th>
-          <th class="text-left">Amount</th>
-          <th class="text-left">Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="order in orders" :key="order.id">
-          <td>{{ order.buyer }}</td>
-          <td>{{ order.amount }}</td>
-          <td :class="{'text-green-500': order.status === 'Completed', 'text-yellow-500': order.status === 'Pending'}">
-            {{ order.status }}
-          </td>
-        </tr>
-        </tbody>
-      </v-simple-table>
-    </v-card>
+      <!-- Daily Listings & Orders Line Chart -->
+      <v-col cols="12" md="6">
+        <v-card class="tw-rounded-2xl tw-shadow-lg p-4">
+          <h2 class="tw-text-lg tw-font-semibold tw-text-center">Daily Listings & Orders</h2>
+          <apexchart
+              type="line"
+              :options="lineChartOptions"
+              :series="lineChartSeries"
+              class="tw-mt-4"
+          />
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
+import axios from 'axios';
 import VueApexCharts from 'vue-apexcharts';
 
 export default {
-  components: { apexchart: VueApexCharts },
+  components: {
+    apexchart: VueApexCharts,
+  },
   data() {
     return {
-      chartOptions: {
-        chart: { id: 'sales-chart' },
-        xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'] },
+      // Pie Chart: Total Sales Per Produce
+      pieChartSeries: [],
+      pieChartOptions: {
+        chart: {
+          type: 'pie',
+          toolbar: { show: true },
+        },
+        labels: [], // Labels set dynamically
       },
-      chartSeries: [{ name: 'Sales', data: [5000, 7000, 8000, 12000, 15000, 20000] }],
-      orders: [
-        {
-          id: 1, buyer: 'John Doe', amount: '$150', status: 'Completed',
+
+      // Line Chart: Daily Listings & Orders
+      lineChartSeries: [],
+      lineChartOptions: {
+        chart: {
+          type: 'area',
         },
-        {
-          id: 2, buyer: 'Alice Smith', amount: '$230', status: 'Pending',
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shadeIntensity: 1,
+            inverseColors: false,
+            opacityFrom: 0.5,
+            opacityTo: 0,
+            stops: [0, 90, 100],
+          },
         },
-        {
-          id: 3, buyer: 'Michael Lee', amount: '$120', status: 'Completed',
+        xaxis: {
+          categories: [], // Dates formatted dynamically
+          title: { text: 'Date' },
+          labels: {
+            rotate: -45,
+            formatter: (value) => this.formatDate(value),
+          },
         },
-      ],
+        yaxis: {
+          title: { text: 'Count' },
+        },
+      },
     };
+  },
+  mounted() {
+    this.fetchData();
+  },
+  methods: {
+    async fetchData() {
+      await this.fetchProduceSales();
+      await this.fetchDailyListings();
+    },
+    async fetchProduceSales() {
+      try {
+        const response = await axios.get('/api/admin/produce-sales');
+        const data = response.data;
+
+        this.pieChartSeries = data.map((item) => Math.round(item.totalSales));
+        this.pieChartOptions = {
+          ...this.pieChartOptions,
+          labels: data.map((item) => item.name), // Fix for correct produce names
+        };
+      } catch (error) {
+        console.error('Error fetching produce sales:', error);
+      }
+    },
+    async fetchDailyListings() {
+      try {
+        const response = await axios.get('/api/admin/daily-listings');
+        const data = response.data;
+
+        const formattedDates = data.map((item) => this.formatDate(item.listingDate));
+
+        this.lineChartOptions = {
+          ...this.lineChartOptions,
+          xaxis: {
+            ...this.lineChartOptions.xaxis,
+            categories: formattedDates, // Fix for proper date display
+          },
+        };
+
+        this.lineChartSeries = [
+          {
+            name: 'Total Listings',
+            data: data.map((item) => item.totalListings),
+          },
+          {
+            name: 'Total Orders',
+            data: data.map((item) => item.totalOrders),
+          },
+        ];
+      } catch (error) {
+        console.error('Error fetching daily listings:', error);
+      }
+    },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-GB', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+      }).format(date);
+    },
   },
 };
 </script>
 
 <style scoped>
-.p-4 { padding: 1rem; }
-.text-xl { font-size: 1.25rem; }
-.text-3xl { font-size: 1.875rem; }
-.font-semibold { font-weight: 600; }
-.font-bold { font-weight: 700; }
-.text-green-500 { color: #10B981; }
-.text-yellow-500 { color: #F59E0B; }
+/* Tailwind utilities are already applied via classes */
 </style>

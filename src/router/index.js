@@ -85,6 +85,16 @@ const routes = [
     name: 'BrowseRequests',
     component: () => import('../views/farmer/BrowseRequests.vue'),
   },
+  {
+    path: '/users-report',
+    name: 'UsersReport',
+    component: () => import('../views/admin/UsersReport.vue'),
+  },
+  {
+    path: '/order-report',
+    name: 'OrdersReport',
+    component: () => import('../views/admin/OrdersReport.vue'),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',

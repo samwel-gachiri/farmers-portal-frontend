@@ -10,7 +10,7 @@
           <div class="tw-flex tw-flex-col tw-w-full">
 <!--            <p><strong>ID:</strong> {{ listing.produceListing.id }}</p>-->
             <p><strong>Price:</strong> {{ listing.produceListing.price.price.toLocaleString() }} {{ listing.produceListing.price.currency }} per {{listing.produceListing.unit}}</p>
-            <p><strong>Earnings:</strong> {{ listing.earnings }} {{listing.produceListing.price.currency}}</p>
+            <p><strong>Earnings:</strong> {{ listing.earnings.toFixed(2) }} {{listing.produceListing.price.currency}}</p>
             <p><strong>Rating:</strong> {{ listing.produceListing.rating }}</p>
             <p><strong>Status:</strong> {{ listing.produceListing.status }}</p>
             <p><strong>Quantity Sold:</strong> {{ listing.quantitySold }} {{ listing.produceListing.unit }}</p>
@@ -26,7 +26,7 @@
               <div class="tw-flex tw-justify-between tw-items-center tw-mb-4">
                 <div class="tw-text-green-700 tw-text-3xl tw-font-bold">{{percentageSold}}% SOLD</div>
                 <div class="tw-text-gray-500 tw-text-lg tw-font-light">
-                  {{listing.produceListing.price.currency}} {{listing.earnings}} earned
+                  {{listing.produceListing.price.currency}} {{listing.earnings.toFixed(2)}} earned
                 </div>
               </div>
 
@@ -59,9 +59,9 @@
 
                 <div class="tw-flex tw-justify-between tw-py-3">
         <span class="tw-text-green-700 tw-font-medium">
-          {{listing.produceListing.price.currency}} {{listing.quantitySold * listing.produceListing.price.price}} earned
+          {{listing.produceListing.price.currency}} {{(listing.quantitySold * listing.produceListing.price.price).toFixed(2)}} earned
         </span>
-                  <span class="tw-text-gray-500"> {{listing.produceListing.price.currency}} {{listing.produceListing.price.price * listing.produceListing.quantity}} Total</span>
+                  <span class="tw-text-gray-500"> {{listing.produceListing.price.currency}} {{(listing.produceListing.price.price * listing.produceListing.quantity).toFixed(2)}} Total</span>
                 </div>
               </v-card-text>
 

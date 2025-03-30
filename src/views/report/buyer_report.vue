@@ -1,115 +1,36 @@
 <template>
   <Default>
-    <v-container class="tw-bg-gray-50 tw-min-h-screen tw-p-8">
-      <!-- Reports Header -->
-      <v-row class="tw-mb-8">
-        <v-col cols="12">
-          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Buyer Reports</h1>
-          <p class="tw-text-gray-600">Gain insights into your sales.</p>
-        </v-col>
-      </v-row>
-
-      <!-- Filter and Parameter Controls -->
-      <v-row class="tw-mb-8">
-        <v-col cols="12" md="4">
-          <v-select
-              v-model="selectedReportType"
-              :items="reportTypes"
-              label="Select Report Type"
-              outlined
-              dense
-          ></v-select>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-menu
-              v-model="dateMenu"
-              :close-on-content-click="false"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                  v-model="selectedDateRange"
-                  label="Select Date Range"
-                  readonly
-                  outlined
-                  dense
-                  v-bind="attrs"
-                  v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-                v-model="selectedDateRange"
-                range
-                no-title
-                :max="new Date().toISOString()"
-                @input="dateMenu = !(selectedDateRange.length>1)"
-                @change="generateReport"
-            ></v-date-picker>
-          </v-menu>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-btn color="primary" class="tw-w-full"
-                 :loading="isDownloading"
-                 @click="downloadPdf"
-                 :disabled="ordersHistory.length <= 0">
-            Generate Report PDF
-            <v-icon color="white">mdi-file-pdf</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
-
-      <!-- Detailed Report with Chart -->
-      <v-row class="tw-mb-8" v-if="showReport && (selectedReportType === 'all' || selectedReportType === 'detailed')">
-        <v-col cols="12">
-          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
-              Detailed Report
-            </h2>
-            <apexchart
-                type="bar"
-                height="350"
-                :options="detailedChartOptions"
-                :series="detailedChartSeries"
-            ></apexchart>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <!-- Filtered Report with Chart -->
-      <v-row class="tw-mb-8" v-if="showReport && (selectedReportType === 'all' || selectedReportType === 'filtered')">
-        <v-col cols="12">
-          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
-              Filtered Report (Top Performers)
-            </h2>
-            <apexchart
-                type="pie"
-                height="350"
-                :options="filteredChartOptions"
-                :series="filteredChartSeries"
-            ></apexchart>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <!-- Parameterized Report with Chart -->
-      <v-row class="tw-mb-8" v-if="showReport && (selectedReportType === 'all' || selectedReportType === 'parameterized')">
-        <v-col cols="12">
-          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">
-              Parameterized Report <span class="tw-text-blue-600 hover:tw-underline" @click="dateMenu=true">({{ selectedDateRange[0] +' to '+ selectedDateRange[1] }})</span>
-            </h2>
-            <apexchart
-                type="line"
-                height="350"
-                :options="parameterizedChartOptions"
-                :series="parameterizedChartSeries"
-            ></apexchart>
-          </v-card>
-        </v-col>
-      </v-row>
+    <v-container>
+      <v-card id="printSection">
+        <v-card-title>Buyer Report</v-card-title>
+        <v-card-text>
+          <logo-title/>
+          <v-row>
+            <v-col cols="12" md="4">
+              <v-text-field v-model="buyerId" label="Buyer ID" disabled></v-text-field>
+            </v-col>
+            <v-col cols="12" md="4">
+              <v-menu v-model="startMenu" :close-on-content-click="false" transition="scale-transition" offset-y>
+                <template v-slot:activator="{ on }">
+                  <v-text-field v-model="startDate" label="Start Date" readonly v-on="on"></v-text-field>
+                </template>
+                <v-date-picker v-model="startDate" @input="startMenu = false"></v-date-picker>
+              </v-menu>
+            </v-col>
+            <v-col cols="12" md="4">
+              <v-menu v-model="endMenu" :close-on-content-click="false" transition="scale-transition" offset-y>
+                <template v-slot:activator="{ on }">
+                  <v-text-field v-model="endDate" label="End Date" readonly v-on="on"></v-text-field>
+                </template>
+                <v-date-picker v-model="endDate" @input="endMenu = false"></v-date-picker>
+              </v-menu>
+            </v-col>
+          </v-row>
+          <v-btn color="primary" @click="fetchReport">Get Report</v-btn>
+          <v-data-table :headers="headers" :items="reportData" class="mt-4"></v-data-table>
+          <apexchart type="bar" :options="chartOptions" :series="chartSeries"></apexchart>
+        </v-card-text>
+      </v-card>
     </v-container>
   </Default>
 </template>
@@ -117,252 +38,84 @@
 <script>
 import VueApexCharts from 'vue-apexcharts';
 import Default from '@/components/layout/Default.vue';
-import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
+import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
-  components: {
-    Default,
-    apexchart: VueApexCharts,
-  },
+  components: { LogoTitle, Default, apexchart: VueApexCharts },
   data() {
     return {
-      selectedReportType: 'all',
-      reportTypes: ['all', 'detailed', 'filtered', 'parameterized'],
-      selectedDateRange: [new Date().toISOString().substr(0, 10), new Date().toISOString().substr(0, 10)],
-      dateMenu: false,
-      showReport: false,
-      isDownloading: false,
-      groupedOrders: [
-        {
-          date: '2025-02-10T06:15:27.644Z',
-          product: 'string',
-          quantitySold: 0,
-          currency: 'string',
-          revenue: 0,
-        },
+      buyerId: getCurrentUserId(),
+      startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().substr(0, 10),
+      endDate: new Date().toISOString().substr(0, 10),
+      startMenu: false,
+      endMenu: false,
+      reportData: [],
+      headers: [
+        { text: 'Farmer Name', value: 'farmerName' },
+        { text: 'Produce', value: 'produceName' },
+        { text: 'Total Spent', value: 'totalSpent' },
+        { text: 'Farmer Interactions', value: 'farmerInteractions' },
+        { text: 'Pending Orders', value: 'pendingOrders' },
+        { text: 'Accepted Orders', value: 'acceptedOrders' },
+        { text: 'Supplied Orders', value: 'suppliedOrders' },
       ],
-      ordersHistory: [
-        {
-          date: '2025-02-10T06:15:27.644Z',
-          product: 'string',
-          quantitySold: 0,
-          currency: 'string',
-          revenue: 0,
-        },
-      ],
-      // // Detailed Report Data
-      // detailedReport: [
-      //   {
-      //     // eslint-disable-next-line sonarjs/no-duplicate-string
-      //     product: 'Organic Tomatoes', quantitySold: 120, revenue: 600, buyerFeedback: 4,
-      //   },
-      //   {
-      //     // eslint-disable-next-line sonarjs/no-duplicate-string
-      //     product: 'Fresh Strawberries', quantitySold: 80, revenue: 400, buyerFeedback: 5,
-      //   },
-      //   {
-      //     product: 'Free-Range Eggs', quantitySold: 200, revenue: 300, buyerFeedback: 3,
-      //   },
-      // ],
-
-      // // Filtered Report Data
-      // filteredReport: [
-      //   { product: 'Organic Tomatoes', totalRevenue: 600, profitMargin: 25 },
-      //   { product: 'Fresh Strawberries', totalRevenue: 400, profitMargin: 30 },
-      // ],
-
-      // // Parameterized Report Data
-      // parameterizedReport: [
-      //   {
-      //     date: '2023-10-01', product: 'Organic Tomatoes', quantitySold: 50, revenue: 250,
-      //   },
-      //   {
-      //     date: '2023-10-02', product: 'Fresh Strawberries', quantitySold: 30, revenue: 150,
-      //   },
-      //   {
-      //     date: '2023-10-03', product: 'Free-Range Eggs', quantitySold: 100, revenue: 200,
-      //   },
-      // ],
-
-      // Chart Options and Series
-      detailedChartOptions: {
-        chart: {
-          type: 'bar',
-        },
+      chartOptions: {
+        chart: { type: 'bar' },
         xaxis: {
+          type: 'category',
           categories: [],
+          title: { text: 'Produce Name' }, // Label for the x-axis
         },
-        title: {
-          text: 'Product Sales and Revenue',
-          align: 'center',
-          style: {
-            fontSize: '16px',
-            fontWeight: 'bold',
-          },
+        yaxis: {
+          title: { text: 'Total Spent (USD)' }, // Label for the y-axis
         },
-      },
-      detailedChartSeries: [
-        {
-          name: 'Quantity Sold',
-          data: [],
-        },
-        {
-          name: 'Revenue ($)',
-          data: [],
-        },
-      ],
-
-      filteredChartOptions: {
-        chart: {
-          type: 'pie',
-        },
-        labels: [],
-        title: {
-          text: 'Top Performers by Revenue',
-          align: 'center',
-          style: {
-            fontSize: '16px',
-            fontWeight: 'bold',
-          },
+        dataLabels: {
+          enabled: true,
+          formatter: (val, { dataPointIndex }) => this.reportData[dataPointIndex]?.produceName || '',
         },
       },
-      filteredChartSeries: [],
-
-      parameterizedChartOptions: {
-        chart: {
-          type: 'line',
-        },
-        xaxis: {
-          categories: [],
-        },
-        title: {
-          text: 'Daily Sales Over Time',
-          align: 'center',
-          style: {
-            fontSize: '16px',
-            fontWeight: 'bold',
-          },
-        },
-      },
-      parameterizedChartSeries: [
-        {
-          name: 'Revenue ($)',
-          data: [],
-        },
-      ],
+      chartSeries: [{ name: 'Total Spent', data: [] }],
     };
   },
+  watch: {
+    startDate() {
+      this.fetchReport();
+    },
+    endDate() {
+      this.fetchReport();
+    },
+  },
   mounted() {
-    this.generateReport();
+    this.fetchReport();
   },
   methods: {
-    async fetchReport() {
-      this.loading = true;
-      try {
-        const startDateTime = new Date(this.selectedDateRange[0]);
-        startDateTime.setHours(0, 0, 0, 0);
-        const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
-        endDateTime.setHours(23, 59, 59, 999);
-        await axios.get('/buyers-service/api/reports/orders/grouped', {
-          params: {
-            buyerId: getCurrentUserId(), // Replace with actual buyer ID
-            startDateTime: startDateTime.toISOString(),
-            endDateTime: endDateTime.toISOString(),
-          },
-        }).then((response) => {
-          this.groupedOrders = response.data.data;
-        });
-        await axios.get('/buyers-service/api/reports/orders/history', {
-          params: {
-            buyerId: getCurrentUserId(), // Replace with actual buyer ID
-            startDateTime: startDateTime.toISOString(),
-            endDateTime: endDateTime.toISOString(),
-          },
-        }).then((response) => {
-          this.ordersHistory = response.data.data;
-        });
-      } catch (error) {
-        this.$toast.error('Error fetching listings:', error.message);
-      } finally {
-        this.loading = false;
-      }
+    formatDateTime(date) {
+      return date ? new Date(date).toISOString() : '';
     },
-    async generateReport() {
-      await this.fetchReport();
-      this.showReport = true;
+    fetchReport() {
+      const formattedStartDate = this.formatDateTime(this.startDate);
+      const formattedEndDate = this.formatDateTime(this.endDate);
 
-      // Update Detailed Chart Data
-      const detailedChartCategories = this.groupedOrders.map((item) => item.product);
-      const detailedChartSeriesData = [
-        { name: 'Quantity Sold', data: this.groupedOrders.map((item) => item.quantitySold) },
-        { name: 'Revenue', data: this.groupedOrders.map((item) => item.revenue) },
-      ];
-
-      this.detailedChartOptions.xaxis.categories = detailedChartCategories;
-      this.detailedChartSeries = detailedChartSeriesData;
-
-      // Update Filtered Chart Data
-      this.filteredChartOptions.labels = this.groupedOrders.map((item) => item.product);
-      this.filteredChartSeries = this.groupedOrders.map((item) => item.revenue);
-
-      // Update Parameterized Chart Data
-      const parameterizedChartCategories = this.ordersHistory.map((item) => item.date);
-      const parameterizedChartSeriesData = [
-        { name: 'Revenue', data: this.ordersHistory.map((item) => item.revenue) },
-      ];
-
-      this.parameterizedChartOptions.xaxis.categories = parameterizedChartCategories;
-      this.parameterizedChartSeries = parameterizedChartSeriesData;
+      fetch(`/api/reports/buyer?buyerId=${this.buyerId}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`)
+        .then((res) => res.json())
+        .then((data) => {
+          this.reportData = data;
+          this.chartOptions.xaxis.categories = data.map((item) => item.produceName);
+          this.chartSeries[0].data = data.map((item) => item.totalSpent);
+        })
+        .catch((err) => console.error(err));
     },
-    async downloadPdf() {
-      this.isDownloading = true;
-      const startDateTime = new Date(this.selectedDateRange[0]);
-      startDateTime.setHours(0, 0, 0, 0);
-      const endDateTime = new Date(this.selectedDateRange.length > 1 ? this.selectedDateRange[1] : this.selectedDateRange[0]);
-      endDateTime.setHours(23, 59, 59, 999);
-      await axios.get('/buyers-service/api/reports/orders/pdf', {
-        params: {
-          buyerId: getCurrentUserId(), // Replace with actual buyer ID
-          startDateTime: startDateTime.toISOString(),
-          endDateTime: endDateTime.toISOString(),
-        },
-        responseType: 'arraybuffer',
-      })
-        .then((res) => {
-          const contentDisposition = res.headers['content-disposition'];
-          const fileNameRegex = /filename="(.+?)"/;
-          const fileNameMatch = contentDisposition?.match(fileNameRegex);
-          const fileName = fileNameMatch ? fileNameMatch[1] : 'REPORT.pdf';
+    printReport() {
+      const printContent = document.getElementById('printSection').innerHTML;
+      const originalContent = document.body.innerHTML;
 
-          // Create a Blob from the byte array
-          const blob = new Blob([res.data], { type: 'application/pdf' });
-          const url = window.URL.createObjectURL(blob);
-
-          // Create a temporary link to trigger the download
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', fileName);
-          document.body.appendChild(link);
-          link.click();
-
-          // Cleanup
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-        })
-        .catch((err) => {
-          this.$toast.error('error', err.message);
-        })
-        // eslint-disable-next-line no-return-assign
-        .finally(() => (this.isDownloading = false));
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalContent;
+      window.location.reload(); // Reload to restore Vue bindings
     },
   },
-  computed: {
-    getCurrentUserId,
-  },
+
 };
 </script>
-
-<style scoped>
-
-</style>

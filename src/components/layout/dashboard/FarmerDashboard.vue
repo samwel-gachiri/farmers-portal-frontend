@@ -62,10 +62,10 @@
         <v-col cols="12">
           <v-card :loading="loading" rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
             <apexchart
-                type="line"
-                height="350"
-                :options="revenueChartOptions"
-                :series="revenueChartOptions.series"
+                type="bar"
+                height="400"
+                :options="chartOptions"
+                :series="series"
             ></apexchart>
           </v-card>
         </v-col>
@@ -120,80 +120,59 @@ export default {
           currency: 'KSH',
         },
       },
-      revenueChartOptions: {
-        forecastDataPoints: {
-          count: 0,
-          fillOpacity: 0.5,
-          strokeWidth: undefined,
-          dashArray: 4,
+      salesData: [
+        {
+          saleMonth: '2025-03', produceName: 'Maize', totalSold: 2.0, totalRevenue: 100.0,
         },
-        series: [{
-          name: 'Pineapple',
-          type: 'bar',
-          data: [44, 55, 41, 37, 22, 43, 21],
-        }, {
-          name: 'Sales made',
-          type: 'line',
-          data: [23, 42, 35, 27, 43, 22, 17],
-        }, {
-          name: 'Mango',
-          type: 'bar',
-          data: [53, 32, 33, 52, 13, 43, 32],
-        }, {
-          name: 'Orange',
-          type: 'bar',
-          data: [12, 17, 11, 9, 15, 11, 20],
-        }, {
-          name: 'Sukuma wiki',
-          type: 'bar',
-          data: [9, 7, 5, 8, 6, 9, 4],
-        }, {
-          name: 'Cabbage',
-          type: 'bar',
-          data: [25, 12, 19, 32, 25, 24, 10],
-        }],
+        {
+          saleMonth: '2025-03', produceName: 'Yellow Maize', totalSold: 2.0, totalRevenue: 185.8,
+        },
+        {
+          saleMonth: '2025-04', produceName: 'Beans', totalSold: 5.0, totalRevenue: 300.0,
+        },
+      ],
+      chartOptions: {
         chart: {
-          height: 350,
-          type: 'line',
+          type: 'bar',
+          stacked: false,
+          toolbar: { show: false },
         },
-        stroke: {
-          width: [0, 4],
+        xaxis: {
+          categories: [], // Will be populated dynamically
+          title: { text: 'Sale Month' },
+          labels: { rotate: -45 },
         },
-        title: {
-          text: 'Sales Over Time',
-          align: 'left',
-          margin: 10,
-          offsetX: 0,
-          offsetY: 0,
-          floating: false,
-          style: {
-            fontSize: '14px',
-            fontWeight: 'bold',
-            fontFamily: 'Trebuc',
-            color: '#263238',
+        yaxis: [
+          {
+            title: { text: 'Total Revenue ($)' },
+            labels: { formatter: (value) => `$${value.toFixed(2)}` },
+          },
+          {
+            opposite: true,
+            title: { text: 'Total Sold (kg)' },
+            labels: { formatter: (value) => `${value.toFixed(1)} kg` },
+          },
+        ],
+        plotOptions: {
+          bar: {
+            columnWidth: '50%',
+            dataLabels: {
+              position: 'top',
+            },
           },
         },
         dataLabels: {
           enabled: true,
-          enabledOnSeries: [1],
+          formatter: (val) => val.toFixed(1),
         },
-        labels: ['Jan 2001', 'Feb 2001', 'March 2001', 'April 2001', 'May 2001', 'Jun 2001', 'Jul 2001', 'Aug 2001', 'Sep 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'],
-        yaxis: [{
-          title: {
-            text: 'Revenue Generated',
-          },
-          labels: {
-            formatter(value) {
-              return `Ksh ${value}`;
-            },
-          },
-        }, {
-          opposite: true,
-          title: {
-            text: 'Sales made',
-          },
-        }],
+        title: {
+          text: 'Produce Sales Report',
+          align: 'center',
+        },
+        legend: { position: 'top' },
+        stroke: { width: [0, 2] }, // No stroke for bar, 2px for line
       },
+      series: [],
     };
   },
   computed: {
@@ -203,8 +182,48 @@ export default {
   },
   mounted() {
     this.fetchLiveCount();
+    this.fetchSalesReport();
   },
   methods: {
+    async fetchSalesReport() {
+      try {
+        await axios.get(`/farmers-service/api/dashboard/sales-report?farmerId=${getCurrentUserId()}`);
+        const groupedData = {};
+
+        // Organize data by saleMonth and produce
+        this.salesData.forEach((item) => {
+          if (!groupedData[item.saleMonth]) {
+            groupedData[item.saleMonth] = {};
+          }
+          groupedData[item.saleMonth][item.produceName] = {
+            totalSold: item.totalSold,
+            totalRevenue: item.totalRevenue,
+          };
+        });
+
+        // Extract unique produce names
+        const allProduceNames = [...new Set(this.salesData.map((item) => item.produceName))];
+        const categories = Object.keys(groupedData).sort(); // Sorted sale months
+
+        // Prepare series data for revenue (bars) and total sold (line)
+        const revenueSeries = {
+          name: 'Total Revenue',
+          type: 'column',
+          data: categories.map((month) => allProduceNames.reduce((sum, produce) => sum + (groupedData[month][produce]?.totalRevenue || 0), 0)),
+        };
+
+        const soldSeries = {
+          name: 'Total Sold',
+          type: 'line',
+          data: categories.map((month) => allProduceNames.reduce((sum, produce) => sum + (groupedData[month][produce]?.totalSold || 0), 0)),
+        };
+
+        this.chartOptions.xaxis.categories = categories;
+        this.series = [revenueSeries, soldSeries];
+      } catch (error) {
+        console.error('Error fetching sales data:', error);
+      }
+    },
     // fetchListings() {
     //   axios.get(`/listing/farmer?farmerId=${getCurrentUserId()}`)
     //     .then((response) => {

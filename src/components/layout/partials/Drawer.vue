@@ -81,8 +81,8 @@ export default {
         roles: ['buyer'],
       },
       {
-        icon: 'mdi-package',
-        text: 'My Bids',
+        icon: 'mdi-handshake',
+        text: 'Request Bids',
         link: {
           name: 'FarmerOrders',
         },
@@ -114,6 +114,18 @@ export default {
         text: 'Reports',
         link: { name: 'BuyerReport' },
         roles: ['buyer'],
+      },
+      {
+        icon: 'mdi-account-group',
+        text: 'Users',
+        link: { name: 'UsersReport' },
+        roles: ['admin'],
+      },
+      {
+        icon: 'mdi-package',
+        text: 'Orders',
+        link: { name: 'OrdersReport' },
+        roles: ['admin'],
       },
       // { icon: 'mdi-tractor', text: 'Sell produce', link: { name: 'sales', query: { toSamwel: true } } },
     ],

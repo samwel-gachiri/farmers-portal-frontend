@@ -6,16 +6,22 @@
           <h2>Sell your produce</h2>
         </logo-title>
         <div class="tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-gap-5 tw-m-5">
-          <v-combobox
-              dense
-              :items="formattedFarmerProduces"
-              title="farmProduce.name"
-              item-value="id"
-              item-text="name"
-              label="Select farm produce"
-              @change="farmProduceListingChanged"
-              return-object
-          ></v-combobox>
+          <div class="tw-flex tw-flex-col">
+            <v-combobox
+                dense
+                :items="formattedFarmerProduces"
+                title="farmProduce.name"
+                item-value="id"
+                item-text="name"
+                label="Select farm produce"
+                @change="farmProduceListingChanged"
+                return-object
+            ></v-combobox>
+            <v-alert
+              v-if="formattedFarmerProduces?.length === 0"
+              type="info"
+            >You seem not to have any produce. Please go to <router-link class="tw-underline" style="color: blue;" :to="{name: 'Produces', params: { farmerId: getCurrentUserId }}">My Produces</router-link> to add a produce first.</v-alert>
+          </div>
           <v-combobox
               v-model="listing.unit"
               dense
