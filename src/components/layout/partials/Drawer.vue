@@ -64,14 +64,14 @@ export default {
         },
         roles: ['buyer', 'anybody'],
       },
-      {
-        icon: 'mdi-web',
-        text: 'Browse Requests',
-        link: {
-          name: 'BrowseRequests',
-        },
-        roles: ['farmer'],
-      },
+      // {
+      //   icon: 'mdi-web',
+      //   text: 'Browse Requests',
+      //   link: {
+      //     name: 'BrowseRequests',
+      //   },
+      //   roles: ['farmer'],
+      // },
       {
         icon: 'mdi-corn',
         text: 'My Orders',
@@ -80,14 +80,14 @@ export default {
         },
         roles: ['buyer'],
       },
-      {
-        icon: 'mdi-handshake',
-        text: 'Request Bids',
-        link: {
-          name: 'FarmerOrders',
-        },
-        roles: ['farmer'],
-      },
+      // {
+      //   icon: 'mdi-handshake',
+      //   text: 'Request Bids',
+      //   link: {
+      //     name: 'FarmerOrders',
+      //   },
+      //   roles: ['farmer'],
+      // },
       {
         icon: 'mdi-corn',
         text: 'My Produces',
@@ -97,12 +97,12 @@ export default {
         },
         roles: ['farmer'],
       },
-      {
-        icon: 'mdi-cart-plus',
-        text: 'My Requests',
-        link: { name: 'Requests' },
-        roles: ['buyer'],
-      },
+      // {
+      //   icon: 'mdi-cart-plus',
+      //   text: 'My Requests',
+      //   link: { name: 'Requests' },
+      //   roles: ['buyer'],
+      // },
       {
         icon: 'mdi-chart-pie',
         text: 'Reports',

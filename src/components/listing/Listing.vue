@@ -207,7 +207,7 @@ export default {
   computed: {
     percentageSold() {
       // eslint-disable-next-line no-mixed-operators
-      return this.listing.quantitySold / (this.listing.quantitySold + this.listing.quantityLeft) * 100;
+      return (this.listing.quantitySold / (this.listing.quantitySold + this.listing.quantityLeft) * 100).toFixed(2);
     },
   },
   methods: {

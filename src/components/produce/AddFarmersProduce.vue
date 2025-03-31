@@ -79,6 +79,7 @@ export default {
         farmingType: '',
         images: [],
       },
+      newProduceId: '',
       imagePreviews: [],
       farmingTypes,
       ...validations,
@@ -148,6 +149,7 @@ export default {
         });
         const newProduce = response.data.data;
         this.produceList.push(newProduce); // Add new produce to local list
+        this.newProduceId = newProduce.id;
       } catch (error) {
         this.$toast.error('Error adding new produce:', error.message);
       } finally {
@@ -165,9 +167,12 @@ export default {
         }
       });
       if (produceId === '') {
-        produceId = await this.addNewProduce();
+        await this.addNewProduce();
+        produceId = this.newProduceId;
       }
-      this.$toast.success('posting');
+      if (produceId === '') {
+        this.$toast.success('New produce added to the catalogue, reload to continue', 'success');
+      }
       const formData = new FormData();
       formData.append('farmerId', getCurrentUserId());
       formData.append('name', this.newProduce.name);
