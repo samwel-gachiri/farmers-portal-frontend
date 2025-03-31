@@ -60,13 +60,27 @@
         <!--        </v-card>-->
         <!--      </v-col>-->
         <v-col cols="12">
-          <v-card :loading="loading" rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-            <apexchart
-                type="bar"
-                height="400"
-                :options="chartOptions"
-                :series="series"
-            ></apexchart>
+          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+<!--            <apexchart-->
+<!--                type="bar"-->
+<!--                height="400"-->
+<!--                :options="chartOptions"-->
+<!--                :series="series"-->
+<!--            ></apexchart>-->
+            <v-data-table
+              :headers="headers"
+              :items="listings"
+              :loading="loading"
+              :items-per-page="size"
+              :page.sync="page"
+              @update:page="fetchListings"
+              class="elevation-1"
+            >
+              <template v-slot:item.createdAt="{ item }">
+                <h2>{{ formatToHumanWithTime(item.createdAt) }}</h2>
+              </template>
+            </v-data-table>
+            <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
           </v-card>
         </v-col>
       </v-row>
@@ -80,14 +94,6 @@
                 <v-icon left>mdi-plus</v-icon>
                 Add New Listing
               </v-btn>
-              <v-btn color="secondary" class="flex-1" @click="this.$router.push({name: 'Reports'})">
-                <v-icon left>mdi-chart-line</v-icon>
-                View Analytics
-              </v-btn>
-              <v-btn color="success" class="flex-1">
-                <v-icon left>mdi-email</v-icon>
-                Message Buyers
-              </v-btn>
             </div>
           </v-card>
         </v-col>
@@ -100,17 +106,33 @@ import { mapState } from 'vuex';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
 import CreateListing from '@/components/listing/CreateListing.vue';
-import VueApexCharts from 'vue-apexcharts';
+import pluralize from 'pluralize';
+import { formatToHumanWithTime } from '@/utils/time.js';
+// import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
     CreateListing,
-    apexchart: VueApexCharts,
+    // apexchart: VueApexCharts,
   },
   data() {
     return {
       loading: false,
       listingDialog: false,
+      headers: [
+        { text: 'Product', value: 'farmerProduce.farmProduce.name' },
+        { text: 'Quantity', value: 'quantityWithUnit' },
+        { text: 'Price', value: 'priceWithCurrency' },
+        { text: 'Created At', value: 'createdAt' },
+        { text: 'Status', value: 'status' },
+        { text: 'Total Price', value: 'totalPrice' },
+      ],
+      // Data
+      listings: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: 10,
+      page: 0,
       dialog: false,
       liveCount: {
         activeListings: 3,
@@ -120,17 +142,6 @@ export default {
           currency: 'KSH',
         },
       },
-      salesData: [
-        {
-          saleMonth: '2025-03', produceName: 'Maize', totalSold: 2.0, totalRevenue: 100.0,
-        },
-        {
-          saleMonth: '2025-03', produceName: 'Yellow Maize', totalSold: 2.0, totalRevenue: 185.8,
-        },
-        {
-          saleMonth: '2025-04', produceName: 'Beans', totalSold: 5.0, totalRevenue: 300.0,
-        },
-      ],
       chartOptions: {
         chart: {
           type: 'bar',
@@ -182,9 +193,37 @@ export default {
   },
   mounted() {
     this.fetchLiveCount();
-    this.fetchSalesReport();
+    // this.fetchSalesReport();
+    this.fetchListings();
   },
   methods: {
+    formatToHumanWithTime,
+    async fetchListings() {
+      this.loading = true;
+      try {
+        const response = await axios.get('/farmers-service/listing/farmer', {
+          params: {
+            farmerId: getCurrentUserId(),
+            page: this.page,
+            size: this.size,
+          },
+        });
+        const data = response.data.data;
+        this.listings = data.content
+          .map((item) => ({
+            ...item,
+            quantityWithUnit: `${item.quantity} ${item.quantity > 1 ? item.unit : pluralize(item.unit)}`,
+            priceWithCurrency: `${item.price.currency} ${item.price.price} @ ${item.unit}`,
+            totalPrice: `${item.price.currency} ${item.price.price * item.quantity}`,
+          }));
+        this.totalElements = data.totalElements;
+        this.totalPages = data.totalPages;
+      } catch (error) {
+        this.$toast.error('Error fetching listings:', error.message);
+      } finally {
+        this.loading = false;
+      }
+    },
     async fetchSalesReport() {
       try {
         await axios.get(`/farmers-service/api/dashboard/sales-report?farmerId=${getCurrentUserId()}`);

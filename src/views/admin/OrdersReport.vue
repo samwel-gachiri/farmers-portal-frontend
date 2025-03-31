@@ -62,7 +62,7 @@ export default {
         { text: 'Declined Orders', value: 'totalDeclinedOrders' },
         { text: 'Supplied Orders', value: 'totalSuppliedOrders' },
         { text: 'Supplied & Paid Orders', value: 'totalSuppliedAndPaidOrders' },
-        { text: 'Total Transaction Amount', value: 'totalTransactionAmount', format: (val) => `$${val.toFixed(2)}` },
+        { text: 'Total Transaction Amount (Ksh)', value: 'totalTransactionAmount', format: (val) => `$${val.toFixed(2)}` },
       ],
     };
   },

@@ -54,11 +54,11 @@ export default {
       headers: [
         { text: 'Farmer Name', value: 'farmerName' },
         { text: 'Produce', value: 'produceName' },
-        { text: 'Total Spent', value: 'totalSpent' },
+        { text: 'Total Spent (Ksh)', value: 'totalSpent' },
         { text: 'Farmer Interactions', value: 'farmerInteractions' },
         { text: 'Pending Orders', value: 'pendingOrders' },
-        { text: 'Accepted Orders', value: 'acceptedOrders' },
-        { text: 'Supplied Orders', value: 'suppliedOrders' },
+        // { text: 'Accepted Orders', value: 'acceptedOrders' },
+        // { text: 'Supplied Orders', value: 'suppliedOrders' },
       ],
       chartOptions: {
         chart: { type: 'bar' },
@@ -68,7 +68,7 @@ export default {
           title: { text: 'Produce Name' }, // Label for the x-axis
         },
         yaxis: {
-          title: { text: 'Total Spent (USD)' }, // Label for the y-axis
+          title: { text: 'Total Spent (KSH)' }, // Label for the y-axis
         },
         dataLabels: {
           enabled: true,

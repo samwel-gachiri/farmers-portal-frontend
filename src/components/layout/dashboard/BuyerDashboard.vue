@@ -61,12 +61,20 @@
       <!--      </v-col>-->
       <v-col cols="12">
         <v-card :loading="loading" rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-          <apexchart
-              type="line"
-              height="350"
-              :options="revenueChartOptions"
-              :series="revenueChartOptions.series"
-          ></apexchart>
+<!--          <apexchart-->
+<!--              type="line"-->
+<!--              height="350"-->
+<!--              :options="revenueChartOptions"-->
+<!--              :series="revenueChartOptions.series"-->
+<!--          ></apexchart>-->
+          <v-data-table :headers="headers" :items="orders" class="elevation-1">
+            <template v-slot:item.dateCreated="{ item }">
+              {{ item.dateCreated | formatToHumanWithTime }}
+            </template>
+            <template v-slot:item.totalAmount="{ item }">
+              <h2>KSH {{ (item.pricePerUnit * item.quantity).toFixed(2) }}</h2>
+            </template>
+          </v-data-table>
         </v-card>
       </v-col>
     </v-row>
@@ -80,14 +88,6 @@
               <v-icon left>mdi-plus</v-icon>
               Add New Request
             </v-btn>
-            <v-btn color="secondary" class="flex-1" @click="this.$router.push({name: 'Reports'})">
-              <v-icon left>mdi-chart-line</v-icon>
-              View Analytics
-            </v-btn>
-            <v-btn color="success" class="flex-1">
-              <v-icon left>mdi-email</v-icon>
-              Message Farmers
-            </v-btn>
           </div>
         </v-card>
       </v-col>
@@ -100,15 +100,25 @@ import { mapState } from 'vuex';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
 import CreateRequest from '@/components/request/CreateRequest.vue';
-import VueApexCharts from 'vue-apexcharts';
+import { formatToHumanWithTime } from '@/utils/time.js';
+// import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
     CreateRequest,
-    apexchart: VueApexCharts,
+    // apexchart: VueApexCharts,
   },
   data() {
     return {
+      orders: [],
+      headers: [
+        { text: 'Produce Name', value: 'produceName' },
+        { text: 'Quantity', value: 'quantity' },
+        { text: 'Date ordered', value: 'dateCreated' },
+        { text: 'Status', value: 'status' },
+        { text: 'Price per unit (KSH)', value: 'pricePerUnit' },
+        { text: 'Total Amount', value: 'totalAmount' },
+      ],
       loading: false,
       requestDialog: false,
       dialog: false,
@@ -203,8 +213,10 @@ export default {
   },
   mounted() {
     this.fetchLiveCount();
+    this.fetchOrders();
   },
   methods: {
+    formatToHumanWithTime,
     // fetchRequests() {
     //   axios.get(`/request/buyer?buyerId=${getCurrentUserId()}`)
     //     .then((response) => {
@@ -215,6 +227,17 @@ export default {
     //     });
     // },
     // Fetch requests from the API
+    async fetchOrders() {
+      try {
+        const response = await axios.get(`/farmers-service/listing-orders?buyerId=${getCurrentUserId()}`);
+        if (response.data.success) {
+          this.orders = response.data.data;
+          this.setUpEventSources();
+        }
+      } catch (error) {
+        this.$toast.error('Error fetching orders:', error);
+      }
+    },
     async fetchLiveCount() {
       this.loading = true;
       try {
@@ -230,6 +253,14 @@ export default {
         this.loading = false;
       }
     },
+    getStatusColor(status) {
+      const statusColors = {
+        PENDING_ACCEPTANCE: 'orange',
+        BOOKED_FOR_SUPPLY: 'blue',
+        SUPPLIED: 'green',
+      };
+      return statusColors[status] || 'grey';
+    },
   },
   watch: {
     requestDialog(newValue) {
@@ -238,6 +269,9 @@ export default {
         this.fetchRequests();
       }
     },
+  },
+  filters: {
+    formatToHumanWithTime,
   },
 };
 </script>
