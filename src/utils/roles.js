@@ -2,19 +2,21 @@
 import store from '@/store';
 
 const getUser = () => store.getters['auth/authenticatedUser'];
+const getRole = () => store.getters['auth/role'];
 const viewPermissions = (roles = []) => {
   const user = getUser();
-  if (user == null) return [];
+  if (user == null) {
+    return roles.length === 0
+      ? false
+      : [...roles].includes('anybody');
+  }
   return roles.length === 0
     ? false
-    : [...roles, ...['admin']].includes(user['custom:role']);
+    : [...roles].includes(getUser()['custom:role']);
+  // : [...roles, ...['admin']].includes(getUser()['custom:role']);
 };
 
-const getCurrentUserRole = () => {
-  const user = getUser();
-  if (user == null) return [];
-  return user['custom:role'];
-};
+const getCurrentUserRole = () => getRole();
 
 const getCurrentUserId = () => {
   const user = getUser();

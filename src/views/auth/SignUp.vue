@@ -1,50 +1,100 @@
 <template>
   <v-app id="inspire">
     <terms-and-conditions ref="termsDialog"/>
-    <v-main class="">
+    <v-main v-if="!openUserForm" class="">
       <div class="tw-w-full tw-h-full tw-flex md:tw-flex-row tw-flex-col-reverse">
         <!--Ad part-->
         <div class="ad-gradient tw-flex tw-justify-center tw-items-center md:tw-visible tw-invisible">
         </div>
         <!--  FORM part       -->
         <div class="tw-flex tw-flex-col tw-gap-8  tw-justify-center tw-items-center tw-w-full tw-h-full">
+          <div class="tw-w-full tw-pt-4">
+            <router-link class="tw-ml-4 tw-bg-yellow-400 tw-rounded-none tw-p-2 tw-mt-4" :to="{name: 'Landing'}">Go Home</router-link>
+          </div>
           <div class="tw-flex md:tw-justify-center tw-justify-start tw-items-center tw-h-full tw-flex-col tw-rounded-lg">
             <div class="tw-flex tw-flex-row-reverse tw-justify-center tw-items-center tw-w-full tw-p-4">
               <logo-title
-                  :text="`Welcome ${form.userType}`"
+                  :text="`Welcome`"
                   class="">
               </logo-title>
             </div>
             <!--Form part-->
             <div class="tw-flex tw-flex-col tw-m-3 tw-w-full tw-items-center tw-justify-center">
-              <div
-                  class="md:tw-p-5 tw-p-2 tw-mx-5 tw-border-4"
+              <v-card
                   style="border-radius: 25px;"
               >
                 <card-title
                     icon="mdi-cow"
-                >Sign up</card-title>
+                >Sign Up As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>
                 <v-form
                     v-model="form.isValid"
-                    class="tw-px-4 tw-fex tw-flex-col"
+                    class="tw-px-4 tw-fex tw-flex-col tw-pt-5"
                 >
-                  <phone-number-input
-                      class="tw-my-3"
-                      v-model="form.phoneNumber"
-                      default-country-code="KE"
-                      :no-country-selector="false"
-                      :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                  />
+<!--                  <phone-number-input-->
+<!--                      class="tw-mt-6 tw-ml-3"-->
+<!--                      v-model="form.phoneNumber"-->
+<!--                      default-country-code="KE"-->
+<!--                      :preferred-countries="['KE', 'US', 'UG', 'TZ']"-->
+<!--                      @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"-->
+<!--                  />-->
                   <v-text-field
-                      label="Full names"
+                      dense
+                      outlined
+                      label="Input email"
+                      class="tw-mt-6"
+                      v-model="form.email"
+                      placeholder="email@example.com"
+                      :rules="[emailFormat()]"
+                  >
+                    <v-icon slot="prepend" color="primary">mdi-email</v-icon>
+                  </v-text-field>
+                  <div v-if="form.userType === 'buyer'" class="tw-flex tw-flex-row tw-justify-center tw-items-center" >
+                    <v-icon color="primary">mdi-city</v-icon>
+                    <div>
+                      <v-combobox
+                          v-model="selectedBusiness"
+                          :items="businessTypes"
+                          label="Select your business type"
+                          outlined
+                          clearable
+                          :rules="[required('Business Type')]"
+                          @update:search-input="handleSearchInput"
+                      >
+                        <template v-slot:no-data>
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                Press <kbd>Enter</kbd> to add "<strong>{{ searchInput }}</strong>" as a custom business type
+                              </v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </template>
+                      </v-combobox>
+                      <div v-if="selectedBusiness === 'Other'">
+                        <v-text-field
+                            v-model="customBusiness"
+                            label="Please specify your business type"
+                            outlined
+                            :rules="[required('Business Type')]"
+                        ></v-text-field>
+                      </div>
+                      <v-alert v-if="error" type="error" dense>
+                        {{ error }}
+                      </v-alert>
+                    </div>
+                  </div>
+                  <v-text-field
+                      outlined
+                      :label="`Full Name ${form.userType === 'farmer'? '/Farm Name': '/Business Name'}`"
                       class="tw-my-5"
                       dense
                       v-model="form.fullName"
-                      :rules="[required('Name')]"
+                      :rules="[required('Name'), noDigitFormat()]"
                   >
                     <v-icon slot="prepend" color="primary">mdi-account</v-icon>
                   </v-text-field>
                   <v-text-field
+                      outlined
                       class="tw-my-3"
                       dense
                       id="password"
@@ -57,6 +107,7 @@
                     <v-icon slot="append" color="primary" class="tw-cursor-pointer" @click="passwordField = passwordField === 'password' ? 'text' : 'password'">{{ passwordField === 'password' ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
                   </v-text-field>
                   <v-text-field
+                      outlined
                       class="tw-mb-5 my-3"
                       id="ConfirmPassword"
                       dense
@@ -88,142 +139,188 @@
                     <v-btn
                         block
                         color="primary"
+                        :loading="loading"
                         @click="onSignUp"
                         :disabled="!form.isValid"
                     >Sign up</v-btn>
                   </div>
                 </v-form>
-              </div>
+              </v-card>
               <div/>
             </div>
           </div>
         </div>
       </div>
     </v-main>
+    <Default v-else>
+      <div style="max-width: 1000px; min-height: 80vh;">
+        <h2 class="tw-font-extrabold tw-text-xl tw-my-5">Give in your location details</h2>
+        <UserForm/>
+      </div>
+    </Default>
   </v-app>
 </template>
 <script>
 import validations from '@/utils/validations.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
-import { FB_SIGNUP } from '@/utils/const.js';
+// import { FB_SIGNUP } from '@/utils/const.js';
 import AuthMixins from '@/mixins/AuthMixins.js';
-import axios from 'axios';
-import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
+import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
+import Auth from '@aws-amplify/auth';
+import AuthConfig from '@/utils/aws-exports.js';
+import axios from 'axios';
+import { mapGetters } from 'vuex';
+import Default from '@/components/layout/Default.vue';
+import UserForm from '@/components/layout/partials/nav/UserForm.vue';
 
 export default {
-  components: { TermsAndConditions, LogoTitle, CardTitle },
+  components: {
+    UserForm, Default, TermsAndConditions, LogoTitle, CardTitle,
+  },
   data() {
     return {
       form: {
         fullName: '',
         password: '',
         confirmPassword: '',
+        email: '',
         phoneNumber: '',
-        userType: '',
+        userType: getCurrentUserRole(),
         terms: '',
         isValid: false,
       },
-      farmer: {
+      user: {
         id: 'string',
         name: 'string',
         email: 'string',
         phoneNumber: 'string',
         createdAt: '2025-01-25T09:38:38.536Z',
-        produces: [
-          {
-            id: 'string',
-            farmer: 'string',
-            farmProduce: {
-              id: 'string',
-              name: 'string',
-              description: 'string',
-              farmingType: 'string',
-              status: 'INACTIVE',
-            },
-            status: 'INACTIVE',
-          },
-        ],
       },
-      userTypes: ['Farmer', 'Buyer'],
       ...validations,
       selectedCountry: 'KE',
       passwordField: 'password',
       passwordConfirmField: 'password',
       show: false,
-      intervalId: null,
+      openUserForm: false,
+      loading: false,
+      selectedBusiness: null,
+      customBusiness: '',
+      searchInput: '',
+      error: '',
+      businessTypes: [
+        'Retailer',
+        'Wholesaler',
+        'Restaurant/Café',
+        'Food Processor',
+        'Exporter',
+        'Sole Proprietorship',
+        'School/University', // Specific
+        'Hospital/Healthcare', // Specific
+        'Government Agency', // Explicit
+        'Non-Profit/NGO', // Explicit
+        'Other',
+      ],
     };
   },
   mixins: [AuthMixins],
   computed: {
     getCurrentUserId,
     getCurrentUserRole,
+    ...mapGetters('auth', ['hasAuthenticationStatus', 'authenticationStatus']),
+  },
+  mounted() {
+    const userRole = getCurrentUserRole();
+    if (userRole === '' || userRole == null) {
+      this.$router.push({ name: 'Landing' });
+    }
+    if (userRole === 'farmer') {
+      Auth.configure(AuthConfig.FarmerAuth);
+    }
+    if (userRole === 'buyer') {
+      Auth.configure(AuthConfig.BuyerAuth);
+    }
+    if (userRole === 'admin') {
+      Auth.configure(AuthConfig.AdminAuth);
+    }
   },
   methods: {
+    handleSearchInput(val) {
+      this.searchInput = val;
+    },
     openTermsDialog() {
       this.$refs.termsDialog.openDialog();
     },
     async onSignUp() {
+      this.loading = true;
       const payload = {
-        username: `+254${this.form.phoneNumber.slice(1)}`,
+        username: this.form.email,
         password: this.form.password,
         attributes: {
-          picture: 'https://images.app.goo.gl/CS3uJKWnP61jdUNQ7',
           name: this.form.fullName,
-          'custom:role': this.form.userType, // Custom attribute for user type
+          'custom:role': this.form.userType,
         },
       };
+      if (this.form.userType === 'buyer') {
+        this.error = '';
+        // Validate if "Other" is selected but no custom value provided
+        if (this.selectedBusiness === 'Other' && !this.customBusiness.trim()) {
+          this.error = 'Please specify your business type';
+          return;
+        }
+        // Determine the final business type
+        payload.attributes['custom:businessType'] = this.selectedBusiness === 'Other'
+          ? this.customBusiness
+          : this.selectedBusiness;
+      }
       await this.$store.dispatch('auth/signUp', payload)
-        .then(async () => {
-          if (this.hasAuthenticationStatus) {
+        .then(async (response) => {
+          if (this.hasAuthenticationStatus && this.form.userType !== 'admin') {
             if (this.authenticationStatus.variant === 'error') {
               this.$toast.error(this.authenticationStatus.message, 'Error');
             } else {
-              this.$analytics.logEvent(FB_SIGNUP, {
-                name: this.form.fullname,
-                // email: this.form.email,
-              });
-            }
-          }
-          await this.signInUser(this.form.phoneNumber, this.form.password)
-            .then(() => {
-              this.intervalId = setInterval(() => {
-                if (getCurrentUserId() != null) {
-                  this.farmer = {
-                    id: getCurrentUserId(),
-                    name: this.form.fullName,
-                    email: '',
-                    phoneNumber: this.form.phoneNumber,
-                    createdAt: '',
-                    farmerProduces: [],
-                  };
-                  axios.post(
-                    '/farmer',
-                    this.farmer,
-                  );
-                  this.$router.push({
-                    name: 'Profile',
-                    params: { farmerId: getCurrentUserId() },
-                  });
-                  clearInterval(this.intervalId);
+              // this.$analytics.logEvent(FB_SIGNUP, {
+              //   name: this.form.fullname,
+              //   // email: this.form.email,
+              // });
+              this.user = {
+                id: response.userSub,
+                name: this.form.fullName,
+                email: this.form.email,
+                phoneNumber: '',
+                createdAt: '',
+                [`${getCurrentUserRole() === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
+              };
+              await axios.post(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}`,
+                this.user).then(async (saveResponse) => {
+                if (saveResponse.data.success === true) {
+                  await this.signInUser(this.form.email, this.form.password)
+                    .then(() => {
+                      this.openUserForm = true;
+                      this.$toast.success(`${this.form.fullName} signed up successfully as ${this.form.userType}!`, 'Success', 'Give in location and phone number to continue');
+                    })
+                    .catch((reason) => {
+                      this.$toast.error(reason.message, 'Error');
+                    });
+                } else {
+                  this.$toast.error(saveResponse.data.msg, 'Error');
                 }
-              }, 1000);
-            });
-          this.$toast.success(`${this.form.fullName} signed up successfully!`, 'Success');
+              }).catch((e) => this.$toast.error(e.message, 'Error'));
+            }
+          } else {
+            this.$toast.error('Authentication status not found!');
+          }
         })
-        .catch((reason) => {
-          this.$toast.error(reason.message);
+        .catch((e) => this.$toast.error(e.message, 'Error'))
+        .finally(() => {
+          this.loading = false;
         });
     },
   },
 };
 </script>
 <style scoped>
-* {
-  border-radius: 10px;
-  font-family: Arial,serif;
-}
 .ad-gradient {
   background-image: url("../../assets/images/futuristic_city.webp");
   background-size: cover;

@@ -2,7 +2,7 @@ const AuthMixins = {
   methods: {
     async signInUser(phoneNumber, password) {
       const formData = {
-        username: `+254${phoneNumber.slice(1)}`,
+        username: phoneNumber,
         password,
       };
 

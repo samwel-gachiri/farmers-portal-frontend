@@ -1,23 +1,17 @@
 <template>
   <div>
     <v-list dense>
-      <div class="tw-mx-8 tw-py-3 md:tw-py-5 tw-mb-8">
-          <div v-if="isAuthenticated">
-            <avatar/>
-          </div>
-          <div v-else>
-            <router-link to="SignIn">Login
-              <v-icon>mdi-login</v-icon>
-            </router-link>
-          </div>
+      <div class="tw-mx-4 tw-py-3 md:tw-py-5 tw-mb-8">
+          <logo-title></logo-title>
       </div>
-      <template v-for="item in items">
+      <template v-for="(item, i) in items">
         <v-list-item
-            :key="item.text"
+            v-if="viewPermissions((item.roles))"
+            :key="i"
             link
             :to="item.link"
             active-class="nav-active"
-            class="tw-mx-6 md:tw-mt-2 mdi-lis tw-mt-5"
+            class="tw-mx-4 md:tw-mt-2 mdi-lis tw-mt-5 "
         >
           <v-list-item-action>
             <v-icon color="black">{{ item.icon }}</v-icon>
@@ -35,20 +29,105 @@
 </template>
 
 <script>
-import avatar from '@/components/layout/partials/nav/Avatar.vue';
-import { isAuthenticated } from '@/utils/roles.js';
+import { getCurrentUserId, isAuthenticated, viewPermissions } from '@/utils/roles.js';
+import LogoTitle from '@/components/shared/LogoText.vue';
 
 export default {
   name: 'Drawer',
-  components: { avatar },
+  methods: { viewPermissions },
+  components: { LogoTitle },
   data: () => ({
     items: [
-      { icon: 'mdi-apps', text: 'Dashboard', link: { name: 'Dashboard' } },
-      { icon: 'mdi-account-group', text: 'Community', link: { name: 'Community' } },
+      {
+        icon: 'mdi-apps',
+        text: 'Dashboard',
+        link: { name: 'Dashboard' },
+        roles: ['farmer', 'buyer', 'admin'],
+      },
+      {
+        icon: 'mdi-account-group',
+        text: 'Community',
+        link: { name: 'Community' },
+        roles: ['farmer', 'buyer', 'anybody'],
+      },
+      {
+        icon: 'mdi-cash',
+        text: 'My Listings',
+        link: { name: 'Listings' },
+        roles: ['farmer'],
+      },
+      {
+        icon: 'mdi-web',
+        text: 'Browse Listings',
+        link: {
+          name: 'BrowseListings',
+        },
+        roles: ['buyer', 'anybody'],
+      },
+      // {
+      //   icon: 'mdi-web',
+      //   text: 'Browse Requests',
+      //   link: {
+      //     name: 'BrowseRequests',
+      //   },
+      //   roles: ['farmer'],
+      // },
+      {
+        icon: 'mdi-corn',
+        text: 'My Orders',
+        link: {
+          name: 'BuyerOrders',
+        },
+        roles: ['buyer'],
+      },
+      // {
+      //   icon: 'mdi-handshake',
+      //   text: 'Request Bids',
+      //   link: {
+      //     name: 'FarmerOrders',
+      //   },
+      //   roles: ['farmer'],
+      // },
+      {
+        icon: 'mdi-corn',
+        text: 'My Produces',
+        link: {
+          name: 'Produces',
+          params: { farmerId: getCurrentUserId() },
+        },
+        roles: ['farmer'],
+      },
+      // {
+      //   icon: 'mdi-cart-plus',
+      //   text: 'My Requests',
+      //   link: { name: 'Requests' },
+      //   roles: ['buyer'],
+      // },
+      {
+        icon: 'mdi-chart-pie',
+        text: 'Reports',
+        link: { name: 'FarmerReport' },
+        roles: ['farmer'],
+      },
+      {
+        icon: 'mdi-chart-pie',
+        text: 'Reports',
+        link: { name: 'BuyerReport' },
+        roles: ['buyer'],
+      },
+      {
+        icon: 'mdi-account-group',
+        text: 'Users',
+        link: { name: 'UsersReport' },
+        roles: ['admin'],
+      },
+      {
+        icon: 'mdi-package',
+        text: 'Orders',
+        link: { name: 'OrdersReport' },
+        roles: ['admin'],
+      },
       // { icon: 'mdi-tractor', text: 'Sell produce', link: { name: 'sales', query: { toSamwel: true } } },
-      { icon: 'mdi-cash-multiple', text: 'My Sales', link: { name: 'Listings' } },
-      { icon: 'mdi-corn', text: 'Requests', link: { name: 'Requests' } },
-      { icon: 'mdi-chart-pie', text: 'Reports', link: { name: 'Report' } },
     ],
   }),
   computed: {
@@ -65,6 +144,5 @@ export default {
   background-color: #a6a6a5;
   color: white;
   margin-right: 1.5rem;
-  margin-left: 1.5rem;
 }
 </style>

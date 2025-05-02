@@ -1,31 +1,29 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="text-xl font-bold">Listing Details</span>
+      <span class="text-xl font-bold">Request Details</span>
     </v-card-title>
     <v-card-text>
-      <div v-if="listing">
-        <p><strong>ID:</strong> {{ listing.produceListing.id }}</p>
-        <p><strong>Price:</strong> {{ listing.produceListing.price.price.toLocaleString() }} {{ listing.produceListing.price.currency }} per {{listing.produceListing.unit}}</p>
-        <p><strong>Earnings:</strong> {{ listing.earnings }} {{listing.produceListing.price.currency}}</p>
-        <p><strong>Rating:</strong> {{ listing.produceListing.rating }}</p>
-        <p><strong>Status:</strong> {{ listing.produceListing.status }}</p>
-        <p><strong>Quantity Sold:</strong> {{ listing.quantitySold }} {{ listing.produceListing.unit }}</p>
-        <p><strong>Quantity Left:</strong> {{ listing.quantityLeft }} {{ listing.produceListing.unit }}</p>
-        <p><strong>No of purchases:</strong> {{ listing.noOfPurchases }} <v-icon>mdi-arrow-down</v-icon></p>
+      <div v-if="request">
+        <p><strong>ID:</strong> {{ request.produceRequest.id }}</p>
+        <p><strong>Price:</strong> {{ request.produceRequest.price.price.toLocaleString() }} {{ request.produceRequest.price.currency }} per {{request.produceRequest.unit}}</p>
+        <p><strong>Earnings:</strong> {{ request.earnings }} {{request.produceRequest.price.currency}}</p>
+        <p><strong>Rating:</strong> {{ request.produceRequest.rating }}</p>
+        <p><strong>Status:</strong> {{ request.produceRequest.status }}</p>
+        <p><strong>Quantity Sold:</strong> {{ request.quantitySold }} {{ request.produceRequest.unit }} out of {{ request.quantityLeft }} {{ request.produceRequest.unit }}</p>
+        <p><strong>No of purchases:</strong> {{ request.noOfPurchases }} <v-icon>mdi-arrow-down</v-icon></p>
 
         <v-divider class="my-4"></v-divider>
 
         <h3 class="text-lg font-bold mb-2">Orders</h3>
         <v-data-table
             :headers="orderHeaders"
-            :items="listing.produceListing.orders"
+            :items="request.produceRequest.requestOrders"
             class="elevation-1"
         >
           <template v-slot:item.actions="{ item }">
             <v-btn v-if="item.status === 'PENDING_ACCEPTANCE'" small color="success" @click="acceptOrder(item)">Accept</v-btn>
-            <v-btn v-if="item.status === 'BOOKED_FOR_SUPPLY'" small color="success" disabled>confirm pay</v-btn>
-            <v-btn v-if="item.status === 'SUPPLIED'" small color="success" @click="confirmPayment(item)">confirm pay</v-btn>
+            <v-btn v-if="item.status === 'BOOKED_FOR_SUPPLY'" small color="success" @click="confirmSupply(item)">confirm supply</v-btn>
           </template>
         </v-data-table>
       </div>
@@ -37,11 +35,11 @@
 import axios from 'axios';
 
 export default {
-  name: 'Listing',
+  name: 'Request',
   data() {
     return {
       orderHeaders: [
-        { text: 'Buyer ID', value: 'buyerId' },
+        { text: 'Farmer ID', value: 'farmerId' },
         { text: 'Date Created', value: 'dateCreated' },
         { text: 'Quantity ordered', value: 'quantity' },
         { text: 'Date Accepted', value: 'dateAccepted' },
@@ -50,12 +48,12 @@ export default {
         { text: 'Status', value: 'status' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      listing: {
+      request: {
         quantitySold: 2,
         quantityLeft: 8,
         earnings: 200,
         noOfPurchases: 1,
-        produceListing: {
+        produceRequest: {
           id: '68d2ad3f-8042-4089-bb97-557bb670580a',
           quantity: 10,
           price: {
@@ -65,7 +63,7 @@ export default {
           unit: 'pineapples',
           rating: 0,
           status: 'ACTIVE',
-          farmerProduce: {
+          buyerProduce: {
             id: '3cf68e23-a729-40fc-affa-a5e1be7a5473',
             farmProduce: {
               id: 'f209e2c3-b35e-497a-8ffe-8d5b8f0ec7f6',
@@ -76,7 +74,7 @@ export default {
             },
             status: 'ON_SALE',
           },
-          orders: [
+          requestOrders: [
             {
               id: '3f4e3ba6-ab11-4ee2-9b27-cff10420aac6',
               buyerId: '8dd3971f-b1b8-45c7-aedd-15f33e5b6cbf',
@@ -92,10 +90,11 @@ export default {
       },
       loading: false,
       intervalId: null,
+      eventSource: null,
     };
   },
   props: {
-    listingId: {
+    requestId: {
       type: String,
       default: '',
     },
@@ -103,62 +102,73 @@ export default {
   mounted() {
     // this.intervalId = setInterval(() => {
     // }, 3000);
-    this.fetchListing().then(() => this.connectToSSE());
+    this.fetchRequest();
   },
   beforeDestroy() {
     clearInterval(this.intervalId);
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
   },
   methods: {
     connectToSSE() {
-      const eventSource = new EventSource(
-        `${process.env.VUE_APP_API_BASE_URL}/listing/stream?listingId=${this.listing.produceListing.id}`,
-        // `${process.env.VUE_APP_API_BASE_URL}/listing/stream-sse`,
+      this.eventSource = new EventSource(
+        `${process.env.VUE_APP_API_BASE_URL}buyers-service/request/stream?requestId=${this.request.produceRequest.id}`,
       );
 
       // Listen for custom event types
-      eventSource.addEventListener('supply-confirmed', (event) => {
-        this.$toast.success('Supply confirmed for an order you made', `Supply for ${event.data}`);
-        this.fetchListing();
+      this.eventSource.addEventListener('order-added-to-request', () => {
+        this.$toast.success('Order has been made to one of your request', 'New order!!!');
+        this.fetchRequest();
       });
 
       // Listen for custom event types
-      eventSource.addEventListener('order-added-to-listing', () => {
-        this.$toast.success('Order has been made', 'New order!!!');
-        this.fetchListing();
+      this.eventSource.addEventListener('supply-confirmed', (event) => {
+        this.fetchRequest();
+        this.$toast.success('Supply confirmed for an order', `Supply for ${event.data}`);
       });
 
-      eventSource.onmessage = (event) => {
+      // Listen for custom event types
+      this.eventSource.addEventListener('payment-confirmed', () => {
+        this.$toast.success('Payment has been confirmed to one of your request orders', 'Finished!!');
+        this.fetchRequest();
+      });
+
+      this.eventSource.onmessage = (event) => {
         this.$toast.error('Received event:', event.data);
-        this.fetchListing();
+        this.fetchRequest();
       };
 
-      eventSource.onopen = () => {
+      this.eventSource.onopen = () => {
         this.$toast.show('SSE connection opened');
       };
 
-      eventSource.onerror = (error) => {
+      this.eventSource.onerror = (error) => {
         this.$toast.error('SSE error:', error.message);
-        eventSource.close();
+        this.eventSource.close();
       };
     },
-    async fetchListing() {
+    async fetchRequest() {
       this.loading = true;
       try {
-        const response = await axios.get('/listing', {
+        const response = await axios.get('/buyers-service/request', {
           params: {
-            listingId: this.listingId,
+            requestId: this.requestId,
           },
         });
-        this.listing = response.data.data;
+        this.request = response.data.data;
       } catch (error) {
-        this.$toast.error('Error fetching listing');
+        this.$toast.error('Error fetching request');
       } finally {
         this.loading = false;
+        if (!this.eventSource) {
+          this.connectToSSE();
+        }
       }
     },
     // Accept an order
     acceptOrder(order) {
-      axios.put(`/listing/order/accept?orderId=${order.id}&listingId=${this.listing.produceListing.id}`).then((response) => {
+      axios.put(`/buyers-service/request/order/accept?orderId=${order.id}&requestId=${this.request.produceRequest.id}`).then((response) => {
         if (response.data.success === true) {
           this.$toast.success('Order accepted');
         } else {
@@ -169,22 +179,22 @@ export default {
           this.$toast.error(error.message);
         })
         .finally(() => {
-          this.fetchListing();
+          this.fetchRequest();
         });
     },
-    confirmPayment(order) {
-      axios.put(`/listing/order/confirm-payment?orderId=${order.id}&listingId=${this.listing.produceListing.id}`).then((response) => {
+    confirmSupply(order) {
+      axios.put(`/buyers-service/request/order/confirm-supply?orderId=${order.id}&requestId=${this.request.produceRequest.id}`).then((response) => {
         if (response.data.success === true) {
-          this.$toast.success('Payment confirmed', order.id);
+          this.$toast.success('Supply confirmed', order.id);
         } else {
-          this.$toast.error(response.data.msg, 'Failed to confirm payment');
+          this.$toast.error(response.data.msg, 'Failed to confirm supply');
         }
       })
         .catch((error) => {
           this.$toast.error(error.message);
         })
         .finally(() => {
-          this.fetchListing();
+          this.fetchRequest();
         });
     },
   },

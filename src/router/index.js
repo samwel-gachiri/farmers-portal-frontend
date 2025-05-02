@@ -34,6 +34,12 @@ const routes = [
     component: Landing,
   },
   {
+    path: '/portals',
+    name: 'Home',
+    // beforeEnter: ifAuthenticated,
+    component: Landing,
+  },
+  {
     path: '/signin',
     name: 'SignIn',
     beforeEnter: ifNotAuthenticated,
@@ -46,19 +52,54 @@ const routes = [
     component: () => import('../views/auth/SignUp.vue'),
   },
   {
-    path: '/profile/:farmerId',
-    name: 'Profile',
-    component: () => import('../views/profile.vue'),
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('../views/auth/ForgotPassword.vue'),
   },
   {
-    path: '/requests',
-    name: 'Requests',
-    component: () => import('../views/requests.vue'),
+    path: '/produces/:farmerId',
+    name: 'Produces',
+    component: () => import('../views/Produces.vue'),
   },
   {
     path: '/listings',
     name: 'Listings',
     component: () => import('../views/Listings.vue'),
+  },
+  {
+    path: '/requests',
+    name: 'Requests',
+    component: () => import('../views/Requests.vue'),
+  },
+  {
+    path: '/buyer-orders',
+    name: 'BuyerOrders',
+    component: () => import('../views/buyers/BuyerOrders.vue'),
+  },
+  {
+    path: '/farmer-orders',
+    name: 'FarmerOrders',
+    component: () => import('../views/farmer/FarmerOrders.vue'),
+  },
+  {
+    path: '/browse',
+    name: 'BrowseListings',
+    component: () => import('../views/buyers/BrowseListings.vue'),
+  },
+  {
+    path: '/browse-requests',
+    name: 'BrowseRequests',
+    component: () => import('../views/farmer/BrowseRequests.vue'),
+  },
+  {
+    path: '/users-report',
+    name: 'UsersReport',
+    component: () => import('../views/admin/UsersReport.vue'),
+  },
+  {
+    path: '/order-report',
+    name: 'OrdersReport',
+    component: () => import('../views/admin/OrdersReport.vue'),
   },
   // {
   //   path: '/confirm-otp',
@@ -97,9 +138,14 @@ const routes = [
     component: () => import('../views/Community.vue'),
   },
   {
-    path: '/report',
-    name: 'Report',
-    component: () => import('../views/report/reports.vue'),
+    path: '/farmer-report',
+    name: 'FarmerReport',
+    component: () => import('../views/report/farmer_reports.vue'),
+  },
+  {
+    path: '/buyer-report',
+    name: 'BuyerReport',
+    component: () => import('../views/report/buyer_report.vue'),
   },
   // {
   //   path: '/buy-cover',

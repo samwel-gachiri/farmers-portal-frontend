@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { NOTIFICATIONS } from '@/utils/const.js';
+// import { NOTIFICATIONS } from '@/utils/const.js';
 
 import CardTitle from '@/components/shared/CardTitle.vue';
 
@@ -43,7 +43,7 @@ export default {
     dialog(val) {
       if (!val) {
         this.$store.dispatch('auth/signOut').then(() => {
-          localStorage.removeItem(NOTIFICATIONS);
+          // localStorage.removeItem(NOTIFICATIONS);
           if (caches) {
             caches.keys().then((arr) => {
               arr.forEach((key) => {

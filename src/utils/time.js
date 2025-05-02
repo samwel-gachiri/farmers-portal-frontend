@@ -7,6 +7,10 @@ export const formatDate = (date) => {
   return `${day}/${month}/${year}`;
 };
 
+export const formatToHumanWithTime = (date) => {
+  if (!date || date === '~') return '~';
+  return moment(date).format('DD/MM/YYYY hh:mma');
+};
 export const formatDate2 = (date) => {
   if (!date) return null;
 
@@ -51,17 +55,6 @@ export const formatDateToMonth = (date) => moment(date).format('MMM');
 export const diffDate2 = (date) => {
   const now = moment(new Date());
   return moment(date, 'Do MMM YYYY').isBefore(now);
-};
-
-export const isInstalmentDue = (paymentSchedule) => {
-  let s = false;
-  if (paymentSchedule === null) return false;
-  paymentSchedule.forEach((i) => {
-    if (diffDate2(i.dueDate)) {
-      s = true;
-    }
-  });
-  return s;
 };
 
 export const timeNow = (i = null) => {
