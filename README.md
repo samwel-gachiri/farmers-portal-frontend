@@ -1,4 +1,13 @@
-# Agriconnect System Frontend
+# Name: Samwel Gachiri Nganga
+# Registration number: J17/5082/2021
+
+
+[//]: # (# Supervisor: Prof. Elizaphan Maina)
+
+[//]: # (# Academic Year: 2024/2025)
+
+# Agriconnect System 
+ A web-based application that Provides a platform for farmers to connect, with buyers, and make trade  
 
 ## 📌 Overview
 Agriconnect System Frontend is a Vue.js-based application designed to provide an intuitive and seamless user experience for managing agricultural processes. This project follows best practices for maintainability, scalability, and performance.
@@ -56,25 +65,15 @@ npm run lint
 ```
 
 ### 🖥️ Tech Stack
-- **Frontend Framework:** Vue 3
-- **State Management:** Vuex / Pinia
-- **UI Library:** Vuetify / Tailwind CSS
+- **Frontend Framework:** Vue 2
+- **State Management:** Vuex 
+- **UI Library:** Vuetify & Tailwind CSS
 - **Routing:** Vue Router
 - **HTTP Client:** Axios
 
-## 📖 Documentation
 For detailed configurations, refer to the official Vue.js documentation:  
 [Vue.js Documentation](https://vuejs.org/)
 
-## 📸 Screenshots & Demo
-### 🏠 Home Page
-![Home Page](./design_images/home.png)
-### 📊 Dashboard
-![Dashboard](./design_images/farmer_dashboard.png)
-### 🌾 My Produces
-![My Produces](./design_images/my_produces.png)
-### 🌐 Browse Listings
-![Browse Listings](./design_images/browse_listings.png)
 
 ## 💡 Contributing
 1. Fork the repository.

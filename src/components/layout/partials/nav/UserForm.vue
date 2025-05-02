@@ -158,7 +158,16 @@ export default {
         this.userLocation.location.customName = data?.customName;
         if (data.latitude) {
           this.map.panTo([data?.latitude, data?.longitude]);
-          this.marker = L.marker([data?.latitude, data?.longitude]).addTo(this.map);
+          this.marker = L.marker([data?.latitude, data?.longitude], {
+            icon: L.icon({
+              iconUrl: `https://agri-image.s3.us-east-1.amazonaws.com/uploads/${this.role}_map_icon.png`, // Path to your image
+              iconSize: [25, 41], // Size of the icon
+              iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
+              popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
+              shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png', // Optional shadow
+              shadowSize: [41, 41], // Shadow size
+            }),
+          }).addTo(this.map);
         }
       }
     }).catch((e) => {

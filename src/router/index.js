@@ -34,6 +34,12 @@ const routes = [
     component: Landing,
   },
   {
+    path: '/portals',
+    name: 'Home',
+    // beforeEnter: ifAuthenticated,
+    component: Landing,
+  },
+  {
     path: '/signin',
     name: 'SignIn',
     beforeEnter: ifNotAuthenticated,

@@ -46,7 +46,7 @@
       <!-- Map Section -->
       <v-row class="tw-h-full">
         <v-col cols="12" md="8" class="rounded-lg overflow-hidden tw-shadow-2xl tw-bg-white">
-          <div ref="map" class="tw-h-full tw-w-full" style="height: 500px;"></div>
+          <div ref="map" id="map" class="tw-h-full tw-w-full" style="height: 500px;"></div>
         </v-col>
 
         <!-- Sidebar for Farmers/Buyers List -->
@@ -130,17 +130,21 @@
 <script>
 import Default from '@/components/layout/Default.vue';
 import googleMapsLoader from '@/components/GoogleMapsLoader.js';
-import axios from 'axios';
+// import axios from 'axios';
 import { mapGetters, mapState } from 'vuex';
 import FarmerListingsDialog from '@/components/listing/FarmerListingsDialog.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
 import BuyerRequestsDialog from '@/components/request/BuyerRequestsDialog.vue';
+import L from 'leaflet';
+import axios from 'axios';
 
 export default {
   components: { BuyerRequestsDialog, FarmerListingsDialog, Default },
   data() {
     return {
       map: null,
+      google: null,
+      markers: [],
       center: { lat: null, lng: null },
       farmersLocation: [
         {
@@ -258,54 +262,74 @@ export default {
     buyFarmProduce(productId, productName) {
       this.$toast.success(`Buy ${productId} - ${productName}`);
     },
-    toggleConnection() {
+
+    initMap() {
+      this.initGoogleMap();
     },
     loadMap() {
-      this.$toast.show('loading map');
+      this.loadGoogleMap();
+    },
+    initLeafletMap() {
+      this.map = L.map('map').setView([0, 0], 16);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(this.map);
+    },
+    initGoogleMap() {
       googleMapsLoader.load()
         .then((google) => {
-          this.directionsService = new google.maps.DirectionsService();
-          this.directionsRenderer = new google.maps.DirectionsRenderer();
-          this.directionsRenderer.setMap(this.map);
+          this.google = google;
+          this.map = new google.maps.Map(this.$refs.map, {
+            center: { lat: 0, lng: 0 },
+            zoom: 8,
+            heading: 320,
+            tilt: 0.0,
+            mapId: '8fafea89cad68455',
+            rotateControl: true,
+            disableDefaultUI: false,
+          });
+        })
+        .then(() => {
+          this.loadGoogleMap();
+        })
+        .catch((err) => {
+          this.$toast.error(err.message);
+        });
+    },
 
-          navigator.geolocation.getCurrentPosition((position) => {
-            this.map = new google.maps.Map(this.$refs.map, {
-              center: { lat: position.coords.latitude, lng: position.coords.longitude },
-              zoom: 8,
-              heading: 320,
-              tilt: 0.0,
-              mapId: '8fafea89cad68455',
-              rotateControl: true,
-              disableDefaultUI: false,
-            });
-            this.center.lat = position.coords.latitude;
-            this.center.lng = position.coords.longitude;
+    loadGoogleMap() {
+      this.directionsService = new this.google.maps.DirectionsService();
+      this.directionsRenderer = new this.google.maps.DirectionsRenderer();
+      this.directionsRenderer.setMap(this.map);
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.center.lat = position.coords.latitude;
+        this.center.lng = position.coords.longitude;
+        this.setFocusToLocation(position.coords.latitude, position.coords.longitude);
+        const marker = new this.google.maps.Marker({
+          position: { lat: position.coords.latitude, lng: position.coords.longitude },
+          map: this.map,
+        });
 
-            const marker = new google.maps.Marker({
-              position: { lat: position.coords.latitude, lng: position.coords.longitude },
-              map: this.map,
-            });
+        marker.addListener('click', () => {
+          this.$toast.success('You clicked your location!');
+        });
 
-            marker.addListener('click', () => {
-              this.$toast.success('You clicked your location!');
-            });
+        this.filteredFarmers.forEach((farmerLocation) => {
+          const farmerMarker = new this.google.maps.Marker({
+            position: { lat: farmerLocation.latitude, lng: farmerLocation.longitude },
+            map: this.map,
+            icon: {
+              // eslint-disable-next-line global-require
+              url: require('@/assets/images/farmer_map_icon.png'),
+              scaledSize: new this.google.maps.Size(50, 50),
+            },
+          });
 
-            this.filteredFarmers.forEach((farmerLocation) => {
-              const farmerMarker = new google.maps.Marker({
-                position: { lat: farmerLocation.latitude, lng: farmerLocation.longitude },
-                map: this.map,
-                icon: {
-                  // eslint-disable-next-line global-require
-                  url: require('@/assets/images/farmer_map_icon.png'),
-                  scaledSize: new google.maps.Size(50, 50),
-                },
-              });
+          // Create an InfoWindow instance (used for popups)
+          const infoWindow = new this.google.maps.InfoWindow();
 
-              // Create an InfoWindow instance (used for popups)
-              const infoWindow = new google.maps.InfoWindow();
-
-              farmerMarker.addListener('mouseover', () => {
-                const productsHtml = farmerLocation.farmer.farmerProduces.map((product) => `
+          farmerMarker.addListener('mouseover', () => {
+            const productsHtml = farmerLocation.farmer.farmerProduces.map((product) => `
                     <div>${product.farmProduce.name} - ${product.status}
                     ${
   product.status === 'ON_SALE'
@@ -313,56 +337,56 @@ export default {
     : ''
 }</div>`);
 
-                const content = `
+            const content = `
                     <div style="max-width: 250px;">
                       <h3>${farmerLocation.farmer.name}</h3>
                       <div>${productsHtml}</div>
                     </div>
                   `;
-                // Set content and open InfoWindow at the marker
-                infoWindow.setContent(content);
-                infoWindow.open(this.map, farmerMarker);
+            // Set content and open InfoWindow at the marker
+            infoWindow.setContent(content);
+            infoWindow.open(this.map, farmerMarker);
 
-                // Wait for DOM to be ready before adding click events
-                setTimeout(() => {
-                  document.getElementById('connect-btn').addEventListener('click', () => {
-                    // toggleConnection(); // Handle connection toggle
-                  });
-                }, 100);
+            // Wait for DOM to be ready before adding click events
+            setTimeout(() => {
+              document.getElementById('connect-btn').addEventListener('click', () => {
+                // toggleConnection(); // Handle connection toggle
               });
-              //
-              farmerMarker.addListener('click', () => {
-                this.selectedUserFromMap = { ...farmerLocation, role: 'farmer' };
-                this.userDialog = true;
-              });
-              farmerMarker.addListener('mouseout', () => {
-                // Wait for DOM to be ready before adding click events
-                setTimeout(() => {
-                  infoWindow.close();
-                }, 500);
-              });
-            });
-            this.filteredBuyers.forEach((buyerLocation) => {
-              const buyerMarker = new google.maps.Marker({
-                position: { lat: buyerLocation.latitude, lng: buyerLocation.longitude },
-                map: this.map,
-                icon: {
-                  // eslint-disable-next-line global-require
-                  url: require('@/assets/images/buyer_map_icon.png'),
-                  scaledSize: new google.maps.Size(50, 50),
-                },
-              });
+            }, 100);
+          });
+          //
+          farmerMarker.addListener('click', () => {
+            this.selectedUserFromMap = { ...farmerLocation, role: 'farmer' };
+            this.userDialog = true;
+          });
+          farmerMarker.addListener('mouseout', () => {
+            // Wait for DOM to be ready before adding click events
+            setTimeout(() => {
+              infoWindow.close();
+            }, 500);
+          });
+        });
+        this.filteredBuyers.forEach((buyerLocation) => {
+          const buyerMarker = new this.google.maps.Marker({
+            position: { lat: buyerLocation.latitude, lng: buyerLocation.longitude },
+            map: this.map,
+            icon: {
+              // eslint-disable-next-line global-require
+              url: require('@/assets/images/buyer_map_icon.png'),
+              scaledSize: new this.google.maps.Size(50, 50),
+            },
+          });
 
-              buyerMarker.addListener('click', () => {
-                this.$toast.success(`Buyer: ${buyerLocation.buyer.name}`);
-                this.selectedUserFromMap = { ...buyerLocation, role: 'buyer' };
-                this.userDialog = true;
-              });
+          buyerMarker.addListener('click', () => {
+            this.$toast.success(`Buyer: ${buyerLocation.buyer.name}`);
+            this.selectedUserFromMap = { ...buyerLocation, role: 'buyer' };
+            this.userDialog = true;
+          });
 
-              const infoWindow = new google.maps.InfoWindow();
-              buyerMarker.addListener('mouseover', () => {
-                // Set content and open InfoWindow at the marker
-                infoWindow.setContent(`<div style="max-width: 250px;">
+          const infoWindow = new this.google.maps.InfoWindow();
+          buyerMarker.addListener('mouseover', () => {
+            // Set content and open InfoWindow at the marker
+            infoWindow.setContent(`<div style="max-width: 250px;">
                   <h3>${buyerLocation.buyer.name}</h3>
                   <div>${buyerLocation.buyer.preferredProduces.map((product) => `
                     <div>${product.bsfarmProduce.name} - ${product.status}
@@ -372,22 +396,18 @@ export default {
     : ''
 }</div>`)}</div>
                 </div>`);
-                infoWindow.open(this.map, buyerMarker);
-              });
-              buyerMarker.addListener('mouseout', () => {
-                // Wait for DOM to be ready before adding click events
-                setTimeout(() => {
-                  infoWindow.close();
-                }, 500);
-              });
-            });
-          }, (error) => {
-            this.$toast.error(error.message);
-          }, { enableHighAccuracy: true });
-        })
-        .catch((err) => {
-          this.$toast.error(err.message);
+            infoWindow.open(this.map, buyerMarker);
+          });
+          buyerMarker.addListener('mouseout', () => {
+            // Wait for DOM to be ready before adding click events
+            setTimeout(() => {
+              infoWindow.close();
+            }, 500);
+          });
         });
+      }, (error) => {
+        this.$toast.error(error.message);
+      }, { enableHighAccuracy: true });
     },
 
     setFocusToLocation(lat, lng) {
@@ -396,11 +416,11 @@ export default {
 
     calculateRoute(start, end) {
       // eslint-disable-next-line no-undef,new-cap
-      this.distance = new google.maps.geometry.spherical.computeDistanceBetween(
+      this.distance = new this.google.maps.geometry.spherical.computeDistanceBetween(
         // eslint-disable-next-line no-undef
-        new google.maps.LatLng(start.lat, start.lng),
+        new this.google.maps.LatLng(start.lat, start.lng),
         // eslint-disable-next-line no-undef
-        new google.maps.LatLng(end.lat, end.lng),
+        new this.google.maps.LatLng(end.lat, end.lng),
       );
 
       this.directionsService.route(
@@ -436,7 +456,7 @@ export default {
               } else {
                 this.$toast.error('Failed to load buyers locations');
               }
-              this.loadMap();
+              this.initMap();
             })
             .catch((reason) => this.$toast.error(reason.message));
         } else {
