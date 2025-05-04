@@ -153,9 +153,7 @@ import { NOTIFICATIONS } from '@/utils/const.js';
 export default {
   methods: {
     async openSignIn(name) {
-      console.log('1');
       const userName = name.toString().toLowerCase();
-      console.log('2');
       if (getCurrentUserRole() !== userName) {
         await this.$store.dispatch('auth/signOut');
         if (localStorage != null) {
