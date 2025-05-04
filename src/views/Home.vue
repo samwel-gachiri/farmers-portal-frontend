@@ -1,126 +1,308 @@
-/* eslint-disable */
 <template>
-  <v-app id="inspire">
-    <div class="tw-w-full tw-flex tw-flex-col tw-justify-center tw-items-start tw-py-5 md:tw-border-t-2 tw-border-t-0 top-bar tw-border-black md:tw-shadow-none tw-shadow-md">
-      <logo-title class=""></logo-title>
+  <v-app>
+    <!-- Animated Background -->
+    <div class="background-animation">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
     </div>
 
-    <div class="tw-w-full tw-flex tw-flex-col tw-h-full lg:tw-h-full md:tw-items-center tw-items-start tw-justify-center tw-bg-gray-100">
-      <h2 style="color: #13361C;" class="md:tw-text-6xl tw-text-3xl  md:tw-mt-0 tw-mt-8 md:tw-mx-0 tw-mx-10">Agriconnect Portals</h2>
-      <h2 style="color: #13361C;" class="tw-mt-3 md:tw-font-bold  md:tw-mx-0 tw-mx-10">A place where farmers and buyers meet, interact and trade</h2>
-      <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-8 tw-p-10 tw-justify-center tw-items-center tw-w-full md:tw-w-auto">
-        <v-card
-            v-for="(user, index) in userTypes"
-            :key="index"
-            class="user-type-item tw-py-8 tw-px-10 tw-w-full tw-justify-center tw-flex w-flex-col tw-shadow-lg tw-bg-white"
-            style="border-radius: 20px;"
-            @click="openSignIn(user.name)"
-        >
-          <v-img
-              v-if="user.name === 'Buyer'"
-              src="@/assets/images/buyer.png"
-              width="100"
-              height="100"
-          ></v-img>
-          <v-img
-              v-if="user.name === 'Farmer'"
-              src="@/assets/images/farmer.png"
-              width="100"
-              height="100"
-          ></v-img>
-          <v-img
-              v-if="user.name === 'Admin'"
-              src="@/assets/images/admin.png"
-              width="100"
-              height="100"
-          ></v-img>
-          <h2 class="user-type-text tw-text-lg tw-font-extrabold tw-mt-2">{{ user.name }} Portal</h2>
-          <h2 style="color: #7a7a7a;" class="c-blue-text tw-font-light tw-text-md"> {{ user.name }} Start Here</h2>
-        </v-card>
-      </div>
-    </div>
+    <!-- Main Content -->
+    <v-main>
+      <v-container class="fill-height" fluid>
+        <v-row align="center" justify="center">
+          <v-col cols="12" class="text-center">
+            <!-- Logo and Title -->
+            <div class="mb-10">
+              <v-avatar size="80" class="mb-4">
+                <v-img src="@/assets/images/logo.png"></v-img>
+              </v-avatar>
+              <h1 class="text-h3 text-md-h2 font-weight-bold mb-2">
+                Welcome to <span class="primary--text">AgriConnect</span>
+              </h1>
+              <p class="text-h6 text-md-h5 font-weight-regular">
+                Select your role to continue to the platform
+              </p>
+            </div>
+
+            <!-- Role Cards -->
+            <v-row justify="center" class="mt-8">
+              <!-- Farmer Card -->
+              <v-col cols="12" md="4" class="d-flex">
+                <v-hover v-slot="{ hover }">
+                  <v-card
+                      :elevation="hover ? 12 : 6"
+                      class="pa-6 text-center mx-auto role-card"
+                      max-width="350"
+                      :color="hover ? 'primary lighten-5' : 'white'"
+                      @click="openSignIn('farmer')"
+                  >
+                    <v-avatar size="100" color="primary lighten-4" class="mb-4">
+                      <v-img
+                          src="@/assets/images/farmer.png"
+                          :class="{ 'scale-up': hover }"
+                      ></v-img>
+                    </v-avatar>
+                    <h3 class="text-h4 font-weight-bold mb-3 primary--text">Farmer</h3>
+                    <p class="text-body-1 mb-6">
+                      Connect with buyers, showcase your produce, and grow your farming business
+                    </p>
+                    <v-btn
+                        color="primary"
+                        large
+                        :class="{ 'pulse-btn': hover }"
+                    >
+                      Continue as Farmer
+                      <v-icon right>mdi-arrow-right</v-icon>
+                    </v-btn>
+                    <div class="highlight-bar" :class="{ 'active': hover }"></div>
+                  </v-card>
+                </v-hover>
+              </v-col>
+
+              <!-- Buyer Card -->
+              <v-col cols="12" md="4" class="d-flex">
+                <v-hover v-slot="{ hover }">
+                  <v-card
+                      :elevation="hover ? 12 : 6"
+                      class="pa-6 text-center mx-auto role-card"
+                      max-width="350"
+                      :color="hover ? 'secondary lighten-5' : 'white'"
+                      @click="openSignIn('buyer')"
+                  >
+                    <v-avatar size="100" color="secondary lighten-4" class="mb-4">
+                      <v-img
+                          src="@/assets/images/buyer.png"
+                          :class="{ 'scale-up': hover }"
+                      ></v-img>
+                    </v-avatar>
+                    <h3 class="text-h4 font-weight-bold mb-3 secondary--text">Buyer</h3>
+                    <p class="text-body-1 mb-6">
+                      Source fresh produce directly from farmers with quality assurance
+                    </p>
+                    <v-btn
+                        color="secondary"
+                        large
+                        :class="{ 'pulse-btn': hover }"
+                    >
+                      Continue as Buyer
+                      <v-icon right>mdi-arrow-right</v-icon>
+                    </v-btn>
+                    <div class="highlight-bar" :class="{ 'active': hover }"></div>
+                  </v-card>
+                </v-hover>
+              </v-col>
+
+              <!-- Admin Card -->
+              <v-col cols="12" md="4" class="d-flex">
+                <v-hover v-slot="{ hover }">
+                  <v-card
+                      :elevation="hover ? 12 : 6"
+                      class="pa-6 text-center mx-auto role-card"
+                      max-width="350"
+                      :color="hover ? 'accent lighten-5' : 'white'"
+                      @click="openSignIn('admin')"
+                  >
+                    <v-avatar size="100" color="accent lighten-4" class="mb-4">
+                      <v-img
+                          src="@/assets/images/admin.png"
+                          :class="{ 'scale-up': hover }"
+                      ></v-img>
+                    </v-avatar>
+                    <h3 class="text-h4 font-weight-bold mb-3 accent--text">Admin</h3>
+                    <p class="text-body-1 mb-6">
+                      Manage platform operations, verify users, and ensure smooth transactions
+                    </p>
+                    <v-btn
+                        color="accent"
+                        large
+                        :class="{ 'pulse-btn': hover }"
+                    >
+                      Continue as Admin
+                      <v-icon right>mdi-arrow-right</v-icon>
+                    </v-btn>
+                    <div class="highlight-bar" :class="{ 'active': hover }"></div>
+                  </v-card>
+                </v-hover>
+              </v-col>
+            </v-row>
+
+            <!-- Sign In Option -->
+            <div v-if="false" class="mt-12">
+              <p class="text-body-1 mb-2">Already have an account?</p>
+              <v-btn
+                  text
+                  color="primary"
+                  @click="$router.push({ name: 'SignIn' })"
+              >
+                Sign in here
+                <v-icon right>mdi-login</v-icon>
+              </v-btn>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
 <script>
-// import Navigation from '@/components/navigation.vue';
-
-// import Default from '@/components/layout/Default.vue';
-
-import LogoTitle from '@/components/shared/LogoText.vue';
-import { NOTIFICATIONS } from '@/utils/const.js';
 import { getCurrentUserRole } from '@/utils/roles.js';
+import { NOTIFICATIONS } from '@/utils/const.js';
 
 export default {
-  name: 'Home',
-  data() {
-    return {
-      userTypes: [
-        {
-          name: 'Farmer',
-          icon: '',
-        },
-        {
-          name: 'Buyer',
-          icon: '',
-        },
-        {
-          name: 'Admin',
-          icon: '',
-        },
-      ],
-    };
-  },
-  components: { LogoTitle },
   methods: {
     async openSignIn(name) {
+      console.log('1');
       const userName = name.toString().toLowerCase();
+      console.log('2');
       if (getCurrentUserRole() !== userName) {
         await this.$store.dispatch('auth/signOut');
-        localStorage.removeItem(NOTIFICATIONS);
-        if (caches) {
-          caches.keys().then((arr) => {
-            arr.forEach((key) => {
-              caches.delete(key);
+        if (localStorage != null) {
+          localStorage.removeItem(NOTIFICATIONS);
+          if (caches) {
+            caches.keys().then((arr) => {
+              arr.forEach((key) => {
+                caches.delete(key);
+              });
             });
-          });
+          }
         }
       }
       await this.$store.dispatch('auth/setViewRole', userName);
       await this.$router.push({ name: 'SignIn', query: { r: btoa(window.location.href) } });
     },
   },
-  // components: { Default },
-  // components: {
-  //   Navigation,
-  // },
+  computed: {
+    getCurrentUserRole,
+  },
 };
 </script>
 
 <style scoped>
-
-h1 {
-  font-family: "Roboto Thin",serif;
-}
-h1, h2, a{
-  color: white;
-}
-.user-type-text{
-  color: #13361C;
-}
-.lifted-neu {
-  background: #0f0f0f;
-  border-radius: 15px;
-  min-height: 90vh;
-  box-shadow: 9.91px 9.91px 15px #D9DADE, -9.91px -9.91px 15px #FFFFFF;
-}
-.lifted {
-  background: #EEF0F4;
-  border-radius: 15px;
-  box-shadow: 9.91px 9.91px 15px #D9DADE, -9.91px -9.91px 15px #FFFFFF;
+/* Background Animation */
+.background-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
 }
 
-.top-bar {
-  border-radius: 0 0 50% 50% / 0 0 50% 50%;
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.15;
+}
+
+.circle-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--v-primary-base);
+  top: -100px;
+  left: -100px;
+  animation: float 15s infinite ease-in-out;
+}
+
+.circle-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--v-secondary-base);
+  bottom: -100px;
+  right: -50px;
+  animation: float 18s infinite ease-in-out reverse;
+  animation-delay: 2s;
+}
+
+.circle-3 {
+  width: 300px;
+  height: 300px;
+  background: var(--v-accent-base);
+  top: 50%;
+  left: 30%;
+  animation: float 12s infinite ease-in-out;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(50px, 50px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Card Styles */
+.role-card {
+  transition: all 0.3s ease;
+  border-radius: 16px !important;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.highlight-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--v-primary-base), var(--v-secondary-base));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.highlight-bar.active {
+  transform: scaleX(1);
+}
+
+.scale-up {
+  animation: scaleUp 0.5s ease forwards;
+}
+
+@keyframes scaleUp {
+  to {
+    transform: scale(1.1);
+  }
+}
+
+.pulse-btn {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Vuetify Overrides */
+.v-application .primary {
+  background-color: #2e7d32 !important;
+  border-color: #2e7d32 !important;
+}
+
+.v-application .secondary {
+  background-color: #ff8f00 !important;
+  border-color: #ff8f00 !important;
+}
+
+.v-application .accent {
+  background-color: #00acc1 !important;
+  border-color: #00acc1 !important;
 }
 </style>

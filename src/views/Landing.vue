@@ -7,15 +7,15 @@
           <v-col cols="6" sm="4" md="3">
             <v-btn text class="pa-0" @click="scrollTo('hero')">
               <v-avatar size="40" class="mr-2">
-                <v-img src="https://cdn-icons-png.flaticon.com/512/3079/3079158.png"></v-img>
+                <v-img src="@/assets/images/logo.png"></v-img>
               </v-avatar>
-              <span class="text-h6 font-weight-bold primary--text">AgriConnect</span>
+              <span class="text-h6 tw-font-weight-bold primary--text">AgriConnect</span>
             </v-btn>
           </v-col>
 
-          <v-col cols="6" sm="8" md="9" class="text-right">
-            <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-app-bar-nav-icon>
-            <div class="hidden-sm-and-down">
+          <v-col cols="6" sm="8" md="9" class="tw-text-right">
+<!--            <v-app-bar-nav-icon @click="drawer = !drawer" class="tw-hidden-md-and-up"></v-app-bar-nav-icon>-->
+            <div class="tw-hidden-sm-and-down">
               <v-btn text color="primary" @click="scrollTo('features')">Features</v-btn>
               <v-btn text color="primary" @click="scrollTo('benefits')">Benefits</v-btn>
               <v-btn text color="primary" @click="scrollTo('success')">Success Stories</v-btn>
@@ -41,7 +41,7 @@
           <v-list-item-title>Success Stories</v-list-item-title>
         </v-list-item>
         <v-list-item @click="scrollTo('cta')">
-          <v-list-item-title class="primary--text font-weight-bold">Get Started</v-list-item-title>
+          <v-list-item-title class="primary--text tw-font-weight-bold">Get Started</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -51,13 +51,13 @@
       <v-container>
         <v-row align="center">
           <v-col cols="12" md="6" class="pr-md-10">
-            <h1 class="text-h3 text-md-h2 font-weight-bold mb-6">
+            <h1 class="text-h3 tw-text-md-h2 tw-font-weight-bold tw-mb-6">
               <span class="primary--text">Farmers</span> &
               <span class="secondary--text">Buyers</span>
               Connected
             </h1>
 
-            <p class="text-h6 mb-8">
+            <p class="tw-text-h6 tw-mb-8">
               A modern platform bridging the gap between agricultural producers and markets
             </p>
 
@@ -117,8 +117,8 @@
       <v-container>
         <v-row>
           <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 font-weight-bold mb-4">Our Platform Features</h2>
-            <p class="text-h6 font-weight-regular mx-auto" style="max-width: 600px">
+            <h2 class="text-h3 tw-font-weight-bold mb-4">Our Platform Features</h2>
+            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
               Designed to empower both farmers and buyers with modern tools
             </p>
           </v-col>
@@ -131,7 +131,7 @@
                 <v-avatar size="60" color="primary" class="mr-4">
                   <v-icon dark size="32">mdi-sprout</v-icon>
                 </v-avatar>
-                <h3 class="text-h5 font-weight-bold">For Farmers</h3>
+                <h3 class="text-h5 tw-font-weight-bold">For Farmers</h3>
               </div>
 
               <v-list dense class="transparent">
@@ -160,7 +160,7 @@
                 <v-avatar size="60" color="secondary" class="mr-4">
                   <v-icon dark size="32">mdi-cart</v-icon>
                 </v-avatar>
-                <h3 class="text-h5 font-weight-bold">For Buyers</h3>
+                <h3 class="text-h5 tw-font-weight-bold">For Buyers</h3>
               </div>
 
               <v-list dense class="transparent">
@@ -191,8 +191,8 @@
       <v-container>
         <v-row>
           <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 font-weight-bold mb-4">Key Benefits</h2>
-            <p class="text-h6 font-weight-regular mx-auto" style="max-width: 600px">
+            <h2 class="text-h3 tw-font-weight-bold mb-4">Key Benefits</h2>
+            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
               Why our platform is transforming agricultural commerce
             </p>
           </v-col>
@@ -203,14 +203,14 @@
             <v-hover v-slot="{ hover }">
               <v-card
                   :elevation="hover ? 12 : 4"
-                  class="pa-6 text-center benefit-card"
+                  class="pa-6 tw-text-center benefit-card"
                   :color="benefit.color"
                   dark
               >
                 <v-avatar size="80" :color="benefit.iconColor" class="mb-4">
                   <v-icon size="40">{{ benefit.icon }}</v-icon>
                 </v-avatar>
-                <h3 class="text-h5 font-weight-bold mb-3">{{ benefit.title }}</h3>
+                <h3 class="text-h5 tw-font-weight-bold mb-3">{{ benefit.title }}</h3>
                 <p class="text-body-1">{{ benefit.text }}</p>
               </v-card>
             </v-hover>
@@ -224,8 +224,8 @@
       <v-container>
         <v-row>
           <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 font-weight-bold mb-4">Success Stories</h2>
-            <p class="text-h6 font-weight-regular mx-auto" style="max-width: 600px">
+            <h2 class="text-h3 tw-font-weight-bold mb-4">Success Stories</h2>
+            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
               Real farmers and buyers achieving real results with our platform
             </p>
           </v-col>
@@ -265,9 +265,9 @@
     <section id="cta" class="py-12 secondary darken-1 white--text">
       <v-container>
         <v-row align="center">
-          <v-col cols="12" md="8" class="text-center text-md-left">
-            <h2 class="text-h3 font-weight-bold mb-4">Ready to transform your agricultural business?</h2>
-            <p class="text-h6 font-weight-regular">
+          <v-col cols="12" md="8" class="text-center tw-text-md-left">
+            <h2 class="text-h3 tw-font-weight-bold mb-4">Ready to transform your agricultural business?</h2>
+            <p class="text-h6 tw-font-weight-regular">
               Join thousands of farmers and buyers already benefiting from our platform
             </p>
           </v-col>
@@ -276,7 +276,7 @@
             <v-btn
                 x-large
                 color="white"
-                class="primary--text font-weight-bold"
+                class="primary--text tw-font-weight-bold"
                 @click="getStarted"
             >
               Get Started Now
@@ -296,7 +296,7 @@
               <v-avatar size="40" class="mr-2">
                 <v-img src="https://cdn-icons-png.flaticon.com/512/3079/3079158.png"></v-img>
               </v-avatar>
-              <span class="text-h6 font-weight-bold">AgriConnect</span>
+              <span class="text-h6 tw-font-weight-bold">AgriConnect</span>
             </div>
             <p class="text-body-1">
               Connecting farmers and buyers for sustainable agricultural commerce
@@ -318,7 +318,7 @@
           </v-col>
 
           <v-col cols="6" md="2">
-            <h4 class="text-h6 font-weight-bold mb-4">Quick Links</h4>
+            <h4 class="text-h6 tw-font-weight-bold mb-4">Quick Links</h4>
             <v-list dense nav class="transparent">
               <v-list-item
                   v-for="(link, i) in quickLinks"
@@ -331,7 +331,7 @@
           </v-col>
 
           <v-col cols="6" md="2">
-            <h4 class="text-h6 font-weight-bold mb-4">Company</h4>
+            <h4 class="text-h6 tw-font-weight-bold mb-4">Company</h4>
             <v-list dense nav class="transparent">
               <v-list-item
                   v-for="(link, i) in companyLinks"
@@ -344,7 +344,7 @@
           </v-col>
 
           <v-col cols="12" md="4">
-            <h4 class="text-h6 font-weight-bold mb-4">Newsletter</h4>
+            <h4 class="text-h6 tw-font-weight-bold mb-4">Newsletter</h4>
             <p class="text-body-1 mb-4">
               Subscribe to get updates on new features and agricultural insights
             </p>
@@ -374,7 +374,7 @@
 
         <v-divider class="my-6"></v-divider>
 
-        <div class="text-center text-body-2">
+        <div class="text-center tw-text-body-2">
           &copy; {{ new Date().getFullYear() }} AgriConnect. All rights reserved.
         </div>
       </v-container>
