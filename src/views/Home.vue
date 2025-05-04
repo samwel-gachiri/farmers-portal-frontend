@@ -1,23 +1,18 @@
 /* eslint-disable */
 <template>
   <v-app id="inspire">
-    <div class="tw-w-full tw-flex tw-flex-col tw-justify-center tw-items-start tw-py-5 md:tw-border-t-2 tw-border-t-0 tw-border-black md:tw-shadow-none tw-shadow-md">
+    <div class="tw-w-full tw-flex tw-flex-col tw-justify-center tw-items-start tw-py-5 md:tw-border-t-2 tw-border-t-0 top-bar tw-border-black md:tw-shadow-none tw-shadow-md">
       <logo-title class=""></logo-title>
     </div>
 
     <div class="tw-w-full tw-flex tw-flex-col tw-h-full lg:tw-h-full md:tw-items-center tw-items-start tw-justify-center tw-bg-gray-100">
       <h2 style="color: #13361C;" class="md:tw-text-6xl tw-text-3xl  md:tw-mt-0 tw-mt-8 md:tw-mx-0 tw-mx-10">Agriconnect Portals</h2>
       <h2 style="color: #13361C;" class="tw-mt-3 md:tw-font-bold  md:tw-mx-0 tw-mx-10">A place where farmers and buyers meet, interact and trade</h2>
-      <v-divider
-          :thickness="20"
-          class="border-opacity-100 tw-w-64 tw-h-4"
-          color="primary"
-      ></v-divider>
-      <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-8 tw-m-10">
+      <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-8 tw-p-10 tw-justify-center tw-items-center tw-w-full md:tw-w-auto">
         <v-card
             v-for="(user, index) in userTypes"
             :key="index"
-            class="user-type-item tw-py-8 tw-px-10 tw-w-full"
+            class="user-type-item tw-py-8 tw-px-10 tw-w-full tw-justify-center tw-flex w-flex-col tw-shadow-lg tw-bg-white"
             style="border-radius: 20px;"
             @click="openSignIn(user.name)"
         >
@@ -123,5 +118,9 @@ h1, h2, a{
   background: #EEF0F4;
   border-radius: 15px;
   box-shadow: 9.91px 9.91px 15px #D9DADE, -9.91px -9.91px 15px #FFFFFF;
+}
+
+.top-bar {
+  border-radius: 0 0 50% 50% / 0 0 50% 50%;
 }
 </style>

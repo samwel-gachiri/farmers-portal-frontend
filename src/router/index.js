@@ -5,6 +5,7 @@ import store from '@/store';
 import VueMeta from 'vue-meta';
 import Landing from '@/views/Landing.vue';
 import Connection from '@/views/errors/Connection.vue';
+import Home from '@/views/Home.vue';
 
 Vue.use(VueMeta);
 
@@ -34,10 +35,10 @@ const routes = [
     component: Landing,
   },
   {
-    path: '/portals',
+    path: '/home',
     name: 'Home',
     // beforeEnter: ifAuthenticated,
-    component: Landing,
+    component: Home,
   },
   {
     path: '/signin',
