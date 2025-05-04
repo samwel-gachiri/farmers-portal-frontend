@@ -11,16 +11,16 @@
     <v-main>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
-          <v-col cols="12" class="text-center">
+          <v-col cols="12" class="tw-text-center">
             <!-- Logo and Title -->
             <div class="mb-10">
               <v-avatar size="80" class="mb-4">
                 <v-img src="@/assets/images/logo.png"></v-img>
               </v-avatar>
-              <h1 class="text-h3 text-md-h2 font-weight-bold mb-2">
+              <h1 class="tw-text-h3 tw-text-md-h2  tw-font-weight-bold mb-2">
                 Welcome to <span class="primary--text">AgriConnect</span>
               </h1>
-              <p class="text-h6 text-md-h5 font-weight-regular">
+              <p class="tw-text-h6 tw-text-md-h5  tw-font-weight-regular">
                 Select your role to continue to the platform
               </p>
             </div>
@@ -32,7 +32,7 @@
                 <v-hover v-slot="{ hover }">
                   <v-card
                       :elevation="hover ? 12 : 6"
-                      class="pa-6 text-center mx-auto role-card"
+                      class="pa-6 tw-text-center mx-auto role-card"
                       max-width="350"
                       :color="hover ? 'primary lighten-5' : 'white'"
                       @click="openSignIn('farmer')"
@@ -43,8 +43,8 @@
                           :class="{ 'scale-up': hover }"
                       ></v-img>
                     </v-avatar>
-                    <h3 class="text-h4 font-weight-bold mb-3 primary--text">Farmer</h3>
-                    <p class="text-body-1 mb-6">
+                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 primary--text">Farmer</h3>
+                    <p class="tw-text-body-1  tw-mb-6">
                       Connect with buyers, showcase your produce, and grow your farming business
                     </p>
                     <v-btn
@@ -65,19 +65,19 @@
                 <v-hover v-slot="{ hover }">
                   <v-card
                       :elevation="hover ? 12 : 6"
-                      class="pa-6 text-center mx-auto role-card"
+                      class="pa-6 tw-text-center mx-auto role-card"
                       max-width="350"
                       :color="hover ? 'secondary lighten-5' : 'white'"
                       @click="openSignIn('buyer')"
                   >
-                    <v-avatar size="100" color="secondary lighten-4" class="mb-4">
+                    <v-avatar size="100" color="secondary lighten-4" class=" tw-mb-4">
                       <v-img
                           src="@/assets/images/buyer.png"
                           :class="{ 'scale-up': hover }"
                       ></v-img>
                     </v-avatar>
-                    <h3 class="text-h4 font-weight-bold mb-3 secondary--text">Buyer</h3>
-                    <p class="text-body-1 mb-6">
+                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 secondary--text">Buyer</h3>
+                    <p class="tw-text-body-1  tw-mb-6">
                       Source fresh produce directly from farmers with quality assurance
                     </p>
                     <v-btn
@@ -98,19 +98,19 @@
                 <v-hover v-slot="{ hover }">
                   <v-card
                       :elevation="hover ? 12 : 6"
-                      class="pa-6 text-center mx-auto role-card"
+                      class="pa-6 tw-text-center mx-auto role-card"
                       max-width="350"
                       :color="hover ? 'accent lighten-5' : 'white'"
                       @click="openSignIn('admin')"
                   >
-                    <v-avatar size="100" color="accent lighten-4" class="mb-4">
+                    <v-avatar size="100" color="accent lighten-4" class=" tw-mb-4">
                       <v-img
                           src="@/assets/images/admin.png"
                           :class="{ 'scale-up': hover }"
                       ></v-img>
                     </v-avatar>
-                    <h3 class="text-h4 font-weight-bold mb-3 accent--text">Admin</h3>
-                    <p class="text-body-1 mb-6">
+                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 accent--text">Admin</h3>
+                    <p class="tw-text-body-1  tw-mb-6">
                       Manage platform operations, verify users, and ensure smooth transactions
                     </p>
                     <v-btn
@@ -129,7 +129,7 @@
 
             <!-- Sign In Option -->
             <div v-if="false" class="mt-12">
-              <p class="text-body-1 mb-2">Already have an account?</p>
+              <p class="tw-text-body-1  tw-mb-2">Already have an account?</p>
               <v-btn
                   text
                   color="primary"
