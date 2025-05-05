@@ -25,6 +25,7 @@ import './plugins/vuetify-money.js';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
 import App from './App.vue';
+import './registerServiceWorker.js';
 
 Vue.config.productionTip = false;
 

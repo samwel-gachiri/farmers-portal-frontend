@@ -17,8 +17,8 @@
               <v-avatar size="80" class="mb-4">
                 <v-img src="@/assets/images/logo.png"></v-img>
               </v-avatar>
-              <h1 class="tw-text-h3 tw-text-md-h2  tw-font-weight-bold mb-2">
-                Welcome to <span class="primary--text">AgriConnect</span>
+              <h1 class="tw-text-xl tw-text-h3 tw-text-md-h2 tw-font-bold tw-font-weight-bold tw-mb-2">
+                Welcome to <span class="">AgriConnect</span>
               </h1>
               <p class="tw-text-h6 tw-text-md-h5  tw-font-weight-regular">
                 Select your role to continue to the platform
@@ -44,16 +44,16 @@
                       ></v-img>
                     </v-avatar>
                     <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 primary--text">Farmer</h3>
-                    <p class="tw-text-body-1  tw-mb-6">
+                    <p v-if="false" class="tw-text-body-1  tw-mb-6">
                       Connect with buyers, showcase your produce, and grow your farming business
                     </p>
                     <v-btn
                         color="primary"
                         large
-                        :class="{ 'pulse-btn': hover }"
+                        :class="{ 'pulse-btn': hover , 'no-uppercase': false}"
                     >
                       Continue as Farmer
-                      <v-icon right>mdi-arrow-right</v-icon>
+<!--                      <v-icon right>mdi-arrow-right</v-icon>-->
                     </v-btn>
                     <div class="highlight-bar" :class="{ 'active': hover }"></div>
                   </v-card>
@@ -77,16 +77,16 @@
                       ></v-img>
                     </v-avatar>
                     <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 secondary--text">Buyer</h3>
-                    <p class="tw-text-body-1  tw-mb-6">
+                    <p v-if="false" class="tw-text-body-1  tw-mb-6">
                       Source fresh produce directly from farmers with quality assurance
                     </p>
                     <v-btn
                         color="secondary"
                         large
-                        :class="{ 'pulse-btn': hover }"
+                        :class="{ 'pulse-btn': hover, 'no-uppercase': false }"
                     >
                       Continue as Buyer
-                      <v-icon right>mdi-arrow-right</v-icon>
+<!--                      <v-icon right>mdi-arrow-right</v-icon>-->
                     </v-btn>
                     <div class="highlight-bar" :class="{ 'active': hover }"></div>
                   </v-card>
@@ -109,17 +109,17 @@
                           :class="{ 'scale-up': hover }"
                       ></v-img>
                     </v-avatar>
-                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 accent--text">Admin</h3>
-                    <p class="tw-text-body-1  tw-mb-6">
+                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 text-black">Admin</h3>
+                    <p v-if="false" class="tw-text-body-1  tw-mb-6">
                       Manage platform operations, verify users, and ensure smooth transactions
                     </p>
                     <v-btn
                         color="accent"
                         large
-                        :class="{ 'pulse-btn': hover }"
+                        :class="{ 'pulse-btn': hover, 'no-uppercase': false}"
                     >
                       Continue as Admin
-                      <v-icon right>mdi-arrow-right</v-icon>
+<!--                      <v-icon right>mdi-arrow-right</v-icon>-->
                     </v-btn>
                     <div class="highlight-bar" :class="{ 'active': hover }"></div>
                   </v-card>
@@ -302,5 +302,8 @@ export default {
 .v-application .accent {
   background-color: #00acc1 !important;
   border-color: #00acc1 !important;
+}
+.no-uppercase {
+  text-transform: none !important;
 }
 </style>
