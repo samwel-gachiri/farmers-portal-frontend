@@ -515,6 +515,10 @@ export default {
         { title: 'Privacy Policy', target: '' },
         { title: 'Terms of Service', target: '' },
       ],
+      meta: {
+        title: 'Agriconnect - company',
+        metaDescription: 'Farmers & Buyers Connection platform',
+      },
     };
   },
   methods: {

@@ -33,6 +33,10 @@ const routes = [
     name: 'Landing',
     // beforeEnter: ifAuthenticated,
     component: Landing,
+    meta: {
+      title: 'Agriconnect - company',
+      metaDescription: 'Farmers & Buyers Connection platform',
+    },
   },
   {
     path: '/home',
