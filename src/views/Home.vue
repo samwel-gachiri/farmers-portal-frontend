@@ -193,7 +193,7 @@ export default {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
-  opacity: 0.15;
+  opacity: 0.20;
 }
 
 .circle-1 {
@@ -202,7 +202,7 @@ export default {
   background: var(--v-primary-base);
   top: -100px;
   left: -100px;
-  animation: float 15s infinite ease-in-out;
+  animation: circle-clockwise 15s infinite linear;
 }
 
 .circle-2 {
@@ -211,7 +211,7 @@ export default {
   background: var(--v-secondary-base);
   bottom: -100px;
   right: -50px;
-  animation: float 18s infinite ease-in-out reverse;
+  animation: circle-clockwise 18s infinite linear;
   animation-delay: 2s;
 }
 
@@ -221,7 +221,7 @@ export default {
   background: var(--v-accent-base);
   top: 50%;
   left: 30%;
-  animation: float 12s infinite ease-in-out;
+  animation: circle-clockwise 12s infinite linear;
   animation-delay: 4s;
 }
 
@@ -237,6 +237,25 @@ export default {
   }
 }
 
+/* Clockwise circular motion */
+@keyframes circle-clockwise {
+  0% {
+    transform: rotate(0deg) translateX(150px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(150px) rotate(-360deg);
+  }
+}
+
+/* Anticlockwise circular motion */
+@keyframes circle-anticlockwise {
+  0% {
+    transform: rotate(0deg) translateX(200px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg) translateX(200px) rotate(360deg);
+  }
+}
 /* Card Styles */
 .role-card {
   transition: all 0.3s ease;
