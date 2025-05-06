@@ -9,7 +9,7 @@
         <!--  FORM part       -->
         <div class="tw-flex tw-flex-col tw-gap-8  tw-justify-center tw-items-center tw-w-full tw-h-full">
           <div class="tw-w-full tw-pt-4">
-            <router-link class="tw-ml-4 tw-bg-yellow-400 tw-rounded-none tw-p-2 tw-mt-4" :to="{name: 'Landing'}">Go Home</router-link>
+            <router-link class="tw-ml-4 tw-bg-yellow-400 tw-rounded-none tw-p-2 tw-mt-4" :to="{name: 'Home'}">Go Home</router-link>
           </div>
           <div class="tw-flex md:tw-justify-center tw-justify-start tw-items-center tw-h-full tw-flex-col tw-rounded-lg">
             <div class="tw-flex tw-flex-row-reverse tw-justify-center tw-items-center tw-w-full tw-p-4">
@@ -233,7 +233,7 @@ export default {
   mounted() {
     const userRole = getCurrentUserRole();
     if (userRole === '' || userRole == null) {
-      this.$router.push({ name: 'Landing' });
+      this.$router.push({ name: 'Home' });
     }
     if (userRole === 'farmer') {
       Auth.configure(AuthConfig.FarmerAuth);
