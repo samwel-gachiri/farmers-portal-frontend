@@ -1,28 +1,46 @@
 <template>
   <div>
     <v-list dense>
-      <div class="tw-mx-4 tw-py-3 md:tw-py-5 tw-mb-8">
+      <div class="tw-mx-4 tw-py-3 md:tw-py-5 tw-mb-5">
           <logo-title></logo-title>
       </div>
-      <template v-for="(item, i) in items">
+      <div>
         <v-list-item
-            v-if="viewPermissions((item.roles))"
-            :key="i"
+            key="aiagent"
             link
-            :to="item.link"
+            :to="{ name: 'FarmAI' }"
             active-class="nav-active"
             class="tw-mx-4 md:tw-mt-2 mdi-lis tw-mt-5 "
         >
           <v-list-item-action>
-            <v-icon color="black">{{ item.icon }}</v-icon>
+            <v-icon left color="light-green lighten-4" class="gradient-icon">mdi-leaf</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title class="tw-text-black tw-font-bold">
-              {{ item.text }}
+              Farm AI
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-      </template>
+        <template v-for="(item, i) in items">
+          <v-list-item
+              v-if="viewPermissions((item.roles))"
+              :key="i"
+              link
+              :to="item.link"
+              active-class="nav-active"
+              class="tw-mx-4 md:tw-mt-2 mdi-lis tw-mt-5 "
+          >
+            <v-list-item-action>
+              <v-icon color="black">{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title class="tw-text-black tw-font-bold">
+                {{ item.text }}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+      </div>
     </v-list>
     <!--    <claims-modal v-if="$route.name !== 'Dashboard'" />-->
   </div>
@@ -144,5 +162,11 @@ export default {
   background-color: #a6a6a5;
   color: white;
   margin-right: 1.5rem;
+}
+.gradient-icon {
+  background: linear-gradient(45deg, #8d08e8, #05d30f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0;
 }
 </style>

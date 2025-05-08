@@ -253,7 +253,7 @@
               </v-card-text>
 
               <v-card-actions>
-                <v-btn text color="primary">Read Full Story</v-btn>
+<!--                <v-btn text color="primary">Read Full Story</v-btn>-->
               </v-card-actions>
             </v-card>
           </v-col>
