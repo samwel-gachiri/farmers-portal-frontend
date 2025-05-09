@@ -4,22 +4,23 @@
       <div v-if="listings.length === 0"
            class="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-flex-col tw-w-full tw-h-full">
         <div class="tw-mb-3">
-          <LogoTitle>
-            <h2 class="c-green-text tw-text-md tw-font-bold tw-mb-4 md:tw-mb-0 md:tw-mr-4">
-              Let your sales skyrocket!
-            </h2>
-          </LogoTitle>
+          <h1 class="tw-text-xl tw-text-h3 tw-text-md-h2 tw-font-bold tw-font-weight-bold tw-mb-2">
+            You have not sold your produce
+          </h1>
+        </div>
+        <div style="max-height: 350px;">
+          <v-img src="@/assets/images/farmer_anticipate_to_sell.png" style="border-radius: 25px;"></v-img>
         </div>
         <div
-            class="tw-flex md:tw-flex-row tw-flex-col"
+            class="tw-flex md:tw-flex-row tw-flex-col tw-justify-center tw-items-center"
         >
-          <h2>You have not sold your produce</h2>
           <v-btn
               dense
+              rounded
               class="tw-rounded-lg tw-ml-5"
-              color="secondary"
+              color="primary"
               @click="listingDialog = true"
-          >Sell your produce</v-btn>
+          >Start selling</v-btn>
         </div>
       </div>
       <div class="" v-else>
@@ -88,7 +89,6 @@
 <script>
 
 import Default from '@/components/layout/Default.vue';
-import LogoTitle from '@/components/shared/LogoText.vue';
 import CreateListing from '@/components/listing/CreateListing.vue';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
@@ -97,7 +97,7 @@ import pluralize from 'pluralize';
 
 export default {
   components: {
-    Listing, CreateListing, LogoTitle, Default,
+    Listing, CreateListing, Default,
   },
   data() {
     return {

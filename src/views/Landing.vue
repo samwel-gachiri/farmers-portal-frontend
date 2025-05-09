@@ -19,7 +19,7 @@
               <v-btn text color="primary" @click="scrollTo('features')">Features</v-btn>
               <v-btn text color="primary" @click="scrollTo('benefits')">Benefits</v-btn>
               <v-btn text color="primary" @click="scrollTo('success')">Success Stories</v-btn>
-              <v-btn color="primary" class="ml-3" @click="scrollTo('cta')">Get Started</v-btn>
+              <v-btn rounded color="primary" class="ml-3" @click="getStarted">Go to Application</v-btn>
             </div>
           </v-col>
         </v-row>
@@ -70,6 +70,14 @@
                   <v-list-item-title class="text-body-1">{{ item }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item>
+                <v-list-item-icon>
+                  <v-icon class="gradient-icon">mdi-leaf</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title class="text-body-1"><span class="">FarmAI</span> - AI insights on crop growth and livestock rearing</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
             </v-list>
 
             <div class="d-flex flex-wrap">
@@ -85,15 +93,14 @@
 
           <v-col cols="12" md="6" class="text-center">
             <v-img
-                src="https://cdn-icons-png.flaticon.com/512/4149/4149677.png"
-                max-width="300"
+                src="@/assets/images/farmer_buyer_greetings.png"
                 class="d-inline-block farmer-img"
             ></v-img>
-            <v-img
-                src="https://cdn-icons-png.flaticon.com/512/4149/4149685.png"
-                max-width="300"
-                class="d-inline-block buyer-img ml-n8"
-            ></v-img>
+<!--            <v-img-->
+<!--                src="https://cdn-icons-png.flaticon.com/512/4149/4149685.png"-->
+<!--                max-width="300"-->
+<!--                class="d-inline-block buyer-img ml-n8"-->
+<!--            ></v-img>-->
 
             <div class="chat-bubble pa-4 rounded-xl secondary lighten-5">
               <v-icon color="secondary" class="mr-2">mdi-chat</v-icon>
@@ -207,7 +214,10 @@
                   :color="benefit.color"
                   dark
               >
-                <v-avatar size="80" :color="benefit.iconColor" class="mb-4">
+                <v-avatar v-if="benefit.class != null" size="80" :color="benefit.iconColor" class="mb-4">
+                  <v-icon :class="benefit.class" size="40">{{ benefit.icon }}</v-icon>
+                </v-avatar>
+                <v-avatar v-else size="80" :color="benefit.iconColor" class="mb-4">
                   <v-icon size="40">{{ benefit.icon }}</v-icon>
                 </v-avatar>
                 <h3 class="text-h5 tw-font-weight-bold mb-3">{{ benefit.title }}</h3>
@@ -253,7 +263,7 @@
               </v-card-text>
 
               <v-card-actions>
-                <v-btn text color="primary">Read Full Story</v-btn>
+<!--                <v-btn text color="primary">Read Full Story</v-btn>-->
               </v-card-actions>
             </v-card>
           </v-col>
@@ -467,7 +477,7 @@ export default {
           text: 'Eliminate middlemen to get better prices for farmers and better deals for buyers',
           icon: 'mdi-cash-multiple',
           iconColor: 'amber',
-          color: 'secondary',
+          color: '#6d7e91',
         },
         {
           title: 'Real-time Data',
@@ -475,6 +485,14 @@ export default {
           icon: 'mdi-chart-line',
           iconColor: 'info',
           color: 'accent',
+        },
+        {
+          title: 'Farm AI',
+          text: 'AI analytics for crop growth and livestock rearing',
+          icon: 'mdi-leaf',
+          iconColor: '#fff',
+          color: 'brown',
+          class: 'gradient-icon',
         },
       ],
       successStories: [
@@ -567,7 +585,7 @@ export default {
 }
 
 .farmer-img {
-  animation: float 6s ease-in-out infinite;
+  //animation: float 6s ease-in-out infinite;
 }
 
 .buyer-img {
@@ -634,5 +652,11 @@ export default {
 .v-application .accent {
   background-color: #00acc1 !important;
   border-color: #00acc1 !important;
+}
+
+.gradient-icon {
+  background: linear-gradient(45deg, #8d08e8, #05d30f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 </style>
