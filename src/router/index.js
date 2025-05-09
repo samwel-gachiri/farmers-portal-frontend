@@ -137,6 +137,11 @@ const routes = [
     component: () => import('../views/Dashboard.vue'),
   },
   {
+    path: '/farm-ai',
+    name: 'FarmAI',
+    component: () => import('../views/FarmAI.vue'),
+  },
+  {
     path: '/community',
     name: 'Community',
     // beforeEnter: ifAuthenticated,
