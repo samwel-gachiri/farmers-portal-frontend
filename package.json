@@ -24,7 +24,7 @@
     "dayjs": "^1.11.13",
     "eslint-import-resolver-webpack": "^0.13.8",
     "file-saver": "^2.0.5",
-    "firebase": "^7.24.0",
+    "firebase": "^11.7.1",
     "flag-icons": "^7.2.3",
     "google-maps": "^4.3.2",
     "idle-vue": "^2.0.5",

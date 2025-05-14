@@ -1,7 +1,7 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 /* eslint no-shadow:0 */
-import Auth from '@aws-amplify/auth';
-import Amplify from '@aws-amplify/core';
+// import Auth from '@aws-amplify/auth';
+// import Amplify from '@aws-amplify/core';
 import cookie from 'vue-cookies';
 import axios from 'axios';
 /* eslint import/named:0 */
@@ -12,10 +12,13 @@ import {
 // await context.dispatch('auth/generateOtp', { email: params.attributes.email, mobile: params.attributes.phone_number }, { root: true });
 // keep user cred
 import CryptoJS from 'crypto-js';
+// eslint-disable-next-line import/extensions
+import { signOut } from 'firebase/auth';
+import { auth } from '@/firebase.js';
 
-const { Logger } = Amplify;
-Logger.LOG_LEVEL = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' ? 'ERROR' : 'DEBUG'; // to show detailed logs from Amplify library
-const logger = new Logger('store:auth');
+// const { Logger } = Amplify;
+// Logger.LOG_LEVEL = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' ? 'ERROR' : 'DEBUG'; // to show detailed logs from Amplify library
+// const logger = new Logger('store:auth');
 
 const data = {
   user: cookie.get(USER) || null,
@@ -42,7 +45,7 @@ const mutations = {
     state.role = text;
   },
   setAuthenticationError(state, err) {
-    logger.debug('auth error: {}', err);
+    // logger.debug('auth error: {}', err);
     state.authenticationStatus = {
       state: 'failed',
       message: err.message,
@@ -60,11 +63,12 @@ const mutations = {
     state.authenticationStatus = null;
   },
   setUserAuthenticated(state, user) {
-    const token = user.signInUserSession.idToken.jwtToken;
-    cookie.set(USER, user.attributes);
+    // const token = user.signInUserSession.idToken.jwtToken;
+    const token = user.accessToken;
+    cookie.set(USER, user);
     cookie.set(ROLE, state.role);
     cookie.set(ACCESS_TOKEN, token);
-    state.user = user.attributes;
+    state.user = user;
     state.token = token;
   },
   setUserToken(state, token) {
@@ -92,14 +96,14 @@ const actions = {
     context.commit('clearAuthenticationStatus', null);
   },
   signIn: async (context, params) => {
-    logger.debug('signIn for {}', params.username);
+    // logger.debug('signIn for {}', params.username);
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
-      const user = await Auth.signIn(params.username, params.password);
-      context.commit('setUserAuthenticated', user);
+      // const user = await Auth.signIn(params.username, params.password);
+      context.commit('setUserAuthenticated', params.user);
       context.commit('auth/setAuthenticationSuccess', 'logged in', { root: true });
       // SUSPEND USER LOGIN STATE HERE FOR OTP VERIFICATION
-      return user;
+      // return params.user;
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
       throw err;
@@ -107,82 +111,84 @@ const actions = {
   },
   signOut: async (context) => {
     try {
-      await Auth.signOut();
+      // await Auth.signOut();
+      await signOut(auth);
     } catch (err) {
-      logger.debug('error during sign out: {}', err);
+      // logger.debug('error during sign out: {}', err);
     }
     context.commit('auth/clearAuthentication', null, { root: true });
   },
   signUp: async (context, params) => {
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
-      const {
-        userConfirmed, userSub, user,
-      } = await Auth.signUp(params);
+      // const {
+      //   userConfirmed, userSub, user,
+      // } = await Auth.signUp(params);
       context.commit('setAuthenticationSuccess', `${params.attributes.name} signed up successfully!`);
-      context.commit('setUserConfirmed', userConfirmed);
+      // context.commit('setUserConfirmed', userConfirmed);
       const creds = CryptoJS.AES.encrypt(JSON.stringify({ username: params.username, password: params.password }), CR_KEY).toString();
       cookie.set(CR_KEY, creds);
       context.commit('auth/clearAuthentication', null, { root: true });
-      return { user, userSub };
+      // return { user, userSub };
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
       throw err;
     }
   },
-  refresh: async (context) => {
+  refresh: async () => {
+  // refresh: async (context) => {
     try {
-      const currentSession = await Auth.currentSession();
-      context.commit('setUserToken', currentSession.idToken.jwtToken);
+      // const currentSession = await Auth.currentSession();
+      // context.commit('setUserToken', currentSession.idToken.jwtToken);
     } catch (e) {
       throw Error(e);
     }
   },
-  passwordReset: async (context, params) => {
+  passwordReset: async (context) => {
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
-      await Auth.forgotPassword(params.username);
+      // await Auth.forgotPassword(params.username);
       context.commit('auth/setAuthenticationSuccess', 'Password reset code sent via email/phone', { root: true });
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
     }
   },
-  confirmPasswordReset: async (context, params) => {
+  confirmPasswordReset: async (context) => {
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
-      await Auth.forgotPasswordSubmit(
-        params.username,
-        params.code,
-        params.password,
-      );
+      // await Auth.forgotPasswordSubmit(
+      //   params.username,
+      //   params.code,
+      //   params.password,
+      // );
       context.commit('auth/setAuthenticationSuccess', 'Password reset successful, Sign in', { root: true });
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
     }
   },
-  passwordChange: async (context, params) => {
-    logger.debug('password change for {}', context.state.user.name);
+  passwordChange: async (context) => {
+    // logger.debug('password change for {}', context.state.user.name);
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
-      const user = await Auth.currentAuthenticatedUser();
-      await Auth.changePassword(
-        user,
-        params.oldPassword,
-        params.newPassword,
-      );
+      // const user = await Auth.currentAuthenticatedUser();
+      // await Auth.changePassword(
+      //   user,
+      //   params.oldPassword,
+      //   params.newPassword,
+      // );
       context.commit('auth/setAuthenticationSuccess', 'Password successfully updated', { root: true });
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });
     }
   },
-  updateUser: async (context, params) => {
-    logger.debug('update user >> {}', context.state.user.name);
+  updateUser: async (context) => {
+    // logger.debug('update user >> {}', context.state.user.name);
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
-      const user1 = await Auth.currentAuthenticatedUser();
-      await Auth.updateUserAttributes(user1, params);
-      const user = await Auth.currentAuthenticatedUser();
-      context.commit('setUserAuthenticated', user);
+      // const user1 = await Auth.currentAuthenticatedUser();
+      // await Auth.updateUserAttributes(user1, params);
+      // const user = await Auth.currentAuthenticatedUser();
+      // context.commit('setUserAuthenticated', user);
       context.commit('auth/setAuthenticationSuccess', 'Profile successfully updated', { root: true });
     } catch (err) {
       context.commit('auth/setAuthenticationError', err, { root: true });

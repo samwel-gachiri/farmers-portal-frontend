@@ -17,7 +17,7 @@
           <v-btn
               dense
               rounded
-              class="tw-rounded-lg tw-ml-5"
+              class="tw-rounded-lg tw-ml-5 tw-mt-5"
               color="primary"
               @click="listingDialog = true"
           >Start selling</v-btn>
