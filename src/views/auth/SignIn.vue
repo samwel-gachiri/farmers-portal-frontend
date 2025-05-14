@@ -211,7 +211,7 @@ import { getCurrentUserRole, isAuthenticated } from '@/utils/roles.js';
 // import AuthConfig from '@/utils/aws-exports.js';
 import { auth } from '@/firebase.js';
 import {
-  RecaptchaVerifier, signInWithPhoneNumber, GoogleAuthProvider, signInWithRedirect, getRedirectResult,
+  RecaptchaVerifier, signInWithPhoneNumber, GoogleAuthProvider, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence, onAuthStateChanged,
 // eslint-disable-next-line import/extensions
 } from 'firebase/auth';
 import axios from 'axios';
@@ -269,18 +269,7 @@ export default {
   },
   async mounted() {
     try {
-      // Wait for Firebase to initialize auth state
-      await auth.authStateReady();
-
-      const result = await getRedirectResult(auth);
-
-      if (result) {
-        this.isSignInWithGoogle = true;
-        this.isSignInWithPhone = false;
-        this.$toast.success(`Signed in as ${result.user.email}`);
-        await this.handleGoogleResult(result);
-      }
-
+      await this.initAuth();
       // Check user role only after auth state is confirmed
       const userRole = getCurrentUserRole();
       if (!userRole) {
@@ -296,11 +285,40 @@ export default {
     }
   },
   methods: {
+    initAuth() {
+      setPersistence(auth, browserLocalPersistence)
+        .then(() => {
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              this.user.uid = user.uid;
+              // console.log('User logged in:', user);
+              // Handle both Google and Phone auth users here
+              if (user.providerData.some((provider) => provider.providerId === 'google.com')) {
+                this.handleGoogleUser(user);
+              } else if (user.providerData.some((provider) => provider.providerId === 'phone')) {
+                this.handlePhoneUser(user);
+              }
+            } else {
+              // console.log('No user logged in');
+              this.checkRedirectResult(); // Only check redirect when no user exists
+            }
+          });
+        });
+    },
+    async checkRedirectResult() {
+      const result = await getRedirectResult(auth);
+
+      if (result) {
+        this.isSignInWithGoogle = true;
+        this.isSignInWithPhone = false;
+        this.$toast.success(`Signed in as ${result.user.email}`);
+        await this.handleGoogleUser(result);
+      }
+    },
     async signInWithGoogleRedirect() {
       try {
         this.isSignInWithPhone = false;
         this.isSignInWithGoogle = true;
-
         const googleAuthProvider = new GoogleAuthProvider();
         googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
         // Explicitly await the redirect
@@ -309,13 +327,23 @@ export default {
         this.$toast.error(`Failed to start Google Sign-In: ${e.message}`);
       }
     },
-    handleGoogleResult(result) {
+    handleGoogleUser(user) {
       // const credentials = GoogleAuthProvider.credentialFromResult(results);
-      const user = result.user;
+      this.isSignInWithGoogle = true;
+      this.isSignInWithPhone = false;
       this.user.uid = user.uid;
       this.user.accessToken = user.accessToken;
       this.form.name = user.displayName;
       this.form.email = user.email;
+      this.checkFarmerOrBuyerExistence();
+    },
+    handlePhoneUser(user) {
+      // const credentials = GoogleAuthProvider.credentialFromResult(results);
+      this.isSignInWithPhone = true;
+      this.isSignInWithGoogle = false;
+      this.user.uid = user.uid;
+      this.user.accessToken = user.accessToken;
+      this.form.phoneNumber = user.phoneNumber;
       this.checkFarmerOrBuyerExistence();
     },
     continueStepOne() {

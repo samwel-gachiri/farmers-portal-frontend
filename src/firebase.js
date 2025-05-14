@@ -21,7 +21,6 @@ if (window.trustedTypes && window.trustedTypes.createPolicy) {
   });
 }
 
-
 const app = initializeApp(firebaseConfig);
 
 // Initialize services
