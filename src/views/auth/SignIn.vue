@@ -480,7 +480,6 @@ export default {
       }
     },
     async login() {
-      console.log('logging in');
       if (this.userMustBeSignedUp) {
         await this.signUpUser();
       }
