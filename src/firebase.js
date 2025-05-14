@@ -15,6 +15,13 @@ const firebaseConfig = {
   appId: '1:463127818224:web:69dea1e25a3ff3d7867735',
 };
 
+if (window.trustedTypes && window.trustedTypes.createPolicy) {
+  window.trustedTypes.createPolicy('firebase-policy', {
+    createScriptURL: (string) => string,
+  });
+}
+
+
 const app = initializeApp(firebaseConfig);
 
 // Initialize services

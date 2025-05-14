@@ -12,7 +12,7 @@
           <!--        form part-->
           <div style="height: 100vh;" class="tw-border-4 tw-bg-blue tw-flex tw-flex-col  tw-justify-center tw-items-center tw-w-full tw-h-full">
             <h1 class="tw-text-xl tw-text-h3 tw-text-md-h2 tw-font-bold tw-font-weight-bold tw-mb-5">
-              Welcome to <span class="">AgriKonnect</span>
+              Welcome to <span class="">Agriconnect</span>
             </h1>
             <v-card
                  style="border-radius: 20px;"
@@ -110,16 +110,12 @@
                     <v-btn
                         class="tw-mt-3 tw-mx-8 tw-mb-3"
                         color="white"
-                        @click="signInWithGoogle"
+                        @click="signInWithGoogleRedirect"
                         outlined
                         large
                         style="border: 1px solid #dadce0; border-radius: 4px; text-transform: none;"
                     >
-                      <v-icon
-                          color="#4285F4"
-                          size="24"
-                          class="tw-mr-3"
-                      >mdi-google</v-icon>
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg" width="30px" height="30px" alt="Google Logo">
                       <span style="color: #3c4043; font-size: 14px; font-weight: 500;">Sign in with Google</span>
                     </v-btn>
                   </div>
@@ -215,7 +211,7 @@ import { getCurrentUserRole, isAuthenticated } from '@/utils/roles.js';
 // import AuthConfig from '@/utils/aws-exports.js';
 import { auth } from '@/firebase.js';
 import {
-  RecaptchaVerifier, signInWithPhoneNumber, GoogleAuthProvider, signInWithPopup,
+  RecaptchaVerifier, signInWithPhoneNumber, GoogleAuthProvider, signInWithRedirect, getRedirectResult,
 // eslint-disable-next-line import/extensions
 } from 'firebase/auth';
 import axios from 'axios';
@@ -271,32 +267,51 @@ export default {
   computed: {
     isAuthenticated,
   },
-  mounted() {
-    const userRole = getCurrentUserRole();
-    if (userRole === '' || userRole == null) {
-      this.$router.push({ name: 'Home' });
+  async mounted() {
+    try {
+      // Wait for Firebase to initialize auth state
+      await auth.authStateReady();
+
+      const result = await getRedirectResult(auth);
+
+      if (result) {
+        this.isSignInWithGoogle = true;
+        this.isSignInWithPhone = false;
+        this.$toast.success(`Signed in as ${result.user.email}`);
+        await this.handleGoogleResult(result);
+      }
+
+      // Check user role only after auth state is confirmed
+      const userRole = getCurrentUserRole();
+      if (!userRole) {
+        this.$router.push({ name: 'Home' });
+      }
+    } catch (e) {
+      this.$toast.error(`Error: ${e.message}`);
     }
-    // if (userRole === 'farmer') {
-    //   Auth.configure(AuthConfig.FarmerAuth);
-    // }
-    // if (userRole === 'buyer') {
-    //   Auth.configure(AuthConfig.BuyerAuth);
-    // }
-    // if (userRole === 'admin') {
-    //   Auth.configure(AuthConfig.AdminAuth);
-    // }
   },
   destroyed() {
-    window.recaptchaVerifier.clear();
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+    }
   },
   methods: {
-    async signInWithGoogle() {
-      this.isSignInWithPhone = false;
-      this.isSignInWithGoogle = true;
-      const provider = new GoogleAuthProvider();
-      const results = await signInWithPopup(auth, provider);
+    async signInWithGoogleRedirect() {
+      try {
+        this.isSignInWithPhone = false;
+        this.isSignInWithGoogle = true;
+
+        const googleAuthProvider = new GoogleAuthProvider();
+        googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
+        // Explicitly await the redirect
+        await signInWithRedirect(auth, googleAuthProvider);
+      } catch (e) {
+        this.$toast.error(`Failed to start Google Sign-In: ${e.message}`);
+      }
+    },
+    handleGoogleResult(result) {
       // const credentials = GoogleAuthProvider.credentialFromResult(results);
-      const user = results.user;
+      const user = result.user;
       this.user.uid = user.uid;
       this.user.accessToken = user.accessToken;
       this.form.name = user.displayName;
