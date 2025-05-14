@@ -2,6 +2,7 @@
   <div class="tw-flex tw-rounded-lg tw-w-full tw-items-center">
     <!-- Country Code Dropdown -->
     <v-select
+        prepend-icon="mdi-phone"
         outlined
         label="Country code"
         v-model="selectedCountry"
@@ -9,7 +10,7 @@
         item-text="display"
         return-object
         dense
-        class="tw-w-24 tw-min-w-[80px]"
+        class="tw-w-48"
         variant="outlined"
         @update:model-value="updatePhone"
     >
@@ -34,7 +35,7 @@
         label="Phone number"
         placeholder="123456789"
         dense
-        class="tw-flex-1 tw-border-l"
+        class=""
         variant="outlined"
         :rules="[phoneNumber.length === 0 || validatePhone]"
         @input="updatePhone"
