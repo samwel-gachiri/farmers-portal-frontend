@@ -1,6 +1,7 @@
 /* eslint-disable */
 <template>
   <v-app id="inspire">
+    <terms-and-conditions ref="termsDialog"/>
     <div class="background-animation">
       <div class="circle circle-1"></div>
       <div class="circle circle-2"></div>
@@ -110,7 +111,7 @@
                     <v-btn
                         class="tw-mt-3 tw-mx-8 tw-mb-3"
                         color="white"
-                        @click="signInWithGoogleRedirect"
+                        @click="signInWithGooglePopup"
                         outlined
                         large
                         style="border: 1px solid #dadce0; border-radius: 4px; text-transform: none;"
@@ -211,13 +212,15 @@ import { getCurrentUserRole, isAuthenticated } from '@/utils/roles.js';
 // import AuthConfig from '@/utils/aws-exports.js';
 import { auth } from '@/firebase.js';
 import {
-  RecaptchaVerifier, signInWithPhoneNumber, GoogleAuthProvider, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence, onAuthStateChanged,
+  RecaptchaVerifier, signInWithPhoneNumber, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence, onAuthStateChanged,
 // eslint-disable-next-line import/extensions
 } from 'firebase/auth';
 import axios from 'axios';
 import { throttleer as grecaptcha } from 'vue-infinite-loading/src/utils.js';
+import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
 
 export default {
+  components: { TermsAndConditions },
   data() {
     return {
       step: 1,
@@ -269,7 +272,7 @@ export default {
   },
   async mounted() {
     try {
-      await this.initAuth();
+      // await this.initAuth();
       // Check user role only after auth state is confirmed
       const userRole = getCurrentUserRole();
       if (!userRole) {
@@ -285,6 +288,9 @@ export default {
     }
   },
   methods: {
+    openTermsDialog() {
+      this.$refs.termsDialog.openDialog();
+    },
     initAuth() {
       setPersistence(auth, browserLocalPersistence)
         .then(() => {
@@ -313,6 +319,19 @@ export default {
         this.isSignInWithPhone = false;
         this.$toast.success(`Signed in as ${result.user.email}`);
         await this.handleGoogleUser(result);
+      }
+    },
+    async signInWithGooglePopup() {
+      try {
+        this.isSignInWithPhone = false;
+        this.isSignInWithGoogle = true;
+        const googleAuthProvider = new GoogleAuthProvider();
+        googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
+        // Explicitly await the redirect
+        const result = await signInWithPopup(auth, googleAuthProvider);
+        this.handleGoogleUser(result.user);
+      } catch (e) {
+        this.$toast.error(`Failed to start Google Sign-In: ${e.message}`);
       }
     },
     async signInWithGoogleRedirect() {
@@ -355,7 +374,6 @@ export default {
       if (this.isSignInWithPhone) {
         this.goToOTP();
       } else if (this.isSignInWithGoogle) {
-        await this.signUpUser();
         await this.login();
       }
     },
@@ -462,17 +480,19 @@ export default {
       }
     },
     async login() {
+      console.log('logging in');
       if (this.userMustBeSignedUp) {
         await this.signUpUser();
       }
+      // fetching the users credentials and putting them into state
       const response = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
       if (response.data.data == null) this.$toast.error('User not found');
       const user = { ...this.user, ...response.data.data };
       await this.$store.dispatch('auth/signIn', {
         user,
       });
-      this.$toast.success('Signed in successfully!', `${this.form.name}`);
       this.$router.push({ name: 'Dashboard' });
+      this.$toast.success('Signed in successfully!', `${this.form.name}`);
     },
     // async onSubmit() {
     //   this.loading = true;
