@@ -296,8 +296,6 @@ export default {
       const provider = new GoogleAuthProvider();
       const results = await signInWithPopup(auth, provider);
       // const credentials = GoogleAuthProvider.credentialFromResult(results);
-      // console.log(credentials);
-      // console.log('user');
       const user = results.user;
       this.user.uid = user.uid;
       this.user.accessToken = user.accessToken;
@@ -422,8 +420,6 @@ export default {
     },
     async login() {
       if (this.userMustBeSignedUp) {
-        console.log('sign up');
-        console.log(this.user);
         await this.signUpUser();
       }
       const response = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
