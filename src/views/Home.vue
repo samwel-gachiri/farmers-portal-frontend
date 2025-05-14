@@ -180,6 +180,7 @@ export default {
 <style scoped>
 /* Background Animation */
 .background-animation {
+  background-color: #f3ecec;
   position: fixed;
   top: 0;
   left: 0;
@@ -266,15 +267,15 @@ export default {
 }
 
 .highlight-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, var(--v-primary-base), var(--v-secondary-base));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
+  //position: absolute;
+  //bottom: 0;
+  //left: 0;
+  //width: 100%;
+  //height: 4px;
+  //background: linear-gradient(90deg, var(--v-primary-base), var(--v-secondary-base));
+  //transform: scaleX(0);
+  //transform-origin: left;
+  //transition: transform 0.3s ease;
 }
 
 .highlight-bar.active {

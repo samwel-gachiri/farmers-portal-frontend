@@ -64,7 +64,7 @@
 <!--                id="phone"-->
 <!--                type="text"-->
 <!--                name="phone"-->
-<!--                v-model="phone_number"-->
+<!--                v-model="phoneNumber"-->
 <!--                label="Phone Number"-->
 <!--                :rules="[required('Mobile No.')]"-->
 <!--            >-->
@@ -72,10 +72,10 @@
             <div class="tw-mt-8 tw-flex tw-flex-col tw-gap-5">
               <h2 class="tw-bold">Input phone number</h2>
               <phone-number-input
-                  v-model="phone_number"
+                  v-model="phoneNumber"
                   default-country-code="KE"
                   :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                  @update:phoneNumber="(newValue) => (phone_number = newValue)"
+                  @update:phoneNumber="(newValue) => (phoneNumber = newValue)"
               />
             </div>
           </div>
@@ -119,7 +119,7 @@ export default {
       },
       fullname: '',
       email: '',
-      phone_number: '',
+      phoneNumber: '',
       kra_pin: '',
       isValid: false,
       ...validations,
@@ -149,7 +149,7 @@ export default {
     this.role = getCurrentUserRole();
     this.fullname = this.user.name;
     this.email = this.user.email;
-    this.phone_number = this.user.phone_number;
+    this.phoneNumber = this.user.phoneNumber;
     axios.get(`${getCurrentUserRole()}s-service/location/${this.role}?${this.role}Id=${getCurrentUserId()}`).then((response) => {
       if (response.data.success === true) {
         const data = response.data.data;
@@ -178,7 +178,7 @@ export default {
         latitude: this.userLocation.location.latitude,
         longitude: this.userLocation.location.longitude,
         customName: this.userLocation.location.customName,
-        phoneNumber: this.phone_number,
+        phoneNumber: this.phoneNumber,
       };
     });
   },
@@ -223,8 +223,8 @@ export default {
     },
     async updateProfile() {
       this.loading = true;
-      // { email: this.email, phone_number: this.phone_number, name: this.fullname }
-      await this.$store.dispatch('auth/updateUser', { name: this.fullname, phone_number: this.phone_number }).then(() => {
+      // { email: this.email, phoneNumber: this.phoneNumber, name: this.fullname }
+      await this.$store.dispatch('auth/updateUser', { name: this.fullname, phoneNumber: this.phoneNumber }).then(() => {
         if (this.hasAuthenticationStatus) {
           this.loading = false;
           if (this.authenticationStatus.variant === 'error') {
@@ -236,7 +236,7 @@ export default {
       }).finally(async () => axios.put(`${getCurrentUserRole()}s-service/${getCurrentUserRole()}`, {
         [`${this.role}Id`]: getCurrentUserId(),
         name: this.fullname,
-        phone_number: this.phone_number ? this.phone_number : '',
+        phoneNumber: this.phoneNumber ? this.phoneNumber : '',
         email: this.email,
       }).then((response) => {
         if (response.data.success === true) {

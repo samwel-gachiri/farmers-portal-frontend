@@ -1,8 +1,8 @@
 <template>
   <Default>
-    <FarmerDashboard v-if="user && user['custom:role'] === 'farmer'"/>
-    <BuyerDashboard v-if="user && user['custom:role'] === 'buyer'"/>
-    <AdminDashboard v-if="user && user['custom:role'] === 'admin'"/>
+    <FarmerDashboard v-if="user && getCurrentUserRole() === 'farmer'"/>
+    <BuyerDashboard v-if="user && getCurrentUserRole() === 'buyer'"/>
+    <AdminDashboard v-if="user && getCurrentUserRole() === 'admin'"/>
   </Default>
 </template>
 
@@ -12,8 +12,10 @@ import { mapState } from 'vuex';
 import FarmerDashboard from '@/components/layout/dashboard/FarmerDashboard.vue';
 import AdminDashboard from '@/components/layout/dashboard/AdminDashboard.vue';
 import BuyerDashboard from '@/components/layout/dashboard/BuyerDashboard.vue';
+import { getCurrentUserRole } from '@/utils/roles.js';
 
 export default {
+  methods: { getCurrentUserRole },
   components: {
     BuyerDashboard,
     AdminDashboard,
