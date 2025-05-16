@@ -496,24 +496,24 @@ export default {
         },
       ],
       successStories: [
-        {
-          title: 'Organic Tomato Farm',
-          image: 'https://images.unsplash.com/photo-1582284540020-8acbe03f4924?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-          description: 'Increased sales by 120% in first 3 months by connecting directly with local restaurants.',
-          result: '+120% Sales Increase',
-        },
-        {
-          title: 'Dairy Cooperative',
-          image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-          description: 'Reduced unsold milk by 85% by connecting with local buyers in real-time.',
-          result: '85% Less Waste',
-        },
-        {
-          title: 'Local Grocery Chain',
-          image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-          description: 'Saved 30% on produce costs by sourcing directly from nearby farms.',
-          result: '30% Cost Savings',
-        },
+        // {
+        //   title: 'Organic Tomato Farm',
+        //   image: 'https://images.unsplash.com/photo-1582284540020-8acbe03f4924?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+        //   description: 'Increased sales by 120% in first 3 months by connecting directly with local restaurants.',
+        //   result: '+120% Sales Increase',
+        // },
+        // {
+        //   title: 'Dairy Cooperative',
+        //   image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+        //   description: 'Reduced unsold milk by 85% by connecting with local buyers in real-time.',
+        //   result: '85% Less Waste',
+        // },
+        // {
+        //   title: 'Local Grocery Chain',
+        //   image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+        //   description: 'Saved 30% on produce costs by sourcing directly from nearby farms.',
+        //   result: '30% Cost Savings',
+        // },
       ],
       socialLinks: [
         { icon: 'mdi-facebook', color: 'indigo', link: '#' },
