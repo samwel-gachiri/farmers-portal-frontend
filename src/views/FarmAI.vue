@@ -1,29 +1,54 @@
 <template>
   <Default>
     <div class="tw-overflow-hidden">
-      <div
-          v-for="(star, index) in stars"
-          :key="index"
-          class="star"
-          :style="starStyle(star)"
-      ></div>
-      <v-toolbar color="primary" dark flat>
-        <v-toolbar-title class="tw-text-xl tw-font-semibold">
-          <v-icon large left class="tw-mr-2">mdi-robot-outline</v-icon>
-          FarmAI Advisor
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-chip color="white" text-color="primary" class="tw-mr-2">
-          <v-icon left small>mdi-weather-cloudy</v-icon>
-          {{ weatherStatus }}
-        </v-chip>
-      </v-toolbar>
-
+<!--      <v-toolbar color="primary" dark flat rounded>-->
+<!--        <v-toolbar-title class="tw-text-xl tw-font-semibold">-->
+<!--          <v-icon large left class="tw-mr-2">mdi-robot-outline</v-icon>-->
+<!--          FarmAI Advisor-->
+<!--        </v-toolbar-title>-->
+<!--&lt;!&ndash;        <v-spacer></v-spacer>&ndash;&gt;-->
+<!--&lt;!&ndash;        <v-chip color="white" text-color="primary" class="tw-mr-2">&ndash;&gt;-->
+<!--&lt;!&ndash;          <v-icon left small>mdi-weather-cloudy</v-icon>&ndash;&gt;-->
+<!--&lt;!&ndash;          {{ weatherStatus }}&ndash;&gt;-->
+<!--&lt;!&ndash;        </v-chip>&ndash;&gt;-->
+<!--      </v-toolbar>-->
       <v-container class="tw-py-6 tw-px-8">
-        <v-alert
-          type="info"
-      >Under development</v-alert>
-        <v-row>
+        <div>
+          <h2 class="tw-font-bold">Uliza maswali kuhusiana na ukulima hapa</h2>
+        </div>
+        <v-row class="tw-my-16">
+          <v-col cols="12">
+            <v-card class="tw-rounded-lg tw-shadow-md">
+              <v-card-title class="tw-bg-indigo-50 tw-text-indigo-800 tw-text-lg tw-font-medium">
+                <v-icon color="indigo" class="tw-mr-2">mdi-robot</v-icon>
+                Ask FarmAI
+
+              </v-card-title>
+              <v-card-text class="tw-p-6">
+                <v-textarea
+                    v-model="aiQuestion"
+                    outlined
+                    label="Ask any farming question..."
+                    rows="2"
+                    class="tw-rounded-lg"
+                    append-icon="mdi-send"
+                    @click:append="askAI"
+                    @keydown.enter="askAI"
+                ></v-textarea>
+
+                <div v-if="aiResponse"  class="tw-mt-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
+                  <div class="tw-flex tw-items-center tw-mb-2">
+                    <v-icon color="indigo" class="tw-mr-2">mdi-robot-happy-outline</v-icon>
+                    <h3 class="tw-text-indigo-800 tw-font-medium">FarmAI Response</h3>
+                  </div>
+<!--                  <div class="tw-text-gray-700" id="aiResponse">{{aiResponse}}</div>-->
+                  <MarkdownRenderer :content="aiResponse" />
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row v-if="false">
           <v-col cols="12" md="6">
             <v-card class="tw-rounded-lg tw-shadow-md tw-h-full">
               <v-card-title class="tw-bg-green-50 tw-text-green-800 tw-text-lg tw-font-medium">
@@ -122,38 +147,6 @@
             </v-card>
           </v-col>
         </v-row>
-
-        <v-row class="tw-mt-4">
-          <v-col cols="12">
-            <v-card class="tw-rounded-lg tw-shadow-md">
-              <v-card-title class="tw-bg-indigo-50 tw-text-indigo-800 tw-text-lg tw-font-medium">
-                <v-icon color="indigo" class="tw-mr-2">mdi-robot</v-icon>
-                Ask FarmAI
-
-              </v-card-title>
-              <v-card-text class="tw-p-6">
-                <v-textarea
-                    v-model="aiQuestion"
-                    outlined
-                    label="Ask any farming question..."
-                    rows="2"
-                    class="tw-rounded-lg"
-                    append-icon="mdi-send"
-                    @click:append="askAI"
-                    @keydown.enter="askAI"
-                ></v-textarea>
-
-                <div v-if="aiResponse" class="tw-mt-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
-                  <div class="tw-flex tw-items-center tw-mb-2">
-                    <v-icon color="indigo" class="tw-mr-2">mdi-robot-happy-outline</v-icon>
-                    <h3 class="tw-text-indigo-800 tw-font-medium">FarmAI Response</h3>
-                  </div>
-                  <p class="tw-text-gray-700">{{ aiResponse }}</p>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
       </v-container>
 
       <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="3000">
@@ -168,16 +161,19 @@
 
 <script>
 import Default from '@/components/layout/Default.vue';
+import MarkdownRenderer from '@/components/layout/MarkdownRenderer.vue';
+import axios from 'axios';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
-  components: { Default },
+  components: { Default, MarkdownRenderer },
   data() {
     return {
       selectedCrop: null,
       selectedLivestock: null,
       aiQuestion: '',
       aiResponse: '',
-      snackbar: false,
+      snackbar: true,
       snackbarText: '',
       snackbarColor: 'success',
       weatherStatus: 'Sunny, 28°C',
@@ -275,113 +271,37 @@ export default {
           'Maintain proper aeration',
         ],
       },
-      stars: [],
-      starCount: 150,
     };
   },
-  created() {
-    this.generateStars();
-  },
   methods: {
-    askAI() {
-      if (!this.aiQuestion.trim()) {
-        this.snackbarText = 'Please enter a question';
-        this.snackbarColor = 'error';
-        this.snackbar = true;
-        return;
-      }
-
-      // Simulate AI response
-      this.aiResponse = `Based on your question about "${this.aiQuestion}", our AI recommends: 
-      \n1. Conduct soil tests to determine nutrient levels
-      \n2. Implement crop rotation to improve soil health
-      \n3. Monitor weather forecasts for optimal planting times
-      \n4. Consider precision agriculture techniques for better yields`;
-
-      this.snackbarText = 'FarmAI has provided recommendations';
-      this.snackbarColor = 'success';
-      this.snackbar = true;
-
-      // In a real app, you would call an API here
-      // axios.post('/api/ai-query', { question: this.aiQuestion })
-      //   .then(response => {
-      //     this.aiResponse = response.data.answer;
-      //   })
-    },
-    generateStars() {
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < this.starCount; i++) {
-        this.stars.push({
-          size: Math.random() * 3 + 1,
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          opacity: Math.random(),
-          delay: Math.random() * 5,
-          duration: Math.random() * 3 + 2,
+    async askAI() {
+      try {
+        if (!this.aiQuestion.trim()) {
+          this.snackbarText = 'Please enter a question';
+          this.snackbarColor = 'error';
+          this.snackbar = true;
+          return;
+        }
+        const response = await axios.post('/api/chat', {
+          userId: getCurrentUserId() ? getCurrentUserId() : 'RANDOM',
+          question: this.aiQuestion,
         });
+
+        if (response.data.success) {
+          this.aiResponse = response.data.data.answer;
+          // document.getElementById('content').innerHTML = marked.parse(this.aiResponse);
+        }
+
+        this.snackbarText = 'FarmAI has provided recommendations';
+        this.snackbarColor = 'success';
+        this.snackbar = true;
+      } catch (e) {
+        this.$toast.error(e.message);
       }
-    },
-    starStyle(star) {
-      return {
-        width: `${star.size}px`,
-        height: `${star.size}px`,
-        left: `${star.x}%`,
-        top: `${star.y}%`,
-        opacity: star.opacity,
-        animationDelay: `${star.delay}s`,
-        animationDuration: `${star.duration}s`,
-      };
     },
   },
 };
 </script>
 
 <style scoped>
-/* You can add custom styles here if needed */
-.tw-rounded-xl {
-  border-radius: 1rem;
-}
-.tw-rounded-lg {
-  border-radius: 0.75rem;
-}
-.space-container {
-  background: linear-gradient(to bottom, #000000 0%, #1a1a2e 100%);
-  overflow: hidden;
-  z-index: -1;
-}
-
-.star {
-  position: absolute;
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.4);
-  animation: twinkle infinite alternate;
-}
-
-@keyframes twinkle {
-  0% {
-    transform: scale(1);
-    opacity: 0.2;
-  }
-  100% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-}
-
-/* Add some larger "stars" that could represent distant galaxies */
-.star:nth-child(3n) {
-  background-color: #9bb0ff;
-  box-shadow: 0 0 8px 1px #9bb0ff;
-}
-
-.star:nth-child(5n) {
-  background-color: #a6f6ff;
-  box-shadow: 0 0 8px 1px #a6f6ff;
-}
-
-.star:nth-child(7n) {
-  background-color: #ffd3a6;
-  box-shadow: 0 0 8px 1px #ffd3a6;
-}
 </style>

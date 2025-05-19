@@ -202,6 +202,19 @@ export default {
       axios.get(`/farmers-service/farmer?farmerId=${this.$route.params.farmerId}`)
         .then(async (response) => {
           if (response.data.data == null) {
+            await this.$store.dispatch('auth/signOut').then(() => {
+              // localStorage.removeItem(NOTIFICATIONS);
+              if (caches) {
+                caches.keys().then((arr) => {
+                  arr.forEach((key) => {
+                    caches.delete(key);
+                  });
+                });
+              }
+              this.$store.commit('setClient', []);
+              window.location.href = '/';
+              this.$router.push({ name: 'Landing' });
+            });
             const user = await Auth.currentAuthenticatedUser();
             if (user !== null && user.attributes.sub === this.$route.params.farmerId) {
               this.farmer = {
