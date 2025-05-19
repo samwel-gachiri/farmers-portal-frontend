@@ -4,7 +4,7 @@
 
 <script>
 import MarkdownIt from 'markdown-it';
-// import DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 
 export default {
   props: {
@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     renderedMarkdown() {
-      return this.md.render(this.contenty);
+      return DOMPurify.sanitize(this.md.render(this.content));
     },
   },
 };

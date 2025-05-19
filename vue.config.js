@@ -1,6 +1,5 @@
 const CompressionPlugin = require('compression-webpack-plugin');
 const DumpVueEnvVarsWebpackPlugin = require('./DumpVueEnvVarsWebpackPlugin.js');
-
 const manifestJSON = require('./public/manifest.json');
 
 module.exports = {
@@ -13,11 +12,28 @@ module.exports = {
     proxy: process.env.VUE_APP_API_BASE_URL,
   },
   configureWebpack: {
+    module: {
+      rules: [
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: 'javascript/auto', // Required for .mjs files
+        },
+      ],
+    },
     plugins: [
-      // We add our plugin here
       new DumpVueEnvVarsWebpackPlugin({ filename: 'sw-extended.js' }),
       new CompressionPlugin(),
     ],
+  },
+  chainWebpack: (config) => {
+    // Alternative way to handle .mjs (if the above doesn't work)
+    config.module
+      .rule('mjs')
+      .test(/\.mjs$/)
+      .type('javascript/auto')
+      .include.add(/node_modules/)
+      .end();
   },
   pwa: {
     themeColor: manifestJSON.theme_color,

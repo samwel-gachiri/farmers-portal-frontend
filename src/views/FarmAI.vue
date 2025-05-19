@@ -1,29 +1,54 @@
 <template>
   <Default>
     <div class="tw-overflow-hidden">
-      <div
-          v-for="(star, index) in stars"
-          :key="index"
-          class="star"
-          :style="starStyle(star)"
-      ></div>
-      <v-toolbar color="primary" dark flat>
-        <v-toolbar-title class="tw-text-xl tw-font-semibold">
-          <v-icon large left class="tw-mr-2">mdi-robot-outline</v-icon>
-          FarmAI Advisor
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-chip color="white" text-color="primary" class="tw-mr-2">
-          <v-icon left small>mdi-weather-cloudy</v-icon>
-          {{ weatherStatus }}
-        </v-chip>
-      </v-toolbar>
-
+<!--      <v-toolbar color="primary" dark flat rounded>-->
+<!--        <v-toolbar-title class="tw-text-xl tw-font-semibold">-->
+<!--          <v-icon large left class="tw-mr-2">mdi-robot-outline</v-icon>-->
+<!--          FarmAI Advisor-->
+<!--        </v-toolbar-title>-->
+<!--&lt;!&ndash;        <v-spacer></v-spacer>&ndash;&gt;-->
+<!--&lt;!&ndash;        <v-chip color="white" text-color="primary" class="tw-mr-2">&ndash;&gt;-->
+<!--&lt;!&ndash;          <v-icon left small>mdi-weather-cloudy</v-icon>&ndash;&gt;-->
+<!--&lt;!&ndash;          {{ weatherStatus }}&ndash;&gt;-->
+<!--&lt;!&ndash;        </v-chip>&ndash;&gt;-->
+<!--      </v-toolbar>-->
       <v-container class="tw-py-6 tw-px-8">
-        <v-alert
-          type="info"
-      >Under development</v-alert>
-        <v-row>
+        <div>
+          <h2 class="tw-font-bold">Uliza maswali kuhusiana na ukulima hapa</h2>
+        </div>
+        <v-row class="tw-my-16">
+          <v-col cols="12">
+            <v-card class="tw-rounded-lg tw-shadow-md">
+              <v-card-title class="tw-bg-indigo-50 tw-text-indigo-800 tw-text-lg tw-font-medium">
+                <v-icon color="indigo" class="tw-mr-2">mdi-robot</v-icon>
+                Ask FarmAI
+
+              </v-card-title>
+              <v-card-text class="tw-p-6">
+                <v-textarea
+                    v-model="aiQuestion"
+                    outlined
+                    label="Ask any farming question..."
+                    rows="2"
+                    class="tw-rounded-lg"
+                    append-icon="mdi-send"
+                    @click:append="askAI"
+                    @keydown.enter="askAI"
+                ></v-textarea>
+
+                <div v-if="aiResponse"  class="tw-mt-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
+                  <div class="tw-flex tw-items-center tw-mb-2">
+                    <v-icon color="indigo" class="tw-mr-2">mdi-robot-happy-outline</v-icon>
+                    <h3 class="tw-text-indigo-800 tw-font-medium">FarmAI Response</h3>
+                  </div>
+<!--                  <div class="tw-text-gray-700" id="aiResponse">{{aiResponse}}</div>-->
+                  <MarkdownRenderer :content="aiResponse" />
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row v-if="false">
           <v-col cols="12" md="6">
             <v-card class="tw-rounded-lg tw-shadow-md tw-h-full">
               <v-card-title class="tw-bg-green-50 tw-text-green-800 tw-text-lg tw-font-medium">
@@ -117,39 +142,6 @@
                 <div v-else class="tw-text-center tw-py-8 tw-text-gray-500">
                   <v-icon large color="grey" class="tw-mb-2">mdi-help-circle-outline</v-icon>
                   <p>Select livestock to get AI-powered care advice</p>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-        <v-row class="tw-mt-4">
-          <v-col cols="12">
-            <v-card class="tw-rounded-lg tw-shadow-md">
-              <v-card-title class="tw-bg-indigo-50 tw-text-indigo-800 tw-text-lg tw-font-medium">
-                <v-icon color="indigo" class="tw-mr-2">mdi-robot</v-icon>
-                Ask FarmAI
-
-              </v-card-title>
-              <v-card-text class="tw-p-6">
-                <v-textarea
-                    v-model="aiQuestion"
-                    outlined
-                    label="Ask any farming question..."
-                    rows="2"
-                    class="tw-rounded-lg"
-                    append-icon="mdi-send"
-                    @click:append="askAI"
-                    @keydown.enter="askAI"
-                ></v-textarea>
-
-                <div v-if="aiResponse"  class="tw-mt-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
-                  <div class="tw-flex tw-items-center tw-mb-2">
-                    <v-icon color="indigo" class="tw-mr-2">mdi-robot-happy-outline</v-icon>
-                    <h3 class="tw-text-indigo-800 tw-font-medium">FarmAI Response</h3>
-                  </div>
-<!--                  <div class="tw-text-gray-700" id="aiResponse">{{aiResponse}}</div>-->
-                  <MarkdownRenderer :content="aiResponse" />
                 </div>
               </v-card-text>
             </v-card>
@@ -279,16 +271,7 @@ export default {
           'Maintain proper aeration',
         ],
       },
-      stars: [],
-      starCount: 150,
     };
-  },
-  created() {
-    // this.generateStars();
-  },
-  mounted() {
-    this.aiResponse = '# Pesticide Considerations for 2-Year-Old Potato Crops First, I should clarify that potatoes are typically grown as annual crops, harvested within one growing season (3-5 months after planting). If you have potato plants that are actually 2 years old, this is unusual and may indicate volunteer plants or a perennial wild potato variety. Before recommending any pesticide, I would need to know: 1. What specific pest problems are you observing? 2. Your location/climate zone 3. Whether you\'re practicing conventional or organic farming ## General Recommendations: For common potato pests like: - Colorado potato beetle: Consider spinosad, Bt (for organic), or neonicotinoids (conventional) - Aphids: Insecticidal soaps, neem oil (organic) or systemic insecticides (conventional) - Late blight: Copper-based fungicides (organic) or chlorothalonil, mancozeb (conventional) I strongly recommend: - Identifying the specific pest before application - Following an Integrated Pest Management (IPM) approach - Using pesticides as a last resort after cultural controls - Following all label instructions and local regulations Would you be able to provide more details about the specific pest issues you\'re facing?';
-    document.getElementById('aiResponse').innerHTML = this.aiResponse;
   },
   methods: {
     async askAI() {
@@ -316,86 +299,9 @@ export default {
         this.$toast.error(e.message);
       }
     },
-    generateStars() {
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < this.starCount; i++) {
-        this.stars.push({
-          size: Math.random() * 3 + 1,
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          opacity: Math.random(),
-          delay: Math.random() * 5,
-          duration: Math.random() * 3 + 2,
-        });
-      }
-    },
-    starStyle(star) {
-      return {
-        width: `${star.size}px`,
-        height: `${star.size}px`,
-        left: `${star.x}%`,
-        top: `${star.y}%`,
-        opacity: star.opacity,
-        animationDelay: `${star.delay}s`,
-        animationDuration: `${star.duration}s`,
-      };
-    },
-  },
-  filters: {
-    formattedResponse(rawResponse) {
-      // return marked.parse(rawResponse);
-      return rawResponse;
-    },
   },
 };
 </script>
 
 <style scoped>
-/* You can add custom styles here if needed */
-.tw-rounded-xl {
-  border-radius: 1rem;
-}
-.tw-rounded-lg {
-  border-radius: 0.75rem;
-}
-.space-container {
-  background: linear-gradient(to bottom, #000000 0%, #1a1a2e 100%);
-  overflow: hidden;
-  z-index: -1;
-}
-
-.star {
-  position: absolute;
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.4);
-  animation: twinkle infinite alternate;
-}
-
-@keyframes twinkle {
-  0% {
-    transform: scale(1);
-    opacity: 0.2;
-  }
-  100% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-}
-
-/* Add some larger "stars" that could represent distant galaxies */
-.star:nth-child(3n) {
-  background-color: #9bb0ff;
-  box-shadow: 0 0 8px 1px #9bb0ff;
-}
-
-.star:nth-child(5n) {
-  background-color: #a6f6ff;
-  box-shadow: 0 0 8px 1px #a6f6ff;
-}
-
-.star:nth-child(7n) {
-  background-color: #ffd3a6;
-  box-shadow: 0 0 8px 1px #ffd3a6;
-}
 </style>

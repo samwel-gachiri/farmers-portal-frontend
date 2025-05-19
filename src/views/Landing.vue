@@ -49,6 +49,14 @@
     <!-- Hero Section -->
     <section id="hero" class="hero-section">
       <v-container>
+        <div class="tw-flex tw-flex-center tw-flex-col tw-justify-center tw-items-center">
+          <h2 style="font-size: 72px; color: #1c8e1d">AGRI<span style="color: #1e1e8e">CONNECT</span></h2>
+          <v-img
+              src="@/assets/images/landing_page.jpg"
+              style="border-radius: 40px;"
+              max-height="500px"
+          ></v-img>
+        </div>
         <v-row align="center">
           <v-col cols="12" md="6" class="pr-md-10">
             <h1 class="text-h3 tw-text-md-h2 tw-font-weight-bold tw-mb-6">
@@ -374,7 +382,8 @@
               <v-btn
                   color="secondary"
                   block
-                  type="submit"
+                  @click="getStarted"
+                  type=""
               >
                 Subscribe
               </v-btn>
@@ -562,7 +571,7 @@ export default {
 /* Custom Styles */
 .hero-section {
   background: linear-gradient(135deg, #f5fdf4 0%, #e8f5e9 100%);
-  padding: 120px 0 80px;
+  padding: 50px 0 40px;
   position: relative;
 }
 
@@ -585,7 +594,7 @@ export default {
 }
 
 .farmer-img {
-  //animation: float 6s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
 }
 
 .buyer-img {
