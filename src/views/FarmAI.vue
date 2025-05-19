@@ -143,12 +143,13 @@
                     @keydown.enter="askAI"
                 ></v-textarea>
 
-                <div v-if="aiResponse" class="tw-mt-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
+                <div v-if="aiResponse"  class="tw-mt-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
                   <div class="tw-flex tw-items-center tw-mb-2">
                     <v-icon color="indigo" class="tw-mr-2">mdi-robot-happy-outline</v-icon>
                     <h3 class="tw-text-indigo-800 tw-font-medium">FarmAI Response</h3>
                   </div>
-                  <p class="tw-text-gray-700">{{ aiResponse }}</p>
+<!--                  <div class="tw-text-gray-700" id="aiResponse">{{aiResponse}}</div>-->
+                  <MarkdownRenderer :content="aiResponse" />
                 </div>
               </v-card-text>
             </v-card>
@@ -168,16 +169,19 @@
 
 <script>
 import Default from '@/components/layout/Default.vue';
+import MarkdownRenderer from '@/components/layout/MarkdownRenderer.vue';
+import axios from 'axios';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
-  components: { Default },
+  components: { Default, MarkdownRenderer },
   data() {
     return {
       selectedCrop: null,
       selectedLivestock: null,
       aiQuestion: '',
       aiResponse: '',
-      snackbar: false,
+      snackbar: true,
       snackbarText: '',
       snackbarColor: 'success',
       weatherStatus: 'Sunny, 28°C',
@@ -280,33 +284,37 @@ export default {
     };
   },
   created() {
-    this.generateStars();
+    // this.generateStars();
+  },
+  mounted() {
+    this.aiResponse = '# Pesticide Considerations for 2-Year-Old Potato Crops First, I should clarify that potatoes are typically grown as annual crops, harvested within one growing season (3-5 months after planting). If you have potato plants that are actually 2 years old, this is unusual and may indicate volunteer plants or a perennial wild potato variety. Before recommending any pesticide, I would need to know: 1. What specific pest problems are you observing? 2. Your location/climate zone 3. Whether you\'re practicing conventional or organic farming ## General Recommendations: For common potato pests like: - Colorado potato beetle: Consider spinosad, Bt (for organic), or neonicotinoids (conventional) - Aphids: Insecticidal soaps, neem oil (organic) or systemic insecticides (conventional) - Late blight: Copper-based fungicides (organic) or chlorothalonil, mancozeb (conventional) I strongly recommend: - Identifying the specific pest before application - Following an Integrated Pest Management (IPM) approach - Using pesticides as a last resort after cultural controls - Following all label instructions and local regulations Would you be able to provide more details about the specific pest issues you\'re facing?';
+    document.getElementById('aiResponse').innerHTML = this.aiResponse;
   },
   methods: {
-    askAI() {
-      if (!this.aiQuestion.trim()) {
-        this.snackbarText = 'Please enter a question';
-        this.snackbarColor = 'error';
+    async askAI() {
+      try {
+        if (!this.aiQuestion.trim()) {
+          this.snackbarText = 'Please enter a question';
+          this.snackbarColor = 'error';
+          this.snackbar = true;
+          return;
+        }
+        const response = await axios.post('/api/chat', {
+          userId: getCurrentUserId() ? getCurrentUserId() : 'RANDOM',
+          question: this.aiQuestion,
+        });
+
+        if (response.data.success) {
+          this.aiResponse = response.data.data.answer;
+          // document.getElementById('content').innerHTML = marked.parse(this.aiResponse);
+        }
+
+        this.snackbarText = 'FarmAI has provided recommendations';
+        this.snackbarColor = 'success';
         this.snackbar = true;
-        return;
+      } catch (e) {
+        this.$toast.error(e.message);
       }
-
-      // Simulate AI response
-      this.aiResponse = `Based on your question about "${this.aiQuestion}", our AI recommends: 
-      \n1. Conduct soil tests to determine nutrient levels
-      \n2. Implement crop rotation to improve soil health
-      \n3. Monitor weather forecasts for optimal planting times
-      \n4. Consider precision agriculture techniques for better yields`;
-
-      this.snackbarText = 'FarmAI has provided recommendations';
-      this.snackbarColor = 'success';
-      this.snackbar = true;
-
-      // In a real app, you would call an API here
-      // axios.post('/api/ai-query', { question: this.aiQuestion })
-      //   .then(response => {
-      //     this.aiResponse = response.data.answer;
-      //   })
     },
     generateStars() {
       // eslint-disable-next-line no-plusplus
@@ -331,6 +339,12 @@ export default {
         animationDelay: `${star.delay}s`,
         animationDuration: `${star.duration}s`,
       };
+    },
+  },
+  filters: {
+    formattedResponse(rawResponse) {
+      // return marked.parse(rawResponse);
+      return rawResponse;
     },
   },
 };

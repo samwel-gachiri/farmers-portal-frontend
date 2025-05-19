@@ -485,7 +485,13 @@ export default {
       }
       // fetching the users credentials and putting them into state
       const response = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
-      if (response.data.data == null) this.$toast.error('User not found');
+      if (response.data.data == null) {
+        await this.signUpUser();
+        const response2 = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
+        if (response2.data.data == null) {
+          this.$toast.error('user not found');
+        }
+      }
       const user = { ...this.user, ...response.data.data };
       await this.$store.dispatch('auth/signIn', {
         user,
