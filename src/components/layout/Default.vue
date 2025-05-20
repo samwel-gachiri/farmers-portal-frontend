@@ -3,9 +3,9 @@
     <v-navigation-drawer
         class="sidebar"
         v-model="drawer"
-        :clipped="false"
         app
     >
+<!--        :clipped="false"-->
       <drawer />
     </v-navigation-drawer>
 
@@ -17,27 +17,27 @@
         class="tw-rounded-lg"
     >
       <v-app-bar-nav-icon class="tw-block lg:tw-hidden" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title
-          style="width: 300px"
-          class="ml-0 pl-4"
-      >
-      </v-toolbar-title>
+<!--      <v-toolbar-title-->
+<!--          style="width: 300px"-->
+<!--          class="ml-0 pl-4"-->
+<!--      >-->
+<!--      </v-toolbar-title>-->
 
       <v-spacer></v-spacer>
-      <div class="tw-w-full tw-flex tw-justify-end tw-items-center">
-        <v-btn :to="{ name: 'Notifications' }" class="tw-mb-2" icon>
-          <v-badge
-              overlap
-              :color="$store.getters.notificationCount === 0 ? 'success' : 'error'"
-              :content="$store.getters.notificationCount === 0 ? '0' : $store.getters.notificationCount"
-          >
-            <v-icon class="c-gray-text">mdi-bell</v-icon>
-          </v-badge>
-        </v-btn>
-        <span class="tw-h-6 tw-border-r-2 tw-border-gray-600"></span>
+      <div class="tw-w-full tw-flex tw-border-r-2 tw-justify-end tw-items-center">
+<!--        <v-btn :to="{ name: 'Notifications' }" class="tw-mb-2" icon>-->
+<!--          <v-badge-->
+<!--              overlap-->
+<!--              :color="$store.getters.notificationCount === 0 ? 'success' : 'error'"-->
+<!--              :content="$store.getters.notificationCount === 0 ? '0' : $store.getters.notificationCount"-->
+<!--          >-->
+<!--            <v-icon class="c-gray-text">mdi-bell</v-icon>-->
+<!--          </v-badge>-->
+<!--        </v-btn>-->
+        <span class="tw-h-6 tw-border-gray-600"></span>
         <avatar />
         <div v-if="!isAuthenticated()">
-          <router-link to="SignIn" class="tw-ml-4 tw-font-bold tw-bg-yellow-400 tw-px-3 tw-py-2 tw-underline">Login
+          <router-link to="SignIn" class="tw-ml-4 tw-font-bold tw-rounded-lg tw-bg-yellow-400 tw-px-3 tw-py-2 tw-underline">Login
             <v-icon>mdi-login</v-icon>
           </router-link>
         </div>
@@ -63,7 +63,7 @@
 <script>
 import Drawer from '@/components/layout/partials/Drawer.vue';
 import Avatar from '@/components/layout/partials/nav/Avatar.vue';
-import axios from 'axios';
+// import axios from 'axios';
 import { mapGetters } from 'vuex';
 import ScreenIdle from '@/components/shared/ScreenIdle.vue';
 import { isAuthenticated } from '@/utils/roles.js';
@@ -83,12 +83,12 @@ export default {
   },
   methods: {
     isAuthenticated,
-    getClient() {
-      axios.get(`/customer/gis/clients/validateclient?pin=${this.authenticatedUser['custom:kra-pin']}&email=${this.authenticatedUser.email}`)
-        .then((response) => {
-          this.$store.commit('setClient', response?.data?.object);
-        });
-    },
+    // getClient() {
+    //   axios.get(`/customer/gis/clients/validateclient?pin=${this.authenticatedUser['custom:kra-pin']}&email=${this.authenticatedUser.email}`)
+    //     .then((response) => {
+    //       this.$store.commit('setClient', response?.data?.object);
+    //     });
+    // },
   },
 };
 </script>

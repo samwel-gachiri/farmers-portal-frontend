@@ -1,153 +1,41 @@
 <template>
   <Default>
     <div class="tw-overflow-hidden">
-<!--      <v-toolbar color="primary" dark flat rounded>-->
-<!--        <v-toolbar-title class="tw-text-xl tw-font-semibold">-->
-<!--          <v-icon large left class="tw-mr-2">mdi-robot-outline</v-icon>-->
-<!--          FarmAI Advisor-->
-<!--        </v-toolbar-title>-->
-<!--&lt;!&ndash;        <v-spacer></v-spacer>&ndash;&gt;-->
-<!--&lt;!&ndash;        <v-chip color="white" text-color="primary" class="tw-mr-2">&ndash;&gt;-->
-<!--&lt;!&ndash;          <v-icon left small>mdi-weather-cloudy</v-icon>&ndash;&gt;-->
-<!--&lt;!&ndash;          {{ weatherStatus }}&ndash;&gt;-->
-<!--&lt;!&ndash;        </v-chip>&ndash;&gt;-->
-<!--      </v-toolbar>-->
-      <v-container class="tw-py-6 tw-px-8">
+      <div class="tw-py-6">
         <div>
-          <h2 class="tw-font-bold">Uliza maswali kuhusiana na ukulima hapa</h2>
         </div>
-        <v-row class="tw-my-16">
-          <v-col cols="12">
-            <v-card class="tw-rounded-lg tw-shadow-md">
-              <v-card-title class="tw-bg-indigo-50 tw-text-indigo-800 tw-text-lg tw-font-medium">
-                <v-icon color="indigo" class="tw-mr-2">mdi-robot</v-icon>
-                Ask FarmAI
+        <div class="tw-rounded-lg tw-p-8">
+          <div class="tw-text-lg tw-font-medium">
+            <v-icon class="tw-mr-2 tw-bg-white" size="40px" light>mdi-emoticon-happy</v-icon>
+            FarmAI
+            <h2 class="tw-font-bold tw-text-black tw-pt-3">Uliza maswali kuhusiana na ukulima hapa</h2>
+          </div>
 
-              </v-card-title>
-              <v-card-text class="tw-p-6">
-                <v-textarea
-                    v-model="aiQuestion"
-                    outlined
-                    label="Ask any farming question..."
-                    rows="2"
-                    class="tw-rounded-lg"
-                    append-icon="mdi-send"
-                    @click:append="askAI"
-                    @keydown.enter="askAI"
-                ></v-textarea>
-
-                <div v-if="aiResponse"  class="tw-mt-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
-                  <div class="tw-flex tw-items-center tw-mb-2">
-                    <v-icon color="indigo" class="tw-mr-2">mdi-robot-happy-outline</v-icon>
-                    <h3 class="tw-text-indigo-800 tw-font-medium">FarmAI Response</h3>
-                  </div>
-<!--                  <div class="tw-text-gray-700" id="aiResponse">{{aiResponse}}</div>-->
-                  <MarkdownRenderer :content="aiResponse" />
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row v-if="false">
-          <v-col cols="12" md="6">
-            <v-card class="tw-rounded-lg tw-shadow-md tw-h-full">
-              <v-card-title class="tw-bg-green-50 tw-text-green-800 tw-text-lg tw-font-medium">
-                <v-icon color="green" class="tw-mr-2">mdi-sprout-outline</v-icon>
-                Crop Growth Insights
-              </v-card-title>
-              <v-card-text class="tw-p-6">
-                <div class="tw-mb-4">
-                  <v-select
-                      v-model="selectedCrop"
-                      :items="crops"
-                      label="Select your crop"
-                      outlined
-                      dense
-                      class="tw-rounded-lg"
-                      prepend-icon="mdi-corn"
-                  ></v-select>
-                </div>
-
-                <div v-if="selectedCrop" class="tw-space-y-4">
-                  <div class="tw-p-4 tw-bg-blue-50 tw-rounded-lg">
-                    <div class="tw-flex tw-items-center tw-mb-2">
-                      <v-icon color="blue" class="tw-mr-2">mdi-calendar-check</v-icon>
-                      <h3 class="tw-text-blue-800 tw-font-medium">Current Growth Stage</h3>
-                    </div>
-                    <p class="tw-text-gray-700">{{ cropStages[selectedCrop] }}</p>
-                  </div>
-
-                  <div class="tw-p-4 tw-bg-purple-50 tw-rounded-lg">
-                    <div class="tw-flex tw-items-center tw-mb-2">
-                      <v-icon color="purple" class="tw-mr-2">mdi-lightbulb-on-outline</v-icon>
-                      <h3 class="tw-text-purple-800 tw-font-medium">AI Recommendations</h3>
-                    </div>
-                    <ul class="tw-list-disc tw-list-inside tw-text-gray-700 tw-space-y-1">
-                      <li v-for="(tip, index) in cropTips[selectedCrop]" :key="'crop-tip-'+index">
-                        {{ tip }}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div v-else class="tw-text-center tw-py-8 tw-text-gray-500">
-                  <v-icon large color="grey" class="tw-mb-2">mdi-help-circle-outline</v-icon>
-                  <p>Select a crop to get AI-powered recommendations</p>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <v-card class="tw-rounded-lg tw-shadow-md tw-h-full">
-              <v-card-title class="tw-bg-blue-50 tw-text-blue-800 tw-text-lg tw-font-medium">
-                <v-icon color="blue" class="tw-mr-2">mdi-cow</v-icon>
-                Livestock Development
-              </v-card-title>
-              <v-card-text class="tw-p-6">
-                <div class="tw-mb-4">
-                  <v-select
-                      v-model="selectedLivestock"
-                      :items="livestock"
-                      label="Select your livestock"
-                      outlined
-                      dense
-                      class="tw-rounded-lg"
-                      prepend-icon="mdi-paw"
-                  ></v-select>
-                </div>
-
-                <div v-if="selectedLivestock" class="tw-space-y-4">
-                  <div class="tw-p-4 tw-bg-green-50 tw-rounded-lg">
-                    <div class="tw-flex tw-items-center tw-mb-2">
-                      <v-icon color="green" class="tw-mr-2">mdi-chart-line</v-icon>
-                      <h3 class="tw-text-green-800 tw-font-medium">Health Indicators</h3>
-                    </div>
-                    <p class="tw-text-gray-700">{{ livestockHealth[selectedLivestock] }}</p>
-                  </div>
-
-                  <div class="tw-p-4 tw-bg-amber-50 tw-rounded-lg">
-                    <div class="tw-flex tw-items-center tw-mb-2">
-                      <v-icon color="amber" class="tw-mr-2">mdi-medical-bag</v-icon>
-                      <h3 class="tw-text-amber-800 tw-font-medium">Care Recommendations</h3>
-                    </div>
-                    <ul class="tw-list-disc tw-list-inside tw-text-gray-700 tw-space-y-1">
-                      <li v-for="(tip, index) in livestockTips[selectedLivestock]" :key="'livestock-tip-'+index">
-                        {{ tip }}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div v-else class="tw-text-center tw-py-8 tw-text-gray-500">
-                  <v-icon large color="grey" class="tw-mb-2">mdi-help-circle-outline</v-icon>
-                  <p>Select livestock to get AI-powered care advice</p>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+          <div class="">
+            <div id="chat-messages" class="tw-mt-4 tw-px-4 tw-bg-gray-50 tw-rounded-lg tw-max-h-96 tw-overflow-y-auto">
+              <!-- Messages will appear here -->
+            </div>
+            <div class="tw-mt-4">
+              <v-textarea
+                  v-model="aiQuestion"
+                  outlined
+                  rounded
+                  autofocus
+                  label="Ask any farming question..."
+                  rows="2"
+                  class="tw-rounded-lg"
+              ></v-textarea>
+              <v-btn
+                  rounded
+                  color="primary"
+                  class="tw-ml-4"
+                  @click="askAI">
+                Send
+              </v-btn>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="3000">
         {{ snackbarText }}
@@ -161,147 +49,134 @@
 
 <script>
 import Default from '@/components/layout/Default.vue';
-import MarkdownRenderer from '@/components/layout/MarkdownRenderer.vue';
-import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
+import MarkdownIt from 'markdown-it';
+import DOMPurify from 'dompurify';
 
 export default {
-  components: { Default, MarkdownRenderer },
+  components: { Default },
   data() {
     return {
-      selectedCrop: null,
-      selectedLivestock: null,
       aiQuestion: '',
-      aiResponse: '',
-      snackbar: true,
+      snackbar: false,
       snackbarText: '',
       snackbarColor: 'success',
-      weatherStatus: 'Sunny, 28°C',
-      crops: ['Maize', 'Wheat', 'Rice', 'Soybeans', 'Potatoes', 'Tomatoes'],
-      livestock: ['Cattle', 'Poultry', 'Sheep', 'Goats', 'Pigs', 'Fish'],
-      cropStages: {
-        Maize: 'Vegetative stage (V6) - 6 leaves fully emerged',
-        Wheat: 'Flowering stage - Monitor for fungal diseases',
-        Rice: 'Tillering stage - Ensure proper water management',
-        Soybeans: 'Pod development stage - Watch for insect pressure',
-        Potatoes: 'Tuber initiation - Maintain consistent moisture',
-        Tomatoes: 'Fruit development - Monitor calcium levels',
-      },
-      livestockHealth: {
-        Cattle: 'Good overall health. Watch for signs of heat stress.',
-        Poultry: 'Normal activity levels. Check water quality.',
-        Sheep: 'Healthy wool growth. Monitor for parasites.',
-        Goats: 'Active and feeding well. Check hoof condition.',
-        Pigs: 'Good weight gain. Ensure proper ventilation.',
-        Fish: 'Normal feeding behavior. Check water oxygen levels.',
-      },
-      cropTips: {
-        Maize: [
-          'Apply nitrogen fertilizer at 8-leaf stage',
-          'Monitor for armyworm infestation',
-          'Ensure soil moisture is consistent',
-          'Consider side-dressing if leaves show yellowing',
-        ],
-        Wheat: [
-          'Check for rust diseases weekly',
-          'Avoid excessive nitrogen at this stage',
-          'Monitor for aphid populations',
-          'Prepare for harvest in 3-4 weeks',
-        ],
-        Rice: [
-          'Maintain 2-3 inches of standing water',
-          'Apply potassium if leaf edges yellow',
-          'Watch for rice blast symptoms',
-          'Weed control is critical now',
-        ],
-        Soybeans: [
-          'Monitor for soybean cyst nematode',
-          'Ensure adequate phosphorus levels',
-          'Watch for white mold in dense canopies',
-          'Consider foliar fungicide if disease pressure is high',
-        ],
-        Potatoes: [
-          'Hill soil around plants to prevent greening',
-          'Monitor for Colorado potato beetle',
-          'Maintain consistent soil moisture',
-          'Watch for early blight symptoms',
-        ],
-        Tomatoes: [
-          'Provide calcium to prevent blossom end rot',
-          'Prune suckers to improve air circulation',
-          'Monitor for tomato hornworm',
-          'Mulch to maintain soil moisture',
-        ],
-      },
-      livestockTips: {
-        Cattle: [
-          'Provide shade and cool drinking water',
-          'Rotate pastures to prevent overgrazing',
-          'Supplement with minerals if needed',
-          'Monitor for foot rot in wet conditions',
-        ],
-        Poultry: [
-          'Ensure clean water available at all times',
-          'Provide adequate ventilation in housing',
-          'Monitor for signs of respiratory disease',
-          'Adjust feed protein levels as needed',
-        ],
-        Sheep: [
-          'Check for internal parasites regularly',
-          'Provide mineral supplements',
-          'Trim hooves if overgrown',
-          'Monitor for signs of flystrike',
-        ],
-        Goats: [
-          'Ensure secure fencing to prevent escapes',
-          'Provide browse material for enrichment',
-          'Monitor for signs of CAE',
-          'Keep mineral supplements available',
-        ],
-        Pigs: [
-          'Ensure proper ventilation in housing',
-          'Provide wallows or cooling in heat',
-          'Monitor feed conversion ratios',
-          'Watch for signs of respiratory issues',
-        ],
-        Fish: [
-          'Monitor water quality parameters daily',
-          'Adjust feeding based on water temperature',
-          'Watch for signs of stress or disease',
-          'Maintain proper aeration',
-        ],
-      },
+      md: new MarkdownIt({
+        html: false, // Disable HTML tags in source
+        xhtmlOut: true, // Use '/' to close single tags
+        breaks: true, // Convert '\n' to `<br>`
+        linkify: true, // Autoconvert URL-like text to links
+        typographer: true, // Enable smartquotes and other typographic replacements
+      }),
     };
+  },
+  mounted() {
+    this.addMessage('Bot', 'Hello! I\'m farmAI, ready to help!\n**Habari yako!**');
   },
   methods: {
     async askAI() {
       try {
         if (!this.aiQuestion.trim()) {
-          this.snackbarText = 'Please enter a question';
-          this.snackbarColor = 'error';
-          this.snackbar = true;
+          this.showSnackbar('Please enter a question', 'error');
           return;
         }
-        const response = await axios.post('/api/chat', {
-          userId: getCurrentUserId() ? getCurrentUserId() : 'RANDOM',
-          question: this.aiQuestion,
-        });
 
-        if (response.data.success) {
-          this.aiResponse = response.data.data.answer;
-          // document.getElementById('content').innerHTML = marked.parse(this.aiResponse);
+        this.addMessage('User', this.aiQuestion);
+        const question = this.aiQuestion;
+        this.aiQuestion = '';
+
+        // Create bot message element first
+        const botMessageElement = this.addMessage('FarmAI', '...');
+        const contentElement = botMessageElement.querySelector('.message-content');
+
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: getCurrentUserId() || 'RANDOM',
+              question,
+            }),
+          });
+
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+          await this.processStream(response.body.getReader(), contentElement);
+          this.showSnackbar('FarmAI has provided recommendations', 'success');
+        } catch (error) {
+          this.$toast.error('Error:', error.message);
+          contentElement.textContent = 'An error occurred while fetching the response. Please try again.';
+          this.showSnackbar('Error getting response from FarmAI', 'error');
         }
-
-        this.snackbarText = 'FarmAI has provided recommendations';
-        this.snackbarColor = 'success';
-        this.snackbar = true;
       } catch (e) {
-        this.$toast.error(e.message);
+        this.showSnackbar(e.message, 'error');
       }
+    },
+
+    async processStream(reader, contentElement) {
+      const decoder = new TextDecoder();
+      let content = '';
+
+      try {
+        while (true) {
+          // eslint-disable-next-line no-await-in-loop
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          content += decoder.decode(value, { stream: true });
+          // Update content progressively
+          // eslint-disable-next-line no-param-reassign
+          contentElement.textContent = content;
+
+          // Auto-scroll to bottom
+          const chatContainer = document.getElementById('chat-messages');
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      } catch (error) {
+        this.$toast.error('Stream error:', error.message);
+        // eslint-disable-next-line no-param-reassign
+        contentElement.textContent += '\n[Stream interrupted]';
+      }
+    },
+
+    addMessage(sender, content) {
+      const chatMessages = document.getElementById('chat-messages');
+      const messageElement = document.createElement('div');
+      const mdContent = DOMPurify.sanitize(this.md.render(content));
+      messageElement.className = `tw-mb-3 tw-p-3 tw-rounded-lg tw-shadow-lg ${
+        sender === 'User'
+          ? 'tw-bg-blue-100 tw-text-blue-800'
+          : 'tw-bg-gray-100 tw-text-gray-800'
+      }`;
+
+      messageElement.innerHTML = `
+        <div class="tw-font-bold ${
+  sender === 'User' ? 'tw-text-blue-600' : 'tw-text-green-600'
+}">
+          ${sender}:
+        </div>
+        <div class="message-content tw-mt-1">${mdContent}</div>
+      `;
+
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      return messageElement;
+    },
+
+    showSnackbar(text, color) {
+      this.snackbarText = text;
+      this.snackbarColor = color;
+      this.snackbar = true;
     },
   },
 };
 </script>
 
 <style scoped>
+#chat-messages {
+  min-height: 200px;
+}
 </style>

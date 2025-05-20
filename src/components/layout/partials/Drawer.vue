@@ -13,7 +13,7 @@
             class="tw-mx-4 md:tw-mt-2 mdi-lis tw-mt-5 "
         >
           <v-list-item-action>
-            <v-icon left color="light-green lighten-4" class="gradient-icon">mdi-leaf</v-icon>
+            <v-icon left color="light-green lighten-4" class="gradient-icon">mdi-react</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title class="tw-text-black tw-font-bold">
