@@ -90,7 +90,7 @@ export default {
         const contentElement = botMessageElement.querySelector('.message-content');
 
         try {
-          const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/api/chat`, {
+          const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}api/chat`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
