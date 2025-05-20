@@ -15,36 +15,60 @@
       <v-row class="tw-mb-3">
         <v-col cols="12">
           <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>
-          <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>
+<!--          <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>-->
         </v-col>
       </v-row>
 
       <!-- Stats Cards -->
       <v-row class="tw-mb-8">
         <v-col cols="12" md="4">
-          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-            <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>
+          <v-card  class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+            <h2 class="tw-text-xl font-semibold text-gray-800">Total Sales</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
-            <p class="tw-text-gray-500">Active listings</p>
+<!--            <p class="tw-text-gray-500">Active listings</p>-->
           </v-card>
         </v-col>
         <v-col cols="12" md="4">
-          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+          <v-card  class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
-            <p class="tw-text-gray-500">This month</p>
+<!--            <p class="tw-text-gray-500">This month</p>-->
           </v-card>
         </v-col>
         <v-col cols="12" md="4">
-          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+          <v-card  class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Revenue</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
-            <p class="tw-text-gray-500">Last 30 days</p>
+<!--            <p class="tw-text-gray-500">Last 30 days</p>-->
           </v-card>
         </v-col>
       </v-row>
+    <v-row>
+      <v-col v-for="(quickLink, i) in quickLinks" :key="i" cols="12" md="4"
+      >
+        <v-hover v-slot="{ hover }">
+          <v-card
+              rounded="lg"
+              :elevation="hover ? 12 : 4"
+              class="pa-6 tw-text-center benefit-card"
+              :color="quickLink.color"
+              dark
+              @click="quickLinkClicked(quickLink.link)"
+          >
+            <v-avatar v-if="quickLink.class != null" size="80" :color="quickLink.iconColor" class="mb-4">
+              <v-icon :class="quickLink.class" size="40">{{ quickLink.icon }}</v-icon>
+            </v-avatar>
+            <v-avatar v-else size="80" :color="quickLink.iconColor" class="mb-4">
+              <v-icon size="40">{{ quickLink.icon }}</v-icon>
+            </v-avatar>
+            <h3 class="text-h5 tw-font-weight-bold mb-3">{{ quickLink.title }}</h3>
+            <p class="text-body-1">{{ quickLink.text }}</p>
+          </v-card>
+        </v-hover>
+      </v-col>
+    </v-row>
       <!-- Stats Cards -->
-      <v-row class="tw-mb-8">
+<!--      <v-row class="tw-mb-8">-->
         <!--      <v-col cols="12" md="4">-->
         <!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
         <!--          <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>-->
@@ -59,45 +83,45 @@
         <!--          <p class="tw-text-gray-500">This month</p>-->
         <!--        </v-card>-->
         <!--      </v-col>-->
-        <v-col cols="12">
-          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+<!--        <v-col cols="12">-->
+<!--          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
 <!--            <apexchart-->
 <!--                type="bar"-->
 <!--                height="400"-->
 <!--                :options="chartOptions"-->
 <!--                :series="series"-->
 <!--            ></apexchart>-->
-            <v-data-table
-              :headers="headers"
-              :items="listings"
-              :loading="loading"
-              :items-per-page="size"
-              :page.sync="page"
-              @update:page="fetchListings"
-              class="elevation-1"
-            >
-              <template v-slot:item.createdAt="{ item }">
-                <h2>{{ formatToHumanWithTime(item.createdAt) }}</h2>
-              </template>
-            </v-data-table>
-            <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
-          </v-card>
-        </v-col>
-      </v-row>
+<!--            <v-data-table-->
+<!--              :headers="headers"-->
+<!--              :items="listings"-->
+<!--              :loading="loading"-->
+<!--              :items-per-page="size"-->
+<!--              :page.sync="page"-->
+<!--              @update:page="fetchListings"-->
+<!--              class="elevation-1"-->
+<!--            >-->
+<!--              <template v-slot:item.createdAt="{ item }">-->
+<!--                <h2>{{ formatToHumanWithTime(item.createdAt) }}</h2>-->
+<!--              </template>-->
+<!--            </v-data-table>-->
+<!--            <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />-->
+<!--          </v-card>-->
+<!--        </v-col>-->
+<!--      </v-row>-->
       <!-- Quick Actions -->
-      <v-row>
-        <v-col cols="12">
-          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">Quick Actions</h2>
-            <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">
-              <v-btn color="primary" class="flex-1" @click="listingDialog = true">
-                <v-icon left>mdi-plus</v-icon>
-                Add New Listing
-              </v-btn>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row>
+<!--      <v-row>-->
+<!--        <v-col cols="12">-->
+<!--          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">-->
+<!--            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">Quick Actions</h2>-->
+<!--            <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">-->
+<!--              <v-btn color="primary" class="flex-1" @click="listingDialog = true">-->
+<!--                <v-icon left>mdi-plus</v-icon>-->
+<!--                Add New Listing-->
+<!--              </v-btn>-->
+<!--            </div>-->
+<!--          </v-card>-->
+<!--        </v-col>-->
+<!--      </v-row>-->
     </v-container>
 </template>
 
@@ -142,6 +166,39 @@ export default {
           currency: 'KSH',
         },
       },
+      quickLinks: [
+        {
+          title: 'Farm AI',
+          text: 'Get Farm Advice on livestock and crop growth',
+          icon: 'mdi-react',
+          class: 'gradient-icon',
+          iconColor: 'success',
+          color: 'primary',
+          link: {
+            name: 'FarmAI',
+          },
+        },
+        {
+          title: 'Community',
+          text: 'View farmers and buyers near you!',
+          icon: 'mdi-account-group',
+          iconColor: '#2064af',
+          color: 'brown',
+          link: {
+            name: 'Community',
+          },
+        },
+        {
+          title: 'Sales',
+          text: 'Sell your produce, view what you sold',
+          icon: 'mdi-cash-multiple',
+          iconColor: 'info',
+          color: 'darkblue',
+          link: {
+            name: 'Listings',
+          },
+        },
+      ],
       chartOptions: {
         chart: {
           type: 'bar',
@@ -194,10 +251,13 @@ export default {
   mounted() {
     this.fetchLiveCount();
     // this.fetchSalesReport();
-    this.fetchListings();
+    // this.fetchListings();
   },
   methods: {
     formatToHumanWithTime,
+    quickLinkClicked(link) {
+      this.$router.push(link);
+    },
     async fetchListings() {
       this.loading = true;
       try {

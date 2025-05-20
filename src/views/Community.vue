@@ -1,6 +1,6 @@
 <template>
   <Default>
-    <div class="tw-pl-4">
+    <div class="">
       <!-- Header -->
       <h1 class="tw-text-4xl font-bold tw-text-green-800">Farmers & Buyers</h1>
       <p class="">Connecting farmers and buyers in real-time</p>
@@ -45,12 +45,12 @@
       </div>
       <!-- Map Section -->
       <v-row class="tw-h-full">
-        <v-col cols="12" md="8" class="rounded-lg overflow-hidden tw-shadow-2xl tw-bg-white">
+        <v-col cols="12" md="12" class="rounded-lg overflow-hidden">
           <div ref="map" id="map" class="tw-h-full tw-w-full" style="height: 500px;"></div>
         </v-col>
 
         <!-- Sidebar for Farmers/Buyers List -->
-        <v-col cols="12" md="4" class="tw-space-y-4">
+        <v-col v-if="false" cols="12" md="8" class="tw-space-y-4">
           <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
             <h2 class="tw-text-xl tw-font-semibold tw-text-green-900 tw-mb-4">Farmers Nearby</h2>
             <v-list class="tw-bg-gray-700 tw-rounded-lg">
