@@ -1,7 +1,7 @@
 {
  "name": "Farmers Portal",
  "short_name": "Farmers Portal",
- "start_url": "/home",
+ "start_url": "/home?fullscreen=true",
  "display": "standalone",
  "background_color": "#ffffff",
  "theme_color": "#4DBA87",
