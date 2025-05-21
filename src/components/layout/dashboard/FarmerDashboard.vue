@@ -169,7 +169,7 @@ export default {
       quickLinks: [
         {
           title: 'Farm AI',
-          text: 'Get Advice on Farming',
+          text: 'Get Advice on Farming Practices',
           icon: 'mdi-react',
           class: 'gradient-icon',
           iconColor: 'success',
