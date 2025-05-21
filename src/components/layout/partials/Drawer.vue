@@ -1,7 +1,7 @@
 <template>
-  <div class="futuristic-drawer">
+  <div class="futuristic-drawer tw-border-l-5">
     <!-- Drawer Header with Holographic Effect -->
-    <div class="drawer-header tw-mx-4 tw-py-3 md:tw-py-5 tw-mb-5">
+    <div class="drawer-header tw-py-3 md:tw-py-5 tw-mb-5">
       <logo-title class="holographic-logo"></logo-title>
       <div class="connection-status">
         <v-chip v-if="false" small label class="status-chip" :color="connectionColor">
@@ -316,10 +316,12 @@ export default {
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(245, 250, 240, 0.95)) !important;
   backdrop-filter: blur(5px);
   border-right: 1px solid rgba(255, 255, 255, 0.3);
+  padding-left: 0;
 }
 
 .drawer-header {
   position: relative;
+  padding-left: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 

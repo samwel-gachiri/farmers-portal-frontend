@@ -99,22 +99,22 @@
       </v-container>
     </v-main>
 
-<!--    &lt;!&ndash; Floating Action Button for Mobile &ndash;&gt;-->
-<!--    <v-fab-transition>-->
-<!--      <v-btn-->
-<!--          v-show="$vuetify.breakpoint.smAndDown"-->
-<!--          color="primary"-->
-<!--          dark-->
-<!--          fixed-->
-<!--          bottom-->
-<!--          right-->
-<!--          fab-->
-<!--          @click="drawer = !drawer"-->
-<!--          class="mobile-menu-btn"-->
-<!--      >-->
-<!--        <v-icon>mdi-menu</v-icon>-->
-<!--      </v-btn>-->
-<!--    </v-fab-transition>-->
+    <!-- Floating Action Button for Mobile -->
+    <v-fab-transition>
+      <v-btn
+          v-show="$vuetify.breakpoint.smAndDown"
+          color="primary"
+          dark
+          fixed
+          bottom
+          right
+          fab
+          @click="drawer = !drawer"
+          class="mobile-menu-btn"
+      >
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
+    </v-fab-transition>
 
     <!-- AI Assistant Dialog -->
     <ai-assistant :dialog="aiDialog" @close="aiDialog = false" />
