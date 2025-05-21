@@ -1,9 +1,27 @@
 <template>
   <Default>
+    <!-- Dialog for Marker Info -->
+    <v-dialog v-model="userDialog" max-width="400">
+        <FarmerListingsDialog
+            v-if="selectedUserFromMap?.role === 'farmer'"
+            :selected-farmer="selectedUserFromMap"
+            @close="selectedUserFromMap = null"
+        />
+        <BuyerRequestsDialog
+          v-if="selectedUserFromMap?.role === 'buyer'"
+          :selected-buyer="selectedUserFromMap"
+          @close="selectedUserFromMap = null"
+        />
+<!--        <v-card-actions>-->
+<!--          <v-btn @click="toggleConnection">-->
+<!--            <v-icon v-if="isConnected">mdi-check-circle</v-icon>-->
+<!--            {{ isConnected ? "Disconnect" : "Connect" }}-->
+<!--          </v-btn>-->
+<!--        </v-card-actions>-->
+    </v-dialog>
     <div class="">
       <!-- Header -->
-      <h1 class="tw-text-4xl font-bold tw-text-green-800">Farmers & Buyers</h1>
-      <p class="">Connecting farmers and buyers in real-time</p>
+      <h1 class="tw-text-xl tw-font-bold tw-text-gray-800">Find Farmers and Buyers Here</h1>
       <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5 tw-my-5">
         <v-select
             v-model="farmerFilter"
@@ -105,25 +123,6 @@
         </v-col>
       </v-row>
     </div>
-    <!-- Dialog for Marker Info -->
-    <v-dialog v-model="userDialog" max-width="400">
-        <FarmerListingsDialog
-            v-if="selectedUserFromMap?.role === 'farmer'"
-            :selected-farmer="selectedUserFromMap"
-            @close="selectedUserFromMap = null"
-        />
-        <BuyerRequestsDialog
-          v-if="selectedUserFromMap?.role === 'buyer'"
-          :selected-buyer="selectedUserFromMap"
-          @close="selectedUserFromMap = null"
-        />
-<!--        <v-card-actions>-->
-<!--          <v-btn @click="toggleConnection">-->
-<!--            <v-icon v-if="isConnected">mdi-check-circle</v-icon>-->
-<!--            {{ isConnected ? "Disconnect" : "Connect" }}-->
-<!--          </v-btn>-->
-<!--        </v-card-actions>-->
-    </v-dialog>
   </Default>
 </template>
 
@@ -281,9 +280,9 @@ export default {
           this.google = google;
           this.map = new google.maps.Map(this.$refs.map, {
             center: { lat: 0, lng: 0 },
-            zoom: 8,
+            zoom: 16,
             heading: 320,
-            tilt: 0.0,
+            tilt: 70.0,
             mapId: '8fafea89cad68455',
             rotateControl: true,
             disableDefaultUI: false,
@@ -305,14 +304,20 @@ export default {
         this.center.lat = position.coords.latitude;
         this.center.lng = position.coords.longitude;
         this.setFocusToLocation(position.coords.latitude, position.coords.longitude);
-        const marker = new this.google.maps.Marker({
-          position: { lat: position.coords.latitude, lng: position.coords.longitude },
-          map: this.map,
-        });
+        // const marker = new this.google.maps.Marker({
+        //   position: { lat: position.coords.latitude, lng: position.coords.longitude },
+        //   map: this.map,
+        //   label: {
+        //     text: 'Your Location',
+        //     color: 'white',
+        //     fontSize: '12px',
+        //     fontWeight: 'bold',
+        //   },
+        // });
 
-        marker.addListener('click', () => {
-          this.$toast.success('You clicked your location!');
-        });
+        // marker.addListener('click', () => {
+        //   this.$toast.success('You clicked your location!');
+        // });
 
         this.filteredFarmers.forEach((farmerLocation) => {
           const farmerMarker = new this.google.maps.Marker({
@@ -323,47 +328,17 @@ export default {
               url: require('@/assets/images/farmer_map_icon.png'),
               scaledSize: new this.google.maps.Size(50, 50),
             },
+            label: {
+              text: farmerLocation.farmer.name,
+              color: 'white',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            },
+            title: farmerLocation.farmer.name,
           });
-
-          // Create an InfoWindow instance (used for popups)
-          const infoWindow = new this.google.maps.InfoWindow();
-
-          farmerMarker.addListener('mouseover', () => {
-            const productsHtml = farmerLocation.farmer.farmerProduces.map((product) => `
-                    <div>${product.farmProduce.name} - ${product.status}
-                    ${
-  product.status === 'ON_SALE'
-    ? `<button style="background-color: green; color: white;" onclick="buyFarmProduce(${product.id}, '${product.farmProduce.name}')">>Buy</button>`
-    : ''
-}</div>`);
-
-            const content = `
-                    <div style="max-width: 250px;">
-                      <h3>${farmerLocation.farmer.name}</h3>
-                      <div>${productsHtml}</div>
-                    </div>
-                  `;
-            // Set content and open InfoWindow at the marker
-            infoWindow.setContent(content);
-            infoWindow.open(this.map, farmerMarker);
-
-            // Wait for DOM to be ready before adding click events
-            setTimeout(() => {
-              document.getElementById('connect-btn').addEventListener('click', () => {
-                // toggleConnection(); // Handle connection toggle
-              });
-            }, 100);
-          });
-          //
           farmerMarker.addListener('click', () => {
             this.selectedUserFromMap = { ...farmerLocation, role: 'farmer' };
             this.userDialog = true;
-          });
-          farmerMarker.addListener('mouseout', () => {
-            // Wait for DOM to be ready before adding click events
-            setTimeout(() => {
-              infoWindow.close();
-            }, 500);
           });
         });
         this.filteredBuyers.forEach((buyerLocation) => {
@@ -375,34 +350,19 @@ export default {
               url: require('@/assets/images/buyer_map_icon.png'),
               scaledSize: new this.google.maps.Size(50, 50),
             },
+            label: {
+              text: buyerLocation.buyer.name,
+              color: 'yellow',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            },
+            title: buyerLocation.buyer.name,
           });
 
           buyerMarker.addListener('click', () => {
             this.$toast.success(`Buyer: ${buyerLocation.buyer.name}`);
             this.selectedUserFromMap = { ...buyerLocation, role: 'buyer' };
             this.userDialog = true;
-          });
-
-          const infoWindow = new this.google.maps.InfoWindow();
-          buyerMarker.addListener('mouseover', () => {
-            // Set content and open InfoWindow at the marker
-            infoWindow.setContent(`<div style="max-width: 250px;">
-                  <h3>${buyerLocation.buyer.name}</h3>
-                  <div>${buyerLocation.buyer.preferredProduces.map((product) => `
-                    <div>${product.bsfarmProduce.name} - ${product.status}
-                    ${
-  product.status === 'REQUESTING'
-    ? `<button style="background-color: green; color: white;" onclick="buyFarmProduce(${product.id}, '${product.farmProduce.name}')">>Buy</button>`
-    : ''
-}</div>`)}</div>
-                </div>`);
-            infoWindow.open(this.map, buyerMarker);
-          });
-          buyerMarker.addListener('mouseout', () => {
-            // Wait for DOM to be ready before adding click events
-            setTimeout(() => {
-              infoWindow.close();
-            }, 500);
           });
         });
       }, (error) => {

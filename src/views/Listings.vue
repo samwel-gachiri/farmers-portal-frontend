@@ -1,29 +1,14 @@
 <template>
   <Default>
     <div v-if="!loading">
-      <div v-if="listings.length === 0"
-           class="tw-absolute tw-top-0 tw-bottom-0 tw-left-0 tw-right-0 tw-flex tw-justify-center tw-items-center tw-flex-col tw-w-full tw-h-full">
-        <div class="tw-mb-3">
-          <h1 class="tw-text-xl tw-text-h3 tw-text-md-h2 tw-font-bold tw-font-weight-bold tw-mb-2">
-            You have not sold your produce
-          </h1>
-        </div>
-        <div style="max-height: 350px;">
-          <v-img src="@/assets/images/farmer_anticipate_to_sell.png" style="border-radius: 25px;"></v-img>
-        </div>
-        <div
-            class="tw-flex md:tw-flex-row tw-flex-col tw-justify-center tw-items-center"
-        >
-          <v-btn
-              dense
-              rounded
-              class="tw-rounded-lg tw-ml-5 tw-mt-5"
-              color="primary"
-              @click="listingDialog = true"
-          >Start selling</v-btn>
-        </div>
-      </div>
-      <div class="" v-else>
+      <v-dialog v-model="listingDialog" max-width="500px">
+        <create-listing/>
+        <v-card-actions class="tw-justify-end">
+          <v-btn color="primary"  @click="listingDialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-dialog>
+
+      <div>
         <div class="tw-flex tw-flex-row tw-justify-between tw-p-5">
           <h2 class="tw-text-xl tw-font-bold tw-text-green-800">My Listings</h2>
           <v-btn
@@ -72,17 +57,6 @@
     <div v-else class="tw-flex tw-justify-center tw-items-center tw-h-screen">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
-    <v-dialog v-model="listingDialog" max-width="500px">
-      <create-listing/>
-      <v-btn
-          class="tw-bg-white"
-          color="error"
-          text
-          @click="listingDialog = false"
-      >
-        Close
-      </v-btn>
-    </v-dialog>
   </Default>
 </template>
 
@@ -131,6 +105,10 @@ export default {
     getCurrentUserId,
   },
   methods: {
+    openListingDialog() {
+      this.$toast.show('show');
+      this.listingDialog = true;
+    },
     // fetchListings() {
     //   axios.get(`/listing/farmer?farmerId=${getCurrentUserId()}`)
     //     .then((response) => {

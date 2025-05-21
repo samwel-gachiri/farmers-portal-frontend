@@ -6,7 +6,7 @@
         </div>
         <div class="tw-rounded-lg tw-p-8">
           <div class="tw-text-lg tw-font-medium">
-            <v-icon class="tw-mr-2 tw-bg-white" size="40px" light>mdi-emoticon-happy</v-icon>
+            <v-icon class="tw-mr-2" size="40px" light>mdi-emoticon-happy</v-icon>
             FarmAI
             <h2 class="tw-font-bold tw-text-black tw-pt-3">Uliza maswali kuhusiana na ukulima hapa</h2>
           </div>
@@ -29,6 +29,7 @@
                   rounded
                   color="primary"
                   class="tw-ml-4"
+                  :loading="loading"
                   @click="askAI">
                 Send
               </v-btn>
@@ -49,7 +50,7 @@
 
 <script>
 import Default from '@/components/layout/Default.vue';
-import { getCurrentUserId } from '@/utils/roles.js';
+import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
 import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
 
@@ -57,23 +58,26 @@ export default {
   components: { Default },
   data() {
     return {
+      loading: false,
       aiQuestion: '',
       snackbar: false,
       snackbarText: '',
       snackbarColor: 'success',
       md: new MarkdownIt({
-        html: false, // Disable HTML tags in source
+        html: true,
         xhtmlOut: true, // Use '/' to close single tags
         breaks: true, // Convert '\n' to `<br>`
         linkify: true, // Autoconvert URL-like text to links
         typographer: true, // Enable smartquotes and other typographic replacements
+        strict: true,
       }),
     };
   },
   mounted() {
-    this.addMessage('Bot', 'Hello! I\'m farmAI, ready to help!\n**Habari yako!**');
+    this.addMessage('FarmAI', 'Hello! I\'m farmAI, ready to help!\n**Habari yako!**');
   },
   methods: {
+    getCurrentUserRole,
     async askAI() {
       try {
         if (!this.aiQuestion.trim()) {
@@ -82,6 +86,7 @@ export default {
         }
 
         this.addMessage('User', this.aiQuestion);
+        this.loading = true;
         const question = this.aiQuestion;
         this.aiQuestion = '';
 
@@ -98,6 +103,7 @@ export default {
             body: JSON.stringify({
               userId: getCurrentUserId() || 'RANDOM',
               question,
+              userSection: getCurrentUserRole(),
             }),
           });
 
@@ -112,6 +118,8 @@ export default {
         }
       } catch (e) {
         this.showSnackbar(e.message, 'error');
+      } finally {
+        this.loading = false;
       }
     },
 
@@ -120,6 +128,7 @@ export default {
       let content = '';
 
       try {
+        // eslint-disable-next-line no-constant-condition
         while (true) {
           // eslint-disable-next-line no-await-in-loop
           const { done, value } = await reader.read();
@@ -179,4 +188,40 @@ export default {
 #chat-messages {
   min-height: 200px;
 }
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.20;
+}
+
+.circle-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--v-primary-base);
+  top: -100px;
+  left: -100px;
+  animation: circle-clockwise 15s infinite linear;
+}
+
+.circle-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--v-secondary-base);
+  bottom: -100px;
+  right: -50px;
+  animation: circle-clockwise 18s infinite linear;
+  animation-delay: 2s;
+}
+
+.circle-3 {
+  width: 300px;
+  height: 300px;
+  background: var(--v-accent-base);
+  top: 50%;
+  left: 30%;
+  animation: circle-clockwise 12s infinite linear;
+  animation-delay: 4s;
+}
+
 </style>
