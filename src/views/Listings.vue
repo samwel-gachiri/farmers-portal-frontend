@@ -1,6 +1,6 @@
 <template>
   <Default>
-    <div v-if="!loading">
+    <div>
       <v-dialog v-model="listingDialog" max-width="500px">
         <create-listing/>
         <v-card-actions class="tw-justify-end">
@@ -12,6 +12,7 @@
         <div class="tw-flex tw-flex-row tw-justify-between tw-p-5">
           <h2 class="tw-text-xl tw-font-bold tw-text-green-800">My Listings</h2>
           <v-btn
+              v-if="false"
               dense
               class="tw-rounded-lg tw-ml-5"
               color="primary"
@@ -21,6 +22,7 @@
             Sell your produce</v-btn>
         </div>
         <div>
+          <create-listing/>
           <v-data-table
               :headers="headers"
               :items="listings"
@@ -54,9 +56,9 @@
       </div>
     </div>
     <!-- Loading Spinner -->
-    <div v-else class="tw-flex tw-justify-center tw-items-center tw-h-screen">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
-    </div>
+<!--    <div class="tw-flex tw-justify-center tw-items-center tw-h-screen">-->
+<!--      <v-progress-circular indeterminate color="primary"></v-progress-circular>-->
+<!--    </div>-->
   </Default>
 </template>
 

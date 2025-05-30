@@ -41,6 +41,11 @@ const getters = {
 };
 
 const mutations = {
+  UPDATE_USER_LOCATION(state, location) {
+    if (state.user) {
+      state.user.location = location;
+    }
+  },
   setUserRole(state, text) {
     state.role = text;
   },
@@ -88,6 +93,9 @@ const mutations = {
 };
 
 const actions = {
+  updateUserLocation({ commit }, location) {
+    commit('UPDATE_USER_LOCATION', location);
+  },
   setViewRole: async (context, text) => {
     context.commit('setUserRole', text);
     cookie.set(ROLE, text);

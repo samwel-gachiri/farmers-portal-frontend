@@ -210,7 +210,7 @@ export default {
       },
       {
         icon: 'mdi-cash-multiple',
-        text: 'My Listings',
+        text: 'My Sales',
         link: { name: 'Listings' },
         roles: ['farmer'],
         iconColor: 'black',
@@ -232,7 +232,7 @@ export default {
       },
       {
         icon: 'mdi-sprout',
-        text: 'My Produces',
+        text: 'My Farm',
         link: { name: 'Produces', params: { farmerId: getCurrentUserId() } },
         roles: ['farmer'],
         iconColor: 'darkgreen',
@@ -350,12 +350,14 @@ export default {
   flex-grow: 1;
   overflow-y: auto;
   padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .nav-item {
   border-radius: 8px;
   font-weight: bold;
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
 }
 
 .nav-item:hover {
@@ -386,7 +388,7 @@ export default {
 }
 
 .ai-icon-container {
-  //position: relative;
+  /* position: relative; */
   padding: 0;
 }
 
@@ -537,6 +539,7 @@ export default {
 @media (max-width: 960px) {
   .nav-text {
     font-size: 0.8rem;
+    font-weight: bold;
   }
 
   .nav-item {

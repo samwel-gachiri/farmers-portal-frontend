@@ -26,16 +26,16 @@
     <!--        >-->
     <!--        </v-text-field>-->
             <div
-                class="tw-flex tw-w-full tw-flex-col tw-justify-start tw-items-start"
+                class="tw-fleFx tw-w-full tw-flex-col tw-justify-start tw-items-start"
             >
-              <h2>{{ userLocation.location.customName === '' ? "Give in your location details": "Your Location Details"}}</h2>
+              <h5>{{ user.location?.customName === '' ? "Give in your location details": "Your Location Details"}}</h5>
               <v-alert
                 type="info"
               >This will be used by farmers, buyers and the public to notice you.</v-alert>
               <v-text-field
                   outlined
                   label="My Location"
-                  v-model="userLocation.location.customName"
+                  v-model="user.location.customName"
                   class="tw-font-bold tw-w-full"
               ></v-text-field>
               <div class="tw-flex tw-flex-row">
@@ -43,12 +43,12 @@
                     label="latitude"
                     prefix="("
                     suffix=","
-                    v-model="userLocation.location.latitude"
+                    v-model="user.location.latitude"
                 ></v-text-field>
                 <v-text-field
                     label="longitude"
                     suffix=")"
-                    v-model="userLocation.location.longitude"
+                    v-model="user.location.longitude"
                 ></v-text-field>
               </div>
               <v-btn
@@ -70,7 +70,7 @@
 <!--            >-->
 <!--            </v-text-field>-->
             <div class="tw-mt-8 tw-flex tw-flex-col tw-gap-5">
-              <h2 class="tw-bold">Input phone number</h2>
+              <h5 class="tw-bold">Input phone number</h5>
               <phone-number-input
                   v-model="phoneNumber"
                   default-country-code="KE"
@@ -110,13 +110,6 @@ export default {
   name: 'UserForm',
   data() {
     return {
-      initialDetails: {
-        fullname: '',
-        latitude: '',
-        longitude: '',
-        customName: '',
-        phoneNumber: '',
-      },
       fullname: '',
       email: '',
       phoneNumber: '',
@@ -125,13 +118,6 @@ export default {
       ...validations,
       loading: false,
       role: '',
-      userLocation: {
-        location: {
-          latitude: 0.0,
-          longitude: 0.0,
-          customName: '',
-        },
-      },
       map: null,
       marker: null,
     };
@@ -146,54 +132,62 @@ export default {
   },
   mounted() {
     this.initMap();
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    });
+    this.resizeObserver.observe(document.getElementById('map'));
     this.role = getCurrentUserRole();
     this.fullname = this.user.name;
     this.email = this.user.email;
     this.phoneNumber = this.user.phoneNumber;
-    axios.get(`${getCurrentUserRole()}s-service/location/${this.role}?${this.role}Id=${getCurrentUserId()}`).then((response) => {
-      if (response.data.success === true) {
-        const data = response.data.data;
-        this.userLocation.location.latitude = data?.latitude;
-        this.userLocation.location.longitude = data?.longitude;
-        this.userLocation.location.customName = data?.customName;
-        if (data.latitude) {
-          this.map.panTo([data?.latitude, data?.longitude]);
-          this.marker = L.marker([data?.latitude, data?.longitude], {
-            icon: L.icon({
-              iconUrl: `https://agri-image.s3.us-east-1.amazonaws.com/uploads/${this.role}_map_icon.png`, // Path to your image
-              iconSize: [25, 41], // Size of the icon
-              iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
-              popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
-              shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png', // Optional shadow
-              shadowSize: [41, 41], // Shadow size
-            }),
-          }).addTo(this.map);
-        }
-      }
-    }).catch((e) => {
-      this.$toast.error(e.message);
-    }).finally(() => {
-      this.initialDetails = {
-        fullname: this.fullname,
-        latitude: this.userLocation.location.latitude,
-        longitude: this.userLocation.location.longitude,
-        customName: this.userLocation.location.customName,
-        phoneNumber: this.phoneNumber,
+    if (this.user.location) {
+      this.map.panTo([this.user?.location?.latitude, this.user?.location?.longitude]);
+      this.marker = L.marker([this.user?.location?.latitude, this.user?.location?.longitude], {
+        icon: L.icon({
+          iconUrl: `https://agri-image.s3.us-east-1.amazonaws.com/uploads/${this.role}_map_icon.png`, // Path to your image
+          iconSize: [25, 41], // Size of the icon
+          iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
+          popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
+          shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png', // Optional shadow
+          shadowSize: [41, 41], // Shadow size
+        }),
+      }).addTo(this.map);
+    } else {
+      this.user.location = {
+        latitude: null,
+        longitude: null,
+        customName: '',
       };
-    });
+    }
+  },
+  beforeDestroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
   },
   methods: {
     // Initialize the Leaflet map
     initMap() {
-      this.map = L.map('map').setView([0, 0], 2); // Default view
+      this.$nextTick(() => {
+        if (!this.map) {
+          this.map = L.map('map', {
+            preferCanvas: true, // Better for performance
+          }).setView([0, 0], 2);
 
-      // Add OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(this.map);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+          }).addTo(this.map);
 
-      // Click event to update location
-      this.map.on('click', this.updateLocation);
+          this.map.on('click', this.updateLocation);
+
+          // Force a resize in case the container was hidden initially
+          setTimeout(() => {
+            this.map.invalidateSize();
+          }, 100);
+        }
+      });
     },
 
     // Update location based on user click
@@ -201,8 +195,8 @@ export default {
       const { lat, lng } = event.latlng;
 
       // Update user location
-      this.userLocation.location.latitude = lat;
-      this.userLocation.location.longitude = lng;
+      this.user.location.latitude = lat;
+      this.user.location.longitude = lng;
 
       // Reverse geocode (fetch location name)
       this.getLocationName(lat, lng);
@@ -219,7 +213,7 @@ export default {
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
       );
       const data = await response.json();
-      this.userLocation.location.customName = data.display_name || 'Unknown Location';
+      this.user.location.customName = data.display_name || 'Unknown Location';
     },
     async updateProfile() {
       this.loading = true;
@@ -238,6 +232,11 @@ export default {
         name: this.fullname,
         phoneNumber: this.phoneNumber ? this.phoneNumber : '',
         email: this.email,
+        location: {
+          latitude: this.user.location.latitude,
+          longitude: this.user.location.longitude,
+          customName: this.user.location.customName,
+        },
       }).then((response) => {
         if (response.data.success === true) {
           this.$toast.success('Farmer Profile Updated successfully!');
@@ -250,9 +249,9 @@ export default {
     },
     getLocation() {
       navigator.geolocation.getCurrentPosition(async (position) => {
-        this.userLocation.location.latitude = position.coords.latitude;
-        this.userLocation.location.longitude = position.coords.longitude;
-        this.getLocationName(this.userLocation.location.latitude, this.userLocation.location.longitude);
+        this.user.location.latitude = position.coords.latitude;
+        this.user.location.longitude = position.coords.longitude;
+        this.getLocationName(this.user.location.latitude, this.user.location.longitude);
         if (this.marker) {
           this.marker.setLatLng([position.coords.latitude, position.coords.longitude]);
         } else {
@@ -263,33 +262,18 @@ export default {
         this.$toast.error(positionError.message);
       });
     },
-    saveLocation() {
-      axios.put(`/${this.role}s-service/location/${this.role}`, {
-        [`${this.role}Id`]: getCurrentUserId(),
-        locationDto: {
-          latitude: this.userLocation.location.latitude,
-          longitude: this.userLocation.location.longitude,
-          customName: this.userLocation.location.customName,
-        },
-      }).then((response) => {
-        if (response.data.success === true) {
-          this.$toast.success('Location updated successfully!');
-        } else {
-          this.$toast.error('Failed to update location', response.data.msg);
-        }
-      }).catch((error) => {
-        this.$toast.error(error.message);
-      });
-    },
   },
 };
 </script>
 <style>
 .map-container {
   width: 100%;
-  height: 400px;
+  height: 400px; /* Fixed height */
+  min-height: 400px; /* Prevent collapsing */
   margin-top: 10px;
   border-radius: 8px;
   overflow: hidden;
+  position: relative; /* Important for Leaflet */
+  z-index: 0; /* Ensure proper stacking */
 }
 </style>

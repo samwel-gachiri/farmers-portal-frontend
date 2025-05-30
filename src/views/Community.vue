@@ -61,53 +61,47 @@
         </v-combobox>
 
       </div>
-      <!-- Map Section -->
-      <v-row class="tw-h-full">
-        <v-col cols="12" md="12" class="rounded-lg overflow-hidden">
-          <div ref="map" id="map" class="tw-h-full tw-w-full" style="height: 500px;"></div>
-        </v-col>
+      <div ref="map" id="map" class="tw-h-full tw-w-full"></div>
+      <!-- Sidebar for Farmers/Buyers List -->
+      <div v-if="false" class="tw-space-y-4">
+        <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
+          <h2 class="tw-text-xl tw-font-semibold tw-text-green-900 tw-mb-4">Farmers Nearby</h2>
+          <v-list class="tw-bg-gray-700 tw-rounded-lg">
+            <v-list-item
+                v-for="farmer in farmersLocation"
+                :key="farmer.id"
+                class="tw-mb-2 hover:tw-bg-gray-600 tw-cursor-pointer"
+                @click="setFocusToLocation(farmer.latitude, farmer.longitude)"
+            >
+              <v-list-item-content>
+                <v-list-item-title class="tw-text-green-900 tw-font-extrabold">{{ farmer.farmer.name }}</v-list-item-title>
+                <v-list-item-subtitle class="tw-text-gray-400">
+                  Produces: {{ farmer.farmer.farmerProduces.map(p => p.farmProduce.name).join(', ') || 'None' }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card>
 
-        <!-- Sidebar for Farmers/Buyers List -->
-        <v-col v-if="false" cols="12" md="8" class="tw-space-y-4">
-          <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-green-900 tw-mb-4">Farmers Nearby</h2>
-            <v-list class="tw-bg-gray-700 tw-rounded-lg">
-              <v-list-item
-                  v-for="farmer in farmersLocation"
-                  :key="farmer.id"
-                  class="tw-mb-2 hover:tw-bg-gray-600 tw-cursor-pointer"
-                  @click="setFocusToLocation(farmer.latitude, farmer.longitude)"
-              >
-                <v-list-item-content>
-                  <v-list-item-title class="tw-text-green-900 tw-font-extrabold">{{ farmer.farmer.name }}</v-list-item-title>
-                  <v-list-item-subtitle class="tw-text-gray-400">
-                    Produces: {{ farmer.farmer.farmerProduces.map(p => p.farmProduce.name).join(', ') || 'None' }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-card>
-
-          <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-green-900 tw-mb-4">Buyers Nearby</h2>
-            <v-list class="tw-bg-gray-700 tw-rounded-lg">
-              <v-list-item
-                  v-for="buyerLocation in buyersLocation"
-                  :key="buyerLocation.id"
-                  class="tw-mb-2 hover:tw-bg-gray-600 tw-cursor-pointer"
-                  @click="setFocusToLocation(buyerLocation.latitude, buyerLocation.longitude)"
-              >
-                <v-list-item-content>
-                  <v-list-item-title class="tw-text-green-900 tw-font-extrabold">{{ buyerLocation.buyer.name }}</v-list-item-title>
-                  <v-list-item-subtitle class="tw-text-gray-400">
-                    Interested in: {{ buyerLocation.buyer.preferredProduces.map(p => p.bsfarmProduce.name).join(', ') || 'None' }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-card>
-        </v-col>
-      </v-row>
+        <v-card class="tw-bg-gray-800 tw-p-4 tw-rounded-lg tw-shadow-lg">
+          <h2 class="tw-text-xl tw-font-semibold tw-text-green-900 tw-mb-4">Buyers Nearby</h2>
+          <v-list class="tw-bg-gray-700 tw-rounded-lg">
+            <v-list-item
+                v-for="buyerLocation in buyersLocation"
+                :key="buyerLocation.id"
+                class="tw-mb-2 hover:tw-bg-gray-600 tw-cursor-pointer"
+                @click="setFocusToLocation(buyerLocation.location.latitude, buyerLocation.location.longitude)"
+            >
+              <v-list-item-content>
+                <v-list-item-title class="tw-text-green-900 tw-font-extrabold">{{ buyerLocation.name }}</v-list-item-title>
+                <v-list-item-subtitle class="tw-text-gray-400">
+                  Interested in: {{ buyerLocation.preferredProduces.map(p => p.bsfarmProduce.name).join(', ') || 'None' }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </div>
 
       <!-- Route Calculation Section -->
       <v-row class="tw-mt-8">
@@ -241,13 +235,13 @@ export default {
   watch: {
     selectedFarmer(newFarmerLocation) {
       if (newFarmerLocation != null) {
-        this.setFocusToLocation(newFarmerLocation.latitude, newFarmerLocation.longitude);
+        this.setFocusToLocation(newFarmerLocation.location.latitude, newFarmerLocation.location.longitude);
       }
     },
     selectedBuyer(newBuyerLocation) {
       this.$toast.show('Seleted buyer');
       if (newBuyerLocation != null) {
-        this.setFocusToLocation(newBuyerLocation.latitude, newBuyerLocation.longitude);
+        this.setFocusToLocation(newBuyerLocation.location.latitude, newBuyerLocation.location.longitude);
       }
     },
     selectedUserFromMap(newValue) {
@@ -300,74 +294,68 @@ export default {
       this.directionsService = new this.google.maps.DirectionsService();
       this.directionsRenderer = new this.google.maps.DirectionsRenderer();
       this.directionsRenderer.setMap(this.map);
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.center.lat = position.coords.latitude;
-        this.center.lng = position.coords.longitude;
-        this.setFocusToLocation(position.coords.latitude, position.coords.longitude);
-        // const marker = new this.google.maps.Marker({
-        //   position: { lat: position.coords.latitude, lng: position.coords.longitude },
-        //   map: this.map,
-        //   label: {
-        //     text: 'Your Location',
-        //     color: 'white',
-        //     fontSize: '12px',
-        //     fontWeight: 'bold',
-        //   },
-        // });
+      this.setFocusToLocation(this.center.lat, this.center.lng);
+      // const marker = new this.google.maps.Marker({
+      //   position: { lat: position.coords.latitude, lng: position.coords.longitude },
+      //   map: this.map,
+      //   label: {
+      //     text: 'Your Location',
+      //     color: 'white',
+      //     fontSize: '12px',
+      //     fontWeight: 'bold',
+      //   },
+      // });
 
-        // marker.addListener('click', () => {
-        //   this.$toast.success('You clicked your location!');
-        // });
+      // marker.addListener('click', () => {
+      //   this.$toast.success('You clicked your location!');
+      // });
 
-        this.filteredFarmers.forEach((farmerLocation) => {
-          const farmerMarker = new this.google.maps.Marker({
-            position: { lat: farmerLocation.latitude, lng: farmerLocation.longitude },
-            map: this.map,
-            icon: {
-              // eslint-disable-next-line global-require
-              url: require('@/assets/images/farmer_map_icon.png'),
-              scaledSize: new this.google.maps.Size(50, 50),
-            },
-            label: {
-              text: farmerLocation.farmer.name,
-              color: 'white',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            },
-            title: farmerLocation.farmer.name,
-          });
-          farmerMarker.addListener('click', () => {
-            this.selectedUserFromMap = { ...farmerLocation, role: 'farmer' };
-            this.userDialog = true;
-          });
+      this.filteredFarmers.forEach((farmerLocation) => {
+        const farmerMarker = new this.google.maps.Marker({
+          position: { lat: farmerLocation.location.latitude, lng: farmerLocation.location.longitude },
+          map: this.map,
+          icon: {
+            // eslint-disable-next-line global-require
+            url: require('@/assets/images/farmer_map_icon.png'),
+            scaledSize: new this.google.maps.Size(50, 50),
+          },
+          label: {
+            text: farmerLocation.name,
+            color: 'white',
+            fontSize: '12px',
+            fontWeight: 'bold',
+          },
+          title: farmerLocation.name,
         });
-        this.filteredBuyers.forEach((buyerLocation) => {
-          const buyerMarker = new this.google.maps.Marker({
-            position: { lat: buyerLocation.latitude, lng: buyerLocation.longitude },
-            map: this.map,
-            icon: {
-              // eslint-disable-next-line global-require
-              url: require('@/assets/images/buyer_map_icon.png'),
-              scaledSize: new this.google.maps.Size(50, 50),
-            },
-            label: {
-              text: buyerLocation.buyer.name,
-              color: 'yellow',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            },
-            title: buyerLocation.buyer.name,
-          });
-
-          buyerMarker.addListener('click', () => {
-            this.$toast.success(`Buyer: ${buyerLocation.buyer.name}`);
-            this.selectedUserFromMap = { ...buyerLocation, role: 'buyer' };
-            this.userDialog = true;
-          });
+        farmerMarker.addListener('click', () => {
+          this.selectedUserFromMap = { ...farmerLocation, role: 'farmer' };
+          this.userDialog = true;
         });
-      }, (error) => {
-        this.$toast.error(error.message);
-      }, { enableHighAccuracy: true });
+      });
+      this.filteredBuyers.forEach((buyerLocation) => {
+        const buyerMarker = new this.google.maps.Marker({
+          position: { lat: buyerLocation.location.latitude, lng: buyerLocation.location.longitude },
+          map: this.map,
+          icon: {
+            // eslint-disable-next-line global-require
+            url: require('@/assets/images/buyer_map_icon.png'),
+            scaledSize: new this.google.maps.Size(50, 50),
+          },
+          label: {
+            text: buyerLocation.name,
+            color: 'yellow',
+            fontSize: '12px',
+            fontWeight: 'bold',
+          },
+          title: buyerLocation.name,
+        });
+
+        buyerMarker.addListener('click', () => {
+          this.$toast.success(`Buyer: ${buyerLocation.name}`);
+          this.selectedUserFromMap = { ...buyerLocation, role: 'buyer' };
+          this.userDialog = true;
+        });
+      });
     },
 
     setFocusToLocation(lat, lng) {
@@ -400,15 +388,31 @@ export default {
         },
       );
     },
-  },
-  mounted() {
-    axios.get('/farmers-service/location/farmers')
-      .then((response) => {
-        if (response.data.success) {
-          this.farmersLocation = response.data.data;
-          this.selectedFarmersLocations = response.data.data;
+    fetchUsersLocation() {
+      // getting farmers location
+      axios.get('/farmers-service/location/farmers', {
+        params: {
+          latitude: this.user.location.latitude,
+          longitude: this.user.location.longitude,
+        },
+      })
+        .then((response) => {
+          if (response.data.success) {
+            this.farmersLocation = response.data.data;
+            this.selectedFarmersLocations = response.data.data;
+          } else {
+            this.$toast.error('Failed to load farmers locations');
+          }
+        })
+        .catch((reason) => this.$toast.error(reason.message))
+        .finally(() => {
           // now let's get buyer's locations
-          axios.get('/buyers-service/location/buyers')
+          axios.get('/buyers-service/location/buyers', {
+            params: {
+              latitude: this.user.location.latitude,
+              longitude: this.user.location.longitude,
+            },
+          })
             .then((buyersLocationRes) => {
               if (buyersLocationRes.data.success) {
                 this.buyersLocation = buyersLocationRes.data.data;
@@ -419,14 +423,36 @@ export default {
               this.initMap();
             })
             .catch((reason) => this.$toast.error(reason.message));
-        } else {
-          this.$toast.error('Failed to load farmers locations');
-        }
-      })
-      .catch((reason) => this.$toast.error(reason.message));
+        });
+    },
+  },
+  mounted() {
+    if (this.user.Location == null) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const location = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+
+        // Update Vuex store properly
+        await this.$store.dispatch('auth/updateUserLocation', location);
+        this.fetchUsersLocation();
+      }, (error) => {
+        this.$toast.error(error.message);
+      }, { enableHighAccuracy: true });
+    } else {
+      this.fetchUsersLocation();
+    }
   },
 };
 </script>
 
 <style scoped>
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+}
 </style>

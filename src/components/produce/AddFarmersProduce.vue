@@ -1,13 +1,30 @@
 <template>
-  <div class="tw-flex tw-flex-col tw-justify-center tw-mt-4">
-    <v-form v-model="newProduce.isValid" class="tw-gap-0">
-      <v-row>
-        <v-col>
+  <v-dialog
+      v-model="dialog"
+      max-width="500px"
+  >
+    <v-card
+      rounded
+      class="tw-flex tw-flex-col tw-justify-center tw-mt-4 action-panel"
+    >
+      <v-toolbar flat>
+        <v-avatar size="40" class="tw-mr-2">
+          <v-icon>mdi-corn</v-icon>
+        </v-avatar>
+        <v-toolbar-title>Add produce</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="closeDialog">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-form v-model="newProduce.isValid" class="tw-gap-0">
+        <div class="tw-flex tw-flex-row tw-gap-5">
           <v-combobox
+              dense
+              class="data-input"
               v-model="selectedProduce"
               :items="produceList.map((produce)=>produce.name)"
               label="Select or Enter Produce"
-              outlined
               clearable
               hide-no-data
               :rules="[required('Produce Name')]"
@@ -16,48 +33,53 @@
 <!--              @change="handleProduceInput"-->
 <!--            <v-icon slot="prepend" color="primary" >mdi-text-search</v-icon>-->
           </v-combobox>
-        </v-col>
-        <v-col>
           <v-combobox
+              dense
+              class="data-input"
               v-model="newProduce.farmingType"
               label="Farming type"
               :items="farmingTypes"
-              outlined
           ></v-combobox>
-        </v-col>
-      </v-row>
-      <v-textarea
-          v-model="newProduce.desc"
-          dense
-          outlined
-          label="Input produce description"
-      ></v-textarea>
-      <v-file-input
-          label="Provide Produce Image(s)"
-          v-model="newProduce.images"
-          accept="image/*"
-          multiple
-          outlined
-          chips
-          counter
-          :rules="[validateImages]"
-          @change="previewImages"
-      ></v-file-input>
-      <div v-if="newProduce.images.length > 0">
-        <h2 class="blue--text">{{newProduce.images.length > 1 ? 'Images': 'Image'}} Preview</h2>
-        <v-row>
-          <v-col v-for="(image, index) in imagePreviews" :key="index" cols="4">
-            <v-img :src="image" aspect-ratio="1" contain></v-img>
-          </v-col>
-        </v-row>
-      </div>
-      <div class="tw-flex tw-justify-center tw-items-center">
-        <v-btn :loading="loading" :disabled="!newProduce.isValid" color="secondary" @click="addFarmerProduce">
-          Add Produce
-        </v-btn>
-      </div>
-    </v-form>
-  </div>
+        </div>
+        <div class="tw-flex tw-my-5 tw-flex-col tw-gap-4">
+          <v-textarea
+              v-if="false"
+              v-model="newProduce.desc"
+              dense
+              rounded
+              class="data-input"
+              label="Input produce description"
+          ></v-textarea>
+          <h6 class="tw-font-bold">{{newProduce.images.length > 1 ? 'Images': 'Image'}} Preview</h6>
+          <v-file-input
+              class="data-input"
+              label="Provide Produce Image(s)"
+              v-model="newProduce.images"
+              accept="image/*"
+              multiple
+              dense
+              chips
+              counter
+              :rules="[validateImages]"
+              @change="previewImages"
+          ></v-file-input>
+          <div v-if="newProduce.images.length > 0" class="tw-flex tw-flex-row tw-justify-center tw-align-center">
+            <v-img
+                v-for="(image, index) in imagePreviews" :key="index"
+                :src="image" aspect-ratio="1" contain
+                width="100px"
+                height="100px"
+            ></v-img>
+          </div>
+        </div>
+        <div class="tw-flex tw-justify-center tw-items-center">
+          <v-btn :loading="loading" color="primary" @click="addFarmerProduce" style="color: white;" rounded>
+            Add Produce
+          </v-btn>
+        </div>
+      </v-form>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -70,6 +92,7 @@ export default {
   name: 'add-farmer-produce',
   data() {
     return {
+      dialog: false,
       produceList: [], // To store list of produces fetched from '/produce'
       selectedProduce: null, // To store the selected produce by user
       newProduce: {
@@ -133,7 +156,7 @@ export default {
     },
     validateImages(value) {
       // eslint-disable-next-line no-mixed-operators
-      return value.length >= 1 && value.length <= 3 || 'You must upload between 1 and 3 images';
+      return value.length <= 3 || 'Maximum images is 3';
     },
     // Handles selection of produce from v-select
     handleProduceInput() {
@@ -158,6 +181,10 @@ export default {
     },
     // Adds selected produce to farmer's produces using '/farmer/add-farmer-produce'
     async addFarmerProduce() {
+      if (!this.newProduce.isValid) {
+        this.$toast.error('Give enough information');
+        return;
+      }
       this.newProduce.name = this.selectedProduce;
       this.loading = true;
       let produceId = '';
@@ -203,10 +230,26 @@ export default {
         this.loading = false;
       }
     },
+    openDialog() {
+      this.dialog = true;
+    },
+    closeDialog() {
+      this.dialog = false;
+    },
   },
 };
 </script>
 
 <style lang="scss">
+.data-input {
+  background-color: #FEEED5;
+  border-radius: 10px;
+  margin: 5px;
+}
+.action-panel {
+  background-color: #FFF8F0;
+  padding: 5px;
+  border-radius: 10px;
+}
 /* Add your Tailwind CSS styles or customize Vuetify components here */
 </style>

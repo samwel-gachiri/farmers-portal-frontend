@@ -7,6 +7,8 @@ module.exports = {
     'vuetify',
     'vue-apexcharts',
     'apexcharts',
+    '@stomp/stompjs',
+    'marked',
   ],
   devServer: {
     proxy: process.env.VUE_APP_API_BASE_URL,

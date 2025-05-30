@@ -2,9 +2,9 @@
   <v-card>
     <v-form v-model="isValid" class="tw-py-4 tw-pr-3 tw-flex tw-flex-col tw-justify-center">
       <div class="tw-w-full tw-flex tw-justify-center tw-flex-col">
-        <logo-title>
-          <h2>Sell your produce</h2>
-        </logo-title>
+<!--        <logo-title>-->
+<!--          <h2>Sell your produce</h2>-->
+<!--        </logo-title>-->
         <div class="tw-grid md:tw-grid-cols-2 tw-grid-cols-1 tw-gap-5 tw-m-5">
           <div class="tw-flex tw-flex-col">
             <v-combobox
@@ -74,7 +74,6 @@
 
 <script >
 
-import LogoTitle from '@/components/shared/LogoText.vue';
 import HelperMixins from '@/mixins/helperMixins.js';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
@@ -83,7 +82,7 @@ import validations from '@/utils/validations.js';
 
 export default {
   name: 'CreateListing',
-  components: { NumberInput, LogoTitle },
+  components: { NumberInput },
   mixins: [HelperMixins],
   data() {
     return {

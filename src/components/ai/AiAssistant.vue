@@ -1,5 +1,6 @@
 <template>
   <v-dialog v-model="dialog" max-width="500" persistent>
+    <AppAssistant v-if="false"/>
     <v-card class="ai-assistant-card">
       <v-toolbar color="primary" dark flat>
         <v-avatar size="40" class="mr-2">
@@ -60,14 +61,14 @@
             rounded
             dense
             hide-details
-            @keyup.enter="sendMessage"
+            @keyup.enter="sendMessageFromInput"
             ref="inputField"
         >
           <template v-slot:append>
             <v-btn icon @click="toggleVoice" :color="isListening ? 'red' : 'primary'">
               <v-icon>mdi-microphone</v-icon>
             </v-btn>
-            <v-btn icon color="primary" @click="sendMessage">
+            <v-btn icon color="primary" @click="sendMessageFromInput">
               <v-icon>mdi-send</v-icon>
             </v-btn>
           </template>
@@ -78,15 +79,26 @@
 </template>
 
 <script>
+import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
+import AppAssistant from '@/components/ai/App.vue';
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
+import L from 'leaflet';
+import axios from 'axios';
+
 export default {
   name: 'AiAssistant',
-  props: {
-    dialog: Boolean,
-  },
+  components: { AppAssistant },
   data() {
     return {
+      dialog: false,
+      socket: null,
+      stompClient: null,
       userInput: '',
       isListening: false,
+      wsUrl: 'http://localhost:8080/ws',
+      speechRecognition: null,
+      connection: null,
       conversation: [
         {
           type: 'ai',
@@ -95,10 +107,171 @@ export default {
           actions: ['Field status', 'Irrigation report', 'Pest alerts'],
         },
       ],
+      // Add these to your data()
+      audioContext: null,
+      audioQueue: [],
+      isPlaying: false,
+      audioBufferSource: null,
     };
   },
   methods: {
-    sendMessage() {
+    getCurrentUserId,
+    getCurrentUserRole,
+    openDialog() {
+      this.dialog = true;
+    },
+    connectToSocket() {
+      console.log('starting connection to websocket');
+      try {
+        const userId = getCurrentUserId();
+        const socket = new SockJS(`${this.wsUrl}?userId=${userId}`);
+        this.stompClient = Stomp.over(socket);
+        this.stompClient.onConnect = () => this.onWebSocketConnected();
+        this.stompClient.onDisconnect = (error) => this.onWSError(error);
+        this.stompClient.connect({ userId }, this.onWebSocketConnected, this.onWSError);
+      } catch (e) {
+        console.error(e);
+        this.$toast.error('Error during connection', e.message);
+      }
+    },
+
+    onWebSocketConnected() {
+      console.log('websocket connected');
+      this.$toast.success('Connected to websocket');
+
+      // const joinMessage = {
+      //   type: 'JOIN',
+      //   sender: getCurrentUserId(),
+      // };
+
+      // Subscribe to text responses
+      this.stompClient.subscribe('/user/ai/chat', this.onMsgReceivedFromWebSocket);
+
+      this.stompClient.subscribe('/user/ai/chat/request-location', () => {
+        // eslint-disable-next-line no-restricted-globals,no-alert
+        if (confirm('Let me get your location to assist you')) {
+          // get location details
+          navigator.geolocation.getCurrentPosition(async (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            // get location name
+            const locationNameResponse = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+            );
+            const data = await locationNameResponse.json();
+            const customName = data.display_name || 'Unknown Location';
+            // save location
+            axios.put(`/${this.getCurrentUserRole()}s-service/location/${this.getCurrentUserRole()}`, {
+              [`${this.getCurrentUserRole()}Id`]: getCurrentUserId(),
+              locationDto: {
+                latitude: lat,
+                longitude: lng,
+                customName,
+              },
+            }).then((saveLocationResponse) => {
+              if (saveLocationResponse.data.success === true) {
+                this.$toast.success('Location updated successfully!');
+              } else {
+                this.$toast.error('Failed to update location', saveLocationResponse.data.msg);
+              }
+            }).catch((error) => {
+              this.$toast.error(error.message);
+            });
+            if (this.marker) {
+              this.marker.setLatLng([position.coords.latitude, position.coords.longitude]);
+            } else {
+              this.marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(this.map);
+            }
+          },
+          (positionError) => {
+            this.$toast.error(positionError.message);
+          });
+        }
+      });
+
+      // Subscribe to binary audio responses
+      this.stompClient.subscribe('/user/queue/audio', this.onAudioChunkReceived);
+
+      // this.stompClient.send('/user/chat.addUser',
+      //   {},
+      //   JSON.stringify(joinMessage));
+
+      // // updateNotificationDisplay();
+      // this.stompClient.subscribe('/topic/messages', (message) => {
+      //   // showMessage(JSON.parse(message.body).content);
+      //   console.log('pub msg received');
+      //   this.$toast.success(JSON.parse(message.body).content, 'public msg');
+      // });
+
+      // this.stompClient.subscribe('/user/topic/private-messages', (message) => {
+      //   // showMessage(JSON.parse(message.body).content);
+      //   console.log('priv msg received');
+      //   this.$toast.success(JSON.parse(message.body).content, 'private msg');
+      // });
+
+      // this.stompClient.subscribe('/topic/global-notifications', (message) => {
+      //   // notificationCount = notificationCount + 1;
+      //   // updateNotificationDisplay();
+      // });
+      //
+      // this.stompClient.subscribe('/user/topic/private-notifications', (message) => {
+      //   // notificationCount = notificationCount + 1;
+      //   // updateNotificationDisplay();
+      // });
+    },
+
+    onWSError(error) {
+      console.log('Error connecting to websocket');
+      console.error(error);
+      this.$toast.error('Failed to connect to websocket', error.message);
+    },
+
+    sendMsgToWebsocket(msg) {
+      if (msg && this.stompClient) {
+        const chatMessage = {
+          sender: getCurrentUserId(),
+          userSection: getCurrentUserRole(),
+          content: msg,
+          type: 'CHAT',
+          responseType: 'auio', // Add this to indicate you want audio response
+        };
+        this.stompClient.send('/app/chat.sendPrompt', {}, JSON.stringify(chatMessage));
+        // this.stompClient.send('/app/chat.sendPrompt', {}, JSON.stringify(chatMessage));
+        // this.stompClient.send('/app/message', {}, JSON.stringify({ messageContent: 'Hey' }));
+        this.stompClient.send('/app/private-message', {}, JSON.stringify({ messageContent: 'Hey private' }));
+      }
+    },
+
+    onMsgReceivedFromWebSocket(payload) {
+      try {
+        if (!payload) return;
+        const message = JSON.parse(payload.body);
+        // const sender = message.sender;
+        const content = message.content;
+        if (content == null) return;
+        this.conversation.push({
+          type: 'ai',
+          text: content,
+          time: 'Just now',
+        });
+      } catch (e) {
+        console.error('Error parsing WebSocket message:', e);
+      }
+    },
+    onAudioChunkReceived(payload) {
+      try {
+        // Add the chunk to the queue
+        this.audioChunks.push(payload.body);
+
+        // Start playing if not already
+        if (!this.isAudioPlaying) {
+          this.playNextChunk();
+        }
+      } catch (e) {
+        console.error('Error processing audio chunk:', e);
+      }
+    },
+    sendMessageFromInput() {
       if (!this.userInput.trim()) return;
 
       // Add user message
@@ -107,54 +280,189 @@ export default {
         text: this.userInput,
         time: 'Just now',
       });
-
-      // Simulate AI response
-      setTimeout(() => {
-        this.conversation.push({
-          type: 'ai',
-          text: this.generateAIResponse(this.userInput),
-          time: 'Just now',
-          actions: ['Show details', 'View report', 'Take action'],
-        });
-        this.scrollToBottom();
-      }, 1000);
+      this.sendMsgToWebsocket(this.userInput);
 
       this.userInput = '';
       this.scrollToBottom();
     },
-    generateAIResponse(input) {
-      const responses = [
-        `I've analyzed your query about "${input}". The soil moisture levels are optimal and no immediate action is needed.`,
-        `Regarding "${input}", my sensors show everything is within normal parameters. Would you like a detailed report?`,
-        `I've checked the status for "${input}". All systems are functioning properly across your fields.`,
-        `For "${input}", I recommend checking the irrigation schedule as we're expecting dry weather soon.`,
-      ];
-      return responses[Math.floor(Math.random() * responses.length)];
+    // The following are for speech recognition
+    initSpeech() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        this.$toast.warning('Speech API unavailable');
+        return;
+      }
+
+      this.speechRecognition = new SpeechRecognition();
+      this.speechRecognition.continuous = false;
+      this.speechRecognition.interimResults = true;
+
+      this.speechRecognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (event.results[0].isFinal) {
+          // this.lastTranscript = transcript;
+          // this.$emit('speech-text', transcript); // Emit to parent
+          // this.processCommand(transcript); // Or call your AI directly
+          this.$toast.success(transcript);
+          this.sendMsgToWebsocket(transcript);
+        }
+      };
+
+      this.speechRecognition.onend = () => {
+        if (this.isListening) this.startListening(); // Auto-restart
+      };
+    },
+
+    startListening() {
+      if (!this.speechRecognition) this.initSpeech();
+      this.isListening = true;
+      this.speechRecognition.start();
+    },
+
+    stopListening() {
+      this.isListening = false;
+      this.speechRecognition.onend = null; // Disable auto-restart
+      this.speechRecognition.stop();
     },
     toggleVoice() {
       this.isListening = !this.isListening;
       if (this.isListening) {
-        // Start voice recognition
-        this.$refs.inputField.focus();
+        this.startListening();
+      } else {
+        this.stopListening();
+      }
+    },
+    // Add these methods
+    initAudioContext() {
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+          sampleRate: 24000, // Match ElevenLabs output
+        });
+      }
+    },
+    async playAudioChunk(chunk) {
+      if (!this.audioContext) this.initAudioContext();
+
+      try {
+        // Decode and play the chunk
+        const audioBuffer = await this.audioContext.decodeAudioData(chunk);
+        const source = this.audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(this.audioContext.destination);
+        source.start();
+
+        source.onended = () => {
+          this.isAudioPlaying = false;
+          this.playNextChunk();
+        };
+
+        this.isAudioPlaying = true;
+      } catch (error) {
+        console.error('Error playing audio chunk:', error);
+      }
+    },
+    playNextChunk() {
+      if (this.audioChunks.length > 0 && !this.isAudioPlaying) {
+        const chunk = this.audioChunks.shift();
+        this.playAudioChunk(chunk);
+      }
+    },
+    async playAudioStream(audioData) {
+      if (!this.audioContext) {
+        this.initAudioContext();
+      }
+
+      try {
+        // Decode the audio data
+        const audioBuffer = await this.audioContext.decodeAudioData(audioData);
+
+        // Create a buffer source
+        const source = this.audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(this.audioContext.destination);
+
+        // Play the audio
+        source.start();
+
+        // Store the source so we can stop it if needed
+        this.audioBufferSource = source;
+
+        source.onended = () => {
+          this.isPlaying = false;
+          this.playNextInQueue();
+        };
+
+        this.isPlaying = true;
+      } catch (error) {
+        console.error('Error playing audio:', error);
+      }
+    },
+
+    playNextInQueue() {
+      if (this.audioQueue.length > 0 && !this.isPlaying) {
+        const nextAudio = this.audioQueue.shift();
+        this.playAudioStream(nextAudio);
+      }
+    },
+
+    queueAudio(audioData) {
+      this.audioQueue.push(audioData);
+      if (!this.isPlaying) {
+        this.playNextInQueue();
+      }
+    },
+
+    stopAudio() {
+      if (this.audioBufferSource) {
+        this.audioBufferSource.stop();
+        this.isPlaying = false;
+      }
+      this.audioQueue = [];
+    },
+    // Add this new method for handling audio
+    onAudioReceived(payload) {
+      try {
+        // Convert the binary payload to ArrayBuffer
+        const audioData = new Uint8Array(payload.body).buffer;
+        this.queueAudio(audioData);
+      } catch (e) {
+        console.error('Error processing audio:', e);
       }
     },
     handleQuickAction(action) {
       this.userInput = action;
-      this.sendMessage();
+      this.sendMessageFromInput();
     },
     scrollToBottom() {
       this.$nextTick(() => {
-        const container = this.$el.querySelector('.ai-conversation');
+        const container = document.querySelector('.ai-conversation');
         container.scrollTop = container.scrollHeight;
       });
     },
   },
+  beforeDestroy() {
+    if (this.socket) {
+      this.socket.close();
+    }
+  },
   watch: {
     dialog(val) {
       if (val) {
+        this.$toast.success('initializing ai assistant');
+        console.log('use id');
+        console.log(getCurrentUserId());
+        console.log(getCurrentUserRole());
+        this.initSpeech();
+        this.connectToSocket();
+
         this.$nextTick(() => {
           this.scrollToBottom();
           this.$refs.inputField.focus();
+        });
+      } else {
+        this.stompClient.disconnect(() => {
+          console.log('Disconnected successfully');
         });
       }
     },
