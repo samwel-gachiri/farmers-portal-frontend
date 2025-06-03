@@ -14,15 +14,15 @@
       </v-toolbar>
 
       <div class="ai-conversation">
-        <div v-for="(message, index) in conversation" :key="index" :class="['message', message.type]">
+        <div v-for="(message, index) in conversation" :key="index" :class="['message', message.user]">
           <div class="message-content">
             <div class="message-bubble">
-              <div v-if="message.type === 'ai'" class="ai-avatar">
+              <div v-if="message.user === 'ai'" class="ai-avatar">
                 <v-icon color="primary">mdi-robot</v-icon>
               </div>
               <div class="text">
                 {{ message.text }}
-                <div v-if="message.type === 'ai' && message.actions" class="quick-actions">
+                <div v-if="message.user === 'ai' && message.actions" class="quick-actions">
                   <v-chip
                       v-for="(action, i) in message.actions"
                       :key="i"
@@ -34,7 +34,7 @@
                   </v-chip>
                 </div>
               </div>
-              <div v-if="message.type === 'user'" class="user-avatar">
+              <div v-if="message.user === 'user'" class="user-avatar">
                 <v-icon color="green">mdi-account</v-icon>
               </div>
             </div>
@@ -101,9 +101,10 @@ export default {
       connection: null,
       conversation: [
         {
-          type: 'ai',
+          user: 'ai',
           text: 'Hello! I\'m your AgriAI assistant. How can I help you with your farm today?',
           time: 'Just now',
+          type: 'normal',
           actions: ['Field status', 'Irrigation report', 'Pest alerts'],
         },
       ],
@@ -121,7 +122,6 @@ export default {
       this.dialog = true;
     },
     connectToSocket() {
-      console.log('starting connection to websocket');
       try {
         const userId = getCurrentUserId();
         const socket = new SockJS(`${this.wsUrl}?userId=${userId}`);
@@ -130,15 +130,11 @@ export default {
         this.stompClient.onDisconnect = (error) => this.onWSError(error);
         this.stompClient.connect({ userId }, this.onWebSocketConnected, this.onWSError);
       } catch (e) {
-        console.error(e);
         this.$toast.error('Error during connection', e.message);
       }
     },
 
     onWebSocketConnected() {
-      console.log('websocket connected');
-      this.$toast.success('Connected to websocket');
-
       // const joinMessage = {
       //   type: 'JOIN',
       //   sender: getCurrentUserId(),
@@ -221,8 +217,6 @@ export default {
     },
 
     onWSError(error) {
-      console.log('Error connecting to websocket');
-      console.error(error);
       this.$toast.error('Failed to connect to websocket', error.message);
     },
 
@@ -255,7 +249,7 @@ export default {
           time: 'Just now',
         });
       } catch (e) {
-        console.error('Error parsing WebSocket message:', e);
+        this.$toast.error('Error parsing WebSocket message:', e.message);
       }
     },
     onAudioChunkReceived(payload) {
@@ -268,7 +262,7 @@ export default {
           this.playNextChunk();
         }
       } catch (e) {
-        console.error('Error processing audio chunk:', e);
+        this.$toast.error('Error processing audio chunk:', e.message);
       }
     },
     sendMessageFromInput() {
@@ -359,7 +353,7 @@ export default {
 
         this.isAudioPlaying = true;
       } catch (error) {
-        console.error('Error playing audio chunk:', error);
+        this.$toast.error('Error playing audio chunk:', error.message);
       }
     },
     playNextChunk() {
@@ -395,7 +389,7 @@ export default {
 
         this.isPlaying = true;
       } catch (error) {
-        console.error('Error playing audio:', error);
+        this.$toast.error('Error playing audio', error.message);
       }
     },
 
@@ -427,7 +421,7 @@ export default {
         const audioData = new Uint8Array(payload.body).buffer;
         this.queueAudio(audioData);
       } catch (e) {
-        console.error('Error processing audio:', e);
+        this.$toast.error('Error processing audio', e.message);
       }
     },
     handleQuickAction(action) {
@@ -449,10 +443,6 @@ export default {
   watch: {
     dialog(val) {
       if (val) {
-        this.$toast.success('initializing ai assistant');
-        console.log('use id');
-        console.log(getCurrentUserId());
-        console.log(getCurrentUserRole());
         this.initSpeech();
         this.connectToSocket();
 
@@ -462,7 +452,6 @@ export default {
         });
       } else {
         this.stompClient.disconnect(() => {
-          console.log('Disconnected successfully');
         });
       }
     },

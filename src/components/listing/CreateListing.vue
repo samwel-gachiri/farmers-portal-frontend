@@ -59,7 +59,6 @@
           </div>
           <v-btn
               style="background-color: darkgreen; color: white;"
-              :disabled="!isValid || listing.farmerProduceId === '' || listing.price.price <= 0"
               :loading="loading"
               @click="postListing "
           >Post<v-icon>mdi-gesture-two-tap</v-icon>
@@ -167,6 +166,10 @@ export default {
       return value.length >= 1 && value.length <= 3 || 'You must upload between 1 and 3 images';
     },
     postListing() {
+      if (!this.isValid || this.listing.farmerProduceId === '' || this.listing.price.price <= 0) {
+        this.$toast.error('Please fill in all of the information');
+        return;
+      }
       this.loading = true;
       axios.post('/farmers-service/listing', {
         farmerProduceId: this.listing.farmerProduceId,

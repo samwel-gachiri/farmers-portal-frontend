@@ -49,6 +49,13 @@ const mutations = {
   setUserRole(state, text) {
     state.role = text;
   },
+  TOOGLE_USER_ROLE(state, role) {
+    if (role.toLowerCase() === 'farmer') {
+      state.role = 'buyer';
+    } else {
+      state.role = 'farmer';
+    }
+  },
   setAuthenticationError(state, err) {
     // logger.debug('auth error: {}', err);
     state.authenticationStatus = {

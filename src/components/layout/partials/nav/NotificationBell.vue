@@ -96,7 +96,7 @@ export default {
           title: 'Irrigation Complete',
           message: 'Field A irrigation cycle has finished',
           type: 'irrigation',
-          read: false,
+          read: true,
           timestamp: new Date(Date.now() - 1000 * 60 * 5),
         },
         {
@@ -112,7 +112,7 @@ export default {
           title: 'Harvest Ready',
           message: 'Wheat in Field C ready for harvest',
           type: 'harvest',
-          read: false,
+          read: true,
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
         },
       ],

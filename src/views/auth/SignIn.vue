@@ -2,7 +2,7 @@
 <template>
   <v-app id="inspire">
     <terms-and-conditions ref="termsDialog"/>
-    <div class="background-animation">
+    <div v-if="false" class="background-animation">
       <div class="circle circle-1"></div>
       <div class="circle circle-2"></div>
       <div class="circle circle-3"></div>
@@ -16,12 +16,13 @@
               Welcome to <span class="">Agriconnect</span>
             </h1>
             <v-card
-                 style="border-radius: 20px;"
+                flat
+                style="border-radius: 20px; border: 4px solid #f6eeee;"
                 draggable="true"
             >
 <!--              <card-title>Sign In As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>-->
               <div class="tw-flex tw-flex-col tw-justify-center tw-items-center">
-                <h6 class="tw-text-sm tw-text-black tw-mb-3">Fill in your details below</h6>
+<!--                <h6 class="tw-text-sm tw-text-black tw-mb-3">Fill in your details below</h6>-->
                 <v-avatar size="50" color="primary lighten-4" class="">
                   <v-img
                       v-if="form.userType.toLowerCase() === 'farmer'"
@@ -36,10 +37,12 @@
                       src="@/assets/images/admin.png"
                   ></v-img>
                 </v-avatar>
-                <h2 class="tw-font-bold">{{ form.userType.toUpperCase() }}</h2>
+                <h4 class="tw-font-bold">{{ form.userType.toUpperCase() }}</h4>
               </div>
-              <v-stepper v-model="step" class="tw-p-4">
-                <h2 class="tw-font-bold tw-mt-2 tw-mb-4">{{steps[step - 1].title}}</h2>
+              <v-stepper
+                  flat
+                  v-model="step" class="tw-p-4">
+                <h6 class="tw-font-bold tw-mt-2 tw-mb-4">{{steps[step - 1].title}}</h6>
                 <v-form v-if="step === 1" v-model="isValid1" class="tw-flex tw-flex-col">
                   <phone-number-input
                       class="tw-mb-3"
