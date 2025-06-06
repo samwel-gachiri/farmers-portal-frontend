@@ -10,7 +10,6 @@
 
       <div>
         <div class="tw-flex tw-flex-row tw-justify-between tw-p-5">
-          <h2 class="tw-text-xl tw-font-bold tw-text-green-800">My Listings</h2>
           <v-btn
               v-if="false"
               dense

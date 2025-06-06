@@ -33,13 +33,34 @@
                     {{ action }}
                   </v-chip>
                 </div>
+                <div v-if="message.type === 'PRODUCES'" class="tw-flex">
+                  <v-card
+                      rounded
+                      v-for="(product, i) in message.data" :key="i">
+                    <v-card-title>{{product.name}}</v-card-title>
+                    <div class="tw-px-3">
+                      <div class="tw-flex tw-flex-row tw-items-center tw-justify-start">
+                        <v-icon>mdi-face</v-icon>
+                        <p>{{product.farmer.name}}</p>
+                      </div>
+                      <div class="tw-flex tw-flex-row tw-items-center tw-justify-start">
+                        <v-icon>mdi-home-map-marker</v-icon>
+                        <p>{{product.location.customName.split(',')[0]}}</p>
+                        <h4>{{product.distance}}</h4>
+                      </div>
+                    </div>
+                    <v-card-actions>
+                      <button class="btn btn-primary">Request</button>
+                    </v-card-actions>
+                  </v-card>
+                </div>
               </div>
               <div v-if="message.user === 'user'" class="user-avatar">
                 <v-icon color="green">mdi-account</v-icon>
               </div>
             </div>
             <div class="message-time">
-              {{ message.time }}
+              {{ message.time | formatDate }}
             </div>
           </div>
         </div>
@@ -85,6 +106,8 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import L from 'leaflet';
 import axios from 'axios';
+// eslint-disable-next-line import/extensions
+import helperMixins from '@/mixins/helperMixins';
 
 export default {
   name: 'AiAssistant',
@@ -103,8 +126,8 @@ export default {
         {
           user: 'ai',
           text: 'Hello! I\'m your AgriAI assistant. How can I help you with your farm today?',
-          time: 'Just now',
-          type: 'normal',
+          time: new Date(),
+          type: 'NORMAL',
           actions: ['Field status', 'Irrigation report', 'Pest alerts'],
         },
       ],
@@ -171,7 +194,10 @@ export default {
                 this.$toast.error('Failed to update location', saveLocationResponse.data.msg);
               }
             }).catch((error) => {
+              this.sendMsgToWebsocket(error.message);
               this.$toast.error(error.message);
+            }).finally(() => {
+              this.sendMsgToWebsocket(`location:name=${customName},latitude=${lat},longitude=${lng}`);
             });
             if (this.marker) {
               this.marker.setLatLng([position.coords.latitude, position.coords.longitude]);
@@ -185,6 +211,16 @@ export default {
         }
       });
 
+      this.stompClient.subscribe('/user/ai/chat/display-farm-produce', (data) => {
+        console.log(data);
+        this.conversation.push({
+          user: 'ai',
+          text: 'The following are farmers related produces',
+          time: new Date(),
+          type: 'PRODUCES',
+          data: JSON.parse(data.body),
+        });
+      });
       // Subscribe to binary audio responses
       this.stompClient.subscribe('/user/queue/audio', this.onAudioChunkReceived);
 
@@ -435,6 +471,7 @@ export default {
       });
     },
   },
+  mixins: [helperMixins],
   beforeDestroy() {
     if (this.socket) {
       this.socket.close();

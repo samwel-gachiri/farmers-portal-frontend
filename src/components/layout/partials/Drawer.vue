@@ -229,13 +229,13 @@ export default {
   components: { UserRole, LogoTitle },
   data: () => ({
     items: [
-      // {
-      //   icon: 'mdi-view-dashboard',
-      //   text: 'Dashboard',
-      //   link: { name: 'Dashboard' },
-      //   roles: ['farmer', 'buyer', 'admin'],
-      //   iconColor: 'black',
-      // },
+      {
+        icon: 'mdi-view-dashboard',
+        text: 'Dashboard',
+        link: { name: 'Dashboard' },
+        roles: ['farmer', 'buyer', 'admin'],
+        iconColor: 'black',
+      },
       {
         icon: 'mdi-account-group',
         text: 'Community',
@@ -402,7 +402,6 @@ export default {
 
 .nav-item {
   border-radius: 8px;
-  font-weight: bold;
   /* transition: all 0.3s ease; */
 }
 
@@ -423,7 +422,7 @@ export default {
 }
 
 .nav-text {
-  font-weight: bold;
+  font-weight: 800;
   font-size: 0.9rem;
 }
 

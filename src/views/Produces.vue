@@ -27,12 +27,12 @@
       </v-dialog>
 
       <!-- Main Content -->
-      <div class="tw-p-8">
+      <div class="">
         <!-- Header -->
         <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
-          <h2 class="tw-text-2xl tw-font-bold">
+          <h4 class="tw-text-2xl tw-font-bold">
             {{ getCurrentUserId === farmer.id ? 'My' : `${farmer.name}'s` }} Farm Produces
-          </h2>
+          </h4>
           <v-btn
               v-if="getCurrentUserId === farmer.id"
               color="primary"

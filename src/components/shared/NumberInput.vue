@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <h2 class="grey--text" v-if="label !== ''">{{label}}</h2>
+    <h4 class="grey--text" v-if="label !== ''">{{label}}</h4>
     <div class="number-input">
       <v-btn @click="decrement" :disabled="value <= 1">-</v-btn>
       <input type="number" v-model.number="value" :min="1" :max="maximumValue"/>

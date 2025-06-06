@@ -91,30 +91,30 @@ export default {
   data() {
     return {
       notifications: [
-        {
-          id: 1,
-          title: 'Irrigation Complete',
-          message: 'Field A irrigation cycle has finished',
-          type: 'irrigation',
-          read: true,
-          timestamp: new Date(Date.now() - 1000 * 60 * 5),
-        },
-        {
-          id: 2,
-          title: 'Soil Alert',
-          message: 'Low moisture detected in Field B',
-          type: 'alert',
-          read: true,
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-        },
-        {
-          id: 3,
-          title: 'Harvest Ready',
-          message: 'Wheat in Field C ready for harvest',
-          type: 'harvest',
-          read: true,
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-        },
+        // {
+        //   id: 1,
+        //   title: 'Irrigation Complete',
+        //   message: 'Field A irrigation cycle has finished',
+        //   type: 'irrigation',
+        //   read: true,
+        //   timestamp: new Date(Date.now() - 1000 * 60 * 5),
+        // },
+        // {
+        //   id: 2,
+        //   title: 'Soil Alert',
+        //   message: 'Low moisture detected in Field B',
+        //   type: 'alert',
+        //   read: true,
+        //   timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+        // },
+        // {
+        //   id: 3,
+        //   title: 'Harvest Ready',
+        //   message: 'Wheat in Field C ready for harvest',
+        //   type: 'harvest',
+        //   read: true,
+        //   timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
+        // },
       ],
     };
   },

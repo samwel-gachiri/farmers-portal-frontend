@@ -1,3 +1,9 @@
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime.js';
+
+// Extend dayjs with relativeTime
+dayjs.extend(relativeTime);
+
 const helperMixins = {
   methods: {
     is_null: (value) => value == null,
@@ -28,6 +34,11 @@ const helperMixins = {
         length: 11,
         precision: 2,
       };
+    },
+  },
+  filters: {
+    formatDate(date) {
+      return dayjs(date).fromNow(); // Converts raw date to "x time ago"
     },
   },
 };

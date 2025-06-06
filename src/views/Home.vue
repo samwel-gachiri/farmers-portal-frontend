@@ -81,7 +81,7 @@
                       Source fresh produce directly from farmers with quality assurance
                     </p>
                     <v-btn
-                        color="secondary"
+                        color="#FFD700"
                         large
                         :class="{ 'pulse-btn': hover, 'no-uppercase': false }"
                     >
