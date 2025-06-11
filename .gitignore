@@ -46,7 +46,7 @@ public/damd
 settings.gradle
 src/assets/images/farmer-struggle.jpg
 src/assets/images/happy-farmer.jpg
-src/components/ai/App.vue
+src/components/ai/AIApp.vue
 src/components/ai/ChatBox.vue
 src/components/ai/InputArea.vue
 src/components/ai/SpeechRecognition.vue

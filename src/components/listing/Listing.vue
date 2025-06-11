@@ -1,9 +1,8 @@
 <template>
   <v-card>
-    <v-card-title>
-      <h2 class="text-xl font-bold">Listing Details</h2>
-      <logo-title></logo-title>
-    </v-card-title>
+    <card-title
+        icon="mdi-book"
+        class="tw-mt-4">Listing Details</card-title>
     <v-card-text>
       <div v-if="listing">
         <div class="tw-flex md:tw-flex-row tw-flex-col-reverse">
@@ -11,13 +10,13 @@
 <!--            <p><strong>ID:</strong> {{ listing.produceListing.id }}</p>-->
             <p><strong>Price:</strong> {{ listing.produceListing.price.price.toLocaleString() }} {{ listing.produceListing.price.currency }} per {{listing.produceListing.unit}}</p>
             <p><strong>Earnings:</strong> {{ listing.earnings.toFixed(2) }} {{listing.produceListing.price.currency}}</p>
-            <p><strong>Rating:</strong> {{ listing.produceListing.rating }}</p>
-            <p><strong>Status:</strong> {{ listing.produceListing.status }}</p>
+<!--            <p><strong>Rating:</strong> {{ listing.produceListing.rating }}</p>-->
+<!--            <p><strong>Status:</strong> {{ listing.produceListing.status }}</p>-->
             <p><strong>Quantity Sold:</strong> {{ listing.quantitySold }} {{ listing.produceListing.unit }}</p>
             <p><strong>Quantity Left:</strong> {{ listing.quantityLeft }} {{ listing.produceListing.unit }}</p>
             <p><strong>No of purchases:</strong> {{ listing.noOfPurchases }} <v-icon>mdi-arrow-down</v-icon></p>
           </div>
-          <div class="tw-w-full">
+          <div v-if="false" class="tw-w-full">
             <v-card class="tw-p-4">
               <h1 class="tw-text-xs tw-uppercase tw-font-bold tw-mb-5">
                 Progress
@@ -97,6 +96,11 @@
         </v-data-table>
       </div>
     </v-card-text>
+    <v-card-actions>
+      <v-btn
+          @click="$emit('close-dialog')"
+      >Close</v-btn>
+    </v-card-actions>
     <v-dialog v-model="declineOrderDialog" max-width="300px">
       <v-card type="warning">
         <v-alert
@@ -121,11 +125,11 @@
 
 <script>
 import axios from 'axios';
-import LogoTitle from '@/components/shared/LogoText.vue';
+import CardTitle from '@/components/shared/CardTitle.vue';
 
 export default {
   name: 'Listing',
-  components: { LogoTitle },
+  components: { CardTitle },
   data() {
     return {
       orderHeaders: [

@@ -11,6 +11,9 @@
           Close
         </v-btn>
       </v-dialog>
+    <v-dialog v-model="photoCaptureDialog" max-width="500px">
+        <PhotoCapture/>
+      </v-dialog>
       <!-- Dashboard Header -->
 <!--      <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>-->
 <!--      <v-row class="tw-mb-3">-->
@@ -88,6 +91,7 @@
               <v-card-actions>
                 <v-btn
                   block
+                  @click="photoCaptureDialog = true"
                   color="primary"
                 >Submit</v-btn>
               </v-card-actions>
@@ -179,10 +183,12 @@ import CreateListing from '@/components/listing/CreateListing.vue';
 import pluralize from 'pluralize';
 import { formatToHumanWithTime } from '@/utils/time.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
+import PhotoCapture from '@/components/pictures/PhotoCapture.vue';
 // import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
+    PhotoCapture,
     CardTitle,
     CreateListing,
     // apexchart: VueApexCharts,
@@ -191,6 +197,7 @@ export default {
     return {
       loading: false,
       listingDialog: false,
+      photoCaptureDialog: false,
       headers: [
         { text: 'Product', value: 'farmerProduce.farmProduce.name' },
         { text: 'Quantity', value: 'quantityWithUnit' },

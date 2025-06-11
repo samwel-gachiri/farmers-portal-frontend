@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" max-width="500" persistent>
-    <AppAssistant v-if="false"/>
+<!--    <AppAssistant v-if="false"/>-->
     <v-card class="ai-assistant-card">
       <v-toolbar color="primary" dark flat>
         <v-avatar size="40" class="mr-2">
@@ -101,7 +101,7 @@
 
 <script>
 import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
-import AppAssistant from '@/components/ai/App.vue';
+// import AppAssistant from '@/components/ai/AIApp.vue';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import L from 'leaflet';
@@ -111,7 +111,7 @@ import helperMixins from '@/mixins/helperMixins';
 
 export default {
   name: 'AiAssistant',
-  components: { AppAssistant },
+  // components: { AppAssistant },
   data() {
     return {
       dialog: false,
@@ -212,7 +212,6 @@ export default {
       });
 
       this.stompClient.subscribe('/user/ai/chat/display-farm-produce', (data) => {
-        console.log(data);
         this.conversation.push({
           user: 'ai',
           text: 'The following are farmers related produces',

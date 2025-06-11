@@ -385,7 +385,7 @@ export default {
               <h3 class="tw-font-bold tw-text-gray-800 tw-mb-2">${farmer.name || 'Farmer'}</h3>
               <p class="tw-text-sm tw-text-gray-600 tw-mb-2">📍 ${farmer.location.customName || 'Location'}</p>
               <p class="tw-text-sm tw-text-gray-600 tw-mb-3">🌾 ${produces}</p>
-              <button class="tw-bg-green-500 tw-text-white tw-px-3 tw-py-1 tw-rounded tw-text-sm hover:tw-bg-green-600 tw-transition-colors" onclick="viewFarmerDetails('${farmer.id}')">
+              <button class="tw-bg-green-500 tw-text-white tw-px-3 tw-py-1 tw-rounded tw-text-sm hover:tw-bg-green-600 tw-transition-colors" onclick="this.openUserDialog()">
                 View Details
               </button>
             </div>
@@ -393,7 +393,6 @@ export default {
 
           farmerMarker.on('click', () => {
             this.selectedUserFromMap = { ...farmer, role: 'farmer' };
-            this.userDialog = true;
             this.calculateDistance(farmer.location.latitude, farmer.location.longitude);
           });
 
@@ -417,7 +416,7 @@ export default {
               <h3 class="tw-font-bold tw-text-gray-800 tw-mb-2">${buyer.name || 'Buyer'}</h3>
               <p class="tw-text-sm tw-text-gray-600 tw-mb-2">📍 ${buyer.location.customName || 'Location'}</p>
               <p class="tw-text-sm tw-text-gray-600 tw-mb-3">🛒 ${preferences}</p>
-              <button class="tw-bg-blue-500 tw-text-white tw-px-3 tw-py-1 tw-rounded tw-text-sm hover:tw-bg-blue-600 tw-transition-colors" onclick="viewBuyerDetails('${buyer.id}')">
+              <button class="tw-bg-blue-500 tw-text-white tw-px-3 tw-py-1 tw-rounded tw-text-sm hover:tw-bg-blue-600 tw-transition-colors" onclick="this.openUserDialog()">
                 View Details
               </button>
             </div>
@@ -425,7 +424,6 @@ export default {
 
           buyerMarker.on('click', () => {
             this.selectedUserFromMap = { ...buyer, role: 'buyer' };
-            this.userDialog = true;
             this.calculateDistance(buyer.location.latitude, buyer.location.longitude);
           });
 
@@ -445,6 +443,9 @@ export default {
       } else {
         this.$toast.warning('Could not pan to location');
       }
+    },
+    openUserDialog() {
+      this.userDialog = true;
     },
 
     calculateDistance(targetLat, targetLng) {
@@ -504,95 +505,95 @@ export default {
 
     fetchUsersLocation() {
       // Mock data for testing - replace with actual API calls
-      this.farmersLocation = [
-        {
-          id: '1',
-          name: 'John Farmer',
-          email: 'john@farmer.com',
-          phoneNumber: '+254700000001',
-          farmer: {
-            name: 'John Farmer',
-            farmerProduces: [
-              {
-                id: '1',
-                farmProduce: { name: 'Tomatoes', description: 'Fresh tomatoes' },
-                status: 'ON_SALE',
-              },
-            ],
-          },
-          location: {
-            latitude: -1.2921 + (Math.random() - 0.5) * 0.1,
-            longitude: 36.8219 + (Math.random() - 0.5) * 0.1,
-            customName: 'Nairobi Farm',
-          },
-        },
-        {
-          id: '2',
-          name: 'Mary Grower',
-          email: 'mary@grower.com',
-          phoneNumber: '+254700000002',
-          farmer: {
-            name: 'Mary Grower',
-            farmerProduces: [
-              {
-                id: '2',
-                farmProduce: { name: 'Carrots', description: 'Organic carrots' },
-                status: 'ON_SALE',
-              },
-            ],
-          },
-          location: {
-            latitude: -1.2921 + (Math.random() - 0.5) * 0.1,
-            longitude: 36.8219 + (Math.random() - 0.5) * 0.1,
-            customName: 'Organic Farm',
-          },
-        },
-      ];
-
-      this.buyersLocation = [
-        {
-          id: '1',
-          name: 'Restaurant ABC',
-          email: 'abc@restaurant.com',
-          phoneNumber: '+254700000003',
-          buyer: {
-            name: 'Restaurant ABC',
-            preferredProduces: [
-              {
-                id: '1',
-                bsfarmProduce: { name: 'Vegetables', description: 'Fresh vegetables' },
-                status: 'REQUESTING',
-              },
-            ],
-          },
-          location: {
-            latitude: -1.2921 + (Math.random() - 0.5) * 0.1,
-            longitude: 36.8219 + (Math.random() - 0.5) * 0.1,
-            customName: 'Restaurant Location',
-          },
-        },
-        {
-          id: '2',
-          name: 'Market XYZ',
-          email: 'xyz@market.com',
-          phoneNumber: '+254700000004',
-          buyer: {
-            name: 'Market XYZ',
-            preferredProduces: [
-              {
-                id: '2',
-                bsfarmProduce: { name: 'Fruits', description: 'Fresh fruits' },
-                status: 'REQUESTING',
-              },
-            ],
-          },
-          location: {
-            latitude: -1.2921 + (Math.random() - 0.5) * 0.1,
-            longitude: 36.8219 + (Math.random() - 0.5) * 0.1,
-            customName: 'Market Center',
-          },
-        },
-      ];
+      // this.farmersLocation = [
+      //   {
+      //     id: '1',
+      //     name: 'John Farmer',
+      //     email: 'john@farmer.com',
+      //     phoneNumber: '+254700000001',
+      //     farmer: {
+      //       name: 'John Farmer',
+      //       farmerProduces: [
+      //         {
+      //           id: '1',
+      //           farmProduce: { name: 'Tomatoes', description: 'Fresh tomatoes' },
+      //           status: 'ON_SALE',
+      //         },
+      //       ],
+      //     },
+      //     location: {
+      //       latitude: -1.2921 + (Math.random() - 0.5) * 0.1,
+      //       longitude: 36.8219 + (Math.random() - 0.5) * 0.1,
+      //       customName: 'Nairobi Farm',
+      //     },
+      //   },
+      //   {
+      //     id: '2',
+      //     name: 'Mary Grower',
+      //     email: 'mary@grower.com',
+      //     phoneNumber: '+254700000002',
+      //     farmer: {
+      //       name: 'Mary Grower',
+      //       farmerProduces: [
+      //         {
+      //           id: '2',
+      //           farmProduce: { name: 'Carrots', description: 'Organic carrots' },
+      //           status: 'ON_SALE',
+      //         },
+      //       ],
+      //     },
+      //     location: {
+      //       latitude: -1.2921 + (Math.random() - 0.5) * 0.1,
+      //       longitude: 36.8219 + (Math.random() - 0.5) * 0.1,
+      //       customName: 'Organic Farm',
+      //     },
+      //   },
+      // ];
+      //
+      // this.buyersLocation = [
+      //   {
+      //     id: '1',
+      //     name: 'Restaurant ABC',
+      //     email: 'abc@restaurant.com',
+      //     phoneNumber: '+254700000003',
+      //     buyer: {
+      //       name: 'Restaurant ABC',
+      //       preferredProduces: [
+      //         {
+      //           id: '1',
+      //           bsfarmProduce: { name: 'Vegetables', description: 'Fresh vegetables' },
+      //           status: 'REQUESTING',
+      //         },
+      //       ],
+      //     },
+      //     location: {
+      //       latitude: -1.2921 + (Math.random() - 0.5) * 0.1,
+      //       longitude: 36.8219 + (Math.random() - 0.5) * 0.1,
+      //       customName: 'Restaurant Location',
+      //     },
+      //   },
+      //   {
+      //     id: '2',
+      //     name: 'Market XYZ',
+      //     email: 'xyz@market.com',
+      //     phoneNumber: '+254700000004',
+      //     buyer: {
+      //       name: 'Market XYZ',
+      //       preferredProduces: [
+      //         {
+      //           id: '2',
+      //           bsfarmProduce: { name: 'Fruits', description: 'Fresh fruits' },
+      //           status: 'REQUESTING',
+      //         },
+      //       ],
+      //     },
+      //     location: {
+      //       latitude: -1.2921 + (Math.random() - 0.5) * 0.1,
+      //       longitude: 36.8219 + (Math.random() - 0.5) * 0.1,
+      //       customName: 'Market Center',
+      //     },
+      //   },
+      // ];
 
       this.initMap();
 
@@ -651,7 +652,7 @@ export default {
           this.fetchUsersLocation();
         },
         (error) => {
-          console.warn('Geolocation error:', error.message);
+          this.$toast.warning('Geolocation error:', error.message);
           // Use default location (Nairobi)
           this.fetchUsersLocation();
         },
