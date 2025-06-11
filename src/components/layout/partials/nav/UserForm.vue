@@ -26,16 +26,16 @@
     <!--        >-->
     <!--        </v-text-field>-->
             <div
-                class="tw-flex tw-w-full tw-flex-col tw-justify-start tw-items-start"
+                class="tw-fleFx tw-w-full tw-flex-col tw-justify-start tw-items-start"
             >
-              <h2>{{ userLocation.location.customName === '' ? "Give in your location details": "Your Location Details"}}</h2>
+              <h5>{{ loc_name === '' ? "Give in your location details": "Your Location Details"}}</h5>
               <v-alert
                 type="info"
               >This will be used by farmers, buyers and the public to notice you.</v-alert>
               <v-text-field
                   outlined
                   label="My Location"
-                  v-model="userLocation.location.customName"
+                  v-model="loc_name"
                   class="tw-font-bold tw-w-full"
               ></v-text-field>
               <div class="tw-flex tw-flex-row">
@@ -43,12 +43,12 @@
                     label="latitude"
                     prefix="("
                     suffix=","
-                    v-model="userLocation.location.latitude"
+                    v-model="lat"
                 ></v-text-field>
                 <v-text-field
                     label="longitude"
                     suffix=")"
-                    v-model="userLocation.location.longitude"
+                    v-model="lng"
                 ></v-text-field>
               </div>
               <v-btn
@@ -70,7 +70,7 @@
 <!--            >-->
 <!--            </v-text-field>-->
             <div class="tw-mt-8 tw-flex tw-flex-col tw-gap-5">
-              <h2 class="tw-bold">Input phone number</h2>
+              <h5 class="tw-bold">Input phone number</h5>
               <phone-number-input
                   v-model="phoneNumber"
                   default-country-code="KE"
@@ -79,7 +79,7 @@
               />
             </div>
           </div>
-          <div class="tw-w-full">
+          <div v-if="false" class="tw-w-full">
             <strong>Pinpoint Your Location Here <v-icon>mdi-gesture-two-tap</v-icon></strong>
             <!-- Leaflet Map -->
             <div id="map" class="map-container"></div>
@@ -110,28 +110,17 @@ export default {
   name: 'UserForm',
   data() {
     return {
-      initialDetails: {
-        fullname: '',
-        latitude: '',
-        longitude: '',
-        customName: '',
-        phoneNumber: '',
-      },
       fullname: '',
       email: '',
       phoneNumber: '',
       kra_pin: '',
+      lat: '',
+      lng: '',
+      loc_name: '',
       isValid: false,
       ...validations,
       loading: false,
       role: '',
-      userLocation: {
-        location: {
-          latitude: 0.0,
-          longitude: 0.0,
-          customName: '',
-        },
-      },
       map: null,
       marker: null,
     };
@@ -145,55 +134,68 @@ export default {
     getCurrentUserRole,
   },
   mounted() {
-    this.initMap();
+    // this.initMap();
+    // this.resizeObserver = new ResizeObserver(() => {
+    //   if (this.map) {
+    //     this.map.invalidateSize();
+    //   }
+    // });
+    // if (this.resizeObserver != null) this.resizeObserver.observe(document.getElementById('map'));
     this.role = getCurrentUserRole();
     this.fullname = this.user.name;
     this.email = this.user.email;
     this.phoneNumber = this.user.phoneNumber;
-    axios.get(`${getCurrentUserRole()}s-service/location/${this.role}?${this.role}Id=${getCurrentUserId()}`).then((response) => {
-      if (response.data.success === true) {
-        const data = response.data.data;
-        this.userLocation.location.latitude = data?.latitude;
-        this.userLocation.location.longitude = data?.longitude;
-        this.userLocation.location.customName = data?.customName;
-        if (data.latitude) {
-          this.map.panTo([data?.latitude, data?.longitude]);
-          this.marker = L.marker([data?.latitude, data?.longitude], {
-            icon: L.icon({
-              iconUrl: `https://agri-image.s3.us-east-1.amazonaws.com/uploads/${this.role}_map_icon.png`, // Path to your image
-              iconSize: [25, 41], // Size of the icon
-              iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
-              popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
-              shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png', // Optional shadow
-              shadowSize: [41, 41], // Shadow size
-            }),
-          }).addTo(this.map);
-        }
-      }
-    }).catch((e) => {
-      this.$toast.error(e.message);
-    }).finally(() => {
-      this.initialDetails = {
-        fullname: this.fullname,
-        latitude: this.userLocation.location.latitude,
-        longitude: this.userLocation.location.longitude,
-        customName: this.userLocation.location.customName,
-        phoneNumber: this.phoneNumber,
-      };
-    });
+    if (this.user.location) {
+      this.map.panTo([this.user?.location?.latitude, this.user?.location?.longitude]);
+      this.marker = L.marker([this.user?.location?.latitude, this.user?.location?.longitude], {
+        icon: L.icon({
+          iconUrl: `https://agri-image.s3.us-east-1.amazonaws.com/uploads/${this.role}_map_icon.png`, // Path to your image
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+          shadowSize: [41, 41], // Shadow size
+        }),
+      }).addTo(this.map);
+    }
+    if (this.user.location.latitude) {
+      this.lat = this.user.location.latitude;
+    }
+    if (this.user.location.longitude) {
+      this.lng = this.user.location.longitude;
+    }
+    if (this.user.location.customName) {
+      this.loc_name = this.user.location.customName;
+    }
+    this.phoneNumber = this.user.phoneNumber;
+    this.fullname = this.user.name;
   },
+  // beforeDestroy() {
+  //   if (this.resizeObserver) {
+  //     this.resizeObserver.disconnect();
+  //   }
+  // },
   methods: {
     // Initialize the Leaflet map
     initMap() {
-      this.map = L.map('map').setView([0, 0], 2); // Default view
+      this.$nextTick(() => {
+        if (!this.map) {
+          this.map = L.map('map', {
+            preferCanvas: true, // Better for performance
+          }).setView([0, 0], 2);
 
-      // Add OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(this.map);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+          }).addTo(this.map);
 
-      // Click event to update location
-      this.map.on('click', this.updateLocation);
+          this.map.on('click', this.updateLocation);
+
+          // Force a resize in case the container was hidden initially
+          setTimeout(() => {
+            this.map.invalidateSize();
+          }, 100);
+        }
+      });
     },
 
     // Update location based on user click
@@ -201,8 +203,8 @@ export default {
       const { lat, lng } = event.latlng;
 
       // Update user location
-      this.userLocation.location.latitude = lat;
-      this.userLocation.location.longitude = lng;
+      this.lat = lat;
+      this.lng = lng;
 
       // Reverse geocode (fetch location name)
       this.getLocationName(lat, lng);
@@ -215,11 +217,16 @@ export default {
       }
     },
     async getLocationName(lat, lng) {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-      );
-      const data = await response.json();
-      this.userLocation.location.customName = data.display_name || 'Unknown Location';
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+        );
+        const data = await response.json();
+        this.loc_name = data.display_name || 'Unknown Location';
+      } catch (e) {
+        this.$toast.error(e.message);
+        this.loc_name = '';
+      }
     },
     async updateProfile() {
       this.loading = true;
@@ -227,17 +234,22 @@ export default {
       await this.$store.dispatch('auth/updateUser', { name: this.fullname, phoneNumber: this.phoneNumber }).then(() => {
         if (this.hasAuthenticationStatus) {
           this.loading = false;
-          if (this.authenticationStatus.variant === 'error') {
-            this.$toast.error(this.authenticationStatus.message, 'Error');
-          } else {
-            this.$toast.success(this.authenticationStatus.message, 'Success');
-          }
+          // if (this.authenticationStatus.variant === 'error') {
+          //   this.$toast.error(this.authenticationStatus.message, 'Error');
+          // } else {
+          //   this.$toast.success(this.authenticationStatus.message, 'Success');
+          // }
         }
       }).finally(async () => axios.put(`${getCurrentUserRole()}s-service/${getCurrentUserRole()}`, {
-        [`${this.role}Id`]: getCurrentUserId(),
+        [`${getCurrentUserRole()}Id`]: getCurrentUserId(),
         name: this.fullname,
         phoneNumber: this.phoneNumber ? this.phoneNumber : '',
         email: this.email,
+        location: {
+          latitude: this.lat,
+          longitude: this.lng,
+          customName: this.loc_name,
+        },
       }).then((response) => {
         if (response.data.success === true) {
           this.$toast.success('Farmer Profile Updated successfully!');
@@ -250,9 +262,9 @@ export default {
     },
     getLocation() {
       navigator.geolocation.getCurrentPosition(async (position) => {
-        this.userLocation.location.latitude = position.coords.latitude;
-        this.userLocation.location.longitude = position.coords.longitude;
-        this.getLocationName(this.userLocation.location.latitude, this.userLocation.location.longitude);
+        this.lat = position.coords.latitude;
+        this.lng = position.coords.longitude;
+        this.getLocationName(this.lat, this.lng);
         if (this.marker) {
           this.marker.setLatLng([position.coords.latitude, position.coords.longitude]);
         } else {
@@ -263,33 +275,18 @@ export default {
         this.$toast.error(positionError.message);
       });
     },
-    saveLocation() {
-      axios.put(`/${this.role}s-service/location/${this.role}`, {
-        [`${this.role}Id`]: getCurrentUserId(),
-        locationDto: {
-          latitude: this.userLocation.location.latitude,
-          longitude: this.userLocation.location.longitude,
-          customName: this.userLocation.location.customName,
-        },
-      }).then((response) => {
-        if (response.data.success === true) {
-          this.$toast.success('Location updated successfully!');
-        } else {
-          this.$toast.error('Failed to update location', response.data.msg);
-        }
-      }).catch((error) => {
-        this.$toast.error(error.message);
-      });
-    },
   },
 };
 </script>
 <style>
 .map-container {
   width: 100%;
-  height: 400px;
+  height: 400px; /* Fixed height */
+  min-height: 400px; /* Prevent collapsing */
   margin-top: 10px;
   border-radius: 8px;
   overflow: hidden;
+  position: relative; /* Important for Leaflet */
+  z-index: 0; /* Ensure proper stacking */
 }
 </style>

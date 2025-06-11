@@ -16,9 +16,9 @@
           <v-col cols="6" sm="8" md="9" class="tw-text-right">
 <!--            <v-app-bar-nav-icon @click="drawer = !drawer" class="tw-hidden-md-and-up"></v-app-bar-nav-icon>-->
             <div class="tw-hidden-sm-and-down">
-              <v-btn text color="primary" @click="scrollTo('features')">Features</v-btn>
-              <v-btn text color="primary" @click="scrollTo('benefits')">Benefits</v-btn>
-              <v-btn text color="primary" @click="scrollTo('success')">Success Stories</v-btn>
+<!--              <v-btn text color="primary" @click="scrollTo('features')">Features</v-btn>-->
+<!--              <v-btn text color="primary" @click="scrollTo('benefits')">Benefits</v-btn>-->
+<!--              <v-btn text color="primary" @click="scrollTo('success')">Success Stories</v-btn>-->
               <v-btn rounded color="primary" class="ml-3" @click="getStarted">Go to Application</v-btn>
             </div>
           </v-col>
@@ -56,6 +56,9 @@
               style="border-radius: 40px;"
               max-height="500px"
           ></v-img>
+        </div>
+        <div class="tw-flex tw-justify-center tw-items-center tw-mt-5">
+          <button class="btn btn-primary tw-rounded-lg" @click="getStarted">Get started</button>
         </div>
         <v-row align="center">
           <v-col cols="12" md="6" class="pr-md-10">

@@ -11,20 +11,20 @@ export default {
 </script>
 
 <template>
-  <div class="tw-flex tw-justify-center md:tw-justify-start tw-flex-row tw-cursor-pointer" @click="()=>this.$router.push({path: '/'})">
+  <div class="tw-flex tw-justify-start tw-items-center tw-flex-row tw-cursor-pointer" @click="()=>this.$router.push({path: '/'})">
     <img
         src="@/assets/images/logo.png"
         alt="Company Logo"
-        class="tw-border tw-rounded-lg tw-mx-5"
-        width="50px"
+        class="tw-border tw-rounded-lg tw-ml-2"
+        width="40px"
         height="40px"
         loading="lazy"
     />
     <v-divider vertical/>
     <div class="tw-flex tw-justify-center tw-items-center tw-flex-col tw-px-4">
-      <h2 class="tw-text-md c-green-text tw-font-bold">
+      <h4 class="tw-text-md c-green-text tw-font-bold">
         {{text}}
-      </h2>
+      </h4>
       <slot></slot>
     </div>
   </div>

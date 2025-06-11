@@ -1,8 +1,9 @@
 <template>
   <div class="futuristic-drawer tw-border-l-5">
     <!-- Drawer Header with Holographic Effect -->
-    <div class="drawer-header tw-py-3 md:tw-py-5 tw-mb-5">
+    <div class="drawer-header">
       <logo-title class="holographic-logo"></logo-title>
+      <UserRole/>
       <div class="connection-status">
         <v-chip v-if="false" small label class="status-chip" :color="connectionColor">
           <v-icon small left>mdi-access-point</v-icon>
@@ -14,54 +15,87 @@
     <!-- Main Navigation -->
     <v-list dense class="nav-list">
       <!-- Farm AI Special Item -->
-      <v-list-item
-          key="aiagent"
-          link
-          :to="{ name: 'FarmAI' }"
-          active-class="nav-active"
-          class="nav-item ai-nav-item"
+      <v-menu
+          right
+          offset-x
+          open-on-hover
+          close-delay="100"
+          open-delay="300"
       >
-        <v-list-item-action>
-          <div class="ai-icon-container">
-            <v-icon left class="gradient-icon">mdi-robot-outline</v-icon>
-          </div>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title class="nav-text">
-            Farm AI Assistant
-          </v-list-item-title>
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-icon small>mdi-sparkles</v-icon>
-        </v-list-item-action>
-      </v-list-item>
+        <template v-slot:activator="{ on, attrs }">
+          <v-list-item
+              key="aiagent"
+              link
+              :to="{ name: 'FarmAI' }"
+              active-class="nav-active"
+              class="nav-item ai-nav-item"
+              v-bind="attrs"
+              v-on="on"
+          >
+            <v-list-item-action>
+              <div class="ai-icon-container">
+                <v-icon left class="gradient-icon">mdi-sparkles</v-icon>
+              </div>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title class="nav-text">
+                Farm AI
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+        <v-card class="hover-menu-card" max-width="250">
+          <v-card-text class="py-2">
+            <div class="font-weight-medium mb-1">Farm AI</div>
+            <div class="text-caption">AI-powered farming insights and recommendations</div>
+          </v-card-text>
+        </v-card>
+      </v-menu>
 
       <!-- Regular Navigation Items -->
       <template v-for="(item, i) in items">
-        <v-list-item
+        <v-menu
             v-if="viewPermissions((item.roles))"
             :key="i"
-            link
-            :to="item.link"
-            active-class="nav-active"
-            class="nav-item"
+            right
+            offset-x
+            open-on-hover
+            close-delay="100"
+            open-delay="300"
         >
-          <v-list-item-action>
-            <v-icon :color="item.iconColor || 'primary'">{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title class="nav-text">
-              {{ item.text }}
-            </v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action v-if="item.notifications" class="notification-badge">
-            <v-badge
-                color="error"
-                :content="item.notifications"
-                inline
-            ></v-badge>
-          </v-list-item-action>
-        </v-list-item>
+          <template v-slot:activator="{ on, attrs }">
+            <v-list-item
+                link
+                :to="item.link"
+                active-class="nav-active"
+                class="nav-item"
+                v-bind="attrs"
+                v-on="on"
+            >
+              <v-list-item-action>
+                <v-icon :color="item.iconColor || 'primary'">{{ item.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title class="nav-text">
+                  {{ item.text }}
+                </v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-action v-if="item.notifications" class="notification-badge">
+                <v-badge
+                    color="error"
+                    :content="item.notifications"
+                    inline
+                ></v-badge>
+              </v-list-item-action>
+            </v-list-item>
+          </template>
+          <v-card class="hover-menu-card" max-width="250">
+            <v-card-text class="py-2">
+              <div class="font-weight-medium mb-1">{{ item.text }}</div>
+              <div class="text-caption">{{ item.desc || 'Navigate to ' + item.text }}</div>
+            </v-card-text>
+          </v-card>
+        </v-menu>
       </template>
     </v-list>
 
@@ -160,6 +194,7 @@ import {
 } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import axios from 'axios';
+import UserRole from '@/components/layout/partials/nav/UserRole.vue';
 
 export default {
   name: 'FuturisticDrawer',
@@ -191,7 +226,7 @@ export default {
       }
     },
   },
-  components: { LogoTitle },
+  components: { UserRole, LogoTitle },
   data: () => ({
     items: [
       {
@@ -204,13 +239,15 @@ export default {
       {
         icon: 'mdi-account-group',
         text: 'Community',
+        desc: 'Look for farmers and buyers here',
         link: { name: 'Community' },
         roles: ['farmer', 'buyer', 'anybody'],
         iconColor: 'primary',
       },
       {
         icon: 'mdi-cash-multiple',
-        text: 'My Listings',
+        text: 'My Sales',
+        desc: 'Post your produce here',
         link: { name: 'Listings' },
         roles: ['farmer'],
         iconColor: 'black',
@@ -219,6 +256,7 @@ export default {
       {
         icon: 'mdi-magnify',
         text: 'Browse Listings',
+        desc: 'Look for produce here',
         link: { name: 'BrowseListings' },
         roles: ['buyer', 'anybody'],
         iconColor: 'black',
@@ -226,13 +264,15 @@ export default {
       {
         icon: 'mdi-cart',
         text: 'My Orders',
+        desc: 'View what you ordered here',
         link: { name: 'BuyerOrders' },
         roles: ['buyer'],
         iconColor: 'black',
       },
       {
         icon: 'mdi-sprout',
-        text: 'My Produces',
+        text: 'My Farm',
+        desc: 'View your farm here',
         link: { name: 'Produces', params: { farmerId: getCurrentUserId() } },
         roles: ['farmer'],
         iconColor: 'darkgreen',
@@ -240,6 +280,7 @@ export default {
       {
         icon: 'mdi-chart-areaspline',
         text: 'Reports',
+        desc: 'View your sales report here',
         link: { name: 'FarmerReport' },
         roles: ['farmer'],
         iconColor: 'black',
@@ -247,6 +288,7 @@ export default {
       {
         icon: 'mdi-chart-bar',
         text: 'Reports',
+        desc: 'View your spending report here',
         link: { name: 'BuyerReport' },
         roles: ['buyer'],
         iconColor: 'black',
@@ -254,6 +296,7 @@ export default {
       {
         icon: 'mdi-account-supervisor',
         text: 'Users',
+        desc: 'View active users and sign in graph here',
         link: { name: 'UsersReport' },
         roles: ['admin'],
         iconColor: 'red',
@@ -309,6 +352,9 @@ export default {
 </script>
 
 <style scoped>
+.hover-menu-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 .futuristic-drawer {
   height: 100%;
   display: flex;
@@ -350,12 +396,13 @@ export default {
   flex-grow: 1;
   overflow-y: auto;
   padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .nav-item {
   border-radius: 8px;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
 }
 
 .nav-item:hover {
@@ -375,7 +422,7 @@ export default {
 }
 
 .nav-text {
-  font-weight: bold;
+  font-weight: 800;
   font-size: 0.9rem;
 }
 
@@ -386,7 +433,7 @@ export default {
 }
 
 .ai-icon-container {
-  //position: relative;
+  /* position: relative; */
   padding: 0;
 }
 
@@ -537,6 +584,7 @@ export default {
 @media (max-width: 960px) {
   .nav-text {
     font-size: 0.8rem;
+    font-weight: bold;
   }
 
   .nav-item {

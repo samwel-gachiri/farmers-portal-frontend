@@ -2,19 +2,11 @@
   <default>
     <div v-if="!loading" class="tw-w-full tw-h-screen">
       <!-- Dialogs -->
-      <v-dialog v-model="addProduceDialog" max-width="500px">
-        <v-card>
-          <div class="tw-mt-4">
-            <LogoTitle>Add Farmer Produce</LogoTitle>
-          </div>
-          <v-card-text>
-            <add-farmer-produce :farmer-produces="farmer.farmerProduces"></add-farmer-produce>
-          </v-card-text>
-          <v-card-actions class="tw-justify-end">
-            <v-btn color="primary" @click="addProduceDialog = false">Close</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <add-farmer-produce
+          :farmer-produces="farmer.farmerProduces"
+          ref="addFarmerProduce"
+          @close="this.addProduceDialog = false"
+      ></add-farmer-produce>
 
       <v-dialog v-model="listingDialog" max-width="500px">
         <create-listing></create-listing>
@@ -35,16 +27,16 @@
       </v-dialog>
 
       <!-- Main Content -->
-      <div class="tw-p-8">
+      <div class="">
         <!-- Header -->
         <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
-          <h2 class="tw-text-2xl tw-font-bold">
+          <h4 class="tw-text-2xl tw-font-bold">
             {{ getCurrentUserId === farmer.id ? 'My' : `${farmer.name}'s` }} Farm Produces
-          </h2>
+          </h4>
           <v-btn
               v-if="getCurrentUserId === farmer.id"
               color="primary"
-              @click="addProduceDialog = true"
+              @click="$refs.addFarmerProduce.openDialog()"
           >
             <v-icon left>mdi-leaf</v-icon>
             Add Produce
@@ -141,8 +133,6 @@ import CreateListing from '@/components/listing/CreateListing.vue';
 import AddFarmerProduce from '@/components/produce/AddFarmersProduce.vue';
 import Default from '@/components/layout/Default.vue';
 import Auth from '@aws-amplify/auth';
-// import CardTitle from '@/components/shared/CardTitle.vue';
-import LogoTitle from '@/components/shared/LogoText.vue';
 import EditProduceForm from '@/components/produce/EditProduceForm.vue';
 import CardTitle from '@/components/shared/CardTitle.vue';
 
@@ -150,7 +140,6 @@ export default {
   components: {
     CardTitle,
     EditProduceForm,
-    LogoTitle,
     Default,
     AddFarmerProduce,
     CreateListing,

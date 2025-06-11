@@ -81,7 +81,7 @@
                       Source fresh produce directly from farmers with quality assurance
                     </p>
                     <v-btn
-                        color="secondary"
+                        color="#FFD700"
                         large
                         :class="{ 'pulse-btn': hover, 'no-uppercase': false }"
                     >
@@ -267,15 +267,15 @@ export default {
 }
 
 .highlight-bar {
-  //position: absolute;
-  //bottom: 0;
-  //left: 0;
-  //width: 100%;
-  //height: 4px;
-  //background: linear-gradient(90deg, var(--v-primary-base), var(--v-secondary-base));
-  //transform: scaleX(0);
-  //transform-origin: left;
-  //transition: transform 0.3s ease;
+  /* position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--v-primary-base), var(--v-secondary-base));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease; */
 }
 
 .highlight-bar.active {

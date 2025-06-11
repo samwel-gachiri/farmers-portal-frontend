@@ -11,39 +11,36 @@
           Close
         </v-btn>
       </v-dialog>
+    <v-dialog v-model="photoCaptureDialog" max-width="500px">
+        <PhotoCapture/>
+      </v-dialog>
       <!-- Dashboard Header -->
-      <v-row class="tw-mb-3">
-        <v-col cols="12">
-          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>
-<!--          <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>-->
-        </v-col>
-      </v-row>
+<!--      <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>-->
+<!--      <v-row class="tw-mb-3">-->
+<!--        <v-col cols="12">-->
+<!--&lt;!&ndash;          <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>&ndash;&gt;-->
+<!--        </v-col>-->
+<!--      </v-row>-->
 
       <!-- Stats Cards -->
-      <v-row class="tw-mb-8">
-        <v-col cols="12" md="4">
-          <v-card  class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-            <h2 class="tw-text-xl font-semibold text-gray-800">Total Sales</h2>
+      <div class="tw-flex tw-w-full tw-flex-row tw-gap-5 tw-mb-4">
+          <v-card  class="tw-w-full tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Sales Made</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
 <!--            <p class="tw-text-gray-500">Active listings</p>-->
           </v-card>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-card  class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>
+          <v-card  class="tw-w-full tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800"><v-icon>mdi-account-group</v-icon> Interactions</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
 <!--            <p class="tw-text-gray-500">This month</p>-->
           </v-card>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-card  class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Revenue</h2>
+          <v-card  class="tw-w-full tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800"><v-icon>mdi-cash-multiple</v-icon> Revenue</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
 <!--            <p class="tw-text-gray-500">Last 30 days</p>-->
           </v-card>
-        </v-col>
-      </v-row>
-    <v-row>
+      </div>
+    <v-row v-if="false">
       <v-col v-for="(quickLink, i) in quickLinks" :key="i" cols="12" md="4"
       >
         <v-hover v-slot="{ hover }">
@@ -65,6 +62,59 @@
             <p class="text-body-1">{{ quickLink.text }}</p>
           </v-card>
         </v-hover>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" sm="6">
+        <v-card>
+          <card-title
+              icon="mdi-corn"
+          >
+            <h1 class="tw-text-lg tw-font-bold tw-text-gray-800">Post Produce</h1>
+          </card-title>
+          <v-card-text>
+            <div>
+              <v-text-field
+                label="name"
+              ></v-text-field>
+              <!-- add a div below with quantity and price arranged horizontally -->
+              <div class="tw-flex tw-gap-4">
+                <v-text-field
+                  label="Quantity"
+                  class="tw-flex-1"
+                ></v-text-field>
+                <v-text-field
+                  label="Price"
+                  class="tw-flex-1"
+                ></v-text-field>
+              </div>
+              <v-card-actions>
+                <v-btn
+                  block
+                  @click="photoCaptureDialog = true"
+                  color="primary"
+                >Submit</v-btn>
+              </v-card-actions>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" sm="6">
+        <v-card>
+          <card-title
+              icon="mdi-basket"
+          >
+            <h1 class="tw-text-lg tw-font-bold tw-text-gray-800">Buyers Requests</h1>
+          </card-title>
+          <v-card-text>
+            <h6>no request made</h6>
+            <v-icon>mdi-clock</v-icon>
+          </v-card-text>
+        </v-card>
+        <v-card
+            rounded
+        >
+        </v-card>
       </v-col>
     </v-row>
       <!-- Stats Cards -->
@@ -132,10 +182,14 @@ import { getCurrentUserId } from '@/utils/roles.js';
 import CreateListing from '@/components/listing/CreateListing.vue';
 import pluralize from 'pluralize';
 import { formatToHumanWithTime } from '@/utils/time.js';
+import CardTitle from '@/components/shared/CardTitle.vue';
+import PhotoCapture from '@/components/pictures/PhotoCapture.vue';
 // import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
+    PhotoCapture,
+    CardTitle,
     CreateListing,
     // apexchart: VueApexCharts,
   },
@@ -143,6 +197,7 @@ export default {
     return {
       loading: false,
       listingDialog: false,
+      photoCaptureDialog: false,
       headers: [
         { text: 'Product', value: 'farmerProduce.farmProduce.name' },
         { text: 'Quantity', value: 'quantityWithUnit' },

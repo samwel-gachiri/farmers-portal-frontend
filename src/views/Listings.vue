@@ -1,6 +1,6 @@
 <template>
   <Default>
-    <div v-if="!loading">
+    <div>
       <v-dialog v-model="listingDialog" max-width="500px">
         <create-listing/>
         <v-card-actions class="tw-justify-end">
@@ -10,8 +10,8 @@
 
       <div>
         <div class="tw-flex tw-flex-row tw-justify-between tw-p-5">
-          <h2 class="tw-text-xl tw-font-bold tw-text-green-800">My Listings</h2>
           <v-btn
+              v-if="false"
               dense
               class="tw-rounded-lg tw-ml-5"
               color="primary"
@@ -21,6 +21,7 @@
             Sell your produce</v-btn>
         </div>
         <div>
+          <create-listing/>
           <v-data-table
               :headers="headers"
               :items="listings"
@@ -44,19 +45,22 @@
           </v-data-table>
           <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
           <!-- Dialog for Listing Details -->
-          <v-dialog v-model="dialog">
-            <listing :key="this.selectedListingId" :listing-id="this.selectedListingId"></listing>
-            <div class="tw-justify-end tw-bg-white">
-              <v-btn color="red" @click="dialog = false">Close</v-btn>
-            </div>
+          <v-dialog
+              max-width="500px"
+              v-model="dialog">
+            <listing
+                :key="this.selectedListingId"
+                :listing-id="this.selectedListingId"
+                @close-dialog="dialog = false"
+            ></listing>
           </v-dialog>
         </div>
       </div>
     </div>
     <!-- Loading Spinner -->
-    <div v-else class="tw-flex tw-justify-center tw-items-center tw-h-screen">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
-    </div>
+<!--    <div class="tw-flex tw-justify-center tw-items-center tw-h-screen">-->
+<!--      <v-progress-circular indeterminate color="primary"></v-progress-circular>-->
+<!--    </div>-->
   </Default>
 </template>
 

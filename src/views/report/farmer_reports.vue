@@ -2,12 +2,12 @@
   <Default>
     <v-container class="tw-bg-gray-50 tw-min-h-screen tw-p-8">
       <!-- Reports Header -->
-      <v-row class="tw-mb-8">
-        <v-col cols="12">
-          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Reports</h1>
-          <p class="tw-text-gray-600">Gain insights into your farming operations.</p>
-        </v-col>
-      </v-row>
+<!--      <v-row class="tw-mb-8">-->
+<!--        <v-col cols="12">-->
+<!--          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Reports</h1>-->
+<!--          <p class="tw-text-gray-600">Gain insights into your farming operations.</p>-->
+<!--        </v-col>-->
+<!--      </v-row>-->
 
       <!-- Filter and Parameter Controls -->
       <v-row class="tw-mb-8">

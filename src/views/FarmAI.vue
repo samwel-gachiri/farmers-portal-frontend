@@ -33,6 +33,11 @@
                   @click="askAI">
                 Send
               </v-btn>
+<!--              <div>-->
+<!--                <SpeechRecognition-->
+<!--                    @transcript="handleTranscript"-->
+<!--                />-->
+<!--              </div>-->
             </div>
           </div>
         </div>
@@ -53,9 +58,13 @@ import Default from '@/components/layout/Default.vue';
 import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
 import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
+// import SpeechRecognition from '@/components/ai/SpeechRecognition.vue';
 
 export default {
-  components: { Default },
+  components: {
+    // SpeechRecognition,
+    Default,
+  },
   data() {
     return {
       loading: false,
@@ -95,7 +104,7 @@ export default {
         const contentElement = botMessageElement.querySelector('.message-content');
 
         try {
-          const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}api/chat`, {
+          const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}api/assistant/chat`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -122,7 +131,17 @@ export default {
         this.loading = false;
       }
     },
-
+    // handleTranscript(transcript) {
+    //   this.addMessage('User', transcript);
+    //
+    //   // Send to backend (example using axios)
+    //   // try {
+    //   //   const response = await this.$axios.post('/api/process-speech', { text });
+    //   //   this.messages.push({ sender: 'Bot', text: response.data.reply });
+    //   // } catch (error) {
+    //   //   console.error('Backend error:', error);
+    //   // }
+    // },
     async processStream(reader, contentElement) {
       const decoder = new TextDecoder();
       let content = '';
@@ -137,7 +156,7 @@ export default {
           content += decoder.decode(value, { stream: true });
           // Update content progressively
           // eslint-disable-next-line no-param-reassign
-          contentElement.textContent = content;
+          contentElement.innerHTML = DOMPurify.sanitize(this.md.render(content));
 
           // Auto-scroll to bottom
           const chatContainer = document.getElementById('chat-messages');
@@ -174,7 +193,6 @@ export default {
 
       return messageElement;
     },
-
     showSnackbar(text, color) {
       this.snackbarText = text;
       this.snackbarColor = color;
