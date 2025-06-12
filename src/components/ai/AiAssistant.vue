@@ -333,8 +333,10 @@ export default {
           // this.lastTranscript = transcript;
           // this.$emit('speech-text', transcript); // Emit to parent
           // this.processCommand(transcript); // Or call your AI directly
-          this.$toast.success(transcript);
-          this.sendMsgToWebsocket(transcript);
+          // this.$toast.success(transcript);
+          // this.sendMsgToWebsocket(transcript);
+          this.userInput = transcript;
+          this.sendMessageFromInput();
         }
       };
 
