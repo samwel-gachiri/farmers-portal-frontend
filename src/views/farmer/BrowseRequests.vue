@@ -1,6 +1,13 @@
 <template>
   <Default>
-    <div class="tw-p-6">
+    <div class="tw-px-4">
+      <div>
+        <spacer></spacer>
+        <v-btn
+            color="primary"
+            @click="$router.push({name: 'FarmerOrders'})"
+          >View Your Request Bids</v-btn>
+      </div>
       <!-- Search Bar -->
       <v-text-field
           v-model="searchQuery"
@@ -75,7 +82,7 @@
                   :maximum-value="requestToOrder?.quantity"
               ></number-input>
               <v-btn color="primary" class="tw-w-full tw-mt-2" :loading="loading" @click="orderRequest">
-                Order Now
+                Bid now
               </v-btn>
             </div>
           </div>

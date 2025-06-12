@@ -74,10 +74,12 @@ export default {
         * is an instance of XMLHttpRequest in the browser and an instance
         * of http.ClientRequest in Node.js
         */
-        router.push({ name: 'NoInternet' });
+        // router.push({ name: 'NoInternet' });
+        NProgress.done();
       } else {
         // * Something happened in setting up the request and triggered an Error
-        router.push({ name: 'NoInternet' });
+        // router.push({ name: 'NoInternet' });
+        NProgress.done();
       }
       return Promise.reject(error);
     });

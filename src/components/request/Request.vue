@@ -1,21 +1,23 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="text-xl font-bold">Request Details</span>
+      <card-title>
+        <span class="text-xl font-bold">Request Details</span>
+      </card-title>
     </v-card-title>
     <v-card-text>
       <div v-if="request">
         <p><strong>ID:</strong> {{ request.produceRequest.id }}</p>
         <p><strong>Price:</strong> {{ request.produceRequest.price.price.toLocaleString() }} {{ request.produceRequest.price.currency }} per {{request.produceRequest.unit}}</p>
         <p><strong>Earnings:</strong> {{ request.earnings }} {{request.produceRequest.price.currency}}</p>
-        <p><strong>Rating:</strong> {{ request.produceRequest.rating }}</p>
-        <p><strong>Status:</strong> {{ request.produceRequest.status }}</p>
+<!--        <p><strong>Rating:</strong> {{ request.produceRequest.rating }}</p>-->
+<!--        <p><strong>Status:</strong> {{ request.produceRequest.status }}</p>-->
         <p><strong>Quantity Sold:</strong> {{ request.quantitySold }} {{ request.produceRequest.unit }} out of {{ request.quantityLeft }} {{ request.produceRequest.unit }}</p>
-        <p><strong>No of purchases:</strong> {{ request.noOfPurchases }} <v-icon>mdi-arrow-down</v-icon></p>
+        <p><strong>No of purchases:</strong> {{ request.noOfPurchases }}</p>
 
         <v-divider class="my-4"></v-divider>
 
-        <h3 class="text-lg font-bold mb-2">Orders</h3>
+        <h3 class="text-lg font-bold mb-2">Bids From Farmers</h3>
         <v-data-table
             :headers="orderHeaders"
             :items="request.produceRequest.requestOrders"
@@ -33,15 +35,17 @@
 
 <script>
 import axios from 'axios';
+import CardTitle from '@/components/shared/CardTitle.vue';
 
 export default {
   name: 'Request',
+  components: { CardTitle },
   data() {
     return {
       orderHeaders: [
         { text: 'Farmer ID', value: 'farmerId' },
-        { text: 'Date Created', value: 'dateCreated' },
-        { text: 'Quantity ordered', value: 'quantity' },
+        { text: 'Date', value: 'dateCreated' },
+        { text: 'Quantity', value: 'quantity' },
         { text: 'Date Accepted', value: 'dateAccepted' },
         { text: 'Date Supplied', value: 'dateSupplied' },
         { text: 'Date Paid', value: 'datePaid' },

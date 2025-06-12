@@ -254,11 +254,28 @@ export default {
         notifications: 0,
       },
       {
+        icon: 'mdi-cash-multiple',
+        text: 'My Requests',
+        desc: 'Post what you want supplied here',
+        link: { name: 'Requests' },
+        roles: ['buyer'],
+        iconColor: 'black',
+        notifications: 0,
+      },
+      {
         icon: 'mdi-magnify',
         text: 'Browse Listings',
         desc: 'Look for produce here',
         link: { name: 'BrowseListings' },
         roles: ['buyer', 'anybody'],
+        iconColor: 'black',
+      },
+      {
+        icon: 'mdi-magnify',
+        text: 'Browse Request',
+        desc: 'Look for buyers request here and make a bid to supply',
+        link: { name: 'BrowseRequests' },
+        roles: ['farmer', 'anybody'],
         iconColor: 'black',
       },
       {
