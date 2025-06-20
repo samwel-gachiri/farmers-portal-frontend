@@ -8,7 +8,7 @@
           <p>Checking permissions...</p>
         </div>
         <div v-if="!checkingPermissions" class="tw-mb-4">
-          <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
+          <div v-if="permissionStates.camera != 'granted' || permissionStates.geolocation != 'granted'"  class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
             <!-- Camera Permission -->
             <div class="tw-flex tw-items-center tw-p-3 tw-rounded tw-border">
               <v-icon
@@ -64,14 +64,6 @@
             <!--          {{ getCurrentCameraInfo().label }}-->
             <!--        </v-chip>-->
 <!--          </v-card-title>-->
-            <!-- Camera Selection -->
-            <CameraSelector
-                v-if="availableCameras.length > 0"
-                :cameras="availableCameras"
-                :selected-camera-id="selectedCameraId"
-                :disabled="showCamera"
-                @camera-selected="onCameraSelected"
-            />
 
             <!-- Current Location Display -->
             <!--        <div v-if="currentLocation" class="tw-mb-4 tw-p-3 tw-bg-gray-100 tw-rounded">-->
@@ -117,7 +109,6 @@
                 large
                 @click="startCamera"
                 :loading="isCapturing"
-                :disabled="!selectedCameraId"
             >
               <v-icon left>mdi-camera</v-icon>
               Start Camera
@@ -144,6 +135,13 @@
                 Stop Camera
               </v-btn>
             </template>
+            <div v-if="hasLocationPermission && hasCameraPermission">
+              <CameraSelector
+                  ref="cameraSelector"
+                  :disabled="showCamera"
+                  @camera-selected="onCameraSelected"
+              />
+            </div>
           </v-card-actions>
         </div>
 
@@ -190,8 +188,6 @@ export default {
         geolocation: 'prompt',
       },
 
-      // Available cameras
-      availableCameras: [],
       selectedCameraId: null,
 
       // UI states
@@ -544,25 +540,25 @@ export default {
     async checkPermissionsOnLoad() {
       this.checkingPermissions = true;
 
-      try {
-        // Check camera permission
-        await this.checkCameraPermission();
+      // Check camera permission
+      await this.checkCameraPermission();
 
-        // Check location permission
-        await this.checkLocationPermission();
+      // Check location permission
+      await this.checkLocationPermission();
 
-        // If both permissions are granted, get available cameras and start location tracking
-        if (this.permissionStates.camera === 'granted' && this.permissionStates.geolocation === 'granted') {
-          await this.getAvailableCameras();
+      // If both permissions are granted, get available cameras and start location tracking
+      if (this.permissionStates.camera === 'granted' && this.permissionStates.geolocation === 'granted') {
+        this.hasLocationPermission = true;
+        this.hasCameraPermission = true;
+
+        await this.$nextTick();
+
+        if (this.$refs.cameraSelector) {
+          await this.$refs.cameraSelector.getAvailableCameras();
           this.startLocationTracking();
-          this.hasLocationPermission = true;
-          this.hasCameraPermission = true;
         }
-      } catch (error) {
-        this.$toast.error('Permission check error:', error.message);
-      } finally {
-        this.checkingPermissions = false;
       }
+      this.checkingPermissions = false;
     },
 
     async checkCameraPermission() {
@@ -578,16 +574,20 @@ export default {
             this.hasCameraPermission = permission.state === 'granted';
 
             if (permission.state === 'granted') {
-              this.getAvailableCameras();
+              if (this.$refs.cameraSelector) {
+                this.$refs.cameraSelector.getAvailableCameras();
+              }
             } else if (permission.state === 'denied') {
-              this.availableCameras = [];
+              this.$refs.cameraSelector.onCameraPermissionDenied();
               this.stopCamera();
             }
           };
 
           // If granted, check available cameras
           if (permission.state === 'granted') {
-            await this.getAvailableCameras();
+            if (this.$refs.cameraSelector) {
+              await this.$refs.cameraSelector.getAvailableCameras();
+            }
             this.hasCameraPermission = true;
           }
         } else {
@@ -597,7 +597,9 @@ export default {
             stream.getTracks().forEach((track) => track.stop());
             this.permissionStates.camera = 'granted';
             this.hasCameraPermission = true;
-            await this.getAvailableCameras();
+            if (this.$refs.cameraSelector) {
+              await this.$refs.cameraSelector.getAvailableCameras();
+            }
           } catch (error) {
             this.permissionStates.camera = 'denied';
             this.hasCameraPermission = false;
@@ -662,39 +664,6 @@ export default {
       }
     },
 
-    async getAvailableCameras() {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        this.availableCameras = devices
-          .filter((device) => device.kind === 'videoinput')
-          .map((device) => ({
-            id: device.deviceId,
-            label: device.label || `Camera ${this.availableCameras.length + 1}`,
-            facingMode: this.detectFacingMode(device.label),
-          }));
-
-        // Set default camera (prefer back camera)
-        if (this.availableCameras.length > 0 && !this.selectedCameraId) {
-          const backCamera = this.availableCameras.find((camera) => camera.facingMode === 'environment'
-              || camera.label.toLowerCase().includes('back'));
-          this.selectedCameraId = backCamera ? backCamera.id : this.availableCameras[0].id;
-        }
-      } catch (error) {
-        this.cameraError = 'Failed to detect available cameras';
-      }
-    },
-
-    detectFacingMode(label) {
-      const lowerLabel = label.toLowerCase();
-      if (lowerLabel.includes('back') || lowerLabel.includes('rear')) {
-        return 'environment';
-        // eslint-disable-next-line sonarjs/no-same-line-conditional
-      } if (lowerLabel.includes('front') || lowerLabel.includes('user')) {
-        return 'user';
-      }
-      return 'unknown';
-    },
-
     async switchCamera(cameraId) {
       if (this.selectedCameraId === cameraId) return;
 
@@ -746,11 +715,6 @@ export default {
           await this.startCamera();
         }
       }
-    },
-
-    getCurrentCameraInfo() {
-      if (!this.selectedCameraId) return null;
-      return this.availableCameras.find((camera) => camera.id === this.selectedCameraId);
     },
   },
 

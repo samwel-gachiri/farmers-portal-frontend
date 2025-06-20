@@ -145,7 +145,7 @@ const routes = [
     path: '/community',
     name: 'Community',
     // beforeEnter: ifAuthenticated,
-    component: () => import('../views/Community.vue'),
+    component: () => import('../components/FarmMap.vue'),
   },
   {
     path: '/farmer-report',

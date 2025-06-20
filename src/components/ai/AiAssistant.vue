@@ -281,7 +281,7 @@ export default {
         this.conversation.push({
           type: 'ai',
           text: content,
-          time: 'Just now',
+          time: new Date(),
         });
       } catch (e) {
         this.$toast.error('Error parsing WebSocket message:', e.message);
@@ -307,7 +307,7 @@ export default {
       this.conversation.push({
         type: 'user',
         text: this.userInput,
-        time: 'Just now',
+        time: new Date(),
       });
       this.sendMsgToWebsocket(this.userInput);
 

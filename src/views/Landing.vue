@@ -73,33 +73,63 @@
             </p>
 
             <v-list dense class="transparent mb-8">
-              <v-list-item v-for="(item, i) in heroPoints" :key="i">
+              <v-list-item>
                 <v-list-item-icon>
                   <v-icon color="success">mdi-check-circle</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title class="text-body-1">{{ item }}</v-list-item-title>
+                  <v-list-item-title class="text-body-1">Buy Produce In Bulk From Anywhere</v-list-item-title>
+                  <v-list-item-action>
+                    <v-btn
+                        rounded
+                        block
+                        color="primary"
+                        @click="goToBrowseListing"
+                    >Buy Produce</v-btn>
+                  </v-list-item-action>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item>
                 <v-list-item-icon>
-                  <v-icon class="gradient-icon">mdi-leaf</v-icon>
+                  <v-icon color="success">mdi-check-circle</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title class="text-body-1"><span class="">FarmAI</span> - AI insights on crop growth and livestock rearing</v-list-item-title>
+                  <v-list-item-title class="text-body-1">Request and select the Best Produce</v-list-item-title>
+                  <v-list-item-action>
+                    <v-btn
+                        rounded
+                        block
+                        color="primary"
+                        @click="goToGiveRequest"
+                    >Give your Request</v-btn>
+                  </v-list-item-action>
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item>
+                <v-list-item-icon>
+                  <v-icon color="success">mdi-check-circle</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title class="text-body-1">Post your Farm Produce</v-list-item-title>
+                  <v-list-item-action>
+                    <v-btn
+                        rounded
+                        block
+                        color="primary"
+                        @click="goToPostYourProduce"
+                    >Sell Produce</v-btn>
+                  </v-list-item-action>
+                </v-list-item-content>
+              </v-list-item>
+<!--              <v-list-item v-for="(item, i) in heroPoints" :key="i">-->
+<!--                <v-list-item-icon>-->
+<!--                  <v-icon color="success">mdi-check-circle</v-icon>-->
+<!--                </v-list-item-icon>-->
+<!--                <v-list-item-content>-->
+<!--                  <v-list-item-title class="text-body-1">{{ item }}</v-list-item-title>-->
+<!--                </v-list-item-content>-->
+<!--              </v-list-item>-->
             </v-list>
-
-            <div class="d-flex flex-wrap">
-              <v-btn x-large color="primary" class="mr-4 mb-4" @click="scrollTo('cta')">
-                Get Started
-                <v-icon right>mdi-arrow-right</v-icon>
-              </v-btn>
-              <v-btn x-large outlined color="primary" class="mb-4" @click="scrollTo('features')">
-                Learn More
-              </v-btn>
-            </div>
           </v-col>
 
           <v-col cols="12" md="6" class="text-center">
@@ -131,7 +161,7 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-12">
+    <section v-if="false" id="features" class="py-12">
       <v-container>
         <v-row>
           <v-col cols="12" class="text-center mb-10">
@@ -237,11 +267,20 @@
             </v-hover>
           </v-col>
         </v-row>
+        <div class="d-flex flex-wrap">
+          <v-btn x-large color="primary" class="mr-4 mb-4" @click="scrollTo('cta')">
+            Get Started
+            <v-icon right>mdi-arrow-right</v-icon>
+          </v-btn>
+          <v-btn x-large outlined color="primary" class="mb-4" @click="scrollTo('features')">
+            Learn More
+          </v-btn>
+        </div>
       </v-container>
     </section>
 
     <!-- Success Stories -->
-    <section id="success" class="py-12">
+    <section v-if="false" id="success" class="py-12">
       <v-container>
         <v-row>
           <v-col cols="12" class="text-center mb-10">

@@ -1,207 +1,205 @@
 /* eslint-disable */
 <template>
   <v-app id="inspire">
+    <v-dialog v-model="farmMapDialog">
+      <FarmMap
+          @farm-boundary-updated="handleFarmBoundaryUpdate"
+          @farm-boundary-created="handleFarmBoundaryUpdate"
+      />
+    </v-dialog>
     <terms-and-conditions ref="termsDialog"/>
-    <div v-if="false" class="background-animation">
+    <div class="background-animation">
       <div class="circle circle-1"></div>
       <div class="circle circle-2"></div>
       <div class="circle circle-3"></div>
     </div>
 
-    <v-main>
-      <div class="tw-w-full tw-flex  md:tw-flex-row tw-flex-col-reverse">
-          <!--        form part-->
-          <div style="height: 100vh;" class="tw-border-4 tw-bg-blue tw-flex tw-flex-col  tw-justify-center tw-items-center tw-w-full tw-h-full">
-            <h1 class="tw-text-xl tw-text-h3 tw-text-md-h2 tw-font-bold tw-font-weight-bold tw-mb-5">
-              Welcome to <span class="">Agriconnect</span>
-            </h1>
-            <v-card
-                flat
-                style="border-radius: 20px; border: 4px solid #f6eeee;"
-                draggable="true"
-            >
+    <v-main style="height: 100vh; max-height: 100vh;">
+      <v-app-bar
+          color="primary"
+      >
+        <template v-slot:image>
+          <v-avatar size="50" color="primary lighten-4" class="">
+            <v-img
+                v-if="form.userType.toLowerCase() === 'farmer'"
+                src="@/assets/images/farmer.png"
+            ></v-img>
+            <v-img
+                v-if="form.userType.toLowerCase() === 'buyer'"
+                src="@/assets/images/buyer.png"
+            ></v-img>
+            <v-img
+                v-if="form.userType.toLowerCase() === 'admin'"
+                src="@/assets/images/admin.png"
+            ></v-img>
+          </v-avatar>
+        </template>
+        <v-app-bar-title class="tw-text-white">Sign Up Form</v-app-bar-title>
+        <v-spacer></v-spacer>
+        <v-btn
+            icon
+        >
+          <router-link  :to="{name: 'Home'}">
+            <v-icon color="white">mdi-home</v-icon>
+            Go Home
+          </router-link>
+        </v-btn>
+      </v-app-bar>
+      <div class="tw-w-full tw-flex tw-flex-row tw-p-4">
+        <div class="tw-hidden md:tw-block md:tw-w-1/2">
+          <v-img lazy-src="@/assets/images/happy-farmer.jpg"></v-img>
+        </div>
+        <!--        form part-->
+        <div class="tw-bg-blue tw-flex tw-flex-col  tw-justify-center tw-items-center tw-w-full md:tw-w-1/2 tw-h-full">
+          <v-card
+              flat
+              style="border-radius: 20px; border: 4px solid #f6eeee;"
+              draggable="true"
+          >
 <!--              <card-title>Sign In As {{form.userType ? form.userType[0].toUpperCase() + form.userType.slice(1) : ""}}</card-title>-->
-              <div class="tw-flex tw-flex-col tw-justify-center tw-items-center">
+<!--            <div class="tw-flex tw-flex-col tw-justify-center tw-items-center">-->
 <!--                <h6 class="tw-text-sm tw-text-black tw-mb-3">Fill in your details below</h6>-->
-                <v-avatar size="50" color="primary lighten-4" class="">
-                  <v-img
-                      v-if="form.userType.toLowerCase() === 'farmer'"
-                      src="@/assets/images/farmer.png"
-                  ></v-img>
-                  <v-img
-                      v-if="form.userType.toLowerCase() === 'buyer'"
-                      src="@/assets/images/buyer.png"
-                  ></v-img>
-                  <v-img
-                      v-if="form.userType.toLowerCase() === 'admin'"
-                      src="@/assets/images/admin.png"
-                  ></v-img>
-                </v-avatar>
-                <h4 class="tw-font-bold">{{ form.userType.toUpperCase() }}</h4>
-              </div>
-              <v-stepper
-                  flat
-                  v-model="step" class="tw-p-4">
-                <h6 class="tw-font-bold tw-mt-2 tw-mb-4">{{steps[step - 1].title}}</h6>
-                <v-form v-if="step === 1" v-model="isValid1" class="tw-flex tw-flex-col">
-                  <phone-number-input
-                      class="tw-mb-3"
-                      v-model="form.phoneNumber"
-                      default-country-code="KE"
-                      :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                      @update:phoneNumber="(newValue) => (form.phoneNumber = newValue)"
-                  />
-                  <!--                <div class="tw-flex tw-flex-row tw-gap-3 tw-mx-5 tw-mt-4">-->
-                  <!--                  <v-icon color="primary">mdi-email</v-icon>-->
-                  <!--                  <v-text-field-->
-                  <!--                      class="tw-bg-gray-200 tw-rounded-lg tw-mt-0"-->
-                  <!--                      v-model="form.phoneNumber"-->
-                  <!--                      placeholder="email@example.com"-->
-                  <!--                      :rules="[emailFormat()]"-->
-                  <!--                  >-->
-                  <!--                  </v-text-field>-->
-                  <!--                </div>-->
-                  <!--                <v-text-field-->
-                  <!--                    prepend-icon="mdi-lock"-->
-                  <!--                    class="tw-rounded-lg tw-mt-0"-->
-                  <!--                    id="password"-->
-                  <!--                    :type="passwordField"-->
-                  <!--                    placeholder="********"-->
-                  <!--                    v-model="form.password"-->
-                  <!--                    :rules="[required('Password')]"-->
-                  <!--                >-->
-                  <!--                  <v-icon slot="append" color="primary" class="tw-cursor-pointer" @click="passwordField = passwordField === 'password' ? 'text' : 'password'">{{ passwordField === 'password' ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>-->
-                  <!--                </v-text-field>-->
-<!--                  <div-->
-<!--                      class="tw-flex tw-justify-center tw-items-center tw-mt-2"-->
-<!--                  >-->
-                    <!--                  <div class="tw-flex tw-flex-row tw-gap-3 tw-mx-5 tw-mt-4">-->
-                    <!--                    <v-tooltip text="Create account">-->
-                    <!--                      <template v-slot:activator="{ props }">-->
-                    <!--                        <router-link-->
-                    <!--                            v-bind="props"-->
-                    <!--                            :to="{name: 'SignUp'}"-->
-                    <!--                        >-->
-                    <!--                          <h2 class="tw-text-sm">Create new account?</h2>-->
-                    <!--                          <v-icon>mdi-account-plus</v-icon>-->
-                    <!--                        </router-link>-->
-                    <!--                      </template>-->
-                    <!--                    </v-tooltip>-->
-                    <!--                  </div>-->
-                    <!--                  <div-->
-                    <!--                      class="tw-border-0 tw-w-full tw-ml-3 tw-mt-3 tw-mb-1 tw-text-white"-->
-                    <!--                      @click="toForgotPassword"-->
-                    <!--                  ><h2 class="tw-text-sm">Forgot password?</h2>-->
-                    <!--                  </div>-->
-<!--                  </div>-->
-                  <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center">
-                    <v-btn
-                        rounded
-                        :loading="loading"
-                        color="primary"
-                        @click="continueStepOne"
-                        :disabled="!isValid1 || form.phoneNumber.length < 8"
-                    >Login</v-btn>
-                    <!--                  <div class="tw-flex tw-flex-row tw-w-full tw-justify-center tw-items-center">-->
-                    <!--                    <v-divider />-->
-                    <!--                    <h2 class="tw-text-xl">OR</h2>-->
-                    <!--                    <v-divider/>-->
-                    <!--                  </div>-->
-                    <!--&lt;!&ndash;                  <GoogleSignIn/>&ndash;&gt;-->
-                  </div>
-                  <v-divider></v-divider>
-                  <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center">
-                    <v-btn
-                        class="tw-mt-3 tw-mx-8 tw-mb-3"
-                        color="white"
-                        @click="signInWithGooglePopup"
-                        outlined
-                        large
-                        style="border: 1px solid #dadce0; border-radius: 4px; text-transform: none;"
-                    >
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg" width="30px" height="30px" alt="Google Logo">
-                      <span style="color: #3c4043; font-size: 14px; font-weight: 500;">Sign in with Google</span>
-                    </v-btn>
-                  </div>
-                </v-form>
-                <v-form v-if="step === 2" v-model="isValid2" class="tw-flex tw-flex-col">
-                  <v-alert
-                      type="info"
-                      v-if="userIsCreatingSecondProfile"
-                  >Creating a {{form.userType}} profile</v-alert>
+<!--            </div>-->
+            <v-stepper
+                flat
+                v-model="step" class="tw-p-4">
+              <h6 class="tw-font-bold tw-mt-2 tw-mb-4">{{steps[step - 1].title}}</h6>
+              <v-form v-if="step === 1" v-model="isValid1" class="tw-flex tw-flex-col">
+                <vue-phone-number-input
+                    v-model="form.phoneNumber"
+                    :default-country-code="'KE'"
+                    :preferred-countries="['KE', 'US', 'GB']"
+                    show-code-on-list
+                    @update="onPhoneUpdate"
+                />
+                <div
+                  class="tw-mb-5 tw-mt-10"
+                >
                   <v-text-field
-                      :placeholder="`Enter (Your or ${form.userType === 'farmer'? 'Farm': 'Business'} ) name`"
-                      prepend-icon="mdi-account"
+                      label="Email"
                       outlined
-                      class="tw-my-5"
                       dense
-                      v-model="form.name"
-                      :rules="[required('Name'), noDigitFormat()]"
-                      autofocus
                   >
                   </v-text-field>
-                  <v-checkbox
-                      id="checkbox"
-                      dense
-                      v-model="form.terms"
-                      :rules="[check()]"
+                </div>
+                <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center">
+                  <v-btn
+                      rounded
+                      :loading="loading"
+                      color="primary"
+                      @click="continueStepOne"
+                      :disabled="!isValid1"
+                  >Login</v-btn>
+                </div>
+                <v-divider></v-divider>
+                <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center">
+                  <v-btn
+                      class="tw-mt-3 tw-mx-8 tw-mb-3"
+                      color="white"
+                      @click="signInWithGooglePopup"
+                      outlined
+                      large
+                      style="border: 1px solid #dadce0; border-radius: 4px; text-transform: none;"
                   >
-                    <template v-slot:label>
-                      <div>
-                        Accept
-                        <a class="tw-underline" href="#" @click.prevent="openTermsDialog">Terms and Condition</a>
-                      </div>
-                    </template>
-                  </v-checkbox>
-                  <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center tw-gap-3">
-                    <v-btn
-                        icon
-                        rounded
-                        @click="step = 1"
-                    >Back</v-btn>
-                    <v-btn
-                        rounded
-                        :loading="loading"
-                        color="primary"
-                        @click="continueStepTwo"
-                        :disabled="!isValid2"
-                    >login</v-btn>
-                  </div>
-                </v-form>
-                <v-form v-if="step === 4" v-model="isValid4" class="tw-flex tw-flex-col">
-                  <div  style="width: 250px;">
-                    <v-otp-input
-                        v-model="otp"
-                    ></v-otp-input>
-                  </div>
-                  <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center tw-gap-3">
-                    <v-btn
-                        icon
-                        rounded
-                        @click="userMustBeSignedUp? step = 2: step = 1"
-                    >Back</v-btn>
-                    <v-btn
-                        rounded
-                        :loading="loading"
-                        color="primary"
-                        @click="verifyOtp"
-                        :disabled="!isValid4"
-                    >confirm</v-btn>
-                  </div>
-                </v-form>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg" width="30px" height="30px" alt="Google Logo">
+                    <span style="color: #3c4043; font-size: 14px; font-weight: 500;">Sign in with Google</span>
+                  </v-btn>
+                </div>
+              </v-form>
+              <v-form v-if="step === 2" v-model="isValid2" class="tw-flex tw-flex-col">
+                <v-alert
+                    v-if="userIsCreatingSecondProfile"
+                    type="info"
+                >Creating a {{form.userType}} profile</v-alert>
+                <v-text-field
+                    label="Full Name"
+                    outlined
+                    class="tw-my-5"
+                    dense
+                    v-model="form.name"
+                    :rules="[required('Name'), noDigitFormat()]"
+                >
+                </v-text-field>
+                <v-text-field
+                    :label="`${form.userType === 'farmer'? 'Farm': 'Business'} name`"
+                    outlined
+                    class="tw-my-5"
+                    dense
+                    v-model="form.farmName"
+                    :rules="[required('Farm name'), noDigitFormat()]"
+                >
+                </v-text-field>
+                <v-text-field
+                    label="Farm Size (acres)"
+                    outlined
+                    class="tw-my-5"
+                    dense
+                    @focus="farmMapDialog = true"
+                    v-model="form.farmSize"
+                    :rules="[required('Farm size')]"
+                >
+                </v-text-field>
+                <v-text-field
+                    label="Farm Location"
+                    outlined
+                    class="tw-my-5"
+                    dense
+                    v-model="form.location.customName"
+                    :rules="[required('Name')]"
+                >
+                </v-text-field>
+                <v-checkbox
+                    id="checkbox"
+                    dense
+                    v-model="form.terms"
+                    :rules="[check()]"
+                >
+                  <template v-slot:label>
+                    <div>
+                      Accept
+                      <a class="tw-underline" href="#" @click.prevent="openTermsDialog">Terms and Condition</a>
+                    </div>
+                  </template>
+                </v-checkbox>
+                <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center tw-gap-3">
+                  <v-btn
+                      icon
+                      rounded
+                      @click="step = 1"
+                  >Back</v-btn>
+                  <v-btn
+                      rounded
+                      :loading="loading"
+                      color="primary"
+                      @click="continueStepTwo"
+                  >Sign Up</v-btn>
+                </div>
+              </v-form>
+              <v-form v-if="step === 4" v-model="isValid4" class="tw-flex tw-flex-col">
+                <div  style="width: 250px;">
+                  <v-otp-input
+                      v-model="otp"
+                  ></v-otp-input>
+                </div>
+                <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center tw-gap-3">
+                  <v-btn
+                      icon
+                      rounded
+                      @click="userMustBeSignedUp? step = 2: step = 1"
+                  >Back</v-btn>
+                  <v-btn
+                      rounded
+                      :loading="loading"
+                      color="primary"
+                      @click="verifyOtp"
+                      :disabled="!isValid4"
+                  >confirm</v-btn>
+                </div>
+              </v-form>
 
-              </v-stepper>
-            </v-card>
-            <div class="tw-w-full tw-mt-8 tw-flex tw-justify-center tw-items-center">
-              <v-btn
-                  outlined
-              >
-                <router-link  :to="{name: 'Home'}">
-                  <v-icon>mdi-home</v-icon>
-                </router-link>
-              </v-btn>
-            </div>
-          </div>
+            </v-stepper>
+          </v-card>
+        </div>
       </div>
     </v-main>
   </v-app>
@@ -210,6 +208,8 @@
 import validations from '@/utils/validations.js';
 import AuthMixins from '@/mixins/AuthMixins.js';
 import { getCurrentUserRole, isAuthenticated } from '@/utils/roles.js';
+import VuePhoneNumberInput from 'vue-phone-number-input';
+import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 // import GoogleSignIn from '@/components/auth/GoogleSignIn.vue';
 // import Auth from '@aws-amplify/auth';
 // import AuthConfig from '@/utils/aws-exports.js';
@@ -221,15 +221,19 @@ import {
 import axios from 'axios';
 import { throttleer as grecaptcha } from 'vue-infinite-loading/src/utils.js';
 import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
+import FarmMap from '@/components/FarmMap.vue';
 
 export default {
-  components: { TermsAndConditions },
+  components: { FarmMap, TermsAndConditions, VuePhoneNumberInput },
   data() {
     return {
+      metaInfo: {
+        title: 'Sign In',
+      },
       step: 1,
       steps: [
         { title: 'Enter Phone number' }, // search for the user
-        { title: 'Give in your name' }, // if not found or is in another table, accept terms too
+        { title: 'Add Farmer Details' }, // if not found or is in another table, accept terms too
         { title: 'Details of your business' }, // if not found and is buyer
         { title: 'Enter OTP sent to you phone' }, // if found from the db
       ],
@@ -238,7 +242,13 @@ export default {
         businessType: '',
         password: '',
         phoneNumber: '',
+        fullPhoneNumber: '',
         email: '',
+        farmSize: '',
+        farmName: '',
+        location: {
+          customName: '',
+        },
         userType: getCurrentUserRole(),
       },
       ...validations,
@@ -267,6 +277,7 @@ export default {
         uid: '',
         accessToken: '', // and other credentials too
       },
+      farmMapDialog: false,
     };
   },
   mixins: [AuthMixins],
@@ -293,6 +304,14 @@ export default {
   methods: {
     openTermsDialog() {
       this.$refs.termsDialog.openDialog();
+    },
+    handleFarmBoundaryUpdate(payload) {
+      const { geometry, area, location } = payload;
+      this.form.farmSize = `${area.toFixed(5)} acres`;
+      this.form.location.customName = `(${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})`;
+      console.log(geometry);
+      this.farmMapDialog = false;
+      this.$toast.success('Farm size received as', area.toString());
     },
     initAuth() {
       setPersistence(auth, browserLocalPersistence)
@@ -383,7 +402,7 @@ export default {
     checkFarmerOrBuyerExistence() {
       axios.get('/farmers-service/user/farmer-or-buyer-existence', {
         params: {
-          phoneNumber: this.form.phoneNumber,
+          phoneNumber: this.form.fullPhoneNumber,
           email: this.form.email,
         },
       })
@@ -417,13 +436,17 @@ export default {
           }
         });
     },
+    onPhoneUpdate(phoneData) {
+      // Get the full international number with country code
+      this.form.fullPhoneNumber = phoneData.e164 || phoneData.formatInternational;
+    },
     async signUpUser() {
       try {
         const user = {
           id: this.user.uid,
           name: this.form.name,
           email: this.form.email,
-          phoneNumber: this.form.phoneNumber,
+          phoneNumber: this.form.fullPhoneNumber,
           createdAt: '',
           [`${this.form.userType === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
         };
@@ -458,7 +481,7 @@ export default {
           });
         }
         const appVerifier = window.recaptchaVerifier;
-        window.confirmationResult = await signInWithPhoneNumber(auth, this.form.phoneNumber, appVerifier);
+        window.confirmationResult = await signInWithPhoneNumber(auth, this.form.fullPhoneNumber, appVerifier);
         this.$toast.success('SMS sent to your mobile number');
       } catch (e) {
         // Handle errors (e.g., invalid phone number, quota exceeded)

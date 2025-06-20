@@ -75,15 +75,18 @@
           <v-card-text>
             <div>
               <v-text-field
-                label="name"
+                  v-model="newProducePost.name"
+                  label="name"
               ></v-text-field>
               <!-- add a div below with quantity and price arranged horizontally -->
               <div class="tw-flex tw-gap-4">
                 <v-text-field
+                    v-model="newProducePost.quantity"
                   label="Quantity"
                   class="tw-flex-1"
                 ></v-text-field>
                 <v-text-field
+                  v-model="newProducePost.price"
                   label="Price"
                   class="tw-flex-1"
                 ></v-text-field>
@@ -220,6 +223,11 @@ export default {
           price: 100,
           currency: 'KSH',
         },
+      },
+      newProducePost: {
+        name: '',
+        quantity: '',
+        price: '',
       },
       quickLinks: [
         {
@@ -399,6 +407,36 @@ export default {
         if (response.data.success === true) this.liveCount = response.data.data;
       } catch (error) {
         this.$toast.error('Error fetching live count', error.message);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async postProduce() {
+      const formData = new FormData();
+      formData.append('farmerId', getCurrentUserId());
+      formData.append('name', this.newProducePost.name);
+      formData.append('quantity', this.newProducePost.quantity);
+      formData.append('price', this.newProducePost.price);
+
+      if (this.newProduce.images.length) {
+        this.newProduce.images.forEach((file) => {
+          formData.append('images', file);
+        });
+      }
+
+      try {
+        const response = await axios.post('/farmers-service/farmer/add-farmer-produce', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (response.data.success) {
+          this.farmerProduces = response.data.data;
+          this.$toast.success('Posted successfully!');
+        } else {
+          this.$toast.error('Addition failed!', response.data.msg);
+        }
+      } catch (error) {
+        this.$toast.error('Error adding produce to farmer!', `${error}`);
       } finally {
         this.loading = false;
       }
