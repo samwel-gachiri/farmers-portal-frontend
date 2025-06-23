@@ -76,9 +76,11 @@
                   class="tw-mb-5 tw-mt-10"
                 >
                   <v-text-field
+                      v-model="form.email"
                       label="Email"
                       outlined
                       dense
+                      :rules="[emailFormat()]"
                   >
                   </v-text-field>
                 </div>
@@ -120,6 +122,18 @@
                     :rules="[required('Name'), noDigitFormat()]"
                 >
                 </v-text-field>
+                <div
+                    v-if="!form.fullPhoneNumber || form.fullPhoneNumber.length < 4"
+                    class="tw-mb-5"
+                >
+                  <vue-phone-number-input
+                      v-model="form.phoneNumber"
+                      :default-country-code="'KE'"
+                      :preferred-countries="['KE', 'US', 'GB']"
+                      show-code-on-list
+                      @update="onPhoneUpdate"
+                  />
+                </div>
                 <v-text-field
                     :label="`${form.userType === 'farmer'? 'Farm': 'Business'} name`"
                     outlined
@@ -134,7 +148,8 @@
                     outlined
                     class="tw-my-5"
                     dense
-                    @focus="farmMapDialog = true"
+                    append-icon="mdi-map"
+                    @click:append="farmMapDialog = true"
                     v-model="form.farmSize"
                     :rules="[required('Farm size')]"
                 >
@@ -145,6 +160,8 @@
                     class="tw-my-5"
                     dense
                     v-model="form.location.customName"
+                    append-icon="mdi-map-marker"
+                    @click:append="getUserLocation"
                     :rules="[required('Name')]"
                 >
                 </v-text-field>
@@ -248,6 +265,8 @@ export default {
         farmName: '',
         location: {
           customName: '',
+          lat: '',
+          lng: '',
         },
         userType: getCurrentUserRole(),
       },
@@ -306,10 +325,12 @@ export default {
       this.$refs.termsDialog.openDialog();
     },
     handleFarmBoundaryUpdate(payload) {
+      // eslint-disable-next-line no-unused-vars
       const { geometry, area, location } = payload;
       this.form.farmSize = `${area.toFixed(5)} acres`;
-      this.form.location.customName = `(${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})`;
-      console.log(geometry);
+      this.form.location.lat = location.lat.toFixed(4);
+      this.form.location.lng = location.lng.toFixed(4);
+      this.form.location.customName = `(${this.form.location.lat}, ${this.form.location.lng})`;
       this.farmMapDialog = false;
       this.$toast.success('Farm size received as', area.toString());
     },
@@ -440,6 +461,15 @@ export default {
       // Get the full international number with country code
       this.form.fullPhoneNumber = phoneData.e164 || phoneData.formatInternational;
     },
+    getUserLocation() {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.form.location.lat = position.coords.latitude;
+          this.form.location.lng = position.coords.longitude;
+          this.form.location.customName = `(${this.form.location.lat.toFixed(4)}, ${this.form.location.lng.toFixed(4)})`;
+        },
+      );
+    },
     async signUpUser() {
       try {
         const user = {
@@ -448,7 +478,15 @@ export default {
           email: this.form.email,
           phoneNumber: this.form.fullPhoneNumber,
           createdAt: '',
+          farmSize: this.form.farmSize.replace('acres', '').replace('acre', '').trim(),
+          farmName: this.form.farmName,
           [`${this.form.userType === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
+          location: {
+            id: this.user.uid,
+            latitude: this.form.location.lat,
+            longitude: this.form.location.lng,
+            customName: '',
+          },
         };
         const saveResponse = await axios.post(`/${this.form.userType}s-service/${this.form.userType}`,
           user);
@@ -616,26 +654,5 @@ export default {
   100% {
     transform: rotate(-360deg) translateX(200px) rotate(360deg);
   }
-}
-
-.ad-gradient {
-  background-image: url("../../assets/images/futuristic_city.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  width: 500px;
-}
-.main-bg {
-  position: relative;
-  background-image: url("../../assets/images/pexels-enginakyurt-1435904.svg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-@media (min-width: 768px) {     .h-80 {         height: 70vh     } }
-.neumorphism {
-  box-shadow:  -5px 5px 10px #bebebe,
-  5px -5px 10px #ffffff;
 }
 </style>

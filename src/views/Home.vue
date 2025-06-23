@@ -37,14 +37,14 @@
                       :color="hover ? 'primary lighten-5' : 'white'"
                       @click="openSignIn('farmer')"
                   >
+                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 primary--text">Farmer</h3>
                     <v-avatar size="100" color="primary lighten-4" class="mb-4">
                       <v-img
                           src="@/assets/images/farmer.png"
                           :class="{ 'scale-up': hover }"
                       ></v-img>
                     </v-avatar>
-                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 primary--text">Farmer</h3>
-                    <p v-if="false" class="tw-text-body-1  tw-mb-6">
+                    <p class="tw-text-body-1  tw-mb-6">
                       Connect with buyers, showcase your produce, and grow your farming business
                     </p>
                     <v-btn
@@ -70,14 +70,14 @@
                       :color="hover ? 'secondary lighten-5' : 'white'"
                       @click="openSignIn('buyer')"
                   >
+                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 secondary--text">Buyer</h3>
                     <v-avatar size="100" color="secondary lighten-4" class=" tw-mb-4">
                       <v-img
                           src="@/assets/images/buyer.png"
                           :class="{ 'scale-up': hover }"
                       ></v-img>
                     </v-avatar>
-                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 secondary--text">Buyer</h3>
-                    <p v-if="false" class="tw-text-body-1  tw-mb-6">
+                    <p class="tw-text-body-1  tw-mb-6">
                       Source fresh produce directly from farmers with quality assurance
                     </p>
                     <v-btn
@@ -93,7 +93,7 @@
                 </v-hover>
               </v-col>
 
-              <!-- Admin Card -->
+              <!-- Exporter card -->
               <v-col cols="12" md="4" class="d-flex">
                 <v-hover v-slot="{ hover }">
                   <v-card
@@ -101,15 +101,15 @@
                       class="pa-6 tw-text-center mx-auto role-card"
                       max-width="350"
                       :color="hover ? 'accent lighten-5' : 'white'"
-                      @click="openSignIn('admin')"
+                      @click="openSignIn('exporter')"
                   >
+                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 text-black">Exporter</h3>
                     <v-avatar size="100" color="accent lighten-4" class=" tw-mb-4">
                       <v-img
-                          src="@/assets/images/admin.png"
+                          src="@/assets/images/exporter.png"
                           :class="{ 'scale-up': hover }"
                       ></v-img>
                     </v-avatar>
-                    <h3 class="tw-text-h4  tw-font-weight-bold  tw-mb-3 text-black">Admin</h3>
                     <p v-if="false" class="tw-text-body-1  tw-mb-6">
                       Manage platform operations, verify users, and ensure smooth transactions
                     </p>
@@ -118,7 +118,7 @@
                         large
                         :class="{ 'pulse-btn': hover, 'no-uppercase': false}"
                     >
-                      Continue as Admin
+                      Continue as Exporter
 <!--                      <v-icon right>mdi-arrow-right</v-icon>-->
                     </v-btn>
                     <div class="highlight-bar" :class="{ 'active': hover }"></div>

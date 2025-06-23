@@ -116,23 +116,34 @@
 
             <template v-else>
               <v-btn
-                  color="success"
-                  large
+                  color="primary"
+                  outlined
+                  icon
+                  rounded
                   @click="capturePhoto"
                   :disabled="!currentLocation"
                   class="tw-mr-2"
               >
-                <v-icon left>mdi-camera-plus</v-icon>
-                Capture Photo
+                <v-icon color="primary" size="30px" left>mdi-camera</v-icon>
               </v-btn>
 
               <v-btn
-                  color="error"
-                  large
+                  color="primary"
+                  outlined
+                  icon
+                  rounded
                   @click="stopCamera"
               >
-                <v-icon left>mdi-camera-off</v-icon>
-                Stop Camera
+                <v-icon color="primary" size="30px" left>mdi-checkbox-blank</v-icon>
+              </v-btn>
+              <v-btn
+                  color="primary"
+                  large
+                  rounded
+                  @click="submitPhotos"
+              >
+                Submit
+                <v-icon color="primary" size="30px" left>mdi-chevron-right</v-icon>
               </v-btn>
             </template>
             <div v-if="hasLocationPermission && hasCameraPermission">
@@ -154,6 +165,7 @@
 import piexif from 'piexifjs';
 import PhotoGallery from '@/components/pictures/PhotoGallery.vue';
 import CardTitle from '@/components/shared/CardTitle.vue';
+import { getCurrentUserId } from '@/utils/roles.js';
 import CameraSelector from './CameraSelector.vue';
 
 export default {
@@ -205,6 +217,7 @@ export default {
           && this.currentLocation
           && this.showCamera;
     },
+    getCurrentUserId,
   },
 
   methods: {
@@ -330,7 +343,12 @@ export default {
         this.$toast.error('Location not available');
         return;
       }
-
+      // In your capturePhoto method, add validation:
+      if (Math.abs(this.currentLocation.latitude) > 90
+          || Math.abs(this.currentLocation.longitude) > 180) {
+        this.$toast.error('Invalid GPS coordinates');
+        return;
+      }
       const video = this.$refs.videoElement;
       const canvas = this.$refs.canvasElement;
       const context = canvas.getContext('2d');
@@ -351,6 +369,57 @@ export default {
       }, 'image/jpeg', 0.9);
     },
 
+    // async addGeotagToPhoto(photoBlob) {
+    //   const zerothIfd = {};
+    //   const exifIfd = {};
+    //   const gpsIfd = {};
+    //   zerothIfd[piexif.ImageIFD.Make] = 'Maker Name';
+    //   zerothIfd[piexif.ImageIFD.XResolution] = [777, 1];
+    //   zerothIfd[piexif.ImageIFD.YResolution] = [777, 1];
+    //   zerothIfd[piexif.ImageIFD.Software] = 'Piexifjs';
+    //   exifIfd[piexif.ExifIFD.DateTimeOriginal] = '2010:10:10 10:10:10';
+    //   exifIfd[piexif.ExifIFD.LensMake] = 'Lens Maker';
+    //   exifIfd[piexif.ExifIFD.Sharpness] = 777;
+    //   exifIfd[piexif.ExifIFD.LensSpecification] = [[1, 1], [1, 1], [1, 1], [1, 1]];
+    //   gpsIfd[piexif.GPSIFD.GPSVersionID] = [7, 7, 7, 7];
+    //   gpsIfd[piexif.GPSIFD.GPSDateStamp] = '1999:99:99 99:99:99';
+    //
+    //   const lat = 59.43553989213321;
+    //   const lng = 24.73842144012451;
+    //   gpsIfd[piexif.GPSIFD.GPSLatitudeRef] = lat < 0 ? 'S' : 'N';
+    //   gpsIfd[piexif.GPSIFD.GPSLatitude] = piexif.GPSHelper.degToDmsRational(lat);
+    //   gpsIfd[piexif.GPSIFD.GPSLongitudeRef] = lng < 0 ? 'W' : 'E';
+    //   gpsIfd[piexif.GPSIFD.GPSLongitude] = piexif.GPSHelper.degToDmsRational(lng);
+    //
+    //   const exifObj = { '0th': zerothIfd, Exif: exifIfd, GPS: gpsIfd };
+    //
+    //   // get exif binary as "string" type
+    //   const exifBytes = piexif.dump(exifObj);
+    //
+    //   // get JPEG image from canvas
+    //   const jpegData = document.getElementById('canvas').toDataURL('image/jpeg', 1.0);
+    //
+    //   // insert exif binary into JPEG binary(DataURL)
+    //   const exifModified = piexif.insert(exifBytes, jpegData);
+    //
+    //   // show JPEG modified exif
+    //   const image = new Image();
+    //   image.src = exifModified;
+    //   image.width = 200;
+    //   // for Modern IE
+    //   if (saveJpeg) {
+    //     const jpegBinary = atob(exifModified.split(',')[1]);
+    //     const data = [];
+    //     for (let p = 0; p < jpegBinary.length; p++) {
+    //       data[p] = jpegBinary.charCodeAt(p);
+    //     }
+    //     const ua = new Uint8Array(data);
+    //     const blob = new Blob([ua], { type: 'image/jpeg' });
+    //     image.onclick = saveJpeg(blob);
+    //   }
+    //   // const el = $('<div></div>').append(image);
+    //   // $('#resized').prepend(el);
+    // },
     async addGeotagToPhoto(photoBlob) {
       try {
         // Convert blob to data URL
@@ -367,25 +436,44 @@ export default {
         const dataUrl = `data:image/jpeg;base64,${base64String}`;
 
         // Create GPS EXIF data
-        const gpsData = this.createGPSExifData();
-
+        // const gpsData = this.createGPSExifData();
+        // console.log(gpsData);
+        // Ensure coordinates are within valid ranges
+        const lat = Math.max(-90, Math.min(90, this.currentLocation.latitude));
+        const lon = Math.max(-180, Math.min(180, this.currentLocation.longitude));
+        // const lat = 59.43553989213321;
+        // const lon = 24.73842144012451;
+        // Get current date and time for GPS timestamp
+        // const now = new Date();
         // Create complete EXIF dictionary
         const exifDict = {
           '0th': {
             [piexif.ImageIFD.Make]: 'Web Browser',
             [piexif.ImageIFD.Model]: navigator.userAgent.split(' ')[0],
-            [piexif.ImageIFD.DateTime]: this.getExifDateTime(),
+            // [piexif.ImageIFD.DateTime]: this.getExifDateTime(),
             [piexif.ImageIFD.Software]: 'Vue Geotagged Camera',
-            [piexif.ImageIFD.Artist]: 'farmer', // Set owner as farmer
+            [piexif.ImageIFD.Artist]: getCurrentUserId(), // Set owner as farmer
           },
           Exif: {
             [piexif.ExifIFD.DateTimeOriginal]: this.getExifDateTime(),
             [piexif.ExifIFD.DateTimeDigitized]: this.getExifDateTime(),
-            [piexif.ExifIFD.UserComment]: 'Geotagged with Vue Camera App',
           },
-          GPS: gpsData,
-          '1st': {},
-          thumbnail: null,
+          GPS: {
+            [piexif.GPSIFD.GPSVersionID]: [7, 7, 7, 7],
+            [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
+            [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(lat),
+            [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
+            [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(lon),
+            // [piexif.GPSIFD.GPSAltitudeRef]: 0,
+            // [piexif.GPSIFD.GPSTimeStamp]: [
+            //   [now.getUTCHours(), 1],
+            //   [now.getUTCMinutes(), 1],
+            //   [now.getUTCSeconds(), 1],
+            // ],
+            // [piexif.GPSIFD.GPSDateStamp]: now.toISOString().split('T')[0].replace(/-/g, ':'),
+            // [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
+            // [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
+          },
         };
 
         // Convert EXIF dictionary to bytes
@@ -420,22 +508,27 @@ export default {
     },
 
     createGPSExifData() {
-      const lat = this.currentLocation.latitude;
-      const lon = this.currentLocation.longitude;
+      // Ensure coordinates are within valid ranges
+      const lat = Math.max(-90, Math.min(90, this.currentLocation.latitude));
+      const lon = Math.max(-180, Math.min(180, this.currentLocation.longitude));
 
-      // // Convert decimal degrees to DMS (Degrees, Minutes, Seconds)
-      // const latDMS = this.decimalToDMS(Math.abs(lat));
-      // const lonDMS = this.decimalToDMS(Math.abs(lon));
+      // Get current date and time for GPS timestamp
+      const now = new Date();
 
       return {
-        [piexif.GPSIFD.GPSVersionID]: [2, 2, 0, 0],
+        [piexif.GPSIFD.GPSVersionID]: [7, 7, 7, 7],
+        [piexif.GPSIFD.GPSDateStamp]: '1999:99:99 99:99:99',
         [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
-        [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(Math.abs(lat)),
+        [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(lat),
         [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
-        [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(Math.abs(lon)),
-        [piexif.GPSIFD.GPSAltitudeRef]: 0,
-        [piexif.GPSIFD.GPSTimeStamp]: this.getGPSTimeStamp(),
-        [piexif.GPSIFD.GPSDateStamp]: this.getGPSDateStamp(),
+        [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(lon),
+        // [piexif.GPSIFD.GPSAltitudeRef]: 0,
+        // [piexif.GPSIFD.GPSTimeStamp]: [
+        //   [now.getUTCHours(), 1],
+        //   [now.getUTCMinutes(), 1],
+        //   [now.getUTCSeconds(), 1],
+        // ],
+        [piexif.GPSIFD.GPSDateStamp]: now.toISOString().split('T')[0].replace(/-/g, ':'),
         [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
         [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
       };
@@ -556,6 +649,7 @@ export default {
         if (this.$refs.cameraSelector) {
           await this.$refs.cameraSelector.getAvailableCameras();
           this.startLocationTracking();
+          this.startCamera();
         }
       }
       this.checkingPermissions = false;
@@ -715,6 +809,9 @@ export default {
           await this.startCamera();
         }
       }
+    },
+    submitPhotos() {
+      this.stopCamera();
     },
   },
 

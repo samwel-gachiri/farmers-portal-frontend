@@ -322,63 +322,10 @@ export default {
 </script>
 <style scoped>
 .ad-gradient {
-  background-image: url("../../assets/images/futuristic_city.webp");
+  /* background-image: url("../../assets/images/futuristic_city.webp"); */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   width: 500px;
-}
-.dialog-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.dialog-card {
-  border-radius: 12px;
-  background-color: #FFFFFF;
-  padding: 24px;
-}
-
-.dialog-header {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 16px;
-}
-
-.dialog-content {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 24px;
-}
-
-.user-type-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding-bottom: 20px;
-  border-bottom: 4px solid black;
-  cursor: pointer;
-  border-radius: 0;
-  transition: background-color 0.3s ease;
-}
-
-.user-type-item:hover {
-  background-color: #f5f5f5;
-}
-
-.user-type-text {
-  font-size: 32px;
-  font-weight: bold;
-  color: #4CAF50; /* Green text color */
-}
-
-.arrow-icon {
-  font-weight: bold;
 }
 </style>

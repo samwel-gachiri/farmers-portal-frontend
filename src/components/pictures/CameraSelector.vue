@@ -17,15 +17,15 @@
         >
           <v-icon>mdi-cog</v-icon>
           <!-- Active camera indicator -->
-          <v-badge
-              v-if="selectedCameraId"
-              dot
-              color="success"
-              overlap
-              offset-x="8"
-              offset-y="8"
-          >
-          </v-badge>
+<!--          <v-badge-->
+<!--              v-if="selectedCameraId"-->
+<!--              dot-->
+<!--              color="success"-->
+<!--              overlap-->
+<!--              offset-x="8"-->
+<!--              offset-y="8"-->
+<!--          >-->
+<!--          </v-badge>-->
         </v-btn>
       </template>
 
@@ -246,6 +246,11 @@ export default {
 
     onCameraPermissionDenied() {
       this.availableCameras = [];
+    },
+  },
+  watch: {
+    selectedCameraId(selectedCameraId) {
+      this.$emit('camera-selected', selectedCameraId);
     },
   },
 };

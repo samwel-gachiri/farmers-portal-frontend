@@ -1,15 +1,15 @@
 <template>
   <div>
 <!--      <v-icon left>mdi-image-multiple</v-icon>-->
-      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
-        <PhotoCard
-            v-for="photo in photos"
-            :key="photo.id"
-            :photo="photo"
-            @delete="$emit('delete-photo', photo.id)"
-            @view-location="showLocationDialog"
-        />
-      </div>
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
+      <PhotoCard
+          v-for="photo in photos"
+          :key="photo.id"
+          :photo="photo"
+          @delete="$emit('delete-photo', photo.id)"
+          @view-location="showLocationDialog"
+      />
+    </div>
 
     <!-- Location Dialog -->
     <v-dialog v-model="locationDialog" max-width="500">
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import piexif from 'piexifjs';
 import PhotoCard from './PhotoCard.vue';
 
 export default {
@@ -73,6 +74,40 @@ export default {
       return new Date(dateString).toLocaleString();
     },
 
+    async readExifFromBlob(blob) {
+      try {
+        const dataUrl = await this.blobToDataURL(blob);
+        const exifData = piexif.load(dataUrl);
+        console.log(exifData);
+        if (exifData.GPS) {
+          const lat = piexif.GPSHelper.dmsRationalToDeg(
+            exifData.GPS[piexif.GPSIFD.GPSLatitude],
+          );
+
+          const lon = piexif.GPSHelper.dmsRationalToDeg(
+            exifData.GPS[piexif.GPSIFD.GPSLongitude],
+          );
+          return {
+            latitude: lat,
+            longitude: lon,
+            rawExif: exifData.GPS,
+          };
+        }
+        return null;
+      } catch (error) {
+        console.error('EXIF read error:', error);
+        return null;
+      }
+    },
+
+    // Helper method to convert blob to data URL
+    blobToDataURL(blob) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(blob);
+      });
+    },
     openInMaps() {
       if (this.selectedPhoto) {
         const { latitude, longitude } = this.selectedPhoto.location;

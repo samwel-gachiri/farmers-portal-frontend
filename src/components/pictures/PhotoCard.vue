@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import piexif from 'piexifjs';
 
 export default {
   name: 'PhotoCard',
@@ -101,48 +100,6 @@ export default {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    },
-
-    async readExifFromBlob(blob) {
-      try {
-        // Convert blob to data URL
-        const dataUrl = await this.blobToDataURL(blob);
-
-        // Extract EXIF data
-        const exifData = piexif.load(dataUrl);
-
-        if (exifData.GPS) {
-          // Convert DMS rational to decimal degrees
-          const latitude = piexif.GPSHelper.dmsRationalToDeg(
-            exifData.GPS[piexif.GPSIFD.GPSLatitude],
-            exifData.GPS[piexif.GPSIFD.GPSLatitudeRef],
-          );
-
-          const longitude = piexif.GPSHelper.dmsRationalToDeg(
-            exifData.GPS[piexif.GPSIFD.GPSLongitude],
-            exifData.GPS[piexif.GPSIFD.GPSLongitudeRef],
-          );
-
-          return {
-            latitude,
-            longitude,
-            rawExif: exifData.GPS,
-          };
-        }
-        return null;
-      } catch (error) {
-        this.$toast.error('Error reading EXIF:', error.message);
-        return null;
-      }
-    },
-
-    // Helper method to convert blob to data URL
-    blobToDataURL(blob) {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.readAsDataURL(blob);
-      });
     },
   },
 };

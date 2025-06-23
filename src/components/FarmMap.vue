@@ -405,9 +405,6 @@ export default {
         } catch (error) {
           console.error('Error calculating area:', error);
           this.farmArea = 0;
-        } finally {
-          console.log('farm area');
-          console.log(this.farmArea);
         }
       }
     },
