@@ -1,7 +1,7 @@
 <template>
   <div>
-<!--      <v-icon left>mdi-image-multiple</v-icon>-->
     <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
+      <!-- Photo Cards -->
       <PhotoCard
           v-for="photo in photos"
           :key="photo.id"
@@ -9,6 +9,17 @@
           @delete="$emit('delete-photo', photo.id)"
           @view-location="showLocationDialog"
       />
+
+      <!-- Add New Photo Card -->
+      <div
+          class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-cursor-pointer tw-bg-gray-50 hover:tw-bg-gray-100 tw-transition-colors"
+          @click="$emit('add-photo')"
+      >
+        <div class="tw-text-center tw-p-4">
+          <v-icon large color="grey lighten-1">mdi-plus</v-icon>
+          <p class="tw-mt-2 tw-text-gray-500">Add Photo</p>
+        </div>
+      </div>
     </div>
 
     <!-- Location Dialog -->

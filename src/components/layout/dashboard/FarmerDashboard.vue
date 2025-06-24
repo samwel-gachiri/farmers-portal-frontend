@@ -402,36 +402,6 @@ export default {
         this.loading = false;
       }
     },
-    async postProduce() {
-      const formData = new FormData();
-      formData.append('farmerId', getCurrentUserId());
-      formData.append('name', this.newProducePost.name);
-      formData.append('quantity', this.newProducePost.quantity);
-      formData.append('price', this.newProducePost.price);
-
-      if (this.newProduce.images.length) {
-        this.newProduce.images.forEach((file) => {
-          formData.append('images', file);
-        });
-      }
-
-      try {
-        const response = await axios.post('/farmers-service/farmer/add-farmer-produce', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-
-        if (response.data.success) {
-          this.farmerProduces = response.data.data;
-          this.$toast.success('Posted successfully!');
-        } else {
-          this.$toast.error('Addition failed!', response.data.msg);
-        }
-      } catch (error) {
-        this.$toast.error('Error adding produce to farmer!', `${error}`);
-      } finally {
-        this.loading = false;
-      }
-    },
   },
   watch: {
     listingDialog(newValue) {

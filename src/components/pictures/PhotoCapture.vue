@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-card>
       <card-title icon="mdi-camera">Take Picture</card-title>
-      <v-card-text>
+      <div>
         <div v-if="checkingPermissions" class="tw-mb-1 tw-text-center tw-py-8">
           <v-progress-circular indeterminate color="primary" class="tw-mb-4"></v-progress-circular>
           <p>Checking permissions...</p>
@@ -97,7 +97,7 @@
             </div>
             <PhotoGallery
                 ref="photoGallery"
-                v-if="capturedPhotos.length > 0"
+                v-if="false"
                 :photos="capturedPhotos"
                 @delete-photo="deletePhoto"
                 class="tw-mt-4"
@@ -111,7 +111,7 @@
                 @click="startCamera"
                 :loading="isCapturing"
             >
-              <v-icon left>mdi-camera</v-icon>
+              <v-icon>mdi-camera</v-icon>
               Start Camera
             </v-btn>
 
@@ -125,7 +125,7 @@
                   :disabled="!currentLocation"
                   class="tw-mr-2"
               >
-                <v-icon color="primary" size="30px" left>mdi-camera</v-icon>
+                <v-icon color="primary" size="30px" large>mdi-camera</v-icon>
               </v-btn>
 
               <v-btn
@@ -135,7 +135,7 @@
                   rounded
                   @click="stopCamera"
               >
-                <v-icon color="primary" size="30px" left>mdi-checkbox-blank</v-icon>
+                <v-icon color="primary">mdi-checkbox-blank</v-icon>
               </v-btn>
               <v-btn
                   color="primary"
@@ -144,7 +144,6 @@
                   @click="submitPhotos"
               >
                 Submit
-                <v-icon color="primary" size="30px" left>mdi-chevron-right</v-icon>
               </v-btn>
             </template>
             <div v-if="hasLocationPermission && hasCameraPermission">
@@ -157,7 +156,7 @@
           </v-card-actions>
         </div>
 
-      </v-card-text>
+      </div>
     </v-card>
   </v-container>
 </template>
@@ -320,9 +319,9 @@ export default {
             timestamp: new Date(),
           };
         },
-        () => {
-          // this.$toast.error('Location tracking error:', error.message);
-          this.startLocationTracking();
+        (error) => {
+          this.$toast.error('Location tracking error:', error.message);
+          // this.startLocationTracking();
         },
         {
           enableHighAccuracy: true,
@@ -709,24 +708,6 @@ export default {
 
     async checkLocationPermission() {
       try {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            this.permissionStates.geolocation = 'granted';
-            this.hasLocationPermission = true;
-            this.currentLocation = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              accuracy: position.coords.accuracy,
-              timestamp: new Date(),
-            };
-            this.startLocationTracking();
-          },
-          (error) => {
-            this.permissionStates.geolocation = error.code === 1 ? 'denied' : 'prompt';
-            this.hasLocationPermission = false;
-          },
-          { timeout: 1000 },
-        );
         if ('permissions' in navigator) {
           const permission = await navigator.permissions.query({ name: 'geolocation' });
           this.permissionStates.geolocation = permission.state;
@@ -753,13 +734,33 @@ export default {
           }
         } else {
           // Fallback: try to get location to check permission
+          await this.getLocation();
         }
       } catch (error) {
         this.$toast.error('Location permission check failed:', error.message);
         this.permissionStates.geolocation = 'denied';
       }
     },
-
+    async getLocation() {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.permissionStates.geolocation = 'granted';
+          this.hasLocationPermission = true;
+          this.currentLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            timestamp: new Date(),
+          };
+          this.startLocationTracking();
+        },
+        (error) => {
+          this.permissionStates.geolocation = error.code === 1 ? 'denied' : 'prompt';
+          this.hasLocationPermission = false;
+        },
+        { timeout: 1000 },
+      );
+    },
     async switchCamera(cameraId) {
       if (this.selectedCameraId === cameraId) return;
 

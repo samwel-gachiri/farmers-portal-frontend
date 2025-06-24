@@ -233,7 +233,7 @@ export default {
         icon: 'mdi-view-dashboard',
         text: 'Dashboard',
         link: { name: 'Dashboard' },
-        roles: ['farmer', 'buyer', 'admin'],
+        roles: ['buyer', 'admin'],
         iconColor: 'black',
       },
       {

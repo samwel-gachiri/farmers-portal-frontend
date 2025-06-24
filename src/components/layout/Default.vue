@@ -76,11 +76,6 @@
         <div class="content-container tw-pb-10 md:tw-pb-48 tw-h-full tw-w-full">
           <transition name="fade" mode="out-in">
             <div>
-              <div class="background-animation">
-                <div class="circle circle-1"></div>
-                <div class="circle circle-2"></div>
-                <div class="circle circle-3"></div>
-              </div>
               <slot></slot>
             </div>
           </transition>
@@ -161,72 +156,6 @@ export default {
 </script>
 
 <style scoped>
-.background-animation {
-  background-color: #f3ecec;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.20;
-}
-
-.circle-1 {
-  width: 500px;
-  height: 500px;
-  background: var(--v-primary-base);
-  top: -100px;
-  left: -100px;
-  /* animation: circle-clockwise 15s infinite linear; */
-}
-
-.circle-2 {
-  width: 400px;
-  height: 400px;
-  background: var(--v-secondary-base);
-  bottom: -100px;
-  right: -50px;
-  /* animation: circle-clockwise 18s infinite linear; */
-  /* animation-delay: 2s; */
-}
-
-.circle-3 {
-  width: 300px;
-  height: 300px;
-  background: var(--v-accent-base);
-  top: 50%;
-  left: 30%;
-  /* animation: circle-clockwise 12s infinite linear; */
-  /* animation-delay: 4s; */
-}
-
-/* Clockwise circular motion */
-@keyframes circle-clockwise {
-  0% {
-    transform: rotate(0deg) translateX(150px) rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg) translateX(150px) rotate(-360deg);
-  }
-}
-
-/* Anticlockwise circular motion */
-@keyframes circle-anticlockwise {
-  0% {
-    transform: rotate(0deg) translateX(200px) rotate(0deg);
-  }
-  100% {
-    transform: rotate(-360deg) translateX(200px) rotate(360deg);
-  }
-}
 /* Glass Morphism Design */
 .glass-navbar {
   background: rgba(255, 255, 255, 0.85) !important;
