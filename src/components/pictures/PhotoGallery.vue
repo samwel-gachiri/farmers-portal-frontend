@@ -115,6 +115,12 @@ export default {
         window.open(url, '_blank');
       }
     },
+    getPhotos() {
+      return this.photos;
+    },
+    setPhotos(photos) {
+      this.photos = photos;
+    },
   },
 };
 </script>

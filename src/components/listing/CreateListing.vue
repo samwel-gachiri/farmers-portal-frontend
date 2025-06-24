@@ -1,5 +1,10 @@
 <template>
   <v-card>
+    <v-dialog v-model="photoCaptureDialog" max-width="500px">
+      <PhotoCapture
+          @captured-photos="handleCapturedPhotos"
+      />
+    </v-dialog>
     <card-title
         icon="mdi-corn"
     >
@@ -60,6 +65,16 @@
                 :value="listing.price.price * listing.quantity"
                 :options="vuetifyMoneyOptions"
             ></vuetify-money>
+            <photo-gallery
+                v-if="listing.photos.length > 0"
+                ref="photoGallery"
+                :photos="listing.photos"
+            />
+            <v-btn
+                block
+                @click="photoCaptureDialog = true"
+                color="primary"
+            >Add images</v-btn>
             <div v-if="false">
               <label class="tw-font-medium">Upload Images (Min: 1, Max: 3)</label>
             </div>
@@ -86,10 +101,14 @@ import { getCurrentUserId } from '@/utils/roles.js';
 import NumberInput from '@/components/shared/NumberInput.vue';
 import validations from '@/utils/validations.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
+import PhotoGallery from '@/components/pictures/PhotoGallery.vue';
+import PhotoCapture from '@/components/pictures/PhotoCapture.vue';
 
 export default {
   name: 'CreateListing',
-  components: { CardTitle, NumberInput },
+  components: {
+    PhotoCapture, PhotoGallery, CardTitle, NumberInput,
+  },
   mixins: [HelperMixins],
   data() {
     return {
@@ -129,8 +148,9 @@ export default {
           currency: 'KSH',
         },
         unit: '',
-        images: [],
+        photos: [],
       },
+      photoCaptureDialog: false,
       imagePreviews: [],
       isValid: false,
       ...validations,
@@ -160,6 +180,11 @@ export default {
       this.units = [farmProduceTense, 'KG', 'L'];
       this.listing.unit = 'KG';
       this.listing.farmerProduceId = farmProduce.id;
+    },
+    handleCapturedPhotos(photos) {
+      this.listing.photos.push(...photos);
+      this.$toast.success('setting photogallery photos');
+      this.photoCaptureDialog = false;
     },
     previewImages() {
       this.imagePreviews = []; // Clear previous previews

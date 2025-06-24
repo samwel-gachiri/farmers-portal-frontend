@@ -96,6 +96,7 @@
               ></canvas>
             </div>
             <PhotoGallery
+                ref="photoGallery"
                 v-if="capturedPhotos.length > 0"
                 :photos="capturedPhotos"
                 @delete-photo="deletePhoto"
@@ -319,8 +320,9 @@ export default {
             timestamp: new Date(),
           };
         },
-        (error) => {
-          this.$toast.error('Location tracking error:', error.message);
+        () => {
+          // this.$toast.error('Location tracking error:', error.message);
+          this.startLocationTracking();
         },
         {
           enableHighAccuracy: true,
@@ -364,7 +366,7 @@ export default {
       canvas.toBlob(async (blob) => {
         if (blob) {
           this.capturedPhotos.push(await this.addGeotagToPhoto(blob));
-          this.$toast.success('Photo captured with location data');
+          // this.$toast.success('Photo captured with location data');
         }
       }, 'image/jpeg', 0.9);
     },
@@ -507,49 +509,49 @@ export default {
       }
     },
 
-    createGPSExifData() {
-      // Ensure coordinates are within valid ranges
-      const lat = Math.max(-90, Math.min(90, this.currentLocation.latitude));
-      const lon = Math.max(-180, Math.min(180, this.currentLocation.longitude));
+    // createGPSExifData() {
+    //   // Ensure coordinates are within valid ranges
+    //   const lat = Math.max(-90, Math.min(90, this.currentLocation.latitude));
+    //   const lon = Math.max(-180, Math.min(180, this.currentLocation.longitude));
+    //
+    //   // Get current date and time for GPS timestamp
+    //   const now = new Date();
+    //
+    //   return {
+    //     [piexif.GPSIFD.GPSVersionID]: [7, 7, 7, 7],
+    //     [piexif.GPSIFD.GPSDateStamp]: '1999:99:99 99:99:99',
+    //     [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
+    //     [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(lat),
+    //     [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
+    //     [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(lon),
+    //     // [piexif.GPSIFD.GPSAltitudeRef]: 0,
+    //     // [piexif.GPSIFD.GPSTimeStamp]: [
+    //     //   [now.getUTCHours(), 1],
+    //     //   [now.getUTCMinutes(), 1],
+    //     //   [now.getUTCSeconds(), 1],
+    //     // ],
+    //     [piexif.GPSIFD.GPSDateStamp]: now.toISOString().split('T')[0].replace(/-/g, ':'),
+    //     [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
+    //     [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
+    //   };
+    // },
 
-      // Get current date and time for GPS timestamp
-      const now = new Date();
-
-      return {
-        [piexif.GPSIFD.GPSVersionID]: [7, 7, 7, 7],
-        [piexif.GPSIFD.GPSDateStamp]: '1999:99:99 99:99:99',
-        [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
-        [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(lat),
-        [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
-        [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(lon),
-        // [piexif.GPSIFD.GPSAltitudeRef]: 0,
-        // [piexif.GPSIFD.GPSTimeStamp]: [
-        //   [now.getUTCHours(), 1],
-        //   [now.getUTCMinutes(), 1],
-        //   [now.getUTCSeconds(), 1],
-        // ],
-        [piexif.GPSIFD.GPSDateStamp]: now.toISOString().split('T')[0].replace(/-/g, ':'),
-        [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
-        [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
-      };
-    },
-
-    getGPSTimeStamp() {
-      const now = new Date();
-      return [
-        [now.getUTCHours(), 1],
-        [now.getUTCMinutes(), 1],
-        [now.getUTCSeconds(), 1],
-      ];
-    },
-
-    getGPSDateStamp() {
-      const now = new Date();
-      const year = now.getUTCFullYear();
-      const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(now.getUTCDate()).padStart(2, '0');
-      return `${year}:${month}:${day}`;
-    },
+    // getGPSTimeStamp() {
+    //   const now = new Date();
+    //   return [
+    //     [now.getUTCHours(), 1],
+    //     [now.getUTCMinutes(), 1],
+    //     [now.getUTCSeconds(), 1],
+    //   ];
+    // },
+    //
+    // getGPSDateStamp() {
+    //   const now = new Date();
+    //   const year = now.getUTCFullYear();
+    //   const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    //   const day = String(now.getUTCDate()).padStart(2, '0');
+    //   return `${year}:${month}:${day}`;
+    // },
 
     getExifDateTime() {
       const now = new Date();
@@ -563,33 +565,33 @@ export default {
     },
 
     // Fixed encodeUserComment method
-    encodeUserComment(comment) {
-      // EXIF UserComment should be encoded as Unicode (UTF-8)
-      // The first 8 bytes should be the encoding identifier
-      const encoding = [0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00]; // "UNICODE" + null terminator
+    // encodeUserComment(comment) {
+    //   // EXIF UserComment should be encoded as Unicode (UTF-8)
+    //   // The first 8 bytes should be the encoding identifier
+    //   const encoding = [0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00]; // "UNICODE" + null terminator
+    //
+    //   // Convert comment to UTF-8 bytes
+    //   const encoder = new TextEncoder();
+    //   const commentBytes = encoder.encode(comment);
+    //
+    //   // Combine encoding marker and comment bytes
+    //   const result = new Uint8Array(encoding.length + commentBytes.length);
+    //   result.set(encoding, 0);
+    //   result.set(commentBytes, encoding.length);
+    //
+    //   return result;
+    // },
 
-      // Convert comment to UTF-8 bytes
-      const encoder = new TextEncoder();
-      const commentBytes = encoder.encode(comment);
-
-      // Combine encoding marker and comment bytes
-      const result = new Uint8Array(encoding.length + commentBytes.length);
-      result.set(encoding, 0);
-      result.set(commentBytes, encoding.length);
-
-      return result;
-    },
-
-    encodeProcessingMethod(method) {
-      // GPS Processing Method encoding
-      const encoding = [0x41, 0x53, 0x43, 0x49, 0x49, 0x00, 0x00, 0x00]; // ASCII encoding marker
-      const methodBytes = [];
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < method.length; i++) {
-        methodBytes.push(method.charCodeAt(i));
-      }
-      return new Uint8Array([...encoding, ...methodBytes]);
-    },
+    // encodeProcessingMethod(method) {
+    //   // GPS Processing Method encoding
+    //   const encoding = [0x41, 0x53, 0x43, 0x49, 0x49, 0x00, 0x00, 0x00]; // ASCII encoding marker
+    //   const methodBytes = [];
+    //   // eslint-disable-next-line no-plusplus
+    //   for (let i = 0; i < method.length; i++) {
+    //     methodBytes.push(method.charCodeAt(i));
+    //   }
+    //   return new Uint8Array([...encoding, ...methodBytes]);
+    // },
 
     async dataURLToBlob(dataURL) {
       const response = await fetch(dataURL);
@@ -648,8 +650,8 @@ export default {
 
         if (this.$refs.cameraSelector) {
           await this.$refs.cameraSelector.getAvailableCameras();
+          await this.startCamera();
           this.startLocationTracking();
-          this.startCamera();
         }
       }
       this.checkingPermissions = false;
@@ -707,6 +709,24 @@ export default {
 
     async checkLocationPermission() {
       try {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            this.permissionStates.geolocation = 'granted';
+            this.hasLocationPermission = true;
+            this.currentLocation = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy,
+              timestamp: new Date(),
+            };
+            this.startLocationTracking();
+          },
+          (error) => {
+            this.permissionStates.geolocation = error.code === 1 ? 'denied' : 'prompt';
+            this.hasLocationPermission = false;
+          },
+          { timeout: 1000 },
+        );
         if ('permissions' in navigator) {
           const permission = await navigator.permissions.query({ name: 'geolocation' });
           this.permissionStates.geolocation = permission.state;
@@ -733,24 +753,6 @@ export default {
           }
         } else {
           // Fallback: try to get location to check permission
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              this.permissionStates.geolocation = 'granted';
-              this.hasLocationPermission = true;
-              this.currentLocation = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy,
-                timestamp: new Date(),
-              };
-              this.startLocationTracking();
-            },
-            (error) => {
-              this.permissionStates.geolocation = error.code === 1 ? 'denied' : 'prompt';
-              this.hasLocationPermission = false;
-            },
-            { timeout: 1000 },
-          );
         }
       } catch (error) {
         this.$toast.error('Location permission check failed:', error.message);
@@ -779,6 +781,7 @@ export default {
 
     // Enhanced startCamera method with camera selection
     async startCamera() {
+      this.$toast.success('starting camera');
       try {
         const constraints = {
           video: {
@@ -799,6 +802,7 @@ export default {
         this.$refs.videoElement.srcObject = this.stream;
         this.showCamera = true;
         this.cameraError = null;
+        this.$toast.success('camera started', this.showCamera.toString());
       } catch (error) {
         this.$toast.error('Camera start error:', error.message);
         this.cameraError = `Failed to start camera: ${error.message}`;
@@ -812,6 +816,9 @@ export default {
     },
     submitPhotos() {
       this.stopCamera();
+      console.log('Photos in photocapture');
+      console.log(this.capturedPhotos);
+      this.$emit('captured-photos', this.capturedPhotos);
     },
   },
 
