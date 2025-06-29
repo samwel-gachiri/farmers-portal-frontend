@@ -441,7 +441,7 @@ export default {
 
       this.$nextTick(() => {
         if (!document.getElementById('allZonesMapView')) {
-          console.warn('allZonesMapView container not found');
+          this.showSnackbar('allZonesMapView container not found');
           return;
         }
 
@@ -463,7 +463,7 @@ export default {
 
       this.$nextTick(() => {
         if (!document.getElementById('farmersMapView')) {
-          console.warn('farmersMapView container not found');
+          this.showSnackbar('farmersMapView container not found');
           return;
         }
 
@@ -552,7 +552,6 @@ export default {
         this.showSnackbar('Zone created successfully!', 'success');
         this.resetCreateForm();
       } catch (error) {
-        console.error('Error creating zone:', error);
         this.showSnackbar('Error creating zone. Please try again.', 'error');
       } finally {
         this.loading = false;
@@ -591,7 +590,6 @@ export default {
           this.showSnackbar('No zones found for this exporter', 'info');
         }
       } catch (error) {
-        console.error('Error fetching zones:', error);
         this.showSnackbar('Error fetching zones. Please try again.', 'error');
         this.allZones = [];
       } finally {
@@ -685,7 +683,6 @@ export default {
           // Add any other properties you want to display
         }));
       } catch (error) {
-        console.error('Error fetching zones:', error);
         this.showSnackbar('Error fetching zones. Please try again.', 'error');
       } finally {
         this.loadingZones = false;
@@ -710,7 +707,6 @@ export default {
           this.showSnackbar('No farmers found in this zone', 'info');
         }
       } catch (error) {
-        console.error('Error fetching farmers:', error);
         this.showSnackbar('Error fetching farmers. Please try again.', 'error');
         this.zoneFarmers = [];
       } finally {

@@ -267,7 +267,6 @@ export default {
         this.loading = false;
         this.showSuccess('Map initialized successfully!');
       } catch (error) {
-        console.error('Error initializing map:', error);
         this.showError('Failed to initialize map. Please refresh and try again.');
         this.loading = false;
       }
@@ -281,7 +280,7 @@ export default {
           // eslint-disable-next-line no-await-in-loop
           return await loadModules(modules);
         } catch (error) {
-          console.warn(`Attempt ${i + 1} failed:`, error);
+          this.showErrorMessage(`Attempt ${i + 1} failed:`);
           if (i === retries - 1) throw error;
           // Wait before retrying
           // eslint-disable-next-line no-await-in-loop
@@ -308,7 +307,7 @@ export default {
             resolve();
           },
           (error) => {
-            console.warn('Geolocation error:', error);
+            this.showErrorMessage('Geolocation error:');
             // Default to Nairobi, Kenya if geolocation fails
             this.userLocation = { lat: -1.2921, lng: 36.8219 };
             resolve();
@@ -403,7 +402,7 @@ export default {
           // Convert to acres (1 acre = 4047 square meters)
           this.farmArea = Math.abs(areaInSquareMeters) / 4047;
         } catch (error) {
-          console.error('Error calculating area:', error);
+          this.showErrorMessage('Error calculating area:');
           this.farmArea = 0;
         }
       }
@@ -415,7 +414,7 @@ export default {
         try {
           this.currentDrawingAction.destroy();
         } catch (e) {
-          console.warn('Error destroying draw action:', e);
+          this.showErrorMessage('Error destroying draw action:');
         }
         this.currentDrawingAction = null;
       }
@@ -466,7 +465,7 @@ export default {
 
         this.showSuccess(`Farm boundary saved! Area: ${this.farmArea} hectares`);
       } catch (error) {
-        console.error('Error saving farm boundary:', error);
+        this.showErrorMessage('Error saving farm boundary:');
         this.showError('Failed to save farm boundary. Please try again.');
       }
     },

@@ -817,8 +817,6 @@ export default {
     },
     submitPhotos() {
       this.stopCamera();
-      console.log('Photos in photocapture');
-      console.log(this.capturedPhotos);
       this.$emit('captured-photos', this.capturedPhotos);
     },
   },

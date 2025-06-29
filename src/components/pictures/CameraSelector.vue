@@ -205,7 +205,7 @@ export default {
 
         return defaultCameraId;
       } catch (error) {
-        console.warn('Could not determine default camera, using first available:', error);
+        this.$toast.error('Could not determine default camera, using first available:', error.message);
         // Fallback to first camera if we can't determine default
         return this.availableCameras.length > 0 ? this.availableCameras[0].id : null;
       }
@@ -216,7 +216,7 @@ export default {
       try {
         return localStorage.getItem('selectedCameraId');
       } catch (error) {
-        console.warn('Could not access localStorage:', error);
+        this.$toast.error('Could not access localStorage:', error.message);
         return null;
       }
     },
@@ -229,7 +229,7 @@ export default {
           localStorage.removeItem('selectedCameraId');
         }
       } catch (error) {
-        console.warn('Could not save to localStorage:', error);
+        this.$toast.error('Could not save to localStorage:', error.message);
       }
     },
 
