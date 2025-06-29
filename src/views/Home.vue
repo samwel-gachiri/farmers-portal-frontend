@@ -168,7 +168,15 @@ export default {
         }
       }
       await this.$store.dispatch('auth/setViewRole', userName);
-      await this.$router.push({ name: 'SignIn', query: { r: btoa(window.location.href) } });
+      await this.$router.push(
+        {
+          name: 'SignIn',
+          query: {
+            mode: 'self',
+            r: btoa(window.location.href),
+          },
+        },
+      );
     },
   },
   computed: {

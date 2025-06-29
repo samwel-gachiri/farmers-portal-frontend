@@ -39,6 +39,7 @@
 
       <!-- AI Assistant Button -->
       <v-btn
+          v-if="false"
           fab
           small
           color="primary"
@@ -125,7 +126,7 @@ export default {
     AiAssistant,
   },
   data: () => ({
-    drawer: true, // Set to true by default to show drawer content immediately
+    drawer: false, // Set to true by default to show drawer content immediately
     mini: false,
     isAppIdle: false,
   }),

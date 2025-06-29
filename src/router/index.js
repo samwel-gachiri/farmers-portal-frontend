@@ -106,6 +106,11 @@ const routes = [
     name: 'OrdersReport',
     component: () => import('../views/admin/OrdersReport.vue'),
   },
+  {
+    path: '/op-zones',
+    name: 'OperatingZonesManagement',
+    component: () => import('../views/exporter/OperatingZonesManagement.vue'),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',

@@ -51,6 +51,7 @@
         </div>
         <!--        form part-->
         <div class="tw-bg-blue tw-flex tw-flex-col  tw-justify-center tw-items-center tw-w-full md:tw-w-1/2 tw-h-full">
+          <div>{{ userMustBeSignedUp }}</div>
           <v-card
               flat
               style="border-radius: 20px; border: 4px solid #f6eeee;"
@@ -123,7 +124,7 @@
                 >
                 </v-text-field>
                 <div
-                    v-if="!form.fullPhoneNumber || form.fullPhoneNumber.length < 4"
+                    v-if="hasNotGivenPhoneNumber"
                     class="tw-mb-5"
                 >
                   <vue-phone-number-input
@@ -134,37 +135,50 @@
                       @update="onPhoneUpdate"
                   />
                 </div>
-                <v-text-field
-                    :label="`${form.userType === 'farmer'? 'Farm': 'Business'} name`"
-                    outlined
-                    class="tw-my-5"
-                    dense
-                    v-model="form.farmName"
-                    :rules="[required('Farm name'), noDigitFormat()]"
-                >
-                </v-text-field>
-                <v-text-field
-                    label="Farm Size (acres)"
-                    outlined
-                    class="tw-my-5"
-                    dense
-                    append-icon="mdi-map"
-                    @click:append="farmMapDialog = true"
-                    v-model="form.farmSize"
-                    :rules="[required('Farm size')]"
-                >
-                </v-text-field>
-                <v-text-field
-                    label="Farm Location"
-                    outlined
-                    class="tw-my-5"
-                    dense
-                    v-model="form.location.customName"
-                    append-icon="mdi-map-marker"
-                    @click:append="getUserLocation"
-                    :rules="[required('Name')]"
-                >
-                </v-text-field>
+                <div v-if="form.userType === 'farmer'">
+                  <v-text-field
+                      label="Farm name"
+                      dense
+                      v-model="form.farmName"
+                      outlined
+                      class="tw-my-5"
+                      :rules="[required('Farm name'), noDigitFormat()]"
+                  >
+                  </v-text-field>
+                  <v-text-field
+                      label="Farm Size (acres)"
+                      outlined
+                      class="tw-my-5"
+                      dense
+                      append-icon="mdi-map"
+                      @click:append="farmMapDialog = true"
+                      v-model="form.farmSize"
+                      :rules="[required('Farm size')]"
+                  >
+                  </v-text-field>
+                  <v-text-field
+                      label="Farm Location"
+                      outlined
+                      class="tw-my-5"
+                      dense
+                      v-model="form.location.customName"
+                      append-icon="mdi-map-marker"
+                      @click:append="getUserLocation"
+                      :rules="[required('Name')]"
+                  >
+                  </v-text-field>
+                </div>
+                <div v-if="form.userType === 'exporter'">
+                  <v-text-field
+                      label="Licence Id"
+                      dense
+                      v-model="form.licenseId"
+                      outlined
+                      class="tw-my-5"
+                      :rules="[required('License Id')]"
+                  >
+                  </v-text-field>
+                </div>
                 <v-checkbox
                     id="checkbox"
                     dense
@@ -261,6 +275,9 @@ export default {
         phoneNumber: '',
         fullPhoneNumber: '',
         email: '',
+        // exporter
+        licenseId: '',
+        // farmer
         farmSize: '',
         farmName: '',
         location: {
@@ -278,6 +295,7 @@ export default {
       isValid2: false,
       isValid3: false,
       isValid4: false,
+      hasNotGivenPhoneNumber: true,
       show: false,
       isValid: false,
       loading: false,
@@ -287,6 +305,7 @@ export default {
       existAs: {
         farmer: false,
         buyer: false,
+        exporter: false,
       },
       userIsCreatingSecondProfile: false,
       userMustBeSignedUp: false,
@@ -411,6 +430,8 @@ export default {
     continueStepOne() {
       this.isSignInWithPhone = true;
       this.isSignInWithGoogle = false;
+      this.hasNotGivenPhoneNumber = !this.form.fullPhoneNumber || this.form.fullPhoneNumber.length < 4;
+      this.steps[1].title = `Add ${this.form.userType ? this.form.userType[0].toUpperCase() + this.form.userType.slice(1) : ''} Details`;
       this.checkFarmerOrBuyerExistence();
     },
     async continueStepTwo() {
@@ -421,7 +442,7 @@ export default {
       }
     },
     checkFarmerOrBuyerExistence() {
-      axios.get('/farmers-service/user/farmer-or-buyer-existence', {
+      axios.get('/farmers-service/user/check-existence', {
         params: {
           phoneNumber: this.form.fullPhoneNumber,
           email: this.form.email,
@@ -432,8 +453,10 @@ export default {
             this.existAs = response.data.data;
             this.isExistenceChecked = true;
             // MATCHES
-            if ((this.form.userType.toLowerCase() === 'farmer' && this.existAs.farmer)
+            if (
+              (this.form.userType.toLowerCase() === 'farmer' && this.existAs.farmer)
                 || (this.form.userType.toLowerCase() === 'buyer' && this.existAs.buyer)
+                || (this.form.userType.toLowerCase() === 'exporter' && this.existAs.exporter)
             ) {
               this.userMustBeSignedUp = false;
               if (this.isSignInWithPhone) {
@@ -472,28 +495,47 @@ export default {
     },
     async signUpUser() {
       try {
-        const user = {
-          id: this.user.uid,
-          name: this.form.name,
-          email: this.form.email,
-          phoneNumber: this.form.fullPhoneNumber,
-          createdAt: '',
-          farmSize: this.form.farmSize.replace('acres', '').replace('acre', '').trim(),
-          farmName: this.form.farmName,
-          [`${this.form.userType === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
-          location: {
+        if (this.form.userType === 'farmer' || this.form.userType === 'buyer') {
+          const user = {
             id: this.user.uid,
-            latitude: this.form.location.lat,
-            longitude: this.form.location.lng,
-            customName: '',
-          },
-        };
-        const saveResponse = await axios.post(`/${this.form.userType}s-service/${this.form.userType}`,
-          user);
-        if (saveResponse.data.success === true) {
-          this.$toast.success(`${this.form.userType} profile set up`, 'success');
-        } else {
-          this.$toast.error(saveResponse.data.msg, 'Error');
+            name: this.form.name,
+            email: this.form.email,
+            phoneNumber: this.form.fullPhoneNumber,
+            createdAt: '',
+            // farmer
+            farmSize: this.form.farmSize.replace('acres', '').replace('acre', '').trim(),
+            farmName: this.form.farmName,
+            [`${this.form.userType === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
+            location: {
+              id: this.user.uid,
+              latitude: this.form.location.lat,
+              longitude: this.form.location.lng,
+              customName: '',
+            },
+          };
+          const saveResponse = await axios.post(`/${this.form.userType}s-service/${this.form.userType}`,
+            user);
+          if (saveResponse.data.success === true) {
+            this.$toast.success(`${this.form.userType} profile set up`, 'success');
+          } else {
+            this.$toast.error(saveResponse.data.msg, 'Error');
+          }
+        }
+        if (this.form.userType === 'exporter') {
+          const user = {
+            id: this.user.uid,
+            name: this.form.name,
+            email: this.form.email,
+            phoneNumber: this.form.fullPhoneNumber,
+            licenseId: this.form.licenseId,
+          };
+          const saveResponse = await axios.post('/farmers-service/exporter',
+            user);
+          if (saveResponse.data.success === true) {
+            this.$toast.success(`${this.form.userType} profile set up`, 'success');
+          } else {
+            this.$toast.error(saveResponse.data.msg, 'Error');
+          }
         }
       } catch (e) {
         this.$toast.error(e.message, 'Error');
@@ -548,19 +590,43 @@ export default {
         await this.signUpUser();
       }
       // fetching the users credentials and putting them into state
-      const response = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
-      if (response.data.data == null) {
-        await this.signUpUser();
-        const response2 = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
-        if (response2.data.data == null) {
-          this.$toast.error('user not found');
+      let response = '';
+      if (getCurrentUserRole() === 'farmer' || getCurrentUserRole() === 'buyer') {
+        response = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
+        if (response.data.data == null) {
+          await this.signUpUser();
+          const response2 = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
+          if (response2.data.data == null) {
+            this.$toast.error('user not found');
+          }
+        }
+      } else if (getCurrentUserRole() === 'exporter') {
+        response = await axios.get(`/farmers-service/${getCurrentUserRole()}/${this.user.uid}`);
+        if (response.data.data == null) {
+          await this.signUpUser();
+          const response2 = await axios.get(`/${getCurrentUserRole()}s-service/${getCurrentUserRole()}?${getCurrentUserRole()}Id=${this.user.uid}`);
+          if (response2.data.data == null) {
+            this.$toast.error('user not found');
+          }
         }
       }
       const user = { ...this.user, ...response.data.data };
       await this.$store.dispatch('auth/signIn', {
         user,
       });
-      this.$router.push({ name: 'Dashboard' });
+      const mode = this.$route.query.mode;
+      // const exporterId = this.$route.query.exporterId;
+      const encodedRedirect = this.$route.query.r;
+      const redirectPath = encodedRedirect ? atob(encodedRedirect) : '/';
+
+      if (mode === 'exporter') {
+        // You can fetch exporter info here if needed using exporterId
+        this.$router.push(redirectPath);
+      } else if (mode === 'self') {
+        // Maybe redirect to a specific dashboard
+        this.$router.push({ name: 'Dashboard' }); // or redirectPath if dynamic
+      }
+
       this.$toast.success('Signed in successfully!', `${this.form.name}`);
     },
     // async onSubmit() {
