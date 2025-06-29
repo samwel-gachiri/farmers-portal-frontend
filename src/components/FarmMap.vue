@@ -306,7 +306,7 @@ export default {
             };
             resolve();
           },
-          (error) => {
+          () => {
             this.showErrorMessage('Geolocation error:');
             // Default to Nairobi, Kenya if geolocation fails
             this.userLocation = { lat: -1.2921, lng: 36.8219 };

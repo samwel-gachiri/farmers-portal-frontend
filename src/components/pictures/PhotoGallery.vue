@@ -89,7 +89,6 @@ export default {
       try {
         const dataUrl = await this.blobToDataURL(blob);
         const exifData = piexif.load(dataUrl);
-        console.log(exifData);
         if (exifData.GPS) {
           const lat = piexif.GPSHelper.dmsRationalToDeg(
             exifData.GPS[piexif.GPSIFD.GPSLatitude],
@@ -106,7 +105,7 @@ export default {
         }
         return null;
       } catch (error) {
-        console.error('EXIF read error:', error);
+        this.$toast.error('EXIF read error:', error.message);
         return null;
       }
     },
