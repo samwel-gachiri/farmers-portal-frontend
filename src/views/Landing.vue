@@ -1,21 +1,23 @@
 <template>
   <div class="landing-page">
     <!-- Navigation -->
-    <nav class="navbar tw-fixed tw-top-4 tw-w-full lg:tw-top-6" :class="{ 'scrolled': isScrolled }">
-      <!-- <div class="tw-border-2 tw-mx-6 md:tw-mx-9 tw-relative tw-flex tw-flex-row tw-h-[var(--navbar-height)] tw-w-full tw-items-center tw-justify-between tw-rounded-lg tw-border tw-border-transparent tw-bg-brand-background tw-px-2 tw-py-1 tw-transition-[box-shadow_background-color_border-color] tw-duration-300 tw-motion-reduce:tw-transition-none lg:tw-grid lg:tw-grid-cols-[1fr_auto_1fr] lg:tw-rounded-2xl lg:tw-py-[0.4375rem] lg:tw-pr-[0.4375rem]"> -->
-        <a href="#" class="logo">
-          <div class="logo-icon">AC</div>
-          <span>Agri</span><span>Connect</span>
-        </a>
-        <div class="nav-links" :class="{ 'mobile-menu': showMobileMenu }">
-          <a href="#features" @click="showMobileMenu = false">Features</a>
-          <a href="#benefits" @click="showMobileMenu = false">Benefits</a>
-          <a href="#how-it-works" @click="showMobileMenu = false">How It Works</a>
-          <a href="#testimonials" @click="showMobileMenu = false">Testimonials</a>
-        </div>
-        <a href="#" class="cta-button">Get Started</a>
-        <button class="mobile-menu-btn" @click="toggleMobileMenu">☰</button>
-      <!-- </div> -->
+    <nav
+      class="navbar tw-fixed tw-top-4 tw-left-0 tw-w-full tw-shadow-lg tw-bg-white/80 tw-backdrop-blur-md tw-rounded-2xl tw-px-6 tw-py-2 tw-flex tw-items-center tw-justify-between tw-z-50 tw-transition-all tw-duration-300"
+      :class="{ 'scrolled': isScrolled }"
+      style="box-shadow: 0 6px 32px 0 rgba(0,0,0,0.10);"
+    >
+      <a href="#" class="logo tw-flex tw-items-center tw-gap-2">
+        <div class="logo-icon tw-bg-gradient-to-br tw-from-green-700 tw-to-yellow-500 tw-rounded-full tw-w-10 tw-h-10 tw-flex tw-items-center tw-justify-center tw-text-white tw-font-bold tw-text-lg">AC</div>
+        <span class="tw-font-bold tw-text-green-700">Agri</span><span class="tw-font-bold tw-text-yellow-600">Connect</span>
+      </a>
+      <div class="nav-links tw-flex tw-gap-8 tw-items-center" :class="{ 'mobile-menu': showMobileMenu }">
+        <a href="#features" @click="showMobileMenu = false" class="tw-text-gray-700 tw-font-medium tw-transition hover:tw-text-green-700">Features</a>
+        <a href="#benefits" @click="showMobileMenu = false" class="tw-text-gray-700 tw-font-medium tw-transition hover:tw-text-green-700">Benefits</a>
+        <a href="#how-it-works" @click="showMobileMenu = false" class="tw-text-gray-700 tw-font-medium tw-transition hover:tw-text-green-700">How It Works</a>
+        <a href="#testimonials" @click="showMobileMenu = false" class="tw-text-gray-700 tw-font-medium tw-transition hover:tw-text-green-700">Testimonials</a>
+      </div>
+      <a href="#" class="cta-button tw-bg-gradient-to-r tw-from-green-600 tw-to-green-400 tw-text-white tw-py-2 tw-px-6 tw-rounded-full tw-font-semibold tw-shadow hover:tw-from-green-700 hover:tw-to-green-500 tw-transition">Get Started</a>
+      <button class="mobile-menu-btn tw-bg-transparent tw-border-none tw-text-3xl tw-text-green-700 tw-ml-4 tw-block md:tw-hidden" @click="toggleMobileMenu">☰</button>
     </nav>
 
     <!-- Hero Section -->
@@ -534,12 +536,16 @@ body {
   align-items: center;
   z-index: 1000;
   transition: background 0.3s ease;
+  /* Remove old background and border, handled by Tailwind above */
+  /* Add smooth shadow and rounded corners for modern look */
+  border-radius: 1.5rem;
+  margin: 1rem auto;
+  max-width: 1200px;
 }
 
 .navbar.scrolled {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  background: rgba(255,255,255,0.95) !important;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.15);
 }
 
 .logo {
@@ -980,29 +986,40 @@ footer {
     width: 60%;
     opacity: 0.7;
   }
+
+  .navbar {
+    max-width: 98vw;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    flex-direction: row;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+  }
   .nav-links {
     position: fixed;
     top: 80px;
     right: -100%;
     width: 80%;
     height: calc(100vh - 80px);
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(255,255,255,0.98);
     flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: right 0.3s ease;
     z-index: 999;
+    border-radius: 1.5rem 0 0 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.10);
   }
-
   .nav-links.mobile-menu {
     right: 0;
   }
-
   .mobile-menu-btn {
-    display: block;
+    display: block !important;
   }
 
   .hero {

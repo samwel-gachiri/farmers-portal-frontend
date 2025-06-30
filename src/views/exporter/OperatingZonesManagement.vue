@@ -46,8 +46,8 @@
                     <input
                       v-model="newZone.name"
                       type="text"
-                      class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
-                      :class="{'tw-border-red-500': !newZone.name && formTouched}"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                      :class="{'tw-border-red-500 border-danger': !newZone.name && formTouched}"
                       required
                       placeholder="Enter zone name"
                     />
@@ -55,7 +55,7 @@
                   <!-- produceType select hidden for now -->
                   <div class="tw-mb-5" style="display:none">
                     <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Produce Type</label>
-                    <select v-model="newZone.produceType" class="tw-w-full tw-border tw-rounded-full tw-p-3 tw-bg-gray-50">
+                    <select v-model="newZone.produceType" class="tw-w-full tw-p-3 tw-bg-gray-50 tw-rounded-full border border-secondary">
                       <option v-for="type in produceTypes" :key="type" :value="type">{{ type }}</option>
                     </select>
                   </div>
@@ -65,8 +65,8 @@
                       v-model.number="newZone.centerLatitude"
                       type="number"
                       step="any"
-                      class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
-                      :class="{'tw-border-red-500': !rules.latitude(newZone.centerLatitude) && formTouched}"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                      :class="{'tw-border-red-500 border-danger': !rules.latitude(newZone.centerLatitude) && formTouched}"
                       required
                       placeholder="e.g. -1.2921"
                     />
@@ -77,8 +77,8 @@
                       v-model.number="newZone.centerLongitude"
                       type="number"
                       step="any"
-                      class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
-                      :class="{'tw-border-red-500': !rules.longitude(newZone.centerLongitude) && formTouched}"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                      :class="{'tw-border-red-500 border-danger': !rules.longitude(newZone.centerLongitude) && formTouched}"
                       required
                       placeholder="e.g. 36.8219"
                     />
@@ -89,8 +89,8 @@
                       v-model.number="newZone.radiusKm"
                       type="number"
                       step="any"
-                      class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
-                      :class="{'tw-border-red-500': !rules.positive(newZone.radiusKm) && formTouched}"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                      :class="{'tw-border-red-500 border-danger': !rules.positive(newZone.radiusKm) && formTouched}"
                       required
                       placeholder="e.g. 10"
                     />
@@ -183,7 +183,7 @@
                   <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Select Zone</label>
                   <select
                     v-model="selectedZoneFarmersZone"
-                    class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
+                    class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
                     :disabled="loadingZones"
                     @focus="fetchZoneOptions"
                   >
@@ -230,7 +230,7 @@
                   class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-py-2 tw-px-4 tw-rounded-lg tw-ml-4 tw-font-semibold tw-shadow-md tw-transition"
                 >
                   <span v-if="loading">Adding...</span>
-                  <span v-else>Add Zone Farmers</span>
+                  <span v-else>Add {{selectedZoneFarmersZone?.name}} Zone Farmers</span>
                 </button>
               </div>
               <div class="tw-p-0">
