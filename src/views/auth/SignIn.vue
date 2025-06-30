@@ -51,7 +51,6 @@
         </div>
         <!--        form part-->
         <div class="tw-bg-blue tw-flex tw-flex-col  tw-justify-center tw-items-center tw-w-full md:tw-w-1/2 tw-h-full">
-          <div>{{ userMustBeSignedUp }}</div>
           <v-card
               flat
               style="border-radius: 20px; border: 4px solid #f6eeee;"

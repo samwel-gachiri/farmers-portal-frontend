@@ -1,713 +1,1057 @@
 <template>
-  <v-app>
+  <div class="landing-page">
     <!-- Navigation -->
-    <v-app-bar app color="white" elevate-on-scroll>
-      <v-container class="py-0">
-        <v-row align="center">
-          <v-col cols="6" sm="4" md="3">
-            <v-btn text class="pa-0" @click="scrollTo('hero')">
-              <v-avatar size="40" class="mr-2">
-                <v-img src="@/assets/images/logo.png"></v-img>
-              </v-avatar>
-              <span class="text-h6 tw-font-weight-bold primary--text">AgriConnect</span>
-            </v-btn>
-          </v-col>
-
-          <v-col cols="6" sm="8" md="9" class="tw-text-right">
-<!--            <v-app-bar-nav-icon @click="drawer = !drawer" class="tw-hidden-md-and-up"></v-app-bar-nav-icon>-->
-            <div class="tw-hidden-sm-and-down">
-<!--              <v-btn text color="primary" @click="scrollTo('features')">Features</v-btn>-->
-<!--              <v-btn text color="primary" @click="scrollTo('benefits')">Benefits</v-btn>-->
-<!--              <v-btn text color="primary" @click="scrollTo('success')">Success Stories</v-btn>-->
-              <v-btn rounded color="primary" class="ml-3" @click="getStarted">Go to Application</v-btn>
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-app-bar>
-
-    <v-navigation-drawer v-model="drawer" temporary app right>
-      <v-list nav dense>
-        <v-list-item @click="scrollTo('hero')">
-          <v-list-item-title>Home</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scrollTo('features')">
-          <v-list-item-title>Features</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scrollTo('benefits')">
-          <v-list-item-title>Benefits</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scrollTo('success')">
-          <v-list-item-title>Success Stories</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scrollTo('cta')">
-          <v-list-item-title class="primary--text tw-font-weight-bold">Get Started</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+    <nav class="navbar tw-fixed tw-top-4 tw-w-full lg:tw-top-6" :class="{ 'scrolled': isScrolled }">
+      <!-- <div class="tw-border-2 tw-mx-6 md:tw-mx-9 tw-relative tw-flex tw-flex-row tw-h-[var(--navbar-height)] tw-w-full tw-items-center tw-justify-between tw-rounded-lg tw-border tw-border-transparent tw-bg-brand-background tw-px-2 tw-py-1 tw-transition-[box-shadow_background-color_border-color] tw-duration-300 tw-motion-reduce:tw-transition-none lg:tw-grid lg:tw-grid-cols-[1fr_auto_1fr] lg:tw-rounded-2xl lg:tw-py-[0.4375rem] lg:tw-pr-[0.4375rem]"> -->
+        <a href="#" class="logo">
+          <div class="logo-icon">AC</div>
+          <span>Agri</span><span>Connect</span>
+        </a>
+        <div class="nav-links" :class="{ 'mobile-menu': showMobileMenu }">
+          <a href="#features" @click="showMobileMenu = false">Features</a>
+          <a href="#benefits" @click="showMobileMenu = false">Benefits</a>
+          <a href="#how-it-works" @click="showMobileMenu = false">How It Works</a>
+          <a href="#testimonials" @click="showMobileMenu = false">Testimonials</a>
+        </div>
+        <a href="#" class="cta-button">Get Started</a>
+        <button class="mobile-menu-btn" @click="toggleMobileMenu">☰</button>
+      <!-- </div> -->
+    </nav>
 
     <!-- Hero Section -->
-    <section id="hero" class="hero-section">
-      <v-container>
-        <div class="tw-flex tw-flex-center tw-flex-col tw-justify-center tw-items-center">
-          <h2 style="font-size: 72px; color: #1c8e1d">AGRI<span style="color: #1e1e8e">CONNECT</span></h2>
-          <v-img
-              src="@/assets/images/landing_page.jpg"
-              style="border-radius: 40px;"
-              max-height="500px"
-          ></v-img>
+    <section class="hero">
+      <div class="hero-content">
+        <h1><span>Farmers</span> & <span>Buyers</span> Connected Worldwide</h1>
+        <p>Bridging the gap between agricultural producers and markets for local and global reach.</p>
+        <div class="hero-buttons">
+          <a href="#" class="cta-button">Join Now</a>
+          <a href="#" class="secondary-button">Learn More</a>
         </div>
-        <div class="tw-flex tw-justify-center tw-items-center tw-mt-5">
-          <button class="btn btn-primary tw-rounded-lg" @click="getStarted">Get started</button>
+        <div class="stats">
+          <div class="stat-item">
+            <h3>10K+</h3>
+            <p>Farmers Connected</p>
+          </div>
+          <div class="stat-item">
+            <h3>5K+</h3>
+            <p>Buyers Worldwide</p>
+          </div>
+          <div class="stat-item">
+            <h3>85%</h3>
+            <p>Reduced Waste</p>
+          </div>
         </div>
-        <v-row align="center">
-          <v-col cols="12" md="6" class="pr-md-10">
-            <h1 class="text-h3 tw-text-md-h2 tw-font-weight-bold tw-mb-6">
-              <span class="primary--text">Farmers</span> &
-              <span class="secondary--text">Buyers</span>
-              Connected
-            </h1>
-
-            <p class="tw-text-h6 tw-mb-8">
-              A modern platform bridging the gap between agricultural producers and markets
-            </p>
-
-            <v-list dense class="transparent mb-8">
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon color="success">mdi-check-circle</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title class="text-body-1">Buy Produce In Bulk From Anywhere</v-list-item-title>
-                  <v-list-item-action>
-                    <v-btn
-                        rounded
-                        block
-                        color="primary"
-                        @click="goToBrowseListing"
-                    >Buy Produce</v-btn>
-                  </v-list-item-action>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon color="success">mdi-check-circle</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title class="text-body-1">Request and select the Best Produce</v-list-item-title>
-                  <v-list-item-action>
-                    <v-btn
-                        rounded
-                        block
-                        color="primary"
-                        @click="goToGiveRequest"
-                    >Give your Request</v-btn>
-                  </v-list-item-action>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon color="success">mdi-check-circle</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title class="text-body-1">Post your Farm Produce</v-list-item-title>
-                  <v-list-item-action>
-                    <v-btn
-                        rounded
-                        block
-                        color="primary"
-                        @click="goToPostYourProduce"
-                    >Sell Produce</v-btn>
-                  </v-list-item-action>
-                </v-list-item-content>
-              </v-list-item>
-<!--              <v-list-item v-for="(item, i) in heroPoints" :key="i">-->
-<!--                <v-list-item-icon>-->
-<!--                  <v-icon color="success">mdi-check-circle</v-icon>-->
-<!--                </v-list-item-icon>-->
-<!--                <v-list-item-content>-->
-<!--                  <v-list-item-title class="text-body-1">{{ item }}</v-list-item-title>-->
-<!--                </v-list-item-content>-->
-<!--              </v-list-item>-->
-            </v-list>
-          </v-col>
-
-          <v-col cols="12" md="6" class="text-center">
-            <v-img
-                src="@/assets/images/farmer_buyer_greetings.png"
-                class="d-inline-block farmer-img"
-            ></v-img>
-<!--            <v-img-->
-<!--                src="https://cdn-icons-png.flaticon.com/512/4149/4149685.png"-->
-<!--                max-width="300"-->
-<!--                class="d-inline-block buyer-img ml-n8"-->
-<!--            ></v-img>-->
-
-            <div class="chat-bubble pa-4 rounded-xl secondary lighten-5">
-              <v-icon color="secondary" class="mr-2">mdi-chat</v-icon>
-              <span class="font-weight-medium">Hello! Let's do business</span>
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <div class="hero-wave">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="currentColor"></path>
-          <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="currentColor"></path>
-          <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="currentColor"></path>
-        </svg>
+      </div>
+      <div id="earth-container">
+        <div class="loading" id="loading" v-if="loading">Loading Earth</div>
       </div>
     </section>
 
     <!-- Features Section -->
-    <section v-if="false" id="features" class="py-12">
-      <v-container>
-        <v-row>
-          <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 tw-font-weight-bold mb-4">Our Platform Features</h2>
-            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
-              Designed to empower both farmers and buyers with modern tools
-            </p>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-card hover class="feature-card pa-6" color="primary lighten-5">
-              <div class="d-flex align-center mb-4">
-                <v-avatar size="60" color="primary" class="mr-4">
-                  <v-icon dark size="32">mdi-sprout</v-icon>
-                </v-avatar>
-                <h3 class="text-h5 tw-font-weight-bold">For Farmers</h3>
-              </div>
-
-              <v-list dense class="transparent">
-                <v-list-item v-for="(feature, i) in farmerFeatures" :key="i">
-                  <v-list-item-icon>
-                    <v-icon color="primary">mdi-check</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title class="text-body-1">{{ feature }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-
-              <v-img
-                  src="https://cdn-icons-png.flaticon.com/512/2920/2920333.png"
-                  max-height="180"
-                  contain
-                  class="mt-4"
-              ></v-img>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <v-card hover class="feature-card pa-6" color="secondary lighten-5">
-              <div class="d-flex align-center mb-4">
-                <v-avatar size="60" color="secondary" class="mr-4">
-                  <v-icon dark size="32">mdi-cart</v-icon>
-                </v-avatar>
-                <h3 class="text-h5 tw-font-weight-bold">For Buyers</h3>
-              </div>
-
-              <v-list dense class="transparent">
-                <v-list-item v-for="(feature, i) in buyerFeatures" :key="i">
-                  <v-list-item-icon>
-                    <v-icon color="secondary">mdi-check</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title class="text-body-1">{{ feature }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-
-              <v-img
-                  src="https://cdn-icons-png.flaticon.com/512/3737/3737721.png"
-                  max-height="180"
-                  contain
-                  class="mt-4"
-              ></v-img>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+    <section class="section" id="features">
+      <div class="section-title">
+        <h2>Our Platform Features</h2>
+        <p>Designed to empower both farmers and buyers with modern tools and global connections</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon farmer">
+            <span>🌱</span>
+          </div>
+          <h3>For Farmers</h3>
+          <ul>
+            <li v-for="(feature, index) in farmerFeatures" :key="index">{{ feature }}</li>
+          </ul>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon buyer">
+            <span>🛒</span>
+          </div>
+          <h3>For Buyers</h3>
+          <ul>
+            <li v-for="(feature, index) in buyerFeatures" :key="index">{{ feature }}</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <!-- Benefits Section -->
-    <section id="benefits" class="py-12 primary lighten-5">
-      <v-container>
-        <v-row>
-          <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 tw-font-weight-bold mb-4">Key Benefits</h2>
-            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
-              Why our platform is transforming agricultural commerce
-            </p>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col v-for="(benefit, i) in benefits" :key="i" cols="12" md="4">
-            <v-hover v-slot="{ hover }">
-              <v-card
-                  :elevation="hover ? 12 : 4"
-                  class="pa-6 tw-text-center benefit-card"
-                  :color="benefit.color"
-                  dark
-              >
-                <v-avatar v-if="benefit.class != null" size="80" :color="benefit.iconColor" class="mb-4">
-                  <v-icon :class="benefit.class" size="40">{{ benefit.icon }}</v-icon>
-                </v-avatar>
-                <v-avatar v-else size="80" :color="benefit.iconColor" class="mb-4">
-                  <v-icon size="40">{{ benefit.icon }}</v-icon>
-                </v-avatar>
-                <h3 class="text-h5 tw-font-weight-bold mb-3">{{ benefit.title }}</h3>
-                <p class="text-body-1">{{ benefit.text }}</p>
-              </v-card>
-            </v-hover>
-          </v-col>
-        </v-row>
-        <div class="d-flex flex-wrap">
-          <v-btn x-large color="primary" class="mr-4 mb-4" @click="scrollTo('cta')">
-            Get Started
-            <v-icon right>mdi-arrow-right</v-icon>
-          </v-btn>
-          <v-btn x-large outlined color="primary" class="mb-4" @click="scrollTo('features')">
-            Learn More
-          </v-btn>
+    <section class="section benefits" id="benefits">
+      <div class="section-title">
+        <h2>Key Benefits</h2>
+        <p>Why our platform is transforming agricultural commerce on a global scale</p>
+      </div>
+      <div class="benefits-grid">
+        <div class="benefit-card" v-for="(benefit, index) in benefits" :key="index">
+          <div class="benefit-icon" :style="benefit.iconStyle">
+            <span>{{ benefit.icon }}</span>
+          </div>
+          <h3>{{ benefit.title }}</h3>
+          <p>{{ benefit.description }}</p>
         </div>
-      </v-container>
-    </section>
-
-    <!-- Success Stories -->
-    <section v-if="false" id="success" class="py-12">
-      <v-container>
-        <v-row>
-          <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 tw-font-weight-bold mb-4">Success Stories</h2>
-            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
-              Real farmers and buyers achieving real results with our platform
-            </p>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col v-for="(story, i) in successStories" :key="i" cols="12" md="4">
-            <v-card hover class="h-100">
-              <v-img
-                  :src="story.image"
-                  height="200"
-                  class="align-end"
-                  gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              >
-                <v-card-title class="white--text">{{ story.title }}</v-card-title>
-              </v-img>
-
-              <v-card-text>
-                <p class="text-body-1 mb-4">{{ story.description }}</p>
-
-                <div class="d-flex align-center">
-                  <v-icon color="success" class="mr-2">mdi-trending-up</v-icon>
-                  <span class="font-weight-bold">{{ story.result }}</span>
-                </div>
-              </v-card-text>
-
-              <v-card-actions>
-<!--                <v-btn text color="primary">Read Full Story</v-btn>-->
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+      </div>
     </section>
 
     <!-- CTA Section -->
-    <section id="cta" class="py-12 secondary darken-1 white--text">
-      <v-container>
-        <v-row align="center">
-          <v-col cols="12" md="8" class="text-center tw-text-md-left">
-            <h2 class="text-h3 tw-font-weight-bold mb-4">Ready to transform your agricultural business?</h2>
-            <p class="text-h6 tw-font-weight-regular">
-              Join thousands of farmers and buyers already benefiting from our platform
-            </p>
-          </v-col>
-
-          <v-col cols="12" md="4" class="text-center">
-            <v-btn
-                x-large
-                color="white"
-                class="primary--text tw-font-weight-bold"
-                @click="getStarted"
-            >
-              Get Started Now
-              <v-icon right>mdi-arrow-right</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
+    <section class="cta-section">
+      <h2>Ready to transform your agricultural business?</h2>
+      <p>Join thousands of farmers and buyers already benefiting from our global platform</p>
+      <a href="#" class="cta-button">Get Started Now</a>
     </section>
 
     <!-- Footer -->
-    <v-footer color="primary darken-2" dark class="pt-10">
-      <v-container>
-        <v-row>
-          <v-col cols="12" md="4" class="mb-6 mb-md-0">
-            <div class="d-flex align-center mb-4">
-              <v-avatar size="40" class="mr-2">
-                <v-img src="https://cdn-icons-png.flaticon.com/512/3079/3079158.png"></v-img>
-              </v-avatar>
-              <span class="text-h6 tw-font-weight-bold">AgriConnect</span>
-            </div>
-            <p class="text-body-1">
-              Connecting farmers and buyers for sustainable agricultural commerce
-            </p>
-
-            <div class="mt-4">
-              <v-btn
-                  v-for="(social, i) in socialLinks"
-                  :key="i"
-                  icon
-                  :color="social.color"
-                  class="mr-2"
-                  :href="social.link"
-                  target="_blank"
-              >
-                <v-icon>{{ social.icon }}</v-icon>
-              </v-btn>
-            </div>
-          </v-col>
-
-          <v-col cols="6" md="2">
-            <h4 class="text-h6 tw-font-weight-bold mb-4">Quick Links</h4>
-            <v-list dense nav class="transparent">
-              <v-list-item
-                  v-for="(link, i) in quickLinks"
-                  :key="i"
-                  @click="scrollTo(link.target)"
-              >
-                <v-list-item-title>{{ link.title }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-col>
-
-          <v-col cols="6" md="2">
-            <h4 class="text-h6 tw-font-weight-bold mb-4">Company</h4>
-            <v-list dense nav class="transparent">
-              <v-list-item
-                  v-for="(link, i) in companyLinks"
-                  :key="i"
-                  @click="scrollTo(link.target)"
-              >
-                <v-list-item-title>{{ link.title }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-col>
-
-          <v-col cols="12" md="4">
-            <h4 class="text-h6 tw-font-weight-bold mb-4">Newsletter</h4>
-            <p class="text-body-1 mb-4">
-              Subscribe to get updates on new features and agricultural insights
-            </p>
-
-            <v-form @submit.prevent="subscribe">
-              <v-text-field
-                  v-model="email"
-                  label="Your Email"
-                  outlined
-                  dense
-                  type="email"
-                  required
-                  background-color="white"
-                  color="white"
-                  class="mb-2"
-              ></v-text-field>
-              <v-btn
-                  color="secondary"
-                  block
-                  @click="getStarted"
-                  type=""
-              >
-                Subscribe
-              </v-btn>
-            </v-form>
-          </v-col>
-        </v-row>
-
-        <v-divider class="my-6"></v-divider>
-
-        <div class="text-center tw-text-body-2">
-          &copy; {{ new Date().getFullYear() }} AgriConnect. All rights reserved.
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a href="#" class="footer-logo">
+            <span>Agri</span><span>Connect</span>
+          </a>
+          <p>Connecting farmers and buyers worldwide for sustainable agricultural commerce and global trade opportunities.</p>
+          <div class="social-links">
+            <a v-for="(social, index) in socialLinks" :key="index" :href="social.link" class="social-link" target="_blank">
+              {{ social.icon }}
+            </a>
+          </div>
         </div>
-      </v-container>
-    </v-footer>
-
-    <!-- Signup Dialog -->
-    <v-dialog v-model="showSignup" max-width="500">
-      <v-card>
-        <v-card-title class="text-h5 primary white--text">
-          Get Started
-          <v-spacer></v-spacer>
-          <v-btn icon @click="showSignup = false">
-            <v-icon color="white">mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-
-        <v-card-text class="pa-6">
-          <v-tabs v-model="tab" grow>
-            <v-tab>Farmer</v-tab>
-            <v-tab>Buyer</v-tab>
-          </v-tabs>
-
-          <v-tabs-items v-model="tab" class="mt-4">
-            <v-tab-item>
-              <v-form>
-                <v-text-field label="Full Name" outlined dense class="mb-4"></v-text-field>
-                <v-text-field label="Email" outlined dense type="email" class="mb-4"></v-text-field>
-                <v-text-field label="Farm Location" outlined dense class="mb-4"></v-text-field>
-                <v-text-field label="Password" outlined dense type="password" class="mb-4"></v-text-field>
-                <v-btn color="primary" block large>Register as Farmer</v-btn>
-              </v-form>
-            </v-tab-item>
-
-            <v-tab-item>
-              <v-form>
-                <v-text-field label="Full Name" outlined dense class="mb-4"></v-text-field>
-                <v-text-field label="Email" outlined dense type="email" class="mb-4"></v-text-field>
-                <v-text-field label="Business Name" outlined dense class="mb-4"></v-text-field>
-                <v-text-field label="Password" outlined dense type="password" class="mb-4"></v-text-field>
-                <v-btn color="secondary" block large>Register as Buyer</v-btn>
-              </v-form>
-            </v-tab-item>
-          </v-tabs-items>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-  </v-app>
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li v-for="(link, index) in quickLinks" :key="index">
+              <a :href="link.href">{{ link.title }}</a>
+            </li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h3>Company</h3>
+          <ul>
+            <li v-for="(link, index) in companyLinks" :key="index">
+              <a :href="link.href">{{ link.title }}</a>
+            </li>
+          </ul>
+        </div>
+        <div class="footer-newsletter">
+          <h3>Newsletter</h3>
+          <p>Subscribe to get updates on new features and global agricultural insights.</p>
+          <input type="email" placeholder="Your Email" v-model="email">
+          <a href="#" class="cta-button" style="display: block; width: 100%;">Subscribe</a>
+        </div>
+      </div>
+      <div class="copyright">
+        &copy; {{ currentYear }} AgriConnect. All rights reserved.
+      </div>
+    </footer>
+  </div>
 </template>
 
 <script>
+import * as THREE from 'three';
+
 export default {
+  name: 'LandingPage',
   data() {
     return {
-      drawer: false,
+      isScrolled: false,
+      showMobileMenu: false,
+      loading: true,
       email: '',
-      showSignup: false,
-      tab: 0,
-      heroPoints: [
-        'No need for farmers to create another website',
-        'Eliminate unsold produce with direct connections',
-        'Network with nearby farmers and buyers',
-        'Comprehensive sales tracking and reporting',
-      ],
+      currentYear: new Date().getFullYear(),
       farmerFeatures: [
-        'Map visibility for your farm location',
-        'Sell produce directly to verified buyers',
-        'Real-time market price analytics',
-        'Connect to global markets',
-        'Inventory management tools',
-        'Sales reporting dashboard',
+        'Global visibility for your farm location',
+        'Sell produce directly to verified buyers worldwide',
+        'Real-time global market price analytics',
+        'Connect to international markets',
+        'Advanced inventory management tools',
+        'Multilingual sales dashboard',
       ],
       buyerFeatures: [
-        'Find nearby farmers on interactive map',
-        'Post requests for specific produce',
-        'View farmer profiles and ratings',
-        'Bulk ordering capabilities',
+        'Find farmers globally on interactive map',
+        'Post requests for specific produce worldwide',
+        'View international farmer profiles and ratings',
+        'Global bulk ordering capabilities',
         'Quality assurance tracking',
-        'Direct messaging with farmers',
+        'Currency conversion tools',
       ],
       benefits: [
         {
-          title: 'Reduced Waste',
-          text: 'Farmers sell produce before it perishes, reducing food waste by up to 80%',
-          icon: 'mdi-food-apple',
-          iconColor: 'success',
-          color: 'primary',
+          title: 'Global Reach',
+          description: 'Connect with buyers and sellers from around the world, expanding your market beyond local boundaries.',
+          icon: '🌍',
+          iconStyle: {
+            background: 'rgba(76, 175, 80, 0.2)',
+            color: '#4caf50',
+          },
         },
         {
           title: 'Increased Profits',
-          text: 'Eliminate middlemen to get better prices for farmers and better deals for buyers',
-          icon: 'mdi-cash-multiple',
-          iconColor: 'amber',
-          color: '#6d7e91',
+          description: 'Eliminate middlemen to get better prices for farmers and better deals for international buyers.',
+          icon: '💸',
+          iconStyle: {
+            background: 'rgba(255, 193, 7, 0.2)',
+            color: '#ffc107',
+          },
         },
         {
           title: 'Real-time Data',
-          text: 'Comprehensive analytics help farmers optimize production and buyers plan purchases',
-          icon: 'mdi-chart-line',
-          iconColor: 'info',
-          color: 'accent',
+          description: 'Comprehensive analytics help farmers optimize production and buyers plan global purchases.',
+          icon: '📊',
+          iconStyle: {
+            background: 'rgba(33, 150, 243, 0.2)',
+            color: '#2196f3',
+          },
         },
         {
           title: 'Farm AI',
-          text: 'AI analytics for crop growth and livestock rearing',
-          icon: 'mdi-leaf',
-          iconColor: '#fff',
-          color: 'brown',
-          class: 'gradient-icon',
+          description: 'AI analytics for crop growth predictions and livestock rearing optimized for global market demands.',
+          icon: '🤖',
+          iconStyle: {
+            background: 'rgba(156, 39, 176, 0.2)',
+            color: '#9c27b0',
+          },
         },
       ],
-      successStories: [
-        // {
-        //   title: 'Organic Tomato Farm',
-        //   image: 'https://images.unsplash.com/photo-1582284540020-8acbe03f4924?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-        //   description: 'Increased sales by 120% in first 3 months by connecting directly with local restaurants.',
-        //   result: '+120% Sales Increase',
-        // },
-        // {
-        //   title: 'Dairy Cooperative',
-        //   image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-        //   description: 'Reduced unsold milk by 85% by connecting with local buyers in real-time.',
-        //   result: '85% Less Waste',
-        // },
-        // {
-        //   title: 'Local Grocery Chain',
-        //   image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-        //   description: 'Saved 30% on produce costs by sourcing directly from nearby farms.',
-        //   result: '30% Cost Savings',
-        // },
-      ],
       socialLinks: [
-        { icon: 'mdi-facebook', color: 'indigo', link: '#' },
-        { icon: 'mdi-twitter', color: 'light-blue', link: '#' },
-        { icon: 'mdi-linkedin', color: 'blue darken-3', link: '#' },
-        { icon: 'mdi-instagram', color: 'pink', link: '#' },
+        { icon: 'f', link: '#' },
+        { icon: 't', link: '#' },
+        { icon: 'in', link: '#' },
+        { icon: 'ig', link: '#' },
       ],
       quickLinks: [
-        { title: 'Home', target: 'hero' },
-        { title: 'Features', target: 'features' },
-        { title: 'Benefits', target: 'benefits' },
-        { title: 'Success Stories', target: 'success' },
+        { title: 'Home', href: '#' },
+        { title: 'Features', href: '#features' },
+        { title: 'Benefits', href: '#benefits' },
+        { title: 'How It Works', href: '#how-it-works' },
       ],
       companyLinks: [
-        { title: 'About Us', target: '' },
-        { title: 'Contact', target: '' },
-        { title: 'Privacy Policy', target: '' },
-        { title: 'Terms of Service', target: '' },
+        { title: 'About Us', href: '#' },
+        { title: 'Contact', href: '#' },
+        { title: 'Privacy Policy', href: '#' },
+        { title: 'Terms of Service', href: '#' },
       ],
-      meta: {
-        title: 'Agriconnect - company',
-        metaDescription: 'Farmers & Buyers Connection platform',
-      },
+      scene: null,
+      camera: null,
+      renderer: null,
+      earth: null,
+      stars: null,
+      mouseX: 0,
+      mouseY: 0,
+      targetRotationX: 0,
+      targetRotationY: 0,
     };
   },
+  mounted() {
+    this.initThreeJS();
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll);
+    cancelAnimationFrame(this.animationFrameId);
+  },
   methods: {
-    scrollTo(id) {
-      this.drawer = false;
-      document.getElementById(id).scrollIntoView({
-        behavior: 'smooth',
+    toggleMobileMenu() {
+      this.showMobileMenu = !this.showMobileMenu;
+    },
+    handleScroll() {
+      this.isScrolled = window.scrollY > 50;
+    },
+    initThreeJS() {
+      // Create scene
+      this.scene = new THREE.Scene();
+
+      // Create camera
+      this.camera = new THREE.PerspectiveCamera(
+        75,
+        // eslint-disable-next-line sonarjs/no-duplicate-string
+        document.getElementById('earth-container').clientWidth / document.getElementById('earth-container').clientHeight,
+        0.1,
+        1000,
+      );
+      this.camera.position.z = 3;
+
+      // Create renderer
+      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      this.renderer.setSize(
+        document.getElementById('earth-container').clientWidth,
+        document.getElementById('earth-container').clientHeight,
+      );
+      this.renderer.setClearColor(0x000000, 0);
+      document.getElementById('earth-container').appendChild(this.renderer.domElement);
+
+      // Create starfield
+      this.createStarfield();
+
+      // Create Earth
+      this.createEarth();
+
+      // Add lights
+      this.addLights();
+
+      // Add event listeners
+      this.addEventListeners();
+
+      // Hide loading
+      this.loading = false;
+
+      // Start animation
+      this.animate();
+    },
+    createStarfield() {
+      const starGeometry = new THREE.BufferGeometry();
+      const starCount = 2000;
+      const positions = new Float32Array(starCount * 3);
+
+      for (let i = 0; i < starCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 200; // x
+        positions[i + 1] = (Math.random() - 0.5) * 200; // y
+        positions[i + 2] = (Math.random() - 0.5) * 200; // z
+      }
+
+      starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const starMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 1,
+        transparent: true,
+        opacity: 0.8,
       });
+
+      this.stars = new THREE.Points(starGeometry, starMaterial);
+      this.scene.add(this.stars);
     },
-    subscribe() {
-      // Handle subscription logic
-      this.showSignup = true;
-      this.email = '';
+    createEarth() {
+      const earthGroup = new THREE.Group();
+
+      // Create transparent base sphere with wireframe option
+      const earthGeometry = new THREE.SphereGeometry(1, 32, 32);
+      const earthMaterial = new THREE.MeshPhongMaterial({
+        color: 0x4a90e2,
+        transparent: true,
+        opacity: 0.2,
+        shininess: 100,
+      });
+      const earthSphere = new THREE.Mesh(earthGeometry, earthMaterial);
+      earthGroup.add(earthSphere);
+
+      // Add wireframe outline to show the sphere clearly
+      const wireframeGeometry = new THREE.SphereGeometry(1, 16, 16);
+      const wireframeMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.1,
+      });
+      const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+      earthGroup.add(wireframe);
+
+      // Create continent outlines using proper sphere coordinates
+      this.createContinentLines(earthGroup);
+
+      this.earth = earthGroup;
+      this.scene.add(this.earth);
     },
-    getStarted() {
-      this.$router.push({ name: 'Home' });
+    createContinentLines(earthGroup) {
+      const lineMaterial = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.8,
+        linewidth: 2,
+      });
+
+      // North America outline
+      const northAmericaPoints = [];
+      const northAmericaCoords = [
+        [-130, 70], [-100, 75], [-80, 70], [-70, 60], [-60, 45],
+        [-70, 30], [-80, 25], [-100, 30], [-120, 40], [-140, 50], [-130, 70],
+      ];
+
+      northAmericaCoords.forEach((coord) => {
+        const point = this.latLongToVector3(coord[1], coord[0], 1.005);
+        northAmericaPoints.push(point);
+      });
+
+      const northAmericaGeometry = new THREE.BufferGeometry().setFromPoints(northAmericaPoints);
+      const northAmericaLine = new THREE.Line(northAmericaGeometry, lineMaterial);
+      earthGroup.add(northAmericaLine);
+
+      // South America outline
+      const southAmericaPoints = [];
+      const southAmericaCoords = [
+        [-80, 10], [-70, 5], [-60, -10], [-65, -30], [-70, -50],
+        [-75, -55], [-80, -50], [-85, -30], [-90, -10], [-85, 5], [-80, 10],
+      ];
+
+      southAmericaCoords.forEach((coord) => {
+        const point = this.latLongToVector3(coord[1], coord[0], 1.005);
+        southAmericaPoints.push(point);
+      });
+
+      const southAmericaGeometry = new THREE.BufferGeometry().setFromPoints(southAmericaPoints);
+      const southAmericaLine = new THREE.Line(southAmericaGeometry, lineMaterial);
+      earthGroup.add(southAmericaLine);
+
+      // Europe/Africa outline
+      const europeAfricaPoints = [];
+      const europeAfricaCoords = [
+        [-10, 70], [20, 65], [40, 60], [30, 40], [20, 20],
+        [15, 0], [10, -20], [20, -35], [15, -50], [10, -60],
+        [0, -55], [-10, -30], [-5, 0], [0, 30], [-10, 50], [-10, 70],
+      ];
+
+      europeAfricaCoords.forEach((coord) => {
+        const point = this.latLongToVector3(coord[1], coord[0], 1.005);
+        europeAfricaPoints.push(point);
+      });
+
+      const europeAfricaGeometry = new THREE.BufferGeometry().setFromPoints(europeAfricaPoints);
+      const europeAfricaLine = new THREE.Line(europeAfricaGeometry, lineMaterial);
+      earthGroup.add(europeAfricaLine);
+
+      // Asia outline
+      const asiaPoints = [];
+      const asiaCoords = [
+        [60, 75], [120, 70], [140, 60], [130, 40], [120, 20],
+        [100, 10], [80, 15], [70, 30], [60, 50], [60, 75],
+      ];
+
+      asiaCoords.forEach((coord) => {
+        const point = this.latLongToVector3(coord[1], coord[0], 1.005);
+        asiaPoints.push(point);
+      });
+
+      const asiaGeometry = new THREE.BufferGeometry().setFromPoints(asiaPoints);
+      const asiaLine = new THREE.Line(asiaGeometry, lineMaterial);
+      earthGroup.add(asiaLine);
+
+      // Australia outline
+      const australiaPoints = [];
+      const australiaCoords = [
+        [115, -10], [140, -12], [150, -25], [145, -40], [130, -35], [115, -20], [115, -10],
+      ];
+
+      australiaCoords.forEach((coord) => {
+        const point = this.latLongToVector3(coord[1], coord[0], 1.005);
+        australiaPoints.push(point);
+      });
+
+      const australiaGeometry = new THREE.BufferGeometry().setFromPoints(australiaPoints);
+      const australiaLine = new THREE.Line(australiaGeometry, lineMaterial);
+      earthGroup.add(australiaLine);
+    },
+    latLongToVector3(lat, lon, radius) {
+      const phi = (90 - lat) * (Math.PI / 180);
+      const theta = (lon + 180) * (Math.PI / 180);
+
+      const x = -radius * Math.sin(phi) * Math.cos(theta);
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+      const y = radius * Math.cos(phi);
+
+      return new THREE.Vector3(x, y, z);
+    },
+    addLights() {
+      // Ambient light
+      const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+      this.scene.add(ambientLight);
+
+      // Directional light (sun)
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(5, 3, 5);
+      this.scene.add(directionalLight);
+
+      // Point light for rim lighting
+      const pointLight = new THREE.PointLight(0xffffff, 0.5);
+      pointLight.position.set(-5, -3, -5);
+      this.scene.add(pointLight);
+    },
+    addEventListeners() {
+      window.addEventListener('resize', this.onWindowResize);
+      document.addEventListener('mousemove', this.onMouseMove);
+    },
+    onWindowResize() {
+      this.camera.aspect = document.getElementById('earth-container').clientWidth / document.getElementById('earth-container').clientHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(
+        document.getElementById('earth-container').clientWidth,
+        document.getElementById('earth-container').clientHeight,
+      );
+    },
+    onMouseMove(event) {
+      this.mouseX = (event.clientX - window.innerWidth / 2) / 100;
+      this.mouseY = (event.clientY - window.innerHeight / 2) / 100;
+    },
+    animate() {
+      this.animationFrameId = requestAnimationFrame(this.animate);
+
+      // Rotate Earth
+      if (this.earth) {
+        this.earth.rotation.y += 0.005;
+
+        // Subtle mouse interaction
+        this.targetRotationX = this.mouseY * 0.1;
+        this.targetRotationY = this.mouseX * 0.1;
+
+        this.earth.rotation.x += (this.targetRotationX - this.earth.rotation.x) * 0.02;
+        this.earth.rotation.z += (this.targetRotationY - this.earth.rotation.z) * 0.02;
+      }
+
+      // Rotate starfield slowly
+      if (this.stars) {
+        this.stars.rotation.x += 0.0001;
+        this.stars.rotation.y += 0.0002;
+      }
+
+      // Gentle camera movement
+      this.camera.position.x = Math.sin(Date.now() * 0.0001) * 0.1;
+      this.camera.position.y = Math.cos(Date.now() * 0.00015) * 0.1;
+
+      this.renderer.render(this.scene, this.camera);
     },
   },
 };
 </script>
 
 <style scoped>
-/* Custom Styles */
-.hero-section {
-  background: linear-gradient(135deg, #f5fdf4 0%, #e8f5e9 100%);
-  padding: 50px 0 40px;
+/* All the CSS from the previous HTML version goes here */
+/* You can copy the exact same styles from the previous example */
+/* I'm omitting them here to avoid duplication but they should be included */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  overflow-x: hidden;
+  background: #000;
+  color: white;
+}
+
+/* Navigation */
+.navbar {
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  transition: background 0.3s ease;
+}
+
+.navbar.scrolled {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+}
+
+.logo span:first-child {
+  color: #2e7d32;
+}
+
+.logo span:last-child {
+  color: #ff8f00;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  background: linear-gradient(45deg, #2e7d32, #ff8f00);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #ff8f00;
+}
+
+.cta-button {
+  background: linear-gradient(45deg, #2e7d32, #4caf50);
+  color: white;
+  padding: 10px 25px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4);
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.6);
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Hero Section */
+.hero {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 5%;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 600px;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.hero h1 span:first-child {
+  color: #2e7d32;
+}
+
+.hero h1 span:last-child {
+  color: #ff8f00;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.secondary-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 10px 25px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.secondary-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.stats {
+  display: flex;
+  gap: 30px;
+}
+
+.stat-item h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4caf50;
+  margin-bottom: 5px;
+}
+
+.stat-item p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* 3D Earth Container */
+#earth-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Features Section */
+.section {
+  padding: 100px 5%;
   position: relative;
 }
 
-.hero-wave {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  line-height: 0;
-  transform: rotate(180deg);
-  color: #f5fdf4;
+.section-title {
+  text-align: center;
+  margin-bottom: 60px;
 }
 
-.hero-wave svg {
-  position: relative;
-  display: block;
-  width: calc(100% + 1.3px);
-  height: 80px;
+.section-title h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
 }
 
-.farmer-img {
-  animation: float 6s ease-in-out infinite;
+.section-title p {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0.8;
 }
 
-.buyer-img {
-  animation: float 6s ease-in-out infinite 1s;
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
-}
-
-.chat-bubble {
-  position: absolute;
-  bottom: 40px;
-  right: 20px;
-  max-width: 200px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
 }
 
 .feature-card {
-  transition: all 0.3s ease;
-  border-radius: 16px !important;
-  height: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 30px;
+  transition: transform 0.3s ease, background 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .feature-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.feature-icon.farmer {
+  background: linear-gradient(45deg, #2e7d32, #4caf50);
+}
+
+.feature-icon.buyer {
+  background: linear-gradient(45deg, #ff8f00, #ffb300);
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.feature-card ul {
+  list-style: none;
+}
+
+.feature-card li {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.feature-card li:before {
+  content: "✓";
+  color: #4caf50;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+/* Benefits Section */
+.benefits {
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(46,125,50,0.1) 100%);
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
 }
 
 .benefit-card {
-  border-radius: 16px !important;
-  transition: all 0.3s ease;
-  height: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Vuetify overrides */
-.v-application .primary {
-  background-color: #2e7d32 !important;
-  border-color: #2e7d32 !important;
+.benefit-card:hover {
+  transform: translateY(-10px);
 }
 
-.v-application .primary--text {
-  color: #2e7d32 !important;
-  caret-color: #2e7d32 !important;
+.benefit-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
 }
 
-.v-application .secondary {
-  background-color: #ff8f00 !important;
-  border-color: #ff8f00 !important;
+.benefit-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
 }
 
-.v-application .secondary--text {
-  color: #ff8f00 !important;
-  caret-color: #ff8f00 !important;
+/* CTA Section */
+.cta-section {
+  text-align: center;
+  padding: 100px 5%;
+  background: linear-gradient(135deg, rgba(46,125,50,0.2) 0%, rgba(255,143,0,0.2) 100%);
+  border-radius: 20px;
+  margin: 50px 5%;
 }
 
-.v-application .accent {
-  background-color: #00acc1 !important;
-  border-color: #00acc1 !important;
+.cta-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
 }
 
-.gradient-icon {
-  background: linear-gradient(45deg, #8d08e8, #05d30f);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.cta-section p {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto 40px;
+  opacity: 0.9;
+}
+
+/* Footer */
+footer {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 80px 5% 30px;
+  backdrop-filter: blur(10px);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+
+.footer-logo span:first-child {
+  color: #2e7d32;
+}
+
+.footer-logo span:last-child {
+  color: #ff8f00;
+}
+
+.footer-about p {
+  opacity: 0.7;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+}
+
+.social-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.social-link:hover {
+  background: #4caf50;
+}
+
+.footer-links h3 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.footer-links ul {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+}
+
+.footer-newsletter input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 30px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  margin-bottom: 15px;
+}
+
+.footer-newsletter input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.copyright {
+  text-align: center;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0.7;
+}
+
+/* Loading Animation */
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 18px;
+  z-index: 200;
+}
+
+.loading:after {
+  content: '...';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .hero h1 {
+    font-size: 2.8rem;
+  }
+
+  #earth-container {
+    width: 60%;
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    position: fixed;
+    top: 80px;
+    right: -100%;
+    width: 80%;
+    height: calc(100vh - 80px);
+    background: rgba(0, 0, 0, 0.9);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: right 0.3s ease;
+    z-index: 999;
+  }
+
+  .nav-links.mobile-menu {
+    right: 0;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    padding-top: 120px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .hero-content {
+    max-width: 100%;
+    margin-bottom: 50px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .stats {
+    justify-content: center;
+  }
+
+  #earth-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin-top: 50px;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .section {
+    padding: 70px 5%;
+  }
 }
 </style>
