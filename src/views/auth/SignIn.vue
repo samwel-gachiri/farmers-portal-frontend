@@ -269,7 +269,6 @@ export default {
       ],
       form: {
         name: '',
-        businessType: '',
         password: '',
         phoneNumber: '',
         fullPhoneNumber: '',
@@ -284,7 +283,8 @@ export default {
           lat: '',
           lng: '',
         },
-        userType: getCurrentUserRole(),
+        // if mode from the router query is exporter then this will be farmer else set to getcurrentuserrole
+        userType: this.$route.query.mode === 'exporter' ? 'farmer' : getCurrentUserRole() || 'farmer',
       },
       ...validations,
       selectedCountry: 'KE',
@@ -614,13 +614,27 @@ export default {
         user,
       });
       const mode = this.$route.query.mode;
+      const zoneId = this.$route.query.zoneId;
       // const exporterId = this.$route.query.exporterId;
       const encodedRedirect = this.$route.query.r;
       const redirectPath = encodedRedirect ? atob(encodedRedirect) : '/';
 
       if (mode === 'exporter') {
-        // You can fetch exporter info here if needed using exporterId
-        this.$router.push(redirectPath);
+        // i would like for you to add farmer above to zone with the following api
+        //    Add Farmer to Zone
+        //  - Endpoint: POST /farmers-service/exporter/zones/{zoneId}/farmers/{farmerId}
+        //  - Creates relationship between farmer and zone
+        if (zoneId) {
+          try {
+            await axios.post(`/farmers-service/exporter/zones/${zoneId}/farmers/${this.user.uid}`);
+            this.$toast.success('Farmer added to zone successfully');
+          } catch (error) {
+            this.$toast.error(`Failed to add farmer to zone: ${error.message}`);
+          }
+        } else {
+          this.$toast.error('No zone specified for the exporter');
+        }
+        this.$router.push(redirectPath || { name: 'Dashboard' });
       } else if (mode === 'self') {
         // Maybe redirect to a specific dashboard
         this.$router.push({ name: 'Dashboard' }); // or redirectPath if dynamic

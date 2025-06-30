@@ -47,7 +47,17 @@ const routes = [
   {
     path: '/signin',
     name: 'SignIn',
-    beforeEnter: ifNotAuthenticated,
+    // for before enter, i would like for it to check the query mode and if mode is self it can redirect to dashboard
+    // eslint-disable-next-line consistent-return
+    beforeEnter: (to, from, next) => {
+      const mode = to.query.mode;
+      if (mode === 'self') {
+        // Redirect self-registration to Dashboard
+        return next({ name: 'Dashboard' });
+      }
+      // Otherwise allow access to SignIn page
+      next();
+    },
     component: () => import('../views/auth/SignIn.vue'),
   },
   {

@@ -1,258 +1,261 @@
 <template>
   <Default>
-    <v-container fluid class="tw-p-4">
+    <div class="tw-p-4 tw-bg-gray-50 min-h-screen">
       <!-- Header -->
-      <v-row>
-        <v-col cols="12">
-          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-mb-6">
-            Operating Zones Management
-          </h1>
-        </v-col>
-      </v-row>
+      <div>
+        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-mb-6">
+          Operating Zones Management
+        </h1>
+      </div>
 
       <!-- Action Tabs -->
-      <v-row>
-        <v-col cols="12">
-          <v-tabs v-model="activeTab" class="tw-mb-6">
-            <v-tab>Create Zone</v-tab>
-            <v-tab>View All Zones</v-tab>
-            <v-tab>Zone Farmers</v-tab>
-          </v-tabs>
-        </v-col>
-      </v-row>
+      <div class="tw-mb-6">
+        <div class="tw-flex tw-border-b tw-space-x-4">
+          <button
+            class="tw-py-2 tw-px-4 tw-font-semibold tw-transition-colors tw-duration-200"
+            :class="activeTab === 0 ? 'tw-border-b-2 tw-border-blue-500 tw-text-blue-600 tw-bg-white' : 'tw-text-gray-600 hover:tw-bg-gray-100'"
+            @click="activeTab = 0"
+          >Create Zone</button>
+          <button
+            class="tw-py-2 tw-px-4 tw-font-semibold tw-transition-colors tw-duration-200"
+            :class="activeTab === 1 ? 'tw-border-b-2 tw-border-blue-500 tw-text-blue-600 tw-bg-white' : 'tw-text-gray-600 hover:tw-bg-gray-100'"
+            @click="activeTab = 1"
+          >View All Zones</button>
+          <button
+            class="tw-py-2 tw-px-4 tw-font-semibold tw-transition-colors tw-duration-200"
+            :class="activeTab === 2 ? 'tw-border-b-2 tw-border-blue-500 tw-text-blue-600 tw-bg-white' : 'tw-text-gray-600 hover:tw-bg-gray-100'"
+            @click="activeTab = 2"
+          >Zone Farmers</button>
+        </div>
+      </div>
 
       <!-- Tab Content -->
-      <v-tabs-items v-model="activeTab">
+      <div v-if="activeTab === 0">
         <!-- Create Zone Tab -->
-        <v-tab-item>
-          <v-row>
-            <!-- Form Section -->
-            <v-col cols="12" md="4">
-              <v-card class="tw-shadow-lg">
-                <v-card-title class="tw-bg-blue-500 tw-text-white">
-                  Create New Operating Zone
-                </v-card-title>
-                <v-card-text class="tw-p-6">
-                  <v-form ref="createForm" v-model="formValid">
-                    <v-text-field
-                        v-model="newZone.name"
-                        label="Zone Name"
-                        :rules="[rules.required]"
-                        outlined
-                        class="tw-mb-4"
-                    ></v-text-field>
+        <div class="tw-flex tw-flex-wrap tw--mx-2">
+          <!-- Form Section -->
+          <div class="tw-w-full md:tw-w-1/3 tw-px-2 tw-mb-4">
+            <div class="tw-bg-white tw-shadow-xl tw-rounded-xl tw-border tw-border-gray-200">
+              <div class="tw-bg-blue-500 tw-text-white tw-p-4 tw-rounded-t-xl tw-font-semibold tw-text-lg">
+                Create New Operating Zone
+              </div>
+              <div class="tw-p-6">
+                <form @submit.prevent="createZone" ref="createForm">
+                  <div class="tw-mb-5">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Zone Name</label>
+                    <input
+                      v-model="newZone.name"
+                      type="text"
+                      class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
+                      :class="{'tw-border-red-500': !newZone.name && formTouched}"
+                      required
+                      placeholder="Enter zone name"
+                    />
+                  </div>
+                  <!-- produceType select hidden for now -->
+                  <div class="tw-mb-5" style="display:none">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Produce Type</label>
+                    <select v-model="newZone.produceType" class="tw-w-full tw-border tw-rounded-full tw-p-3 tw-bg-gray-50">
+                      <option v-for="type in produceTypes" :key="type" :value="type">{{ type }}</option>
+                    </select>
+                  </div>
+                  <div class="tw-mb-5">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Center Latitude</label>
+                    <input
+                      v-model.number="newZone.centerLatitude"
+                      type="number"
+                      step="any"
+                      class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
+                      :class="{'tw-border-red-500': !rules.latitude(newZone.centerLatitude) && formTouched}"
+                      required
+                      placeholder="e.g. -1.2921"
+                    />
+                  </div>
+                  <div class="tw-mb-5">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Center Longitude</label>
+                    <input
+                      v-model.number="newZone.centerLongitude"
+                      type="number"
+                      step="any"
+                      class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
+                      :class="{'tw-border-red-500': !rules.longitude(newZone.centerLongitude) && formTouched}"
+                      required
+                      placeholder="e.g. 36.8219"
+                    />
+                  </div>
+                  <div class="tw-mb-6">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Radius (KM)</label>
+                    <input
+                      v-model.number="newZone.radiusKm"
+                      type="number"
+                      step="any"
+                      class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
+                      :class="{'tw-border-red-500': !rules.positive(newZone.radiusKm) && formTouched}"
+                      required
+                      placeholder="e.g. 10"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    :disabled="loading"
+                    class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-py-3 tw-px-4 tw-rounded-lg tw-w-full tw-font-semibold tw-shadow-md tw-transition"
+                  >
+                    <span v-if="loading">Creating...</span>
+                    <span v-else>Create Zone</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- Map Section -->
+          <div class="tw-w-full md:tw-w-2/3 tw-px-2 tw-mb-4">
+            <div class="tw-bg-white tw-shadow-xl tw-rounded-xl tw-border tw-border-gray-200">
+              <div class="tw-bg-green-500 tw-text-white tw-p-4 tw-rounded-t-xl tw-font-semibold tw-text-lg">
+                Zone Preview
+              </div>
+              <div class="tw-p-0">
+                <div id="createMapView" class="tw-h-96 tw-rounded-b-xl tw-overflow-hidden"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                    <v-select
-                        v-if="false"
-                        v-model="newZone.produceType"
-                        :items="produceTypes"
-                        label="Produce Type"
-                        outlined
-                        class="tw-mb-4"
-                    ></v-select>
-
-                    <v-text-field
-                        v-model.number="newZone.centerLatitude"
-                        label="Center Latitude"
-                        type="number"
-                        step="any"
-                        :rules="[rules.required, rules.latitude]"
-                        outlined
-                        class="tw-mb-4"
-                    ></v-text-field>
-
-                    <v-text-field
-                        v-model.number="newZone.centerLongitude"
-                        label="Center Longitude"
-                        type="number"
-                        step="any"
-                        :rules="[rules.required, rules.longitude]"
-                        outlined
-                        class="tw-mb-4"
-                    ></v-text-field>
-
-                    <v-text-field
-                        v-model.number="newZone.radiusKm"
-                        label="Radius (KM)"
-                        type="number"
-                        step="any"
-                        :rules="[rules.required, rules.positive]"
-                        outlined
-                        class="tw-mb-4"
-                    ></v-text-field>
-
-                    <v-btn
-                        @click="createZone"
-                        :disabled="!formValid || loading"
-                        :loading="loading"
-                        color="primary"
-                        block
-                        large
-                    >
-                      Create Zone
-                    </v-btn>
-                  </v-form>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <!-- Map Section -->
-            <v-col cols="12" md="8">
-              <v-card class="tw-shadow-lg">
-                <v-card-title class="tw-bg-green-500 tw-text-white">
-                  Zone Preview
-                </v-card-title>
-                <v-card-text class="tw-p-0">
-                  <div id="createMapView" class="tw-h-96"></div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-tab-item>
-
+      <div v-if="activeTab === 1">
         <!-- View All Zones Tab -->
-        <v-tab-item>
-          <v-row>
-            <v-col cols="12" md="4">
-              <v-card class="tw-shadow-lg">
-                <v-card-title class="tw-bg-purple-500 tw-text-white">
-                  Zones List
-                </v-card-title>
-                <v-card-text>
-                  <v-btn
-                      @click="fetchAllZones"
-                      :loading="loading"
-                      color="primary"
-                      block
-                      class="tw-mb-4"
+        <div class="tw-flex tw-flex-wrap tw--mx-2">
+          <div class="tw-w-full md:tw-w-1/3 tw-px-2 tw-mb-4">
+            <div class="tw-bg-white tw-shadow-xl tw-rounded-xl tw-border tw-border-gray-200">
+              <div class="tw-bg-purple-500 tw-text-white tw-p-4 tw-rounded-t-xl tw-font-semibold tw-text-lg">
+                Zones List
+              </div>
+              <div class="tw-p-6">
+                <button
+                  @click="fetchAllZones"
+                  :disabled="loading"
+                  class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-py-3 tw-px-4 tw-rounded-lg tw-w-full tw-font-semibold tw-shadow-md tw-transition tw-mb-4"
+                >
+                  <span v-if="loading">Loading...</span>
+                  <span v-else>Load Zones</span>
+                </button>
+                <ul v-if="allZones.length > 0" class="tw-divide-y tw-rounded-lg tw-bg-gray-50 tw-shadow-inner">
+                  <li
+                    v-for="zone in allZones"
+                    :key="zone.id"
+                    @click="selectZone(zone)"
+                    :class="['tw-p-4 tw-cursor-pointer tw-transition tw-rounded-lg', selectedZone && selectedZone.id === zone.id ? 'tw-bg-blue-100 tw-shadow' : 'hover:tw-bg-gray-100']"
                   >
-                    Load Zones
-                  </v-btn>
+                    <div class="tw-font-semibold tw-text-gray-800">{{ zone.name }}</div>
+                    <div class="tw-text-xs tw-text-gray-600">
+                      {{ zone.produceType }} - {{ zone.radiusKm }}km
+                    </div>
+                  </li>
+                </ul>
+                <div v-else-if="!loading" class="tw-mt-4 tw-text-blue-700 tw-bg-blue-50 tw-p-3 tw-rounded-lg tw-shadow-inner">
+                  No zones found for this exporter
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tw-w-full md:tw-w-2/3 tw-px-2 tw-mb-4">
+            <div class="tw-bg-white tw-shadow-xl tw-rounded-xl tw-border tw-border-gray-200">
+              <div class="tw-bg-indigo-500 tw-text-white tw-p-4 tw-rounded-t-xl tw-font-semibold tw-text-lg">
+                Zones Map View
+              </div>
+              <div class="tw-p-0">
+                <div id="allZonesMapView" class="tw-h-96 tw-rounded-b-xl tw-overflow-hidden"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                  <v-list v-if="allZones.length > 0">
-                    <v-list-item
-                        v-for="zone in allZones"
-                        :key="zone.id"
-                        @click="selectZone(zone)"
-                        :class="{ 'tw-bg-blue-100': selectedZone && selectedZone.id === zone.id }"
-                    >
-                      <v-list-item-content>
-                        <v-list-item-title>{{ zone.name }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ zone.produceType }} - {{ zone.radiusKm }}km
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-
-                  <v-alert
-                      v-else-if="!loading"
-                      type="info"
-                      class="tw-mt-4"
-                  >
-                    No zones found for this exporter
-                  </v-alert>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="12" md="8">
-              <v-card class="tw-shadow-lg">
-                <v-card-title class="tw-bg-indigo-500 tw-text-white">
-                  Zones Map View
-                </v-card-title>
-                <v-card-text class="tw-p-0">
-                  <div id="allZonesMapView" class="tw-h-96"></div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-tab-item>
-
+      <div v-if="activeTab === 2">
         <!-- Zone Farmers Tab -->
-        <v-tab-item>
-          <v-row>
-            <v-col cols="12" md="4">
-              <v-card class="tw-shadow-lg">
-                <v-card-title class="tw-bg-orange-500 tw-text-white">
-                  Zone Farmers
-                </v-card-title>
-                <v-card-text>
-                  <v-combobox
-                      v-model="selectedZoneId"
-                      :items="zoneOptions"
-                      item-text="name"
-                      item-value="id"
-                      label="Select Zone"
-                      outlined
-                      class="tw-mb-4"
-                      :loading="loadingZones"
-                      :disabled="loadingZones"
-                      @focus="fetchZoneOptions"
-                  ></v-combobox>
-
-                  <v-btn
-                      @click="fetchZoneFarmers"
-                      :loading="loading"
-                      color="primary"
-                      block
-                      class="tw-mb-4"
+        <div class="tw-flex tw-flex-wrap tw--mx-2">
+          <div class="tw-w-full md:tw-w-1/3 tw-px-2 tw-mb-4">
+            <div class="tw-bg-white tw-shadow-xl tw-rounded-xl tw-border tw-border-gray-200">
+              <div class="tw-bg-orange-500 tw-text-white tw-p-4 tw-rounded-t-xl tw-font-semibold tw-text-lg">
+                Zone Farmers
+              </div>
+              <div class="tw-p-6">
+                <div class="tw-mb-5">
+                  <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Select Zone</label>
+                  <select
+                    v-model="selectedZoneFarmersZone"
+                    class="tw-w-full tw-border tw-border-gray-300 tw-rounded-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition"
+                    :disabled="loadingZones"
+                    @focus="fetchZoneOptions"
                   >
-                    Load Farmers
-                  </v-btn>
-
-                  <v-list v-if="zoneFarmers.length > 0">
-                    <v-list-item
-                        v-for="farmer in zoneFarmers"
-                        :key="farmer.id"
-                        @click="selectFarmer(farmer)"
-                        :class="{ 'tw-bg-green-100': selectedFarmer && selectedFarmer.id === farmer.id }"
-                    >
-                      <v-list-item-content>
-                        <v-list-item-title>{{ farmer.name }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ farmer.phoneNumber || 'No phone' }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-
-                  <v-alert
-                      v-else-if="!loading && farmerZoneId"
-                      type="info"
-                      class="tw-mt-4"
+                    <option v-for="zone in zoneOptions" :key="zone.id" :value="zone">
+                      {{ zone.name }}
+                    </option>
+                  </select>
+                </div>
+                <button
+                  @click="fetchZoneFarmers"
+                  :disabled="loading"
+                  class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-py-3 tw-px-4 tw-rounded-lg tw-w-full tw-font-semibold tw-shadow-md tw-transition tw-mb-4"
+                >
+                  <span v-if="loading">Loading...</span>
+                  <span v-else>Load Farmers</span>
+                </button>
+                <ul v-if="zoneFarmers.length > 0" class="tw-divide-y tw-rounded-lg tw-bg-gray-50 tw-shadow-inner">
+                  <li
+                    v-for="farmer in zoneFarmers"
+                    :key="farmer.id"
+                    @click="selectFarmer(farmer)"
+                    :class="['tw-p-4 tw-cursor-pointer tw-transition tw-rounded-lg', selectedFarmer && selectedFarmer.id === farmer.id ? 'tw-bg-green-100 tw-shadow' : 'hover:tw-bg-gray-100']"
                   >
-                    No farmers found in this zone
-                  </v-alert>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="12" md="8">
-              <v-card class="tw-shadow-lg">
-                <v-card-title class="tw-bg-teal-500 tw-text-white">
-                  Farmers Map View
-                </v-card-title>
-                <v-card-text class="tw-p-0">
-                  <div id="farmersMapView" class="tw-h-96"></div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-tab-item>
-      </v-tabs-items>
+                    <div class="tw-font-semibold tw-text-gray-800">{{ farmer.farmerName }}</div>
+                    <div class="tw-text-xs tw-text-gray-600">
+                      maize - 20 acres
+                    </div>
+                  </li>
+                </ul>
+                <div v-else-if="!loading && farmerZoneId" class="tw-mt-4 tw-text-blue-700 tw-bg-blue-50 tw-p-3 tw-rounded-lg tw-shadow-inner">
+                  No farmers found in this zone
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tw-w-full md:tw-w-2/3 tw-px-2 tw-mb-4">
+            <div class="tw-bg-white tw-shadow-xl tw-rounded-xl tw-border tw-border-gray-200">
+              <div class="tw-bg-teal-500 tw-text-white tw-p-4 tw-rounded-t-xl tw-flex tw-items-center tw-font-semibold tw-text-lg">
+                <span>Farmers Map View</span>
+                <button
+                  v-if="selectedZoneFarmersZone"
+                  @click="addZoneFarmers"
+                  :disabled="loading"
+                  class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-py-2 tw-px-4 tw-rounded-lg tw-ml-4 tw-font-semibold tw-shadow-md tw-transition"
+                >
+                  <span v-if="loading">Adding...</span>
+                  <span v-else>Add Zone Farmers</span>
+                </button>
+              </div>
+              <div class="tw-p-0">
+                <div id="farmersMapView" class="tw-h-96 tw-rounded-b-xl tw-overflow-hidden"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Success/Error Snackbar -->
-      <v-snackbar
-          v-model="snackbar.show"
-          :color="snackbar.color"
-          :timeout="4000"
-          top
+      <div
+        v-if="snackbar.show"
+        :class="[
+          'tw-fixed tw-top-6 tw-right-6 tw-z-50 tw-p-4 tw-rounded-xl tw-shadow-xl tw-flex tw-items-center tw-text-base tw-font-semibold',
+          snackbar.color === 'success' ? 'tw-bg-green-500 tw-text-white' :
+          snackbar.color === 'error' ? 'tw-bg-red-500 tw-text-white' :
+          snackbar.color === 'warning' ? 'tw-bg-yellow-400 tw-text-gray-900' :
+          'tw-bg-blue-500 tw-text-white'
+        ]"
       >
-        {{ snackbar.message }}
-        <v-btn text @click="snackbar.show = false">Close</v-btn>
-      </v-snackbar>
-    </v-container>
+        <span>{{ snackbar.message }}</span>
+        <button class="tw-ml-4 tw-bg-transparent tw-border-none tw-text-white tw-font-bold hover:tw-text-gray-200" @click="snackbar.show = false">Close</button>
+      </div>
+    </div>
   </Default>
 </template>
 
@@ -271,6 +274,7 @@ export default {
       activeTab: 0,
       loading: false,
       formValid: false,
+      formTouched: false,
 
       // Create Zone Form
       newZone: {
@@ -302,7 +306,7 @@ export default {
       farmersMapView: null,
 
       zoneOptions: [],
-      selectedZoneId: null,
+      selectedZoneFarmersZone: null,
       loadingZones: false,
 
       // Validation rules
@@ -535,8 +539,17 @@ export default {
     },
 
     async createZone() {
-      if (!this.formValid) return;
-
+      this.formTouched = true;
+      // Simple validation for required fields
+      if (
+        !this.newZone.name
+        || !this.rules.latitude(this.newZone.centerLatitude)
+        || !this.rules.longitude(this.newZone.centerLongitude)
+        || !this.rules.positive(this.newZone.radiusKm)
+      ) {
+        this.showSnackbar('Please fill all required fields correctly.', 'error');
+        return;
+      }
       this.loading = true;
       try {
         // eslint-disable-next-line no-unused-vars
@@ -570,6 +583,7 @@ export default {
         this.createMapView.graphics.removeAll();
       }
       this.$refs.createForm.reset();
+      this.formTouched = false;
     },
 
     async fetchAllZones() {
@@ -690,14 +704,14 @@ export default {
     },
 
     async fetchZoneFarmers() {
-      if (!this.selectedZoneId) {
+      if (!this.selectedZoneFarmersZone) {
         this.showSnackbar('Please select a zone', 'warning');
         return;
       }
 
       this.loading = true;
       try {
-        const response = await axios.get(`/farmers-service/exporter/zones/${this.selectedZoneId.id}/farmers`);
+        const response = await axios.get(`/farmers-service/exporter/zones/${this.selectedZoneFarmersZone.id}/farmers`);
         this.zoneFarmers = response.data.data;
         this.displayFarmersOnMap();
         this.initializeFarmersMap();
@@ -713,7 +727,23 @@ export default {
         this.loading = false;
       }
     },
-
+    async addZoneFarmers() {
+      if (!this.selectedZoneFarmersZone) {
+        this.showSnackbar('Please select a zone', 'warning');
+        return;
+      }
+      // Extract only the path portion
+      const currentPath = window.location.pathname + window.location.search + window.location.hash;
+      await this.$router.push({
+        name: 'SignIn',
+        query: {
+          mode: 'exporter',
+          zoneId: this.selectedZoneFarmersZone.id,
+          r: btoa(currentPath), // Encode the current path
+        },
+      });
+      this.showSnackbar('Redirecting to add farmers', 'info');
+    },
     displayFarmersOnMap() {
       if (!this.farmersMapView) return;
 

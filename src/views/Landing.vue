@@ -27,7 +27,7 @@
           <a href="#" class="cta-button">Join Now</a>
           <a href="#" class="secondary-button">Learn More</a>
         </div>
-        <div class="stats">
+        <div v-if="false" class="stats">
           <div class="stat-item">
             <h3>10K+</h3>
             <p>Farmers Connected</p>
