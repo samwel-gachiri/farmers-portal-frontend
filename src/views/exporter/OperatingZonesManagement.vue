@@ -46,7 +46,7 @@
                     <input
                       v-model="newZone.name"
                       type="text"
-                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full"
                       :class="{'tw-border-red-500 border-danger': !newZone.name && formTouched}"
                       required
                       placeholder="Enter zone name"
@@ -55,7 +55,7 @@
                   <!-- produceType select hidden for now -->
                   <div class="tw-mb-5" style="display:none">
                     <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Produce Type</label>
-                    <select v-model="newZone.produceType" class="tw-w-full tw-p-3 tw-bg-gray-50 tw-rounded-full border border-secondary">
+                    <select v-model="newZone.produceType" class="tw-w-full tw-p-3 tw-bg-gray-50 tw-rounded-full">
                       <option v-for="type in produceTypes" :key="type" :value="type">{{ type }}</option>
                     </select>
                   </div>
@@ -65,7 +65,7 @@
                       v-model.number="newZone.centerLatitude"
                       type="number"
                       step="any"
-                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full"
                       :class="{'tw-border-red-500 border-danger': !rules.latitude(newZone.centerLatitude) && formTouched}"
                       required
                       placeholder="e.g. -1.2921"
@@ -77,7 +77,7 @@
                       v-model.number="newZone.centerLongitude"
                       type="number"
                       step="any"
-                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full"
                       :class="{'tw-border-red-500 border-danger': !rules.longitude(newZone.centerLongitude) && formTouched}"
                       required
                       placeholder="e.g. 36.8219"
@@ -89,7 +89,7 @@
                       v-model.number="newZone.radiusKm"
                       type="number"
                       step="any"
-                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full tw-border-md "
                       :class="{'tw-border-red-500 border-danger': !rules.positive(newZone.radiusKm) && formTouched}"
                       required
                       placeholder="e.g. 10"
@@ -165,6 +165,65 @@
               <div class="tw-p-0">
                 <div id="allZonesMapView" class="tw-h-96 tw-rounded-b-xl tw-overflow-hidden"></div>
               </div>
+              <!-- Edit Zone Form -->
+              <div v-if="selectedZone" class="tw-p-6 tw-border-t tw-border-gray-200">
+                <h3 class="tw-font-semibold tw-mb-4 tw-text-lg">Edit Selected Zone</h3>
+                <form @submit.prevent="updateZone" ref="editZoneForm">
+                  <div class="tw-mb-4">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Zone Name</label>
+                    <input
+                      v-model="editZone.name"
+                      type="text"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full"
+                      required
+                    />
+                  </div>
+                  <div class="tw-mb-4">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Produce Type</label>
+                    <select v-model="editZone.produceType" class="tw-w-full tw-p-3 tw-bg-gray-50 tw-rounded-full">
+                      <option v-for="type in produceTypes" :key="type" :value="type">{{ type }}</option>
+                    </select>
+                  </div>
+                  <div class="tw-mb-4">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Center Latitude</label>
+                    <input
+                      v-model.number="editZone.centerLatitude"
+                      type="number"
+                      step="any"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full"
+                      required
+                    />
+                  </div>
+                  <div class="tw-mb-4">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Center Longitude</label>
+                    <input
+                      v-model.number="editZone.centerLongitude"
+                      type="number"
+                      step="any"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full"
+                      required
+                    />
+                  </div>
+                  <div class="tw-mb-4">
+                    <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Radius (KM)</label>
+                    <input
+                      v-model.number="editZone.radiusKm"
+                      type="number"
+                      step="any"
+                      class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    :disabled="loading"
+                    class="tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-py-3 tw-px-4 tw-rounded-lg tw-w-full tw-font-semibold tw-shadow-md tw-transition"
+                  >
+                    <span v-if="loading">Updating...</span>
+                    <span v-else>Update Zone</span>
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -183,7 +242,7 @@
                   <label class="tw-block tw-mb-2 tw-font-medium tw-text-gray-700">Select Zone</label>
                   <select
                     v-model="selectedZoneFarmersZone"
-                    class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded-full border border-secondary"
+                    class="tw-w-full tw-p-3 tw-bg-gray-50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-bg-white tw-transition tw-rounded tw-border tw-border-gray-300 border border-primary"
                     :disabled="loadingZones"
                     @focus="fetchZoneOptions"
                   >
@@ -227,7 +286,7 @@
                   v-if="selectedZoneFarmersZone"
                   @click="addZoneFarmers"
                   :disabled="loading"
-                  class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-py-2 tw-px-4 tw-rounded-lg tw-ml-4 tw-font-semibold tw-shadow-md tw-transition"
+                  class="btn btn-primary tw-text-white tw-py-2 tw-px-4 tw-rounded-lg tw-ml-4 tw-font-semibold tw-shadow-md tw-transition"
                 >
                   <span v-if="loading">Adding...</span>
                   <span v-else>Add {{selectedZoneFarmersZone?.name}} Zone Farmers</span>
@@ -294,6 +353,7 @@ export default {
       // View All Zones
       allZones: [],
       selectedZone: null,
+      editZone: null, // <-- Add this for editing
 
       // Zone Farmers
       farmerZoneId: '',
@@ -670,7 +730,8 @@ export default {
 
     selectZone(zone) {
       this.selectedZone = zone;
-
+      // Deep copy to avoid mutating the list directly
+      this.editZone = { ...zone };
       if (this.allZonesMapView) {
         const center = new this.Point({
           longitude: zone.centerLongitude,
@@ -681,6 +742,36 @@ export default {
           center,
           zoom: 12,
         });
+      }
+    },
+
+    async updateZone() {
+      if (!this.editZone || !this.selectedZone) return;
+      this.loading = true;
+      try {
+        await axios.put(
+          `/farmers-service/exporter/zones/${this.selectedZone.id}`,
+          {
+            name: this.editZone.name,
+            produceType: this.editZone.produceType,
+            centerLatitude: this.editZone.centerLatitude,
+            centerLongitude: this.editZone.centerLongitude,
+            radiusKm: this.editZone.radiusKm,
+          },
+          { headers: { 'Content-Type': 'application/json' } },
+        );
+        // Update the zone in the allZones array
+        const idx = this.allZones.findIndex((z) => z.id === this.selectedZone.id);
+        if (idx !== -1) {
+          this.allZones[idx] = { ...this.editZone, id: this.selectedZone.id };
+        }
+        this.selectedZone = { ...this.editZone, id: this.selectedZone.id };
+        this.showSnackbar('Zone updated successfully!', 'success');
+        this.displayZonesOnMap();
+      } catch (error) {
+        this.showSnackbar('Error updating zone. Please try again.', 'error');
+      } finally {
+        this.loading = false;
       }
     },
 

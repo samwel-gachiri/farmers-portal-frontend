@@ -34,7 +34,7 @@
             ></v-img>
           </v-avatar>
         </template>
-        <v-app-bar-title class="tw-text-white">Sign Up Form</v-app-bar-title>
+        <v-app-bar-title class="tw-text-white">AgriConnect</v-app-bar-title>
         <v-spacer></v-spacer>
         <v-btn
             icon
@@ -91,7 +91,7 @@
                       color="primary"
                       @click="continueStepOne"
                       :disabled="!isValid1"
-                  >Login</v-btn>
+                  >{{this.$route.query.mode === 'self'? 'Self Login': 'Add Farmer' }}</v-btn>
                 </div>
                 <v-divider></v-divider>
                 <div class="tw-mx-3 tw-mb-5 tw-flex tw-justify-center tw-items-center">
@@ -458,10 +458,10 @@ export default {
                 || (this.form.userType.toLowerCase() === 'exporter' && this.existAs.exporter)
             ) {
               this.userMustBeSignedUp = false;
-              if (this.isSignInWithPhone) {
+              if (this.isSignInWithPhone && this.$route.query.mode === 'self') {
                 this.goToOTP();
               }
-              if (this.isSignInWithGoogle) {
+              if (this.isSignInWithGoogle && this.$route.query.mode === 'self') {
                 this.login();
               }
             } else if ((this.form.userType.toLowerCase() === 'farmer' && this.existAs.buyer)// SIGNING IN WITH DIFFERENT PROFILE
@@ -474,6 +474,10 @@ export default {
               this.userMustBeSignedUp = true;
               this.step = 2;
             }
+            // if (this.$route.query.mode === 'exporter') {
+            //   this.userMustBeSignedUp = this.existAs.farmer;
+            //   this.step = 2;
+            // }
           } else {
             this.$toast.error(response.data.msg);
           }
@@ -634,10 +638,14 @@ export default {
         } else {
           this.$toast.error('No zone specified for the exporter');
         }
-        this.$router.push(redirectPath || { name: 'Dashboard' });
+        this.$router.push(redirectPath || { name: 'OperatingZonesManagement' });
       } else if (mode === 'self') {
         // Maybe redirect to a specific dashboard
-        this.$router.push({ name: 'Dashboard' }); // or redirectPath if dynamic
+        if (this.role === 'exporter') {
+          this.$router.push(redirectPath || { name: 'OperatingZonesManagement' });
+        } else {
+          this.$router.push(redirectPath || { name: 'Dashboard' });
+        }
       }
 
       this.$toast.success('Signed in successfully!', `${this.form.name}`);

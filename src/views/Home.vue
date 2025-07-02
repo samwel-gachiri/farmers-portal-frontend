@@ -173,7 +173,6 @@ export default {
           name: 'SignIn',
           query: {
             mode: 'self',
-            r: btoa(window.location.href),
           },
         },
       );
