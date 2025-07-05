@@ -21,15 +21,14 @@
             Sell your produce</v-btn>
         </div>
         <div>
-          <create-listing/>
           <v-data-table
-              :headers="headers"
-              :items="listings"
-              :loading="loading"
-              :items-per-page="size"
-              :page.sync="page"
-              @update:page="fetchListings"
-              class="elevation-1"
+            :headers="headers"
+            :items="listings"
+            :loading="loading"
+            :items-per-page="size"
+            :page.sync="page"
+            @update:page="fetchListings"
+            class="elevation-1"
           >
   <!--            :server-items-length="totalElements"-->
             <!-- Custom Row Template -->
@@ -43,7 +42,8 @@
               </v-btn>
             </template>
           </v-data-table>
-          <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />
+          <create-listing/>
+          <!-- <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" /> -->
           <!-- Dialog for Listing Details -->
           <v-dialog
               max-width="500px"

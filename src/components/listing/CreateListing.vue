@@ -1,16 +1,5 @@
 <template>
-  <div class="tw-min-h-screen tw-bg-gradient-to-br tw-from-green-50 tw-to-emerald-100 tw-p-4 md:tw-p-8">
-    <!-- Header Section -->
-    <div class="tw-max-w-6xl tw-mx-auto tw-mb-8">
-      <div class="tw-text-center tw-mb-6">
-        <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-bg-green-600 tw-rounded-full tw-mb-4">
-          <v-icon class="tw-text-white tw-text-2xl">mdi-corn</v-icon>
-        </div>
-        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-mb-2">Sell Your Produce</h1>
-        <p class="tw-text-gray-600 tw-text-lg">Connect with buyers and grow your farming business</p>
-      </div>
-    </div>
-
+  <div class="tw-min-h-screen tw-bg-gradient-to-br tw-from-green-50 tw-to-emerald-100 tw-px-2 tw-py-4">
     <!-- Main Content -->
     <div class="tw-max-w-6xl tw-mx-auto">
       <div class="tw-grid lg:tw-grid-cols-3 tw-gap-8">
@@ -18,11 +7,9 @@
         <!-- Left Panel - Form -->
         <div class="lg:tw-col-span-2">
           <v-card class="tw-shadow-xl tw-rounded-2xl tw-border-0 tw-overflow-hidden">
-            <div class="tw-bg-gradient-to-r tw-from-green-600 tw-to-emerald-600 tw-p-6">
-              <h2 class="tw-text-xl tw-font-semibold tw-text-white tw-flex tw-items-center">
-                <v-icon class="tw-mr-3 tw-text-white">mdi-form-select</v-icon>
-                Listing Details
-              </h2>
+            <div class="tw-p-6">
+
+              <h1 class="tw-text-xl tw-font-bold tw-text-gray-800 tw-mb-2"><v-icon class="tw-mr-3 tw-text-white">mdi-form-select</v-icon> Sell Your Produce:</h1>
             </div>
 
             <v-card-text class="tw-p-8">
@@ -143,9 +130,10 @@
                 <div class="tw-flex tw-justify-center tw-pt-6">
                   <v-btn
                       size="x-large"
+                      rounded="xl"
                       :loading="loading"
                       @click="postListing"
-                      class="tw-bg-gradient-to-r tw-from-green-600 tw-to-emerald-600 tw-text-white tw-rounded-full tw-px-12 tw-py-3 tw-shadow-lg hover:tw-shadow-xl tw-transition-all tw-duration-300"
+                      class="btn btn-primary"
                       elevation="0"
                   >
                     <v-icon class="tw-mr-2">mdi-upload</v-icon>
