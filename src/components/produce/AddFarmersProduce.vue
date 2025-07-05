@@ -4,7 +4,7 @@
       max-width="500px"
   >
     <v-card
-      rounded
+      rounded="xl"
       class="tw-flex tw-flex-col tw-justify-center tw-mt-4 action-panel"
     >
       <v-toolbar flat>
@@ -18,7 +18,7 @@
         </v-btn>
       </v-toolbar>
       <v-form v-model="newProduce.isValid" class="tw-gap-0">
-        <div class="tw-flex tw-flex-row tw-gap-5">
+        <div class="tw-flex tw-flex-col tw-gap-5">
           <v-combobox
               dense
               class="data-input"

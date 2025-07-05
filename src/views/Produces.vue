@@ -29,10 +29,10 @@
       <!-- Main Content -->
       <div>
         <!-- Header -->
-        <div class="tw-flex tw-justify-between tw-items-center tw-mb-4 tw-px-4">
+        <div class="tw-flex tw-justify-between tw-items-center tw-mb-4 md:tw-pl-0 tw-px-4">
           <div class="tw-flex tw-flex-col">
             <h2 class="tw-text-lg tw-font-semibold">Produces</h2>
-            <h2 v-if="getCurrentUserId != farmer.id" class="tw-text-lg tw-font-semibold tw-bg-grey-100 tw-p-2 tw-rounded-lg">
+            <h2 class="tw-text-lg tw-font-semibold tw-p-2 tw-rounded-lg" style="background-color: gainsboro;">
               {{ farmer.name }}
             </h2>
           </div>
