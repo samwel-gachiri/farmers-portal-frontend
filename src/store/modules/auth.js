@@ -48,6 +48,7 @@ const mutations = {
   },
   setUserRole(state, text) {
     state.role = text;
+    cookie.set(ROLE, text);
   },
   TOOGLE_USER_ROLE(state, role) {
     if (role.toLowerCase() === 'farmer') {
@@ -105,7 +106,6 @@ const actions = {
   },
   setViewRole: async (context, text) => {
     context.commit('setUserRole', text);
-    cookie.set(ROLE, text);
   },
   clearAuthenticationStatus: (context) => {
     context.commit('clearAuthenticationStatus', null);

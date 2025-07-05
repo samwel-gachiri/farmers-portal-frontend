@@ -19,7 +19,7 @@ const minAmount = (propertyType, num) => (v) => helpers.stringToNumber(v) && hel
 const emailFormat = () => {
   const regex = /^(([^<>()[\]\\.,;:\s@"]+([^.<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[([0-9]{1,3}\.){3}[0-9]{1,3}\])|(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}))$/;
 
-  return (v) => v && regex.test(v) || 'Must be a valid email';
+  return (v) => !v || regex.test(v) || 'Must be a valid email';
 };
 
 const mobileFormat = () => {

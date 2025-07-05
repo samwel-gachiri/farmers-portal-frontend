@@ -2,13 +2,13 @@
   <v-container fluid>
     <v-card>
       <card-title icon="mdi-camera">Take Picture</card-title>
-      <v-card-text>
+      <div>
         <div v-if="checkingPermissions" class="tw-mb-1 tw-text-center tw-py-8">
           <v-progress-circular indeterminate color="primary" class="tw-mb-4"></v-progress-circular>
           <p>Checking permissions...</p>
         </div>
         <div v-if="!checkingPermissions" class="tw-mb-4">
-          <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
+          <div v-if="permissionStates.camera != 'granted' || permissionStates.geolocation != 'granted'"  class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
             <!-- Camera Permission -->
             <div class="tw-flex tw-items-center tw-p-3 tw-rounded tw-border">
               <v-icon
@@ -64,14 +64,6 @@
             <!--          {{ getCurrentCameraInfo().label }}-->
             <!--        </v-chip>-->
 <!--          </v-card-title>-->
-            <!-- Camera Selection -->
-            <CameraSelector
-                v-if="availableCameras.length > 0"
-                :cameras="availableCameras"
-                :selected-camera-id="selectedCameraId"
-                :disabled="showCamera"
-                @camera-selected="onCameraSelected"
-            />
 
             <!-- Current Location Display -->
             <!--        <div v-if="currentLocation" class="tw-mb-4 tw-p-3 tw-bg-gray-100 tw-rounded">-->
@@ -104,7 +96,8 @@
               ></canvas>
             </div>
             <PhotoGallery
-                v-if="capturedPhotos.length > 0"
+                ref="photoGallery"
+                v-if="false"
                 :photos="capturedPhotos"
                 @delete-photo="deletePhoto"
                 class="tw-mt-4"
@@ -117,37 +110,53 @@
                 large
                 @click="startCamera"
                 :loading="isCapturing"
-                :disabled="!selectedCameraId"
             >
-              <v-icon left>mdi-camera</v-icon>
+              <v-icon>mdi-camera</v-icon>
               Start Camera
             </v-btn>
 
             <template v-else>
               <v-btn
-                  color="success"
-                  large
+                  color="primary"
+                  outlined
+                  icon
+                  rounded
                   @click="capturePhoto"
                   :disabled="!currentLocation"
                   class="tw-mr-2"
               >
-                <v-icon left>mdi-camera-plus</v-icon>
-                Capture Photo
+                <v-icon color="primary" size="30px" large>mdi-camera</v-icon>
               </v-btn>
 
               <v-btn
-                  color="error"
-                  large
+                  color="primary"
+                  outlined
+                  icon
+                  rounded
                   @click="stopCamera"
               >
-                <v-icon left>mdi-camera-off</v-icon>
-                Stop Camera
+                <v-icon color="primary">mdi-checkbox-blank</v-icon>
+              </v-btn>
+              <v-btn
+                  color="primary"
+                  large
+                  rounded
+                  @click="submitPhotos"
+              >
+                Submit
               </v-btn>
             </template>
+            <div v-if="hasLocationPermission && hasCameraPermission">
+              <CameraSelector
+                  ref="cameraSelector"
+                  :disabled="showCamera"
+                  @camera-selected="onCameraSelected"
+              />
+            </div>
           </v-card-actions>
         </div>
 
-      </v-card-text>
+      </div>
     </v-card>
   </v-container>
 </template>
@@ -156,6 +165,7 @@
 import piexif from 'piexifjs';
 import PhotoGallery from '@/components/pictures/PhotoGallery.vue';
 import CardTitle from '@/components/shared/CardTitle.vue';
+import { getCurrentUserId } from '@/utils/roles.js';
 import CameraSelector from './CameraSelector.vue';
 
 export default {
@@ -190,8 +200,6 @@ export default {
         geolocation: 'prompt',
       },
 
-      // Available cameras
-      availableCameras: [],
       selectedCameraId: null,
 
       // UI states
@@ -209,6 +217,7 @@ export default {
           && this.currentLocation
           && this.showCamera;
     },
+    getCurrentUserId,
   },
 
   methods: {
@@ -312,6 +321,7 @@ export default {
         },
         (error) => {
           this.$toast.error('Location tracking error:', error.message);
+          // this.startLocationTracking();
         },
         {
           enableHighAccuracy: true,
@@ -334,7 +344,12 @@ export default {
         this.$toast.error('Location not available');
         return;
       }
-
+      // In your capturePhoto method, add validation:
+      if (Math.abs(this.currentLocation.latitude) > 90
+          || Math.abs(this.currentLocation.longitude) > 180) {
+        this.$toast.error('Invalid GPS coordinates');
+        return;
+      }
       const video = this.$refs.videoElement;
       const canvas = this.$refs.canvasElement;
       const context = canvas.getContext('2d');
@@ -350,11 +365,62 @@ export default {
       canvas.toBlob(async (blob) => {
         if (blob) {
           this.capturedPhotos.push(await this.addGeotagToPhoto(blob));
-          this.$toast.success('Photo captured with location data');
+          // this.$toast.success('Photo captured with location data');
         }
       }, 'image/jpeg', 0.9);
     },
 
+    // async addGeotagToPhoto(photoBlob) {
+    //   const zerothIfd = {};
+    //   const exifIfd = {};
+    //   const gpsIfd = {};
+    //   zerothIfd[piexif.ImageIFD.Make] = 'Maker Name';
+    //   zerothIfd[piexif.ImageIFD.XResolution] = [777, 1];
+    //   zerothIfd[piexif.ImageIFD.YResolution] = [777, 1];
+    //   zerothIfd[piexif.ImageIFD.Software] = 'Piexifjs';
+    //   exifIfd[piexif.ExifIFD.DateTimeOriginal] = '2010:10:10 10:10:10';
+    //   exifIfd[piexif.ExifIFD.LensMake] = 'Lens Maker';
+    //   exifIfd[piexif.ExifIFD.Sharpness] = 777;
+    //   exifIfd[piexif.ExifIFD.LensSpecification] = [[1, 1], [1, 1], [1, 1], [1, 1]];
+    //   gpsIfd[piexif.GPSIFD.GPSVersionID] = [7, 7, 7, 7];
+    //   gpsIfd[piexif.GPSIFD.GPSDateStamp] = '1999:99:99 99:99:99';
+    //
+    //   const lat = 59.43553989213321;
+    //   const lng = 24.73842144012451;
+    //   gpsIfd[piexif.GPSIFD.GPSLatitudeRef] = lat < 0 ? 'S' : 'N';
+    //   gpsIfd[piexif.GPSIFD.GPSLatitude] = piexif.GPSHelper.degToDmsRational(lat);
+    //   gpsIfd[piexif.GPSIFD.GPSLongitudeRef] = lng < 0 ? 'W' : 'E';
+    //   gpsIfd[piexif.GPSIFD.GPSLongitude] = piexif.GPSHelper.degToDmsRational(lng);
+    //
+    //   const exifObj = { '0th': zerothIfd, Exif: exifIfd, GPS: gpsIfd };
+    //
+    //   // get exif binary as "string" type
+    //   const exifBytes = piexif.dump(exifObj);
+    //
+    //   // get JPEG image from canvas
+    //   const jpegData = document.getElementById('canvas').toDataURL('image/jpeg', 1.0);
+    //
+    //   // insert exif binary into JPEG binary(DataURL)
+    //   const exifModified = piexif.insert(exifBytes, jpegData);
+    //
+    //   // show JPEG modified exif
+    //   const image = new Image();
+    //   image.src = exifModified;
+    //   image.width = 200;
+    //   // for Modern IE
+    //   if (saveJpeg) {
+    //     const jpegBinary = atob(exifModified.split(',')[1]);
+    //     const data = [];
+    //     for (let p = 0; p < jpegBinary.length; p++) {
+    //       data[p] = jpegBinary.charCodeAt(p);
+    //     }
+    //     const ua = new Uint8Array(data);
+    //     const blob = new Blob([ua], { type: 'image/jpeg' });
+    //     image.onclick = saveJpeg(blob);
+    //   }
+    //   // const el = $('<div></div>').append(image);
+    //   // $('#resized').prepend(el);
+    // },
     async addGeotagToPhoto(photoBlob) {
       try {
         // Convert blob to data URL
@@ -371,25 +437,44 @@ export default {
         const dataUrl = `data:image/jpeg;base64,${base64String}`;
 
         // Create GPS EXIF data
-        const gpsData = this.createGPSExifData();
-
+        // const gpsData = this.createGPSExifData();
+        // console.log(gpsData);
+        // Ensure coordinates are within valid ranges
+        const lat = Math.max(-90, Math.min(90, this.currentLocation.latitude));
+        const lon = Math.max(-180, Math.min(180, this.currentLocation.longitude));
+        // const lat = 59.43553989213321;
+        // const lon = 24.73842144012451;
+        // Get current date and time for GPS timestamp
+        // const now = new Date();
         // Create complete EXIF dictionary
         const exifDict = {
           '0th': {
             [piexif.ImageIFD.Make]: 'Web Browser',
             [piexif.ImageIFD.Model]: navigator.userAgent.split(' ')[0],
-            [piexif.ImageIFD.DateTime]: this.getExifDateTime(),
+            // [piexif.ImageIFD.DateTime]: this.getExifDateTime(),
             [piexif.ImageIFD.Software]: 'Vue Geotagged Camera',
-            [piexif.ImageIFD.Artist]: 'farmer', // Set owner as farmer
+            [piexif.ImageIFD.Artist]: getCurrentUserId(), // Set owner as farmer
           },
           Exif: {
             [piexif.ExifIFD.DateTimeOriginal]: this.getExifDateTime(),
             [piexif.ExifIFD.DateTimeDigitized]: this.getExifDateTime(),
-            [piexif.ExifIFD.UserComment]: 'Geotagged with Vue Camera App',
           },
-          GPS: gpsData,
-          '1st': {},
-          thumbnail: null,
+          GPS: {
+            [piexif.GPSIFD.GPSVersionID]: [7, 7, 7, 7],
+            [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
+            [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(lat),
+            [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
+            [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(lon),
+            // [piexif.GPSIFD.GPSAltitudeRef]: 0,
+            // [piexif.GPSIFD.GPSTimeStamp]: [
+            //   [now.getUTCHours(), 1],
+            //   [now.getUTCMinutes(), 1],
+            //   [now.getUTCSeconds(), 1],
+            // ],
+            // [piexif.GPSIFD.GPSDateStamp]: now.toISOString().split('T')[0].replace(/-/g, ':'),
+            // [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
+            // [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
+          },
         };
 
         // Convert EXIF dictionary to bytes
@@ -423,44 +508,49 @@ export default {
       }
     },
 
-    createGPSExifData() {
-      const lat = this.currentLocation.latitude;
-      const lon = this.currentLocation.longitude;
+    // createGPSExifData() {
+    //   // Ensure coordinates are within valid ranges
+    //   const lat = Math.max(-90, Math.min(90, this.currentLocation.latitude));
+    //   const lon = Math.max(-180, Math.min(180, this.currentLocation.longitude));
+    //
+    //   // Get current date and time for GPS timestamp
+    //   const now = new Date();
+    //
+    //   return {
+    //     [piexif.GPSIFD.GPSVersionID]: [7, 7, 7, 7],
+    //     [piexif.GPSIFD.GPSDateStamp]: '1999:99:99 99:99:99',
+    //     [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
+    //     [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(lat),
+    //     [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
+    //     [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(lon),
+    //     // [piexif.GPSIFD.GPSAltitudeRef]: 0,
+    //     // [piexif.GPSIFD.GPSTimeStamp]: [
+    //     //   [now.getUTCHours(), 1],
+    //     //   [now.getUTCMinutes(), 1],
+    //     //   [now.getUTCSeconds(), 1],
+    //     // ],
+    //     [piexif.GPSIFD.GPSDateStamp]: now.toISOString().split('T')[0].replace(/-/g, ':'),
+    //     [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
+    //     [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
+    //   };
+    // },
 
-      // // Convert decimal degrees to DMS (Degrees, Minutes, Seconds)
-      // const latDMS = this.decimalToDMS(Math.abs(lat));
-      // const lonDMS = this.decimalToDMS(Math.abs(lon));
-
-      return {
-        [piexif.GPSIFD.GPSVersionID]: [2, 2, 0, 0],
-        [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
-        [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(Math.abs(lat)),
-        [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
-        [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(Math.abs(lon)),
-        [piexif.GPSIFD.GPSAltitudeRef]: 0,
-        [piexif.GPSIFD.GPSTimeStamp]: this.getGPSTimeStamp(),
-        [piexif.GPSIFD.GPSDateStamp]: this.getGPSDateStamp(),
-        [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
-        [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
-      };
-    },
-
-    getGPSTimeStamp() {
-      const now = new Date();
-      return [
-        [now.getUTCHours(), 1],
-        [now.getUTCMinutes(), 1],
-        [now.getUTCSeconds(), 1],
-      ];
-    },
-
-    getGPSDateStamp() {
-      const now = new Date();
-      const year = now.getUTCFullYear();
-      const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(now.getUTCDate()).padStart(2, '0');
-      return `${year}:${month}:${day}`;
-    },
+    // getGPSTimeStamp() {
+    //   const now = new Date();
+    //   return [
+    //     [now.getUTCHours(), 1],
+    //     [now.getUTCMinutes(), 1],
+    //     [now.getUTCSeconds(), 1],
+    //   ];
+    // },
+    //
+    // getGPSDateStamp() {
+    //   const now = new Date();
+    //   const year = now.getUTCFullYear();
+    //   const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    //   const day = String(now.getUTCDate()).padStart(2, '0');
+    //   return `${year}:${month}:${day}`;
+    // },
 
     getExifDateTime() {
       const now = new Date();
@@ -474,33 +564,33 @@ export default {
     },
 
     // Fixed encodeUserComment method
-    encodeUserComment(comment) {
-      // EXIF UserComment should be encoded as Unicode (UTF-8)
-      // The first 8 bytes should be the encoding identifier
-      const encoding = [0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00]; // "UNICODE" + null terminator
+    // encodeUserComment(comment) {
+    //   // EXIF UserComment should be encoded as Unicode (UTF-8)
+    //   // The first 8 bytes should be the encoding identifier
+    //   const encoding = [0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00]; // "UNICODE" + null terminator
+    //
+    //   // Convert comment to UTF-8 bytes
+    //   const encoder = new TextEncoder();
+    //   const commentBytes = encoder.encode(comment);
+    //
+    //   // Combine encoding marker and comment bytes
+    //   const result = new Uint8Array(encoding.length + commentBytes.length);
+    //   result.set(encoding, 0);
+    //   result.set(commentBytes, encoding.length);
+    //
+    //   return result;
+    // },
 
-      // Convert comment to UTF-8 bytes
-      const encoder = new TextEncoder();
-      const commentBytes = encoder.encode(comment);
-
-      // Combine encoding marker and comment bytes
-      const result = new Uint8Array(encoding.length + commentBytes.length);
-      result.set(encoding, 0);
-      result.set(commentBytes, encoding.length);
-
-      return result;
-    },
-
-    encodeProcessingMethod(method) {
-      // GPS Processing Method encoding
-      const encoding = [0x41, 0x53, 0x43, 0x49, 0x49, 0x00, 0x00, 0x00]; // ASCII encoding marker
-      const methodBytes = [];
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < method.length; i++) {
-        methodBytes.push(method.charCodeAt(i));
-      }
-      return new Uint8Array([...encoding, ...methodBytes]);
-    },
+    // encodeProcessingMethod(method) {
+    //   // GPS Processing Method encoding
+    //   const encoding = [0x41, 0x53, 0x43, 0x49, 0x49, 0x00, 0x00, 0x00]; // ASCII encoding marker
+    //   const methodBytes = [];
+    //   // eslint-disable-next-line no-plusplus
+    //   for (let i = 0; i < method.length; i++) {
+    //     methodBytes.push(method.charCodeAt(i));
+    //   }
+    //   return new Uint8Array([...encoding, ...methodBytes]);
+    // },
 
     async dataURLToBlob(dataURL) {
       const response = await fetch(dataURL);
@@ -544,25 +634,26 @@ export default {
     async checkPermissionsOnLoad() {
       this.checkingPermissions = true;
 
-      try {
-        // Check camera permission
-        await this.checkCameraPermission();
+      // Check camera permission
+      await this.checkCameraPermission();
 
-        // Check location permission
-        await this.checkLocationPermission();
+      // Check location permission
+      await this.checkLocationPermission();
 
-        // If both permissions are granted, get available cameras and start location tracking
-        if (this.permissionStates.camera === 'granted' && this.permissionStates.geolocation === 'granted') {
-          await this.getAvailableCameras();
+      // If both permissions are granted, get available cameras and start location tracking
+      if (this.permissionStates.camera === 'granted' && this.permissionStates.geolocation === 'granted') {
+        this.hasLocationPermission = true;
+        this.hasCameraPermission = true;
+
+        await this.$nextTick();
+
+        if (this.$refs.cameraSelector) {
+          await this.$refs.cameraSelector.getAvailableCameras();
+          await this.startCamera();
           this.startLocationTracking();
-          this.hasLocationPermission = true;
-          this.hasCameraPermission = true;
         }
-      } catch (error) {
-        this.$toast.error('Permission check error:', error.message);
-      } finally {
-        this.checkingPermissions = false;
       }
+      this.checkingPermissions = false;
     },
 
     async checkCameraPermission() {
@@ -578,16 +669,20 @@ export default {
             this.hasCameraPermission = permission.state === 'granted';
 
             if (permission.state === 'granted') {
-              this.getAvailableCameras();
+              if (this.$refs.cameraSelector) {
+                this.$refs.cameraSelector.getAvailableCameras();
+              }
             } else if (permission.state === 'denied') {
-              this.availableCameras = [];
+              this.$refs.cameraSelector.onCameraPermissionDenied();
               this.stopCamera();
             }
           };
 
           // If granted, check available cameras
           if (permission.state === 'granted') {
-            await this.getAvailableCameras();
+            if (this.$refs.cameraSelector) {
+              await this.$refs.cameraSelector.getAvailableCameras();
+            }
             this.hasCameraPermission = true;
           }
         } else {
@@ -597,7 +692,9 @@ export default {
             stream.getTracks().forEach((track) => track.stop());
             this.permissionStates.camera = 'granted';
             this.hasCameraPermission = true;
-            await this.getAvailableCameras();
+            if (this.$refs.cameraSelector) {
+              await this.$refs.cameraSelector.getAvailableCameras();
+            }
           } catch (error) {
             this.permissionStates.camera = 'denied';
             this.hasCameraPermission = false;
@@ -637,64 +734,33 @@ export default {
           }
         } else {
           // Fallback: try to get location to check permission
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              this.permissionStates.geolocation = 'granted';
-              this.hasLocationPermission = true;
-              this.currentLocation = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy,
-                timestamp: new Date(),
-              };
-              this.startLocationTracking();
-            },
-            (error) => {
-              this.permissionStates.geolocation = error.code === 1 ? 'denied' : 'prompt';
-              this.hasLocationPermission = false;
-            },
-            { timeout: 1000 },
-          );
+          await this.getLocation();
         }
       } catch (error) {
         this.$toast.error('Location permission check failed:', error.message);
         this.permissionStates.geolocation = 'denied';
       }
     },
-
-    async getAvailableCameras() {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        this.availableCameras = devices
-          .filter((device) => device.kind === 'videoinput')
-          .map((device) => ({
-            id: device.deviceId,
-            label: device.label || `Camera ${this.availableCameras.length + 1}`,
-            facingMode: this.detectFacingMode(device.label),
-          }));
-
-        // Set default camera (prefer back camera)
-        if (this.availableCameras.length > 0 && !this.selectedCameraId) {
-          const backCamera = this.availableCameras.find((camera) => camera.facingMode === 'environment'
-              || camera.label.toLowerCase().includes('back'));
-          this.selectedCameraId = backCamera ? backCamera.id : this.availableCameras[0].id;
-        }
-      } catch (error) {
-        this.cameraError = 'Failed to detect available cameras';
-      }
+    async getLocation() {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.permissionStates.geolocation = 'granted';
+          this.hasLocationPermission = true;
+          this.currentLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            timestamp: new Date(),
+          };
+          this.startLocationTracking();
+        },
+        (error) => {
+          this.permissionStates.geolocation = error.code === 1 ? 'denied' : 'prompt';
+          this.hasLocationPermission = false;
+        },
+        { timeout: 1000 },
+      );
     },
-
-    detectFacingMode(label) {
-      const lowerLabel = label.toLowerCase();
-      if (lowerLabel.includes('back') || lowerLabel.includes('rear')) {
-        return 'environment';
-        // eslint-disable-next-line sonarjs/no-same-line-conditional
-      } if (lowerLabel.includes('front') || lowerLabel.includes('user')) {
-        return 'user';
-      }
-      return 'unknown';
-    },
-
     async switchCamera(cameraId) {
       if (this.selectedCameraId === cameraId) return;
 
@@ -716,6 +782,7 @@ export default {
 
     // Enhanced startCamera method with camera selection
     async startCamera() {
+      this.$toast.success('starting camera');
       try {
         const constraints = {
           video: {
@@ -736,6 +803,7 @@ export default {
         this.$refs.videoElement.srcObject = this.stream;
         this.showCamera = true;
         this.cameraError = null;
+        this.$toast.success('camera started', this.showCamera.toString());
       } catch (error) {
         this.$toast.error('Camera start error:', error.message);
         this.cameraError = `Failed to start camera: ${error.message}`;
@@ -747,10 +815,9 @@ export default {
         }
       }
     },
-
-    getCurrentCameraInfo() {
-      if (!this.selectedCameraId) return null;
-      return this.availableCameras.find((camera) => camera.id === this.selectedCameraId);
+    submitPhotos() {
+      this.stopCamera();
+      this.$emit('captured-photos', this.capturedPhotos);
     },
   },
 

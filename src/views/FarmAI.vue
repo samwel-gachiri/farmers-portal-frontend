@@ -1,52 +1,52 @@
 <template>
   <Default>
-    <div class="tw-overflow-hidden">
-      <div class="tw-py-6">
-        <div>
+    <div class="tw-bg-white tw-min-h-screen tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-2">
+      <div class="tw-w-full tw-max-w-xl tw-mt-10 tw-mb-6">
+        <div class="tw-flex tw-items-center tw-space-x-3 tw-mb-2">
+          <v-icon class="tw-text-green-600" size="32px">mdi-sprout</v-icon>
+          <span class="tw-text-2xl tw-font-semibold tw-text-gray-800">FarmAI</span>
         </div>
-        <div class="tw-rounded-lg tw-p-8">
-          <div class="tw-text-lg tw-font-medium">
-            <v-icon class="tw-mr-2" size="40px" light>mdi-emoticon-happy</v-icon>
-            FarmAI
-            <h2 class="tw-font-bold tw-text-black tw-pt-3">Uliza maswali kuhusiana na ukulima hapa</h2>
-          </div>
-
-          <div class="">
-            <div id="chat-messages" class="tw-mt-4 tw-px-4 tw-bg-gray-50 tw-rounded-lg tw-max-h-96 tw-overflow-y-auto">
-              <!-- Messages will appear here -->
-            </div>
-            <div class="tw-mt-4">
-              <v-textarea
-                  v-model="aiQuestion"
-                  outlined
-                  rounded
-                  autofocus
-                  label="Ask any farming question..."
-                  rows="2"
-                  class="tw-rounded-lg"
-              ></v-textarea>
-              <v-btn
-                  rounded
-                  color="primary"
-                  class="tw-ml-4"
-                  :loading="loading"
-                  @click="askAI">
-                Send
-              </v-btn>
-<!--              <div>-->
-<!--                <SpeechRecognition-->
-<!--                    @transcript="handleTranscript"-->
-<!--                />-->
-<!--              </div>-->
-            </div>
+        <div class="tw-text-base tw-text-gray-500 tw-mb-4">
+          Uliza maswali kuhusu ukulima hapa
+        </div>
+      </div>
+      <div class="tw-w-full tw-max-w-xl tw-bg-gray-50 tw-rounded-xl tw-shadow-sm tw-flex tw-flex-col tw-h-[480px]">
+        <div id="chat-messages" class="tw-flex-1 tw-p-4 tw-overflow-y-auto tw-space-y-3 tw-text-base tw-text-gray-800 tw-bg-transparent">
+          <!-- Messages will appear here -->
+        </div>
+        <div class="tw-border-t tw-border-gray-200 tw-p-3 tw-bg-white">
+          <div class="tw-flex tw-items-end tw-space-x-2">
+            <v-textarea
+              v-model="aiQuestion"
+              outlined
+              rounded
+              hide-details
+              placeholder="Andika swali lako hapa..."
+              rows="1"
+              auto-grow
+              class="tw-flex-1 tw-bg-gray-100 tw-rounded-lg tw-border-none focus:tw-ring-2 focus:tw-ring-green-500"
+              style="min-height:40px;"
+              @keyup.enter="askAI"
+            ></v-textarea>
+            <v-btn
+              color="success"
+              class="tw-rounded-full tw-shadow-none"
+              :loading="loading"
+              :disabled="!aiQuestion.trim()"
+              @click="askAI"
+              elevation="0"
+              min-width="40"
+              height="40"
+            >
+              <v-icon size="22px">mdi-send</v-icon>
+            </v-btn>
           </div>
         </div>
       </div>
-
-      <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="3000">
+      <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="3000" class="tw-rounded-lg">
         {{ snackbarText }}
         <template v-slot:action="{ attrs }">
-          <v-btn text v-bind="attrs" @click="snackbar = false">Close</v-btn>
+          <v-btn text v-bind="attrs" @click="snackbar = false" class="tw-text-green-700">Close</v-btn>
         </template>
       </v-snackbar>
     </div>
@@ -55,14 +55,14 @@
 
 <script>
 import Default from '@/components/layout/Default.vue';
+// eslint-disable-next-line no-unused-vars
 import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
 import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
-// import SpeechRecognition from '@/components/ai/SpeechRecognition.vue';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export default {
   components: {
-    // SpeechRecognition,
     Default,
   },
   data() {
@@ -74,27 +74,29 @@ export default {
       snackbarColor: 'success',
       md: new MarkdownIt({
         html: true,
-        xhtmlOut: true, // Use '/' to close single tags
-        breaks: true, // Convert '\n' to `<br>`
-        linkify: true, // Autoconvert URL-like text to links
-        typographer: true, // Enable smartquotes and other typographic replacements
+        xhtmlOut: true,
+        breaks: true,
+        linkify: true,
+        typographer: true,
         strict: true,
       }),
+      geminiApiKey: process.env.VUE_APP_GOOGLE_API_KEY,
+      gemini: null,
     };
   },
   mounted() {
-    this.addMessage('FarmAI', 'Hello! I\'m farmAI, ready to help!\n**Habari yako!**');
+    this.gemini = new GoogleGenerativeAI(this.geminiApiKey);
+    this.addMessage('FarmAI', 'Karibu! Uliza swali lolote kuhusu ukulima.');
   },
   methods: {
     getCurrentUserRole,
     async askAI() {
       try {
         if (!this.aiQuestion.trim()) {
-          this.showSnackbar('Please enter a question', 'error');
+          this.showSnackbar('Tafadhali andika swali', 'error');
           return;
         }
-
-        this.addMessage('User', this.aiQuestion);
+        this.addMessage('Wewe', this.aiQuestion);
         this.loading = true;
         const question = this.aiQuestion;
         this.aiQuestion = '';
@@ -104,26 +106,16 @@ export default {
         const contentElement = botMessageElement.querySelector('.message-content');
 
         try {
-          const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}api/assistant/chat`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userId: getCurrentUserId() || 'RANDOM',
-              question,
-              userSection: getCurrentUserRole(),
-            }),
-          });
+          const model = this.gemini.getGenerativeModel({ model: 'gemini-2.5-flash' });
+          const result = await model.generateContent(question);
+          const response = await result.response;
+          const text = response.text();
 
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-          await this.processStream(response.body.getReader(), contentElement);
-          this.showSnackbar('FarmAI has provided recommendations', 'success');
+          contentElement.innerHTML = DOMPurify.sanitize(this.md.render(text));
+          this.showSnackbar('Jibu limetolewa', 'success');
         } catch (error) {
-          this.$toast.error('Error:', error.message);
-          contentElement.textContent = 'An error occurred while fetching the response. Please try again.';
-          this.showSnackbar('Error getting response from FarmAI', 'error');
+          contentElement.textContent = 'Hitilafu imetokea. Tafadhali jaribu tena.';
+          this.showSnackbar('Hitilafu kupata jibu', 'error');
         }
       } catch (e) {
         this.showSnackbar(e.message, 'error');
@@ -131,66 +123,20 @@ export default {
         this.loading = false;
       }
     },
-    // handleTranscript(transcript) {
-    //   this.addMessage('User', transcript);
-    //
-    //   // Send to backend (example using axios)
-    //   // try {
-    //   //   const response = await this.$axios.post('/api/process-speech', { text });
-    //   //   this.messages.push({ sender: 'Bot', text: response.data.reply });
-    //   // } catch (error) {
-    //   //   console.error('Backend error:', error);
-    //   // }
-    // },
-    async processStream(reader, contentElement) {
-      const decoder = new TextDecoder();
-      let content = '';
-
-      try {
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          // eslint-disable-next-line no-await-in-loop
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          content += decoder.decode(value, { stream: true });
-          // Update content progressively
-          // eslint-disable-next-line no-param-reassign
-          contentElement.innerHTML = DOMPurify.sanitize(this.md.render(content));
-
-          // Auto-scroll to bottom
-          const chatContainer = document.getElementById('chat-messages');
-          chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-      } catch (error) {
-        this.$toast.error('Stream error:', error.message);
-        // eslint-disable-next-line no-param-reassign
-        contentElement.textContent += '\n[Stream interrupted]';
-      }
-    },
-
     addMessage(sender, content) {
       const chatMessages = document.getElementById('chat-messages');
       const messageElement = document.createElement('div');
       const mdContent = DOMPurify.sanitize(this.md.render(content));
-      messageElement.className = `tw-mb-3 tw-p-3 tw-rounded-lg tw-shadow-lg ${
-        sender === 'User'
-          ? 'tw-bg-blue-100 tw-text-blue-800'
-          : 'tw-bg-gray-100 tw-text-gray-800'
-      }`;
+      messageElement.className = sender === 'Wewe'
+        ? 'tw-bg-green-50 tw-text-green-900 tw-p-3 tw-rounded-lg tw-self-end'
+        : 'tw-bg-white tw-text-gray-800 tw-p-3 tw-rounded-lg tw-shadow-sm tw-self-start';
 
       messageElement.innerHTML = `
-        <div class="tw-font-bold ${
-  sender === 'User' ? 'tw-text-blue-600' : 'tw-text-green-600'
-}">
-          ${sender}:
-        </div>
-        <div class="message-content tw-mt-1">${mdContent}</div>
+        <div class="tw-text-xs tw-font-semibold tw-mb-1 ${sender === 'Wewe' ? 'tw-text-green-700' : 'tw-text-gray-500'}">${sender}</div>
+        <div class="message-content">${mdContent}</div>
       `;
-
       chatMessages.appendChild(messageElement);
       chatMessages.scrollTop = chatMessages.scrollHeight;
-
       return messageElement;
     },
     showSnackbar(text, color) {
@@ -203,43 +149,20 @@ export default {
 </script>
 
 <style scoped>
+/* Minimalistic, modern, clean look */
 #chat-messages {
-  min-height: 200px;
+  min-height: 180px;
+  scrollbar-width: thin;
+  scrollbar-color: #d1fae5 #f9fafb;
 }
-.circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.20;
+#chat-messages::-webkit-scrollbar {
+  width: 6px;
 }
-
-.circle-1 {
-  width: 500px;
-  height: 500px;
-  background: var(--v-primary-base);
-  top: -100px;
-  left: -100px;
-  animation: circle-clockwise 15s infinite linear;
+#chat-messages::-webkit-scrollbar-thumb {
+  background: #d1fae5;
+  border-radius: 6px;
 }
-
-.circle-2 {
-  width: 400px;
-  height: 400px;
-  background: var(--v-secondary-base);
-  bottom: -100px;
-  right: -50px;
-  animation: circle-clockwise 18s infinite linear;
-  animation-delay: 2s;
+#chat-messages::-webkit-scrollbar-track {
+  background: #f9fafb;
 }
-
-.circle-3 {
-  width: 300px;
-  height: 300px;
-  background: var(--v-accent-base);
-  top: 50%;
-  left: 30%;
-  animation: circle-clockwise 12s infinite linear;
-  animation-delay: 4s;
-}
-
 </style>

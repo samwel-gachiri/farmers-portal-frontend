@@ -233,7 +233,7 @@ export default {
         icon: 'mdi-view-dashboard',
         text: 'Dashboard',
         link: { name: 'Dashboard' },
-        roles: ['farmer', 'buyer', 'admin'],
+        roles: ['buyer', 'admin'],
         iconColor: 'black',
       },
       {
@@ -324,6 +324,13 @@ export default {
         link: { name: 'OrdersReport' },
         roles: ['admin'],
         iconColor: 'deep-orange',
+      },
+      {
+        icon: 'mdi-map-marker-radius',
+        text: 'Zone Management',
+        link: { name: 'OperatingZonesManagement' },
+        roles: ['exporter'],
+        iconColor: 'green',
       },
     ],
     featureRequest: '',

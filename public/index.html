@@ -5,17 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
     <title><%= htmlWebpackPlugin.options.title %></title>
-<!--  <script src="https://accounts.google.com/gsi/client" async defer></script>-->
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <!-- Register service worker for PWA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/pwabuilder-adv-sw.js');
+      }
+    </script>
+    <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
   </head>
   <body>
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app"></div>
-    <div id="recaptcha-container"></div>
     <!-- built files will be auto injected -->
   </body>
 </html>

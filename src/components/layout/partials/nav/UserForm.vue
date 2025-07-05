@@ -28,55 +28,59 @@
             <div
                 class="tw-fleFx tw-w-full tw-flex-col tw-justify-start tw-items-start"
             >
-              <h5>{{ loc_name === '' ? "Give in your location details": "Your Location Details"}}</h5>
-              <v-alert
-                type="info"
-              >This will be used by farmers, buyers and the public to notice you.</v-alert>
-              <v-text-field
-                  outlined
-                  label="My Location"
-                  v-model="loc_name"
-                  class="tw-font-bold tw-w-full"
-              ></v-text-field>
-              <div class="tw-flex tw-flex-row">
+            <div v-if="role != 'exporter'">
+                <h5>{{ loc_name === '' ? "Give in your location details": "Your Location Details"}}</h5>
+                <v-alert
+                  type="info"
+                >This will be used by farmers, buyers and the public to notice you.</v-alert>
                 <v-text-field
-                    label="latitude"
-                    prefix="("
-                    suffix=","
-                    v-model="lat"
+                    outlined
+                    label="My Location"
+                    v-model="loc_name"
+                    class="tw-font-bold tw-w-full"
                 ></v-text-field>
-                <v-text-field
-                    label="longitude"
-                    suffix=")"
-                    v-model="lng"
-                ></v-text-field>
+                <div class="tw-flex tw-flex-row">
+                  <v-text-field
+                      label="latitude"
+                      prefix="("
+                      suffix=","
+                      v-model="lat"
+                  ></v-text-field>
+                  <v-text-field
+                      label="longitude"
+                      suffix=")"
+                      v-model="lng"
+                  ></v-text-field>
+                </div>
+                <v-btn
+                    @click="getLocation"
+                    class="tw-mb-4"
+                    color="primary"
+                >
+                  Use Device Location
+                  <v-icon color="linear-gradient(green, red)" >mdi-google-maps</v-icon>
+                </v-btn>
               </div>
-              <v-btn
-                  @click="getLocation"
-                  class="tw-mb-4"
-                  color="primary"
-              >
-                Use Device Location
-                <v-icon color="linear-gradient(green, red)" >mdi-google-maps</v-icon>
-              </v-btn>
             </div>
-<!--            <v-text-field-->
-<!--                id="phone"-->
-<!--                type="text"-->
-<!--                name="phone"-->
-<!--                v-model="phoneNumber"-->
-<!--                label="Phone Number"-->
-<!--                :rules="[required('Mobile No.')]"-->
-<!--            >-->
-<!--            </v-text-field>-->
             <div class="tw-mt-8 tw-flex tw-flex-col tw-gap-5">
-              <h5 class="tw-bold">Input phone number</h5>
-              <phone-number-input
-                  v-model="phoneNumber"
-                  default-country-code="KE"
-                  :preferred-countries="['KE', 'US', 'UG', 'TZ']"
-                  @update:phoneNumber="(newValue) => (phoneNumber = newValue)"
+              <h5 class="tw-bold">Set Credentials</h5>
+              <vue-phone-number-input
+                    v-model="phoneNumber"
+                    :default-country-code="'KE'"
+                    :preferred-countries="['KE', 'US', 'GB']"
+                    show-code-on-list
+                    @update="onPhoneUpdate"
               />
+              <!-- email field -->
+              <v-text-field
+                id="email"
+                type="email"
+                name="email"
+                v-model="email"
+                label="Email Address"
+                :rules="[required('Email'), emailFormat()]"
+                class="my-1"
+                ></v-text-field>
             </div>
           </div>
           <div v-if="false" class="tw-w-full">
@@ -101,6 +105,7 @@
 
 <script>
 import validations from '@/utils/validations.js';
+import VuePhoneNumberInput from 'vue-phone-number-input';
 import { mapGetters, mapState } from 'vuex';
 import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
@@ -108,11 +113,15 @@ import L from 'leaflet';
 
 export default {
   name: 'UserForm',
+  components: {
+    VuePhoneNumberInput,
+  },
   data() {
     return {
       fullname: '',
       email: '',
       phoneNumber: '',
+      fullPhoneNumber: '',
       kra_pin: '',
       lat: '',
       lng: '',
@@ -120,7 +129,7 @@ export default {
       isValid: false,
       ...validations,
       loading: false,
-      role: '',
+      role: getCurrentUserRole(),
       map: null,
       marker: null,
     };
@@ -130,8 +139,6 @@ export default {
       user: (state) => state.auth.user,
     }),
     ...mapGetters('auth', ['hasAuthenticationStatus', 'authenticationStatus']),
-    getCurrentUserId,
-    getCurrentUserRole,
   },
   mounted() {
     // this.initMap();
@@ -141,11 +148,10 @@ export default {
     //   }
     // });
     // if (this.resizeObserver != null) this.resizeObserver.observe(document.getElementById('map'));
-    this.role = getCurrentUserRole();
     this.fullname = this.user.name;
     this.email = this.user.email;
     this.phoneNumber = this.user.phoneNumber;
-    if (this.user.location) {
+    if (this.user.location && this.role !== 'exporter') {
       this.map.panTo([this.user?.location?.latitude, this.user?.location?.longitude]);
       this.marker = L.marker([this.user?.location?.latitude, this.user?.location?.longitude], {
         icon: L.icon({
@@ -157,18 +163,16 @@ export default {
           shadowSize: [41, 41], // Shadow size
         }),
       }).addTo(this.map);
+      if (this.user.location.latitude) {
+        this.lat = this.user.location.latitude;
+      }
+      if (this.user.location.longitude) {
+        this.lng = this.user.location.longitude;
+      }
+      if (this.user.location.customName) {
+        this.loc_name = this.user.location.customName;
+      }
     }
-    if (this.user.location.latitude) {
-      this.lat = this.user.location.latitude;
-    }
-    if (this.user.location.longitude) {
-      this.lng = this.user.location.longitude;
-    }
-    if (this.user.location.customName) {
-      this.loc_name = this.user.location.customName;
-    }
-    this.phoneNumber = this.user.phoneNumber;
-    this.fullname = this.user.name;
   },
   // beforeDestroy() {
   //   if (this.resizeObserver) {
@@ -198,6 +202,10 @@ export default {
       });
     },
 
+    onPhoneUpdate(phoneData) {
+      // Get the full international number with country code
+      this.fullPhoneNumber = phoneData.e164 || phoneData.formatInternational;
+    },
     // Update location based on user click
     updateLocation(event) {
       const { lat, lng } = event.latlng;
@@ -231,7 +239,7 @@ export default {
     async updateProfile() {
       this.loading = true;
       // { email: this.email, phoneNumber: this.phoneNumber, name: this.fullname }
-      await this.$store.dispatch('auth/updateUser', { name: this.fullname, phoneNumber: this.phoneNumber }).then(() => {
+      await this.$store.dispatch('auth/updateUser', { name: this.fullname, phoneNumber: this.fullPhoneNumber, email: this.email }).then(() => {
         if (this.hasAuthenticationStatus) {
           this.loading = false;
           // if (this.authenticationStatus.variant === 'error') {
@@ -240,25 +248,43 @@ export default {
           //   this.$toast.success(this.authenticationStatus.message, 'Success');
           // }
         }
-      }).finally(async () => axios.put(`${getCurrentUserRole()}s-service/${getCurrentUserRole()}`, {
-        [`${getCurrentUserRole()}Id`]: getCurrentUserId(),
-        name: this.fullname,
-        phoneNumber: this.phoneNumber ? this.phoneNumber : '',
-        email: this.email,
-        location: {
-          latitude: this.lat,
-          longitude: this.lng,
-          customName: this.loc_name,
-        },
-      }).then((response) => {
-        if (response.data.success === true) {
-          this.$toast.success('Farmer Profile Updated successfully!');
-        } else {
-          this.$toast.error('Failed to update farmer profile', response.data.msg);
+      }).finally(async () => {
+        if (this.role === 'exporter') {
+          axios.put(`/farmers-service/exporter/${getCurrentUserId()}`, {
+            name: this.fullname,
+            email: this.email,
+            phoneNumber: this.fullPhoneNumber ? this.fullPhoneNumber : '',
+          }).then((response) => {
+            if (response.data.success === true) {
+              this.$toast.success('Exporter Profile Updated successfully!');
+            } else {
+              this.$toast.error('Failed to update exporter profile', response.data.msg);
+            }
+          }).catch((error) => {
+            this.$toast.error(error.message);
+          });
+          return;
         }
-      }).catch((error) => {
-        this.$toast.error(error.message);
-      }).finally(() => this.saveLocation()));
+        axios.put(`${getCurrentUserRole()}s-service/${getCurrentUserRole()}`, {
+          [`${getCurrentUserRole()}Id`]: getCurrentUserId(),
+          name: this.fullname,
+          phoneNumber: this.fullPhoneNumber ? this.fullPhoneNumber : '',
+          email: this.email,
+          location: {
+            latitude: this.lat,
+            longitude: this.lng,
+            customName: this.loc_name,
+          },
+        }).then((response) => {
+          if (response.data.success === true) {
+            this.$toast.success('Farmer Profile Updated successfully!');
+          } else {
+            this.$toast.error('Failed to update farmer profile', response.data.msg);
+          }
+        }).catch((error) => {
+          this.$toast.error(error.message);
+        }).finally(() => this.saveLocation());
+      });
     },
     getLocation() {
       navigator.geolocation.getCurrentPosition(async (position) => {

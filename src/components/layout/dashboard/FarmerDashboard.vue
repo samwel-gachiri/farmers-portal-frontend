@@ -11,9 +11,6 @@
           Close
         </v-btn>
       </v-dialog>
-    <v-dialog v-model="photoCaptureDialog" max-width="500px">
-        <PhotoCapture/>
-      </v-dialog>
       <!-- Dashboard Header -->
 <!--      <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>-->
 <!--      <v-row class="tw-mb-3">-->
@@ -23,18 +20,18 @@
 <!--      </v-row>-->
 
       <!-- Stats Cards -->
-      <div class="tw-flex tw-w-full tw-flex-row tw-gap-5 tw-mb-4">
-          <v-card  class="tw-w-full tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+      <div v-if="liveCount.activeListings > 0" class="tw-flex tw-w-full tw-flex-row tw-gap-5 tw-mb-4">
+          <v-card color="transparent" rounded="lg" class="tw-border-2 tw-w-full tw-pl-4 tw-pt-2 tw-shadow-md hover:shadow-lg transition-shadow">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Sales Made</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
 <!--            <p class="tw-text-gray-500">Active listings</p>-->
           </v-card>
-          <v-card  class="tw-w-full tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+          <v-card color="transparent" rounded="lg" class="tw-border-2 tw-w-full tw-pl-4 tw-pt-2 tw-shadow-md hover:shadow-lg transition-shadow">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800"><v-icon>mdi-account-group</v-icon> Interactions</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
 <!--            <p class="tw-text-gray-500">This month</p>-->
           </v-card>
-          <v-card  class="tw-w-full tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">
+          <v-card color="transparent" rounded="lg" class="tw-border-2 tw-w-full tw-pl-4 tw-pt-2 tw-shadow-md hover:shadow-lg transition-shadow">
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800"><v-icon>mdi-cash-multiple</v-icon> Revenue</h2>
             <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
 <!--            <p class="tw-text-gray-500">Last 30 days</p>-->
@@ -75,25 +72,24 @@
           <v-card-text>
             <div>
               <v-text-field
-                label="name"
+                  v-model="newProducePost.name"
+                  label="name"
               ></v-text-field>
               <!-- add a div below with quantity and price arranged horizontally -->
               <div class="tw-flex tw-gap-4">
                 <v-text-field
+                    v-model="newProducePost.quantity"
                   label="Quantity"
                   class="tw-flex-1"
                 ></v-text-field>
                 <v-text-field
+                  v-model="newProducePost.price"
                   label="Price"
                   class="tw-flex-1"
                 ></v-text-field>
               </div>
               <v-card-actions>
-                <v-btn
-                  block
-                  @click="photoCaptureDialog = true"
-                  color="primary"
-                >Submit</v-btn>
+
               </v-card-actions>
             </div>
           </v-card-text>
@@ -183,12 +179,10 @@ import CreateListing from '@/components/listing/CreateListing.vue';
 import pluralize from 'pluralize';
 import { formatToHumanWithTime } from '@/utils/time.js';
 import CardTitle from '@/components/shared/CardTitle.vue';
-import PhotoCapture from '@/components/pictures/PhotoCapture.vue';
 // import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
-    PhotoCapture,
     CardTitle,
     CreateListing,
     // apexchart: VueApexCharts,
@@ -197,7 +191,6 @@ export default {
     return {
       loading: false,
       listingDialog: false,
-      photoCaptureDialog: false,
       headers: [
         { text: 'Product', value: 'farmerProduce.farmProduce.name' },
         { text: 'Quantity', value: 'quantityWithUnit' },
@@ -214,12 +207,18 @@ export default {
       page: 0,
       dialog: false,
       liveCount: {
-        activeListings: 3,
-        buyersInteraction: 1,
+        activeListings: 0,
+        buyersInteraction: 0,
         revenue30Days: {
-          price: 100,
+          price: 0,
           currency: 'KSH',
         },
+      },
+      newProducePost: {
+        name: '',
+        quantity: '',
+        price: '',
+        photos: [],
       },
       quickLinks: [
         {
@@ -415,60 +414,5 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Tailwind-like utility classes */
-.bg-gray-50 {
-  background-color: #f9fafb;
-}
-.min-h-screen {
-  min-height: 100vh;
-}
-.p-8 {
-  padding: 2rem;
-}
-.mb-8 {
-  margin-bottom: 2rem;
-}
-.text-3xl {
-  font-size: 1.875rem;
-}
-.font-bold {
-  font-weight: 700;
-}
-.text-gray-800 {
-  color: #1f2937;
-}
-.text-gray-600 {
-  color: #4b5563;
-}
-.text-green-600 {
-  color: #16a34a;
-}
-.text-blue-600 {
-  color: #2563eb;
-}
-.text-purple-600 {
-  color: #9333ea;
-}
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-.shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-.hover\:shadow-lg:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-.transition-shadow {
-  transition: box-shadow 0.3s ease-in-out;
-}
-.flex {
-  display: flex;
-}
-.space-x-4 > * + * {
-  margin-left: 1rem;
-}
-.flex-1 {
-  flex: 1;
-}
+<style>
 </style>

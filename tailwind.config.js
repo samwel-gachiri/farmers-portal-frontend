@@ -1,7 +1,6 @@
 module.exports = {
-  mode: 'jit',
   prefix: 'tw-',
-  purge: [
+  content: [ // <-- RENAME 'purge' to 'content'
     './src/**/*.html',
     './src/**/*.vue',
     './src/**/*.jsx',
@@ -14,10 +13,7 @@ module.exports = {
       },
     },
   },
-  variants: {},
+  // variants: {}, // Variants is also deprecated in v3, but usually doesn't cause a direct error
   plugins: [],
-  future: {
-    removeDeprecatedGapUtilities: true,
-    purgeLayersByDefault: true,
-  },
+  // future: {} // The 'future' key is also deprecated in v3 as these features are now default
 };

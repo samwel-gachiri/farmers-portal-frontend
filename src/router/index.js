@@ -16,6 +16,7 @@ const ifNotAuthenticated = (_to, _from, next) => {
     next();
     return;
   }
+  // eslint-disable-next-line sonarjs/no-duplicate-string
   next('/dashboard');
 };
 //
@@ -47,7 +48,17 @@ const routes = [
   {
     path: '/signin',
     name: 'SignIn',
-    beforeEnter: ifNotAuthenticated,
+    // for before enter, i would like for it to check the query mode and if mode is self it can redirect to dashboard
+    beforeEnter: (_to, _from, next) => {
+      // get the query mode
+      const queryMode = _to.query.mode;
+      if (!store.getters['auth/isAuthenticated'] || queryMode === 'exporter') {
+        next();
+        return;
+      }
+      next('/dashboard');
+    },
+    // eslint-disable-next-line consistent-return
     component: () => import('../views/auth/SignIn.vue'),
   },
   {
@@ -105,6 +116,11 @@ const routes = [
     path: '/order-report',
     name: 'OrdersReport',
     component: () => import('../views/admin/OrdersReport.vue'),
+  },
+  {
+    path: '/op-zones',
+    name: 'OperatingZonesManagement',
+    component: () => import('../views/exporter/OperatingZonesManagement.vue'),
   },
   // {
   //   path: '/confirm-otp',

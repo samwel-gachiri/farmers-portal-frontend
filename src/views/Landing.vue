@@ -57,9 +57,6 @@
               max-height="500px"
           ></v-img>
         </div>
-        <div class="tw-flex tw-justify-center tw-items-center tw-mt-5">
-          <button class="btn btn-primary tw-rounded-lg" @click="getStarted">Get started</button>
-        </div>
         <v-row align="center">
           <v-col cols="12" md="6" class="pr-md-10">
             <h1 class="text-h3 tw-text-md-h2 tw-font-weight-bold tw-mb-6">
@@ -597,7 +594,7 @@ export default {
 }
 
 .farmer-img {
-  animation: float 6s ease-in-out infinite;
+  /* animation: float 6s ease-in-out infinite; */
 }
 
 .buyer-img {

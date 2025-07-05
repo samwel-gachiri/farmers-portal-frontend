@@ -1,15 +1,26 @@
 <template>
   <div>
-<!--      <v-icon left>mdi-image-multiple</v-icon>-->
-      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
-        <PhotoCard
-            v-for="photo in photos"
-            :key="photo.id"
-            :photo="photo"
-            @delete="$emit('delete-photo', photo.id)"
-            @view-location="showLocationDialog"
-        />
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
+      <!-- Photo Cards -->
+      <PhotoCard
+          v-for="photo in photos"
+          :key="photo.id"
+          :photo="photo"
+          @delete="$emit('delete-photo', photo.id)"
+          @view-location="showLocationDialog"
+      />
+
+      <!-- Add New Photo Card -->
+      <div
+          class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-cursor-pointer tw-bg-gray-50 hover:tw-bg-gray-100 tw-transition-colors"
+          @click="$emit('add-photo')"
+      >
+        <div class="tw-text-center tw-p-4">
+          <v-icon large color="grey lighten-1">mdi-plus</v-icon>
+          <p class="tw-mt-2 tw-text-gray-500">Add Photo</p>
+        </div>
       </div>
+    </div>
 
     <!-- Location Dialog -->
     <v-dialog v-model="locationDialog" max-width="500">
@@ -44,6 +55,7 @@
 </template>
 
 <script>
+import piexif from 'piexifjs';
 import PhotoCard from './PhotoCard.vue';
 
 export default {
@@ -73,12 +85,51 @@ export default {
       return new Date(dateString).toLocaleString();
     },
 
+    async readExifFromBlob(blob) {
+      try {
+        const dataUrl = await this.blobToDataURL(blob);
+        const exifData = piexif.load(dataUrl);
+        if (exifData.GPS) {
+          const lat = piexif.GPSHelper.dmsRationalToDeg(
+            exifData.GPS[piexif.GPSIFD.GPSLatitude],
+          );
+
+          const lon = piexif.GPSHelper.dmsRationalToDeg(
+            exifData.GPS[piexif.GPSIFD.GPSLongitude],
+          );
+          return {
+            latitude: lat,
+            longitude: lon,
+            rawExif: exifData.GPS,
+          };
+        }
+        return null;
+      } catch (error) {
+        this.$toast.error('EXIF read error:', error.message);
+        return null;
+      }
+    },
+
+    // Helper method to convert blob to data URL
+    blobToDataURL(blob) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(blob);
+      });
+    },
     openInMaps() {
       if (this.selectedPhoto) {
         const { latitude, longitude } = this.selectedPhoto.location;
         const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
         window.open(url, '_blank');
       }
+    },
+    getPhotos() {
+      return this.photos;
+    },
+    setPhotos(photos) {
+      this.photos = photos;
     },
   },
 };
