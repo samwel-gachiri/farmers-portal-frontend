@@ -1,6 +1,6 @@
 <template>
   <v-app id="agri-future">
-    <!-- Navigation Drawer -->
+    <!-- Navigation Drawer (Desktop/Tablet Only) -->
     <v-navigation-drawer
         class="sidebar futuristic-drawer"
         :clipped="false"
@@ -11,6 +11,7 @@
         :temporary="$vuetify.breakpoint.smAndDown"
         @mouseover="mini = false"
         @mouseleave="mini = true"
+        v-if="$vuetify.breakpoint.mdAndUp"
     >
       <drawer :mini="mini" />
     </v-navigation-drawer>
@@ -24,9 +25,8 @@
         :elevate-on-scroll="true"
     >
       <v-app-bar-nav-icon
-          v-show="$vuetify.breakpoint.mdAndUp"
-          class="tw-block lg:tw-hidden"
-          @click.stop="mini = !mini"
+          class="tw-block"
+          @click.stop="drawer = !drawer"
       >
         <v-icon>mdi-menu</v-icon>
       </v-app-bar-nav-icon>
@@ -84,20 +84,8 @@
       </v-container>
     </v-main>
 
-    <!-- Mobile Menu Button -->
-    <v-btn
-        v-show="$vuetify.breakpoint.smAndDown"
-        color="primary"
-        dark
-        fixed
-        bottom
-        right
-        fab
-        @click="toggleDrawer"
-        class="mobile-menu-btn"
-    >
-      <v-icon>mdi-menu</v-icon>
-    </v-btn>
+    <!-- Bottom Navigation (Mobile Only) -->
+    <bottom-nav v-if="$vuetify.breakpoint.smAndDown" />
 
     <!-- AI Assistant Dialog -->
     <ai-assistant ref="assistant"/>
@@ -115,6 +103,8 @@ import { isAuthenticated } from '@/utils/roles.js';
 import { mapGetters } from 'vuex';
 import NotificationBell from '@/components/layout/partials/nav/NotificationBell.vue';
 import AiAssistant from '@/components/ai/AiAssistant.vue';
+// Import the new BottomNav component
+import BottomNav from '@/components/layout/partials/BottomNav.vue';
 
 export default {
   name: 'FuturisticLayout',
@@ -124,6 +114,7 @@ export default {
     Drawer,
     NotificationBell,
     AiAssistant,
+    BottomNav,
   },
   data: () => ({
     drawer: false, // Set to true by default to show drawer content immediately
@@ -219,10 +210,11 @@ export default {
   transform: translateY(10px);
 }
 
-/* Mobile Menu Button */
-.mobile-menu-btn {
-  z-index: 999;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+/* Hide the sidebar drawer on small screens */
+@media (max-width: 959px) {
+  .sidebar {
+    display: none !important;
+  }
 }
 
 /* Responsive Adjustments */
