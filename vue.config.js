@@ -45,7 +45,8 @@ module.exports = {
     appleMobileWebAppStatusBarStyle: 'black',
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
-      swSrc: 'src/service-worker.js',
+      // Use pwabuilder-adv-sw.js as the custom service worker
+      swSrc: 'public/pwabuilder-adv-sw.js',
       exclude: [
         /\.map$/,
         /manifest\.json$/,
