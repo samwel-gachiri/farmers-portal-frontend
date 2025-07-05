@@ -27,31 +27,38 @@
       </v-dialog>
 
       <!-- Main Content -->
-      <div class="">
+      <div>
         <!-- Header -->
-        <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
-          <h4 class="tw-text-2xl tw-font-bold">
-            {{ getCurrentUserId === farmer.id ? 'My' : `${farmer.name}'s` }} Farm Produces
-          </h4>
+        <div class="tw-flex tw-justify-between tw-items-center tw-mb-4 md:tw-pl-0 tw-px-4">
+          <div class="tw-flex tw-flex-col">
+            <h2 class="tw-text-lg tw-font-semibold">Produces</h2>
+            <h2 class="tw-text-lg tw-font-semibold tw-p-2 tw-rounded-lg" style="background-color: gainsboro;">
+              {{ farmer.name }}
+            </h2>
+          </div>
           <v-btn
-              v-if="getCurrentUserId === farmer.id"
-              color="primary"
-              @click="$refs.addFarmerProduce.openDialog()"
+            v-if="getCurrentUserId === farmer.id"
+            icon
+            color="primary"
+            @click="$refs.addFarmerProduce.openDialog()"
+            aria-label="Add Produce"
           >
-            <v-icon left>mdi-leaf</v-icon>
-            Add Produce
+            <v-icon>mdi-plus</v-icon>
+            Add
           </v-btn>
         </div>
 
-        <!-- Produces Table -->
-        <v-data-table
+        <!-- Responsive Produces Display -->
+        <div v-if="!isMobile">
+          <!-- Table for desktop -->
+          <v-data-table
             :headers="produceTableHeaders"
             :items="farmer.farmerProduces"
             :loading="loading"
             class="elevation-1"
-        >
-          <!--            :server-items-length="totalElements"-->
-          <!-- Custom Row Template -->
+          >
+            <!--            :server-items-length="totalElements"-->
+            <!-- Custom Row Template -->
 
 <!--          <template v-slot:item.actions="{ item }">-->
 <!--                :src="item.imageUrls.length > 0 ? item.imageUrls[0]: ''"-->
@@ -80,6 +87,48 @@
             <v-btn small color="secondary" @click="listingDialog = true">sell</v-btn>
           </template>
         </v-data-table>
+        </div>
+        <div v-else>
+          <!-- Cards for mobile -->
+          <div class="tw-grid tw-grid-cols-1 tw-gap-4 tw-p-2">
+            <div
+              v-for="item in farmer.farmerProduces"
+              :key="item.id"
+              class="tw-bg-white tw-rounded-xl tw-shadow-md tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-relative"
+              aria-label="Produce Card"
+            >
+              <div class="tw-flex tw-items-center tw-gap-3">
+                <v-img
+                  v-if="item.imageUrls && item.imageUrls.length"
+                  :src="item.imageUrls[0]"
+                  width="80"
+                  height="80"
+                  class="tw-rounded-lg tw-border tw-border-gray-200"
+                  alt="Produce image"
+                />
+                <div>
+                  <div class="tw-font-bold tw-text-lg">{{ item.farmProduce.name }}</div>
+                  <div class="tw-text-xs tw-text-gray-500">{{ item.farmingType }}</div>
+                </div>
+              </div>
+              <div class="tw-mt-2 tw-text-gray-700 tw-text-sm">{{ item.description }}</div>
+              <div class="tw-flex tw-items-center tw-gap-2 tw-mt-1">
+                <span class="tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-bg-green-100 tw-text-green-700">{{ item.status }}</span>
+              </div>
+              <div class="tw-flex tw-gap-2 tw-mt-3">
+                <v-btn small color="primary" @click="()=>{editProduceDialog = true; selectedFarmerProduce = item}" aria-label="Edit">
+                  <v-icon left>mdi-pencil</v-icon>Edit
+                </v-btn>
+                <v-btn small color="error" @click="listingDialog = true" aria-label="Delete">
+                  <v-icon left>mdi-trash-can</v-icon>Delete
+                </v-btn>
+                <v-btn small color="secondary" @click="listingDialog = true" aria-label="Sell">
+                  Sell
+                </v-btn>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -177,11 +226,17 @@ export default {
       showSnackbar: false,
       snackbarMessage: '',
       loading: false,
+      isMobile: false,
     };
   },
   mounted() {
     this.loading = true;
     this.fetchFarmerDetails();
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
   },
   computed: {
     getCurrentUserId,
@@ -265,6 +320,9 @@ export default {
       this.showSnackbar = true;
       window.open('https://www.instagram.com', '_blank');
     },
+    handleResize() {
+      this.isMobile = window.innerWidth < 768;
+    },
   },
   watch: {
     listingDialog(newValue) {
@@ -279,5 +337,9 @@ export default {
 <style scoped>
 .tw-bg-gradient-to-r {
   background: linear-gradient(to right, #e0f7fa, #e8f5e9);
+}
+/* Add subtle card hover for mobile cards */
+.tw-card-hover:hover {
+  box-shadow: 0 4px 14px 0 rgba(0,0,0,0.09);
 }
 </style>

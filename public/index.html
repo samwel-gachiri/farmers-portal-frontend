@@ -9,12 +9,12 @@
     <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
     <title><%= htmlWebpackPlugin.options.title %></title>
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <!-- Register service worker for PWA -->
-    <script>
+    <!-- Remove manual service worker registration, handled by Vue PWA plugin -->
+    <!-- <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/pwabuilder-adv-sw.js');
       }
-    </script>
+    </script> -->
     <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
   </head>
   <body>
