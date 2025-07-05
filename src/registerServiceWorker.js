@@ -2,7 +2,7 @@
 import { register } from 'register-service-worker';
 
 if (process.env.NODE_ENV === 'production') {
-  register(`${process.env.BASE_URL}pwabuilder-adv-sw.js`, {
+  register(`${process.env.BASE_URL}service-worker.js`, {
     ready() {
       console.log(
         'App is being served from cache by a service worker.\n'
@@ -21,10 +21,23 @@ if (process.env.NODE_ENV === 'production') {
     updated() {
       console.log('New content is available; please refresh.');
 
-      // Notify the user that new content is available
-      // You can use a modal, toast notification, or a simple alert:
-      if (window.confirm('New version available! Refresh to get the latest content?')) {
-        window.location.reload(); // Reload the page to apply the new version
+      // Show a non-blocking banner to prompt user to refresh
+      if (!document.getElementById('sw-update-banner')) {
+        const banner = document.createElement('div');
+        banner.id = 'sw-update-banner';
+        banner.textContent = 'A new version is available. Click here to refresh.';
+        banner.style.position = 'fixed';
+        banner.style.bottom = '0';
+        banner.style.left = '0';
+        banner.style.width = '100%';
+        banner.style.backgroundColor = '#2563eb'; // tw-blue-600
+        banner.style.color = '#fff';
+        banner.style.padding = '10px';
+        banner.style.textAlign = 'center';
+        banner.style.cursor = 'pointer';
+        banner.style.zIndex = '9999';
+        banner.onclick = () => window.location.reload();
+        document.body.appendChild(banner);
       }
     },
     offline() {

@@ -86,10 +86,18 @@ workbox.routing.registerRoute(
 
 // This "catch" handler is triggered when any of the other routes fail to
 // generate a response.
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars, sonarjs/no-duplicate-string
 workbox.routing.setCatchHandler(({ event }) => caches.match('/no-internet'));
 
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
+workbox.precaching.precacheAndRoute(self.__precacheManifest, '/no-internet', {});
+workbox.routing.registerNavigationRoute('/index.html');
+
+self.addEventListener('message', (msg) => {
+  if (msg.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
 // workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, '/no-internet', {});
 workbox.routing.registerNavigationRoute('/index.html');
