@@ -1,243 +1,172 @@
 <template>
-  <v-container fluid>
-    <v-card>
-      <card-title icon="mdi-camera">Take Picture</card-title>
-      <div>
-        <div v-if="checkingPermissions" class="tw-mb-1 tw-text-center tw-py-8">
-          <v-progress-circular indeterminate color="primary" class="tw-mb-4"></v-progress-circular>
-          <p>Checking permissions...</p>
-        </div>
-        <div v-if="!checkingPermissions" class="tw-mb-4">
-          <div v-if="permissionStates.camera != 'granted' || permissionStates.geolocation != 'granted'"  class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
-            <!-- Camera Permission -->
-            <div class="tw-flex tw-items-center tw-p-3 tw-rounded tw-border">
-              <v-icon
-                  :color="permissionStates.camera === 'granted' ? 'success' :
-                   permissionStates.camera === 'denied' ? 'error' : 'warning'"
-                  class="tw-mr-3"
-              >
-                {{ permissionStates.camera === 'granted' ? 'mdi-check-circle' :
-                  permissionStates.camera === 'denied' ? 'mdi-close-circle' : 'mdi-help-circle' }}
-              </v-icon>
-              <div>
-                <h6 class="tw-font-semibold">Camera Access</h6>
-                <p class="tw-text-sm tw-capitalize">{{ permissionStates.camera }}</p>
-              </div>
-            </div>
+  <div v-if="hasCameraPermission && hasLocationPermission" class="tw-fixed tw-inset-0 tw-bg-black tw-z-50 tw-overflow-hidden tw-w-screen tw-h-screen">
+    <!-- Camera Preview (fills screen) -->
+    <video
+      ref="videoElement"
+      v-show="showCamera"
+      autoplay
+      playsinline
+      class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-object-cover tw-bg-black"
+      style="z-index:1"
+    ></video>
+    <canvas ref="canvasElement" style="display: none;"></canvas>
 
-            <!-- Location Permission -->
-            <div class="tw-flex tw-items-center tw-p-3 tw-rounded tw-border">
-              <v-icon
-                  :color="permissionStates.geolocation === 'granted' ? 'success' :
-                   permissionStates.geolocation === 'denied' ? 'error' : 'warning'"
-                  class="tw-mr-3"
-              >
-                {{ permissionStates.geolocation === 'granted' ? 'mdi-check-circle' :
-                  permissionStates.geolocation === 'denied' ? 'mdi-close-circle' : 'mdi-help-circle' }}
-              </v-icon>
-              <div>
-                <h6 class="tw-font-semibold">Location Access</h6>
-                <p class="tw-text-sm tw-capitalize">{{ permissionStates.geolocation }}</p>
-              </div>
-            </div>
-          </div>
+    <!-- Top bar: Close and Switch Camera -->
+    <div class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-flex tw-justify-between tw-items-center tw-p-4 tw-z-20">
+      <button @click="closeCamera" aria-label="Close" class="tw-bg-black/60 tw-rounded-full tw-p-2 hover:tw-bg-black/80 tw-transition">
+        <svg class="tw-w-6 tw-h-6 tw-text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <button @click="switchToNextCamera" aria-label="Switch Camera" class="tw-bg-black/60 tw-rounded-full tw-p-2 hover:tw-bg-black/80 tw-transition">
+        <svg class="tw-w-6 tw-h-6 tw-text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+    </div>
 
-          <!-- Request Permissions Button -->
-          <v-btn
-              v-if="permissionStates.camera !== 'granted' || permissionStates.geolocation !== 'granted'"
-              color="primary"
-              @click="requestPermissions"
-              :loading="loading"
-              class="tw-mt-4"
-          >
-            Request Permissions
-          </v-btn>
-        </div>
-        <!-- Camera Interface -->
-        <div v-if="hasLocationPermission && hasCameraPermission">
-<!--          <v-card-title>-->
-<!--            <v-icon left>mdi-camera</v-icon>-->
-<!--            Geotagged Photo Capture-->
-            <!--        &lt;!&ndash; Current Camera Info &ndash;&gt;-->
-            <!--        <v-chip v-if="getCurrentCameraInfo()" color="info" small>-->
-            <!--          <v-icon left small>mdi-camera</v-icon>-->
-            <!--          {{ getCurrentCameraInfo().label }}-->
-            <!--        </v-chip>-->
-<!--          </v-card-title>-->
+    <!-- Error message (centered) -->
+    <div v-if="cameraError" class="tw-absolute tw-top-1/2 tw-left-1/2 tw-transform -tw-translate-x-1/2 -tw-translate-y-1/2 tw-bg-black/80 tw-text-white tw-p-4 tw-rounded tw-z-30">
+      {{ cameraError }}
+    </div>
 
-            <!-- Current Location Display -->
-            <!--        <div v-if="currentLocation" class="tw-mb-4 tw-p-3 tw-bg-gray-100 tw-rounded">-->
-            <!--          <h4 class="tw-text-sm tw-font-semibold tw-mb-2">Current Location:</h4>-->
-            <!--          <p class="tw-text-xs">-->
-            <!--            Latitude: {{ currentLocation.latitude.toFixed(6) }}<br>-->
-            <!--            Longitude: {{ currentLocation.longitude.toFixed(6) }}<br>-->
-            <!--            Accuracy: ±{{ currentLocation.accuracy }}m-->
-            <!--          </p>-->
-            <!--        </div>-->
-
-            <!-- Error Display -->
-            <v-alert v-if="cameraError" type="error" dismissible class="tw-mb-4">
-              {{ cameraError }}
-            </v-alert>
-
-            <!-- Camera Container -->
-            <div class="tw-relative">
-              <video
-                  ref="videoElement"
-                  v-show="showCamera"
-                  autoplay
-                  playsinline
-                  class="tw-w-full tw-max-w-md tw-mx-auto tw-block tw-rounded"
-              ></video>
-
-              <canvas
-                  ref="canvasElement"
-                  style="display: none;"
-              ></canvas>
-            </div>
-            <PhotoGallery
-                ref="photoGallery"
-                v-if="false"
-                :photos="capturedPhotos"
-                @delete-photo="deletePhoto"
-                class="tw-mt-4"
-            />
-
-          <v-card-actions class="tw-justify-center">
-            <v-btn
-                v-if="!showCamera"
-                color="primary"
-                large
-                @click="startCamera"
-                :loading="isCapturing"
-            >
-              <v-icon>mdi-camera</v-icon>
-              Start Camera
-            </v-btn>
-
-            <template v-else>
-              <v-btn
-                  color="primary"
-                  outlined
-                  icon
-                  rounded
-                  @click="capturePhoto"
-                  :disabled="!currentLocation"
-                  class="tw-mr-2"
-              >
-                <v-icon color="primary" size="30px" large>mdi-camera</v-icon>
-              </v-btn>
-
-              <v-btn
-                  color="primary"
-                  outlined
-                  icon
-                  rounded
-                  @click="stopCamera"
-              >
-                <v-icon color="primary">mdi-checkbox-blank</v-icon>
-              </v-btn>
-              <v-btn
-                  color="primary"
-                  large
-                  rounded
-                  @click="submitPhotos"
-              >
-                Submit
-              </v-btn>
-            </template>
-            <div v-if="hasLocationPermission && hasCameraPermission">
-              <CameraSelector
-                  ref="cameraSelector"
-                  :disabled="showCamera"
-                  @camera-selected="onCameraSelected"
-              />
-            </div>
-          </v-card-actions>
-        </div>
-
+    <!-- Captured Photos Gallery (bottom, horizontal scroll, overlays video) -->
+    <div
+      v-if="capturedPhotos.length"
+      class="tw-absolute tw-bottom-28 md:tw-bottom-32 tw-left-0 tw-w-full tw-overflow-x-auto tw-px-4 tw-py-2 tw-bg-black/40 tw-flex tw-space-x-2 tw-items-center tw-justify-start tw-z-20"
+      style="backdrop-filter: blur(2px);"
+    >
+      <div v-for="photo in capturedPhotos" :key="photo.id" class="tw-relative">
+        <img :src="photo.url" class="tw-h-16 tw-w-16 tw-object-cover tw-rounded tw-border-2 tw-border-white tw-shadow" alt="Captured photo" />
+        <button @click="deletePhoto(photo.id)" class="tw-absolute tw-top-0 tw-right-0 tw-bg-black/70 tw-rounded-full tw-p-1 tw-m-1 hover:tw-bg-red-600" aria-label="Delete photo">
+          <svg class="tw-w-4 tw-h-4 tw-text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
-    </v-card>
-  </v-container>
+    </div>
+
+    <!-- Bottom Controls (always visible, overlays video, safe area for mobile) -->
+    <div
+      class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-flex tw-justify-center tw-items-center tw-py-6 tw-bg-gradient-to-t tw-from-black/80 tw-to-transparent tw-z-30"
+      style="padding-bottom: env(safe-area-inset-bottom, 1.5rem);"
+    >
+      <button
+        @click="capturePhoto"
+        :disabled="!currentLocation"
+        aria-label="Capture Photo"
+        class="tw-bg-white tw-rounded-full tw-w-16 tw-h-16 tw-flex tw-items-center tw-justify-center tw-shadow-lg tw-border-4 tw-border-gray-300 tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-400 tw-transition"
+      >
+        <svg class="tw-w-10 tw-h-10 tw-text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+        </svg>
+      </button>
+      <button
+        v-if="capturedPhotos.length"
+        @click="submitPhotos"
+        aria-label="Submit Photos"
+        class="tw-ml-8 tw-bg-blue-600 tw-text-white tw-rounded-full tw-px-6 tw-py-3 tw-shadow hover:tw-bg-blue-700 tw-transition"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+
+  <!-- Permissions UI (centered) -->
+  <div v-else class="tw-fixed tw-inset-0 tw-bg-black tw-flex tw-flex-col tw-items-center tw-justify-center tw-z-50">
+    <div class="tw-bg-white tw-rounded-xl tw-shadow-lg tw-p-8 tw-flex tw-flex-col tw-items-center tw-space-y-6 tw-w-80">
+      <div>
+        <svg v-if="permissionStates.camera !== 'granted'" class="tw-w-12 tw-h-12 tw-text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/>
+        </svg>
+        <svg v-else class="tw-w-12 tw-h-12 tw-text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="tw-text-center">
+        <h2 class="tw-text-lg tw-font-semibold tw-mb-2">Camera & Location Permissions</h2>
+        <p class="tw-text-gray-600 tw-mb-2">To take photos, please allow camera and location access.</p>
+        <div class="tw-flex tw-justify-center tw-space-x-4 tw-mt-2">
+          <span class="tw-text-xs tw-font-medium" :class="permissionStates.camera === 'granted' ? 'tw-text-green-600' : 'tw-text-yellow-600'">
+            Camera: {{ permissionStates.camera }}
+          </span>
+          <span class="tw-text-xs tw-font-medium" :class="permissionStates.geolocation === 'granted' ? 'tw-text-green-600' : 'tw-text-yellow-600'">
+            Location: {{ permissionStates.geolocation }}
+          </span>
+        </div>
+      </div>
+      <button
+        @click="requestPermissions"
+        :disabled="loading"
+        class="tw-bg-blue-600 tw-text-white tw-rounded-full tw-px-6 tw-py-3 tw-shadow hover:tw-bg-blue-700 tw-transition tw-w-full"
+      >
+        {{ loading ? 'Requesting...' : 'Request Permissions' }}
+      </button>
+      <div v-if="locationError" class="tw-text-red-600 tw-text-xs tw-mt-2">{{ locationError }}</div>
+    </div>
+  </div>
 </template>
+
 <script>
-// Add piexifjs import at the top
+// filepath: g:\documents\computer science\4.1\SCO400 - Project\MyProject\Application\frontend\farmer-portal-frontend\src\components\pictures\PhotoCapture.vue
 import piexif from 'piexifjs';
-import PhotoGallery from '@/components/pictures/PhotoGallery.vue';
-import CardTitle from '@/components/shared/CardTitle.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
-import CameraSelector from './CameraSelector.vue';
 
 export default {
   name: 'PhotoCapture',
-  components: {
-    CardTitle,
-    PhotoGallery,
-    CameraSelector,
-  },
   data() {
     return {
-      // Camera and location states
       hasLocationPermission: false,
       hasCameraPermission: false,
       currentLocation: null,
       locationError: null,
-
-      // Camera stream
       stream: null,
-
-      // Captured photos
       capturedPhotos: [],
-
-      // UI states
       isCapturing: false,
       showCamera: false,
       loading: false,
-
-      // Permission states
       permissionStates: {
-        camera: 'prompt', // 'granted', 'denied', 'prompt'
+        camera: 'prompt',
         geolocation: 'prompt',
       },
-
       selectedCameraId: null,
-
-      // UI states
+      cameraDevices: [],
       checkingPermissions: true,
       cameraError: null,
+      watchId: null,
     };
   },
   mounted() {
     this.checkPermissionsOnLoad();
   },
-  computed: {
-    canCapturePhoto() {
-      return this.hasLocationPermission
-          && this.hasCameraPermission
-          && this.currentLocation
-          && this.showCamera;
-    },
-    getCurrentUserId,
-  },
-
   methods: {
     async requestPermissions() {
       this.loading = true;
       this.locationError = null;
-
       try {
-        // Request location permission
-        await this.requestLocationPermission();
-
-        // Request camera permission
-        await this.requestCameraPermission();
-
-        // Start location tracking
+        try {
+          await this.requestLocationPermission();
+        } catch (locErr) {
+          this.locationError = locErr.message;
+          this.hasLocationPermission = false;
+          this.permissionStates.geolocation = 'denied';
+        }
+        try {
+          await this.requestCameraPermission();
+        } catch (camErr) {
+          // Camera permission denied or error occurred; handled by permissionStates update above.
+        }
         if (this.hasLocationPermission) {
-          this.startLocationTracking();
+          try {
+            this.startLocationTracking();
+          } catch (trackErr) {
+            this.$toast.error(`Location tracking error: ${trackErr.message}`);
+          }
         }
       } catch (error) {
-        this.$toast.error('Permission error:', error.message);
+        this.$toast.error(`Permission error: ${error.message}`);
         this.locationError = error.message;
       } finally {
         this.loading = false;
@@ -246,91 +175,115 @@ export default {
         }
       }
     },
-
     async requestLocationPermission() {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
           reject(new Error('Geolocation is not supported by this browser'));
           return;
         }
-
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            this.hasLocationPermission = true;
-            this.currentLocation = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              accuracy: position.coords.accuracy,
-              timestamp: new Date(),
-            };
-            resolve();
-          },
-          (error) => {
-            let errorMessage = 'Location access denied';
-            // eslint-disable-next-line default-case
-            switch (error.code) {
-              case error.PERMISSION_DENIED:
-                errorMessage = 'Location access denied by user';
-                break;
-              case error.POSITION_UNAVAILABLE:
-                errorMessage = 'Location information unavailable';
-                break;
-              case error.TIMEOUT:
-                errorMessage = 'Location request timed out';
-                break;
-            }
-            reject(new Error(errorMessage));
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0,
-          },
-        );
+        try {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              this.hasLocationPermission = true;
+              this.permissionStates.geolocation = 'granted';
+              this.currentLocation = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+                timestamp: new Date(),
+              };
+              resolve();
+            },
+            (error) => {
+              let errorMessage = 'Location access denied';
+              // eslint-disable-next-line default-case
+              switch (error.code) {
+                case error.PERMISSION_DENIED:
+                  errorMessage = 'Location access denied by user';
+                  break;
+                case error.POSITION_UNAVAILABLE:
+                  errorMessage = 'Location information unavailable';
+                  break;
+                case error.TIMEOUT:
+                  errorMessage = 'Location request timed out';
+                  break;
+              }
+              this.hasLocationPermission = false;
+              this.permissionStates.geolocation = 'denied';
+              reject(new Error(errorMessage));
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0,
+            },
+          );
+        } catch (err) {
+          this.hasLocationPermission = false;
+          this.permissionStates.geolocation = 'denied';
+          reject(new Error('Unexpected geolocation error'));
+        }
       });
     },
-
     async requestCameraPermission() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: 'environment', // Use back camera if available
-          },
+          video: { facingMode: 'environment' },
         });
-
-        // Test successful, stop the stream for now
         stream.getTracks().forEach((track) => track.stop());
         this.hasCameraPermission = true;
+        this.permissionStates.camera = 'granted';
+        await this.getAvailableCameras();
       } catch (error) {
+        this.hasCameraPermission = false;
+        this.permissionStates.camera = 'denied';
         throw new Error('Camera access denied or unavailable');
       }
     },
-
-    startLocationTracking() {
-      if (!navigator.geolocation) return;
-
-      // Watch position for real-time updates
-      this.watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          this.currentLocation = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            timestamp: new Date(),
-          };
-        },
-        (error) => {
-          this.$toast.error('Location tracking error:', error.message);
-          // this.startLocationTracking();
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 30000,
-        },
-      );
+    async getAvailableCameras() {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        this.cameraDevices = devices.filter((d) => d.kind === 'videoinput');
+        if (!this.selectedCameraId && this.cameraDevices.length) {
+          this.selectedCameraId = this.cameraDevices[0].deviceId;
+        }
+      } catch (e) {
+        this.cameraDevices = [];
+      }
     },
-
+    async switchToNextCamera() {
+      if (!this.cameraDevices.length) return;
+      const idx = this.cameraDevices.findIndex((d) => d.deviceId === this.selectedCameraId);
+      const nextIdx = (idx + 1) % this.cameraDevices.length;
+      this.selectedCameraId = this.cameraDevices[nextIdx].deviceId;
+      await this.startCamera();
+    },
+    async startCamera() {
+      try {
+        const constraints = {
+          video: {
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            deviceId: this.selectedCameraId ? { exact: this.selectedCameraId } : undefined,
+            facingMode: this.selectedCameraId ? undefined : 'environment',
+          },
+        };
+        if (this.stream) {
+          this.stream.getTracks().forEach((track) => track.stop());
+        }
+        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+        this.$refs.videoElement.srcObject = this.stream;
+        this.showCamera = true;
+        this.cameraError = null;
+      } catch (error) {
+        this.cameraError = `Failed to start camera: ${error.message}`;
+      }
+    },
+    closeCamera() {
+      this.stopCamera();
+      // Optionally emit an event to parent to close the modal/view
+      this.$emit('close');
+    },
     stopCamera() {
       if (this.stream) {
         this.stream.getTracks().forEach((track) => track.stop());
@@ -338,96 +291,63 @@ export default {
       }
       this.showCamera = false;
     },
-
+    startLocationTracking() {
+      if (!navigator.geolocation) return;
+      if (this.watchId) {
+        try {
+          navigator.geolocation.clearWatch(this.watchId);
+        } catch (e) {
+          // Intentionally ignored: error clearing geolocation watch
+        }
+      }
+      try {
+        this.watchId = navigator.geolocation.watchPosition(
+          (position) => {
+            this.currentLocation = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy,
+              timestamp: new Date(),
+            };
+          },
+          (error) => {
+            this.$toast.error(`Location tracking error: ${error.message}`);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 30000,
+          },
+        );
+      } catch (err) {
+        this.$toast.error(`Location tracking error: ${err.message}`);
+      }
+    },
     async capturePhoto() {
       if (!this.currentLocation) {
         this.$toast.error('Location not available');
         return;
       }
-      // In your capturePhoto method, add validation:
-      if (Math.abs(this.currentLocation.latitude) > 90
-          || Math.abs(this.currentLocation.longitude) > 180) {
+      if (Math.abs(this.currentLocation.latitude) > 90 || Math.abs(this.currentLocation.longitude) > 180) {
         this.$toast.error('Invalid GPS coordinates');
         return;
       }
       const video = this.$refs.videoElement;
       const canvas = this.$refs.canvasElement;
       const context = canvas.getContext('2d');
-
-      // Set canvas dimensions to match video
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-
-      // Draw current video frame to canvas
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Convert to blob
       canvas.toBlob(async (blob) => {
         if (blob) {
           this.capturedPhotos.push(await this.addGeotagToPhoto(blob));
-          // this.$toast.success('Photo captured with location data');
         }
       }, 'image/jpeg', 0.9);
     },
-
-    // async addGeotagToPhoto(photoBlob) {
-    //   const zerothIfd = {};
-    //   const exifIfd = {};
-    //   const gpsIfd = {};
-    //   zerothIfd[piexif.ImageIFD.Make] = 'Maker Name';
-    //   zerothIfd[piexif.ImageIFD.XResolution] = [777, 1];
-    //   zerothIfd[piexif.ImageIFD.YResolution] = [777, 1];
-    //   zerothIfd[piexif.ImageIFD.Software] = 'Piexifjs';
-    //   exifIfd[piexif.ExifIFD.DateTimeOriginal] = '2010:10:10 10:10:10';
-    //   exifIfd[piexif.ExifIFD.LensMake] = 'Lens Maker';
-    //   exifIfd[piexif.ExifIFD.Sharpness] = 777;
-    //   exifIfd[piexif.ExifIFD.LensSpecification] = [[1, 1], [1, 1], [1, 1], [1, 1]];
-    //   gpsIfd[piexif.GPSIFD.GPSVersionID] = [7, 7, 7, 7];
-    //   gpsIfd[piexif.GPSIFD.GPSDateStamp] = '1999:99:99 99:99:99';
-    //
-    //   const lat = 59.43553989213321;
-    //   const lng = 24.73842144012451;
-    //   gpsIfd[piexif.GPSIFD.GPSLatitudeRef] = lat < 0 ? 'S' : 'N';
-    //   gpsIfd[piexif.GPSIFD.GPSLatitude] = piexif.GPSHelper.degToDmsRational(lat);
-    //   gpsIfd[piexif.GPSIFD.GPSLongitudeRef] = lng < 0 ? 'W' : 'E';
-    //   gpsIfd[piexif.GPSIFD.GPSLongitude] = piexif.GPSHelper.degToDmsRational(lng);
-    //
-    //   const exifObj = { '0th': zerothIfd, Exif: exifIfd, GPS: gpsIfd };
-    //
-    //   // get exif binary as "string" type
-    //   const exifBytes = piexif.dump(exifObj);
-    //
-    //   // get JPEG image from canvas
-    //   const jpegData = document.getElementById('canvas').toDataURL('image/jpeg', 1.0);
-    //
-    //   // insert exif binary into JPEG binary(DataURL)
-    //   const exifModified = piexif.insert(exifBytes, jpegData);
-    //
-    //   // show JPEG modified exif
-    //   const image = new Image();
-    //   image.src = exifModified;
-    //   image.width = 200;
-    //   // for Modern IE
-    //   if (saveJpeg) {
-    //     const jpegBinary = atob(exifModified.split(',')[1]);
-    //     const data = [];
-    //     for (let p = 0; p < jpegBinary.length; p++) {
-    //       data[p] = jpegBinary.charCodeAt(p);
-    //     }
-    //     const ua = new Uint8Array(data);
-    //     const blob = new Blob([ua], { type: 'image/jpeg' });
-    //     image.onclick = saveJpeg(blob);
-    //   }
-    //   // const el = $('<div></div>').append(image);
-    //   // $('#resized').prepend(el);
-    // },
     async addGeotagToPhoto(photoBlob) {
       try {
-        // Convert blob to data URL
         const arrayBuffer = await photoBlob.arrayBuffer();
         const photoData = new Uint8Array(arrayBuffer);
-
-        // Convert to base64 data URL
         let binary = '';
         // eslint-disable-next-line no-plusplus
         for (let i = 0; i < photoData.length; i++) {
@@ -435,25 +355,14 @@ export default {
         }
         const base64String = btoa(binary);
         const dataUrl = `data:image/jpeg;base64,${base64String}`;
-
-        // Create GPS EXIF data
-        // const gpsData = this.createGPSExifData();
-        // console.log(gpsData);
-        // Ensure coordinates are within valid ranges
         const lat = Math.max(-90, Math.min(90, this.currentLocation.latitude));
         const lon = Math.max(-180, Math.min(180, this.currentLocation.longitude));
-        // const lat = 59.43553989213321;
-        // const lon = 24.73842144012451;
-        // Get current date and time for GPS timestamp
-        // const now = new Date();
-        // Create complete EXIF dictionary
         const exifDict = {
           '0th': {
             [piexif.ImageIFD.Make]: 'Web Browser',
             [piexif.ImageIFD.Model]: navigator.userAgent.split(' ')[0],
-            // [piexif.ImageIFD.DateTime]: this.getExifDateTime(),
             [piexif.ImageIFD.Software]: 'Vue Geotagged Camera',
-            [piexif.ImageIFD.Artist]: getCurrentUserId(), // Set owner as farmer
+            [piexif.ImageIFD.Artist]: getCurrentUserId(),
           },
           Exif: {
             [piexif.ExifIFD.DateTimeOriginal]: this.getExifDateTime(),
@@ -465,27 +374,11 @@ export default {
             [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(lat),
             [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
             [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(lon),
-            // [piexif.GPSIFD.GPSAltitudeRef]: 0,
-            // [piexif.GPSIFD.GPSTimeStamp]: [
-            //   [now.getUTCHours(), 1],
-            //   [now.getUTCMinutes(), 1],
-            //   [now.getUTCSeconds(), 1],
-            // ],
-            // [piexif.GPSIFD.GPSDateStamp]: now.toISOString().split('T')[0].replace(/-/g, ':'),
-            // [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
-            // [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
           },
         };
-
-        // Convert EXIF dictionary to bytes
         const exifBytes = piexif.dump(exifDict);
-
-        // Insert EXIF data into the image
         const newDataUrl = piexif.insert(exifBytes, dataUrl);
-
-        // Convert back to blob
         const newBlob = await this.dataURLToBlob(newDataUrl);
-
         return {
           id: Date.now(),
           blob: newBlob,
@@ -502,104 +395,16 @@ export default {
           },
         };
       } catch (error) {
-        this.$toast.error('Error embedding GPS EXIF data:', error.message);
-        // Fallback to simple geotagging if EXIF embedding fails
+        this.$toast.error(`Error embedding GPS EXIF data: ${error.message}`);
         return this.createSimpleGeotaggedPhoto(photoBlob);
       }
     },
-
-    // createGPSExifData() {
-    //   // Ensure coordinates are within valid ranges
-    //   const lat = Math.max(-90, Math.min(90, this.currentLocation.latitude));
-    //   const lon = Math.max(-180, Math.min(180, this.currentLocation.longitude));
-    //
-    //   // Get current date and time for GPS timestamp
-    //   const now = new Date();
-    //
-    //   return {
-    //     [piexif.GPSIFD.GPSVersionID]: [7, 7, 7, 7],
-    //     [piexif.GPSIFD.GPSDateStamp]: '1999:99:99 99:99:99',
-    //     [piexif.GPSIFD.GPSLatitudeRef]: lat >= 0 ? 'N' : 'S',
-    //     [piexif.GPSIFD.GPSLatitude]: piexif.GPSHelper.degToDmsRational(lat),
-    //     [piexif.GPSIFD.GPSLongitudeRef]: lon >= 0 ? 'E' : 'W',
-    //     [piexif.GPSIFD.GPSLongitude]: piexif.GPSHelper.degToDmsRational(lon),
-    //     // [piexif.GPSIFD.GPSAltitudeRef]: 0,
-    //     // [piexif.GPSIFD.GPSTimeStamp]: [
-    //     //   [now.getUTCHours(), 1],
-    //     //   [now.getUTCMinutes(), 1],
-    //     //   [now.getUTCSeconds(), 1],
-    //     // ],
-    //     [piexif.GPSIFD.GPSDateStamp]: now.toISOString().split('T')[0].replace(/-/g, ':'),
-    //     [piexif.GPSIFD.GPSProcessingMethod]: this.encodeProcessingMethod('GPS'),
-    //     [piexif.GPSIFD.GPSMapDatum]: 'WGS-84',
-    //   };
-    // },
-
-    // getGPSTimeStamp() {
-    //   const now = new Date();
-    //   return [
-    //     [now.getUTCHours(), 1],
-    //     [now.getUTCMinutes(), 1],
-    //     [now.getUTCSeconds(), 1],
-    //   ];
-    // },
-    //
-    // getGPSDateStamp() {
-    //   const now = new Date();
-    //   const year = now.getUTCFullYear();
-    //   const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-    //   const day = String(now.getUTCDate()).padStart(2, '0');
-    //   return `${year}:${month}:${day}`;
-    // },
-
-    getExifDateTime() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      return `${year}:${month}:${day} ${hours}:${minutes}:${seconds}`;
-    },
-
-    // Fixed encodeUserComment method
-    // encodeUserComment(comment) {
-    //   // EXIF UserComment should be encoded as Unicode (UTF-8)
-    //   // The first 8 bytes should be the encoding identifier
-    //   const encoding = [0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00]; // "UNICODE" + null terminator
-    //
-    //   // Convert comment to UTF-8 bytes
-    //   const encoder = new TextEncoder();
-    //   const commentBytes = encoder.encode(comment);
-    //
-    //   // Combine encoding marker and comment bytes
-    //   const result = new Uint8Array(encoding.length + commentBytes.length);
-    //   result.set(encoding, 0);
-    //   result.set(commentBytes, encoding.length);
-    //
-    //   return result;
-    // },
-
-    // encodeProcessingMethod(method) {
-    //   // GPS Processing Method encoding
-    //   const encoding = [0x41, 0x53, 0x43, 0x49, 0x49, 0x00, 0x00, 0x00]; // ASCII encoding marker
-    //   const methodBytes = [];
-    //   // eslint-disable-next-line no-plusplus
-    //   for (let i = 0; i < method.length; i++) {
-    //     methodBytes.push(method.charCodeAt(i));
-    //   }
-    //   return new Uint8Array([...encoding, ...methodBytes]);
-    // },
-
     async dataURLToBlob(dataURL) {
       const response = await fetch(dataURL);
       // eslint-disable-next-line no-return-await
       return await response.blob();
     },
-
     createSimpleGeotaggedPhoto(photoBlob) {
-      // Fallback method without EXIF embedding
       return {
         id: Date.now(),
         blob: photoBlob,
@@ -616,129 +421,104 @@ export default {
         },
       };
     },
-
-    // Enhanced camera switching
-    onCameraSelected(cameraId) {
-      this.switchCamera(cameraId);
-    },
-
     deletePhoto(photoId) {
       const index = this.capturedPhotos.findIndex((photo) => photo.id === photoId);
       if (index > -1) {
-        // Clean up object URL to prevent memory leaks
         URL.revokeObjectURL(this.capturedPhotos[index].url);
         this.capturedPhotos.splice(index, 1);
       }
     },
-
+    submitPhotos() {
+      this.stopCamera();
+      this.$emit('captured-photos', this.capturedPhotos);
+    },
+    getExifDateTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      return `${year}:${month}:${day} ${hours}:${minutes}:${seconds}`;
+    },
     async checkPermissionsOnLoad() {
       this.checkingPermissions = true;
-
-      // Check camera permission
       await this.checkCameraPermission();
-
-      // Check location permission
       await this.checkLocationPermission();
-
-      // If both permissions are granted, get available cameras and start location tracking
       if (this.permissionStates.camera === 'granted' && this.permissionStates.geolocation === 'granted') {
         this.hasLocationPermission = true;
         this.hasCameraPermission = true;
-
-        await this.$nextTick();
-
-        if (this.$refs.cameraSelector) {
-          await this.$refs.cameraSelector.getAvailableCameras();
-          await this.startCamera();
-          this.startLocationTracking();
-        }
+        await this.getAvailableCameras();
+        await this.startCamera();
+        this.startLocationTracking();
       }
       this.checkingPermissions = false;
     },
-
     async checkCameraPermission() {
       try {
-        // Check if Permissions API is supported
         if ('permissions' in navigator) {
           const permission = await navigator.permissions.query({ name: 'camera' });
           this.permissionStates.camera = permission.state;
-
-          // Listen for permission changes
           permission.onchange = () => {
             this.permissionStates.camera = permission.state;
             this.hasCameraPermission = permission.state === 'granted';
-
             if (permission.state === 'granted') {
-              if (this.$refs.cameraSelector) {
-                this.$refs.cameraSelector.getAvailableCameras();
-              }
+              this.getAvailableCameras();
             } else if (permission.state === 'denied') {
-              this.$refs.cameraSelector.onCameraPermissionDenied();
               this.stopCamera();
             }
           };
-
-          // If granted, check available cameras
           if (permission.state === 'granted') {
-            if (this.$refs.cameraSelector) {
-              await this.$refs.cameraSelector.getAvailableCameras();
-            }
+            await this.getAvailableCameras();
             this.hasCameraPermission = true;
           }
         } else {
-          // Fallback: try to access camera to check permission
           try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             stream.getTracks().forEach((track) => track.stop());
             this.permissionStates.camera = 'granted';
             this.hasCameraPermission = true;
-            if (this.$refs.cameraSelector) {
-              await this.$refs.cameraSelector.getAvailableCameras();
-            }
+            await this.getAvailableCameras();
           } catch (error) {
             this.permissionStates.camera = 'denied';
             this.hasCameraPermission = false;
           }
         }
       } catch (error) {
-        this.$toast.error('Camera permission check failed:', error.message);
+        this.$toast.error(`Camera permission check failed: ${error.message}`);
         this.permissionStates.camera = 'denied';
       }
     },
-
     async checkLocationPermission() {
       try {
         if ('permissions' in navigator) {
           const permission = await navigator.permissions.query({ name: 'geolocation' });
           this.permissionStates.geolocation = permission.state;
-
-          // Listen for permission changes
           permission.onchange = () => {
             this.permissionStates.geolocation = permission.state;
             this.hasLocationPermission = permission.state === 'granted';
-
-            if (permission.state === 'granted') {
-              this.startLocationTracking();
-            } else if (permission.state === 'denied') {
+            if (permission.state === 'denied') {
               this.currentLocation = null;
               if (this.watchId) {
-                navigator.geolocation.clearWatch(this.watchId);
+                try {
+                  navigator.geolocation.clearWatch(this.watchId);
+                } catch (e) {
+                  // Intentionally ignored: error clearing geolocation watch
+                }
               }
             }
           };
-
-          // If granted, start location tracking
           if (permission.state === 'granted') {
-            this.startLocationTracking();
             this.hasLocationPermission = true;
           }
         } else {
-          // Fallback: try to get location to check permission
           await this.getLocation();
         }
       } catch (error) {
-        this.$toast.error('Location permission check failed:', error.message);
+        this.$toast.error(`Location permission check failed: ${error.message}`);
         this.permissionStates.geolocation = 'denied';
+        this.hasLocationPermission = false;
       }
     },
     async getLocation() {
@@ -761,80 +541,22 @@ export default {
         { timeout: 1000 },
       );
     },
-    async switchCamera(cameraId) {
-      if (this.selectedCameraId === cameraId) return;
-
-      const wasStreamActive = !!this.stream;
-
-      // Stop current stream
-      if (this.stream) {
-        this.stopCamera();
-      }
-
-      // Update selected camera
-      this.selectedCameraId = cameraId;
-
-      // Restart camera with new device if it was active
-      if (wasStreamActive) {
-        await this.startCamera();
-      }
-    },
-
-    // Enhanced startCamera method with camera selection
-    async startCamera() {
-      this.$toast.success('starting camera');
-      try {
-        const constraints = {
-          video: {
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
-          },
-        };
-
-        // Add device constraint if specific camera is selected
-        if (this.selectedCameraId) {
-          constraints.video.deviceId = { exact: this.selectedCameraId };
-        } else {
-          // Fallback to facingMode
-          constraints.video.facingMode = 'environment';
-        }
-
-        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-        this.$refs.videoElement.srcObject = this.stream;
-        this.showCamera = true;
-        this.cameraError = null;
-        this.$toast.success('camera started', this.showCamera.toString());
-      } catch (error) {
-        this.$toast.error('Camera start error:', error.message);
-        this.cameraError = `Failed to start camera: ${error.message}`;
-
-        // If specific camera failed, try with any available camera
-        if (this.selectedCameraId && error.name === 'NotFoundError') {
-          this.selectedCameraId = null;
-          await this.startCamera();
-        }
-      }
-    },
-    submitPhotos() {
-      this.stopCamera();
-      this.$emit('captured-photos', this.capturedPhotos);
-    },
   },
-
   beforeDestroy() {
-    // Cleanup
     this.stopCamera();
     if (this.watchId) {
       navigator.geolocation.clearWatch(this.watchId);
     }
-
-    // Clean up object URLs
     this.capturedPhotos.forEach((photo) => {
       URL.revokeObjectURL(photo.url);
     });
   },
 };
 </script>
-<style scoped>
 
+<style scoped>
+/* Hide scrollbars for gallery */
+::-webkit-scrollbar {
+  display: none;
+}
 </style>

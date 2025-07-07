@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
+    <div class="tw-flex tw-flex-row tw-gap-4">
       <!-- Photo Cards -->
       <PhotoCard
           v-for="photo in photos"

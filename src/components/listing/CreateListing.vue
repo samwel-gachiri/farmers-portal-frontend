@@ -130,7 +130,7 @@
                 <div class="tw-flex tw-justify-center tw-pt-6">
                   <v-btn
                       size="x-large"
-                      rounded="lg"
+                      rounded
                       :loading="loading"
                       @click="postListing"
                       class="btn btn-primary"
@@ -227,7 +227,10 @@
 
     <!-- Photo Capture Dialog -->
     <v-dialog v-model="photoCaptureDialog" max-width="500px">
-      <PhotoCapture @captured-photos="handleCapturedPhotos" />
+      <PhotoCapture
+        @captured-photos="handleCapturedPhotos"
+        @close="photoCaptureDialog = false"
+      />
     </v-dialog>
   </div>
 </template>
@@ -333,8 +336,7 @@ export default {
       }
     },
     handleCapturedPhotos(photos) {
-      this.listing.photos.push(...photos);
-      this.$toast.success('Photos added successfully');
+      this.listing.photos = [...photos];
       this.photoCaptureDialog = false;
     },
     deletePhoto(photoId) {
