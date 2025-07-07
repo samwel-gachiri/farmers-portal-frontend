@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "electron:serve": "npm run build && electron .",
+    "electron:build": "npm run build && electron-builder"
   },
   "dependencies": {
     "@8bu/vue-otp-input": "^1.2.2",
