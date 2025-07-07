@@ -73,25 +73,31 @@
             aria-live="polite"
           ></div>
           <h6 class="tw-font-bold">{{newProduce.images.length > 1 ? 'Images': 'Image'}} Preview</h6>
-          <v-file-input
-              class="data-input"
-              label="Provide Produce Image(s)"
-              v-model="newProduce.images"
-              accept="image/*"
-              multiple
-              dense
-              chips
-              counter
-              :rules="[validateImages]"
-              @change="previewImages"
-          ></v-file-input>
-          <div v-if="newProduce.images.length > 0" class="tw-flex tw-flex-row tw-justify-center tw-align-center">
-            <v-img
-                v-for="(image, index) in imagePreviews" :key="index"
-                :src="image" aspect-ratio="1" contain
-                width="100px"
-                height="100px"
-            ></v-img>
+          <!-- Camera PhotoCapture integration -->
+          <div class="tw-mb-2">
+            <button
+              type="button"
+              class="tw-bg-blue-600 tw-text-white tw-rounded-full tw-px-4 tw-py-2 tw-shadow hover:tw-bg-blue-700 tw-transition"
+              @click.prevent="openCamera"
+            >
+              Capture Photos
+            </button>
+          </div>
+          <!-- Show PhotoCapture modal/dialog -->
+          <PhotoCapture
+            v-if="showCamera"
+            @captured-photos="onPhotosCaptured"
+            @close="showCamera = false"
+          />
+          <!-- Show previews of captured photos -->
+          <div v-if="newProduce.images.length > 0" class="tw-flex tw-flex-row tw-justify-center tw-align-center tw-gap-2">
+            <img
+              v-for="(image, index) in imagePreviews"
+              :key="index"
+              :src="image"
+              class="tw-w-24 tw-h-24 tw-object-cover tw-rounded tw-border tw-border-gray-300"
+              alt="Produce photo"
+            />
           </div>
         </div>
         <div class="tw-flex tw-justify-center tw-items-center">
@@ -112,6 +118,7 @@ import validations from '@/utils/validations.js';
 import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import PhotoCapture from '@/components/pictures/PhotoCapture.vue';
 
 export default {
   name: 'add-farmer-produce',
@@ -128,6 +135,7 @@ export default {
         images: [],
       },
       newProduceId: '', // Used to store the id of a newly created produce
+      showCamera: false,
       imagePreviews: [],
       farmingTypes,
       ...validations,
@@ -188,13 +196,19 @@ export default {
         this.loading = false;
       }
     },
-    previewImages() {
-      this.imagePreviews = []; // Clear previous previews
-      if (this.newProduce.images) {
-        this.newProduce.images.forEach((file) => {
-          this.imagePreviews.push(URL.createObjectURL(file));
-        });
+    openCamera(e) {
+      // Prevent default to avoid form submit/page reload
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+        // If this is a native <button> inside a <form>, also set type="button" in the template
       }
+      this.showCamera = true;
+    },
+    onPhotosCaptured(photos) {
+      this.newProduce.images = photos.map((photo) => photo.blob);
+      this.imagePreviews = photos.map((photo) => photo.url);
+      this.showCamera = false;
     },
     validateImages(value) {
       // eslint-disable-next-line no-mixed-operators
@@ -259,13 +273,11 @@ export default {
       }
       this.loading = true;
       try {
-        // Always get or create the produce id
         const produceId = await this.getOrCreateProduceId();
         if (!produceId) {
           this.$toast.error('Failed to get or create produce. Please try again.');
           return;
         }
-        // Prepare form data
         const formData = new FormData();
         formData.append('farmerId', getCurrentUserId());
         formData.append('name', this.selectedProduce);
@@ -273,9 +285,10 @@ export default {
         formData.append('description', this.newProduce.desc);
         formData.append('farmingType', this.newProduce.farmingType);
 
+        // Use blobs from PhotoCapture as files
         if (this.newProduce.images.length) {
-          this.newProduce.images.forEach((file) => {
-            formData.append('images', file);
+          this.newProduce.images.forEach((blob, idx) => {
+            formData.append('images', blob, `produce-photo-${idx + 1}.jpg`);
           });
         }
 
@@ -324,6 +337,9 @@ export default {
       this.dialog = false;
       this.fetchProduces(); // Refresh produce list when dialog is closed
     },
+  },
+  components: {
+    PhotoCapture,
   },
 };
 </script>

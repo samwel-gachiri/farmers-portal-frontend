@@ -12,9 +12,9 @@
     <!-- Location indicator overlay -->
     <div class="tw-absolute tw-top-2 tw-right-2">
       <span class="tw-bg-green-600 tw-text-white tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-flex tw-items-center tw-gap-1">
-        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="tw-w-3 tw-h-3" fill="white" stroke="black" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-          <circle cx="12" cy="9" r="2.5" fill="currentColor"/>
+          <circle cx="12" cy="9" r="2.5" fill="white" stroke="black" stroke-width="1"/>
         </svg>
         GPS
       </span>
@@ -23,30 +23,33 @@
     <!-- Actions overlay (bottom) -->
     <div class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-bg-black/60 tw-p-2 tw-flex tw-items-center tw-justify-between">
       <button
-        @click.stop="$emit('view-location', photo)"
+        type="button"
+        @click.stop.prevent="$emit('view-location', photo)"
         title="View location"
         class="tw-bg-transparent tw-text-white tw-p-1 tw-rounded hover:tw-bg-white/20"
       >
-        <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="tw-w-5 tw-h-5" fill="white" stroke="black" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-          <circle cx="12" cy="9" r="2.5" fill="currentColor"/>
+          <circle cx="12" cy="9" r="2.5" fill="white" stroke="black" stroke-width="1"/>
         </svg>
       </button>
       <button
-        @click.stop="downloadPhoto"
+        type="button"
+        @click.stop.prevent="downloadPhoto"
         title="Download"
         class="tw-bg-transparent tw-text-white tw-p-1 tw-rounded hover:tw-bg-white/20"
       >
-        <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="tw-w-5 tw-h-5" fill="white" stroke="black" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
       </button>
       <button
+        type="button"
         @click.stop="$emit('delete', photo.id)"
         title="Delete"
         class="tw-bg-transparent tw-text-white tw-p-1 tw-rounded hover:tw-bg-red-600"
       >
-        <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="tw-w-5 tw-h-5" fill="white" stroke="black" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
