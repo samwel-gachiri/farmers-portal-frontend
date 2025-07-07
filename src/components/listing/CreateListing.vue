@@ -130,7 +130,7 @@
                 <div class="tw-flex tw-justify-center tw-pt-6">
                   <v-btn
                       size="x-large"
-                      rounded="xl"
+                      rounded="lg"
                       :loading="loading"
                       @click="postListing"
                       class="btn btn-primary"

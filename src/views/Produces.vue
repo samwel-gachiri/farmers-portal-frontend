@@ -86,6 +86,9 @@
           <template v-slot:item.actions="{  }">
             <v-btn small color="secondary" @click="listingDialog = true">sell</v-btn>
           </template>
+          <template v-slot:item.description="{ item }">
+            <div v-html="renderMarkdown(item.description)"></div>
+          </template>
         </v-data-table>
         </div>
         <div v-else>
@@ -111,7 +114,7 @@
                   <div class="tw-text-xs tw-text-gray-500">{{ item.farmingType }}</div>
                 </div>
               </div>
-              <div class="tw-mt-2 tw-text-gray-700 tw-text-sm">{{ item.description }}</div>
+              <div class="tw-mt-2 tw-text-gray-700 tw-text-sm" v-html="renderMarkdown(item.description)"></div>
               <div class="tw-flex tw-items-center tw-gap-2 tw-mt-1">
                 <span class="tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-bg-green-100 tw-text-green-700">{{ item.status }}</span>
               </div>
@@ -184,6 +187,8 @@ import Default from '@/components/layout/Default.vue';
 import Auth from '@aws-amplify/auth';
 import EditProduceForm from '@/components/produce/EditProduceForm.vue';
 import CardTitle from '@/components/shared/CardTitle.vue';
+import MarkdownIt from 'markdown-it';
+import DOMPurify from 'dompurify';
 
 export default {
   components: {
@@ -227,6 +232,14 @@ export default {
       snackbarMessage: '',
       loading: false,
       isMobile: false,
+      md: new MarkdownIt({
+        html: true,
+        xhtmlOut: true,
+        breaks: true,
+        linkify: true,
+        typographer: true,
+        strict: true,
+      }),
     };
   },
   mounted() {
@@ -322,6 +335,9 @@ export default {
     },
     handleResize() {
       this.isMobile = window.innerWidth < 768;
+    },
+    renderMarkdown(text) {
+      return DOMPurify.sanitize(this.md.render(text || ''));
     },
   },
   watch: {

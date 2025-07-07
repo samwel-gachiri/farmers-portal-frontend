@@ -56,3 +56,5 @@ src/mixins/speechMixin.js
 src/services/
 store_icon.png
 twa-manifest.json
+
+app2/
