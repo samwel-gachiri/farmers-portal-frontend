@@ -52,7 +52,7 @@
       <!-- User Area -->
       <div class="user-area tw-flex tw-items-center tw-border-l-2 tw-border-opacity-50 tw-pl-4">
         <notification-bell class="mr-2" />
-        <avatar />
+        <avatar ref="avatar" />
         <div v-if="!isAuthenticated()" class="ml-4">
           <v-btn
               color="primary"

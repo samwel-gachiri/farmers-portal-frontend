@@ -24,15 +24,15 @@
       >
         <v-avatar size="45" :color="mode === 'exporter' ? 'primary' : 'primary lighten-4'">
           <v-img
-            v-if="form.userType.toLowerCase() === 'farmer'"
+            v-if="userRole.toLowerCase() === 'farmer'"
             src="@/assets/images/farmer.png"
           ></v-img>
           <v-img
-            v-if="form.userType.toLowerCase() === 'buyer'"
+            v-if="userRole.toLowerCase() === 'buyer'"
             src="@/assets/images/buyer.png"
           ></v-img>
           <v-img
-            v-if="form.userType.toLowerCase() === 'exporter'"
+            v-if="userRole.toLowerCase() === 'exporter'"
             src="@/assets/images/exporter.png"
           ></v-img>
         </v-avatar>
@@ -184,7 +184,7 @@
                         <v-icon left>
                           {{ mode === 'exporter' ? 'mdi-account-plus' : 'mdi-arrow-right' }}
                         </v-icon>
-                        {{this.mode === 'exporter' ? 'Add Farmer' : (this.mode === 'self' ? 'Continue' : 'Add Farmer')}}
+                        {{ mode === 'exporter' ? 'Add Farmer' : (this.mode === 'self' ? 'Continue' : 'Add Farmer')}}
                       </v-btn>
 
                       <v-divider v-if="mode !== 'exporter'" class="tw-my-4"></v-divider>
@@ -211,7 +211,7 @@
                       type="info"
                       class="tw-mb-4"
                       dense
-                    >Creating a {{form.userType}} profile</v-alert>
+                    >Creating a {{userRole}} profile</v-alert>
 
                     <div class="tw-space-y-4">
                       <v-text-field
@@ -239,7 +239,7 @@
                       </div>
 
                       <!-- Farmer specific fields -->
-                      <div v-if="form.userType === 'farmer'" class="tw-space-y-4">
+                      <div v-if="userRole === 'farmer'" class="tw-space-y-4">
                         <v-text-field
                           label="Farm Name"
                           dense
@@ -279,7 +279,7 @@
                       </div>
 
                       <!-- Exporter specific fields -->
-                      <div v-if="form.userType === 'exporter'">
+                      <div v-if="userRole === 'exporter'">
                         <v-text-field
                           label="License ID"
                           dense
@@ -436,8 +436,6 @@ export default {
           lat: '',
           lng: '',
         },
-        // if mode from the router query is exporter then this will be farmer else set to getcurrentuserrole
-        userType: this.mode === 'exporter' ? 'farmer' : this.userRole || 'farmer',
       },
       ...validations,
       selectedCountry: 'KE',
@@ -463,7 +461,7 @@ export default {
       userMustBeSignedUp: false,
       otp: '',
       isOtpGiven: false,
-      userRole: this.mode === 'exporter' ? 'farmer' : getCurrentUserRole(),
+      userRole: this.$route.query.mode === 'exporter' ? 'farmer' : getCurrentUserRole(),
       user: {
         uid: '',
         accessToken: '', // and other credentials too
@@ -583,7 +581,7 @@ export default {
       this.isSignInWithPhone = true;
       this.isSignInWithGoogle = false;
       this.hasNotGivenPhoneNumber = !this.form.fullPhoneNumber || this.form.fullPhoneNumber.length < 4;
-      this.steps[1].title = `Add ${this.form.userType ? this.form.userType[0].toUpperCase() + this.form.userType.slice(1) : ''} Details`;
+      this.steps[1].title = `Add ${this.userRole ? this.userRole[0].toUpperCase() + this.userRole.slice(1) : ''} Details`;
       this.checkFarmerOrBuyerExistence();
     },
     async continueStepTwo() {
@@ -610,9 +608,9 @@ export default {
             this.isExistenceChecked = true;
             // MATCHES
             if (
-              (this.form.userType.toLowerCase() === 'farmer' && this.existAs.farmer)
-                || (this.form.userType.toLowerCase() === 'buyer' && this.existAs.buyer)
-                || (this.form.userType.toLowerCase() === 'exporter' && this.existAs.exporter)
+              (this.userRole.toLowerCase() === 'farmer' && this.existAs.farmer)
+                || (this.userRole.toLowerCase() === 'buyer' && this.existAs.buyer)
+                || (this.userRole.toLowerCase() === 'exporter' && this.existAs.exporter)
             ) {
               this.userMustBeSignedUp = false;
               if (this.isSignInWithPhone && this.mode === 'self') {
@@ -621,8 +619,8 @@ export default {
               if (this.isSignInWithGoogle && this.mode === 'self') {
                 this.login();
               }
-            } else if ((this.form.userType.toLowerCase() === 'farmer' && this.existAs.buyer)// SIGNING IN WITH DIFFERENT PROFILE
-                || (this.form.userType.toLowerCase() === 'buyer' && this.existAs.farmer)) {
+            } else if ((this.userRole.toLowerCase() === 'farmer' && this.existAs.buyer)// SIGNING IN WITH DIFFERENT PROFILE
+                || (this.userRole.toLowerCase() === 'buyer' && this.existAs.farmer)) {
               // add them to the usertype now then step 4
               this.userIsCreatingSecondProfile = true;
               this.userMustBeSignedUp = true;
@@ -655,7 +653,7 @@ export default {
     },
     async signUpUser() {
       try {
-        if (this.form.userType === 'farmer' || this.form.userType === 'buyer') {
+        if (this.userRole === 'farmer' || this.userRole === 'buyer') {
           const user = {
             id: this.user.uid,
             uid: this.user.uid,
@@ -666,23 +664,23 @@ export default {
             // farmer
             farmSize: this.form.farmSize.replace('acres', '').replace('acre', '').trim(),
             farmName: this.form.farmName,
-            [`${this.form.userType === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
+            [`${this.userRole === 'buyer' ? 'preferredProduces' : 'farmerProduces'}`]: [],
             location: {
               latitude: this.form.location.lat,
               longitude: this.form.location.lng,
               customName: '',
             },
           };
-          const saveResponse = await axios.post(`/${this.form.userType}s-service/${this.form.userType}`,
+          const saveResponse = await axios.post(`/${this.userRole}s-service/${this.userRole}`,
             user);
           if (saveResponse.data.success === true) {
             this.user = { ...this.user, ...saveResponse.data.data };
-            this.$toast.success(`${this.form.userType} profile set up`, 'success');
+            this.$toast.success(`${this.userRole} profile set up`, 'success');
           } else {
             this.$toast.error(saveResponse.data.msg, 'Error');
           }
         }
-        if (this.form.userType === 'exporter') {
+        if (this.userRole === 'exporter') {
           const user = {
             id: this.user.uid,
             name: this.form.name,
@@ -694,7 +692,7 @@ export default {
             user);
           if (saveResponse.data.success === true) {
             this.user = { ...this.user, ...saveResponse.data.data };
-            this.$toast.success(`${this.form.userType} profile set up`, 'success');
+            this.$toast.success(`${this.userRole} profile set up`, 'success');
           } else {
             this.$toast.error(saveResponse.data.msg, 'Error');
           }

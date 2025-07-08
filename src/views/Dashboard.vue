@@ -1,5 +1,5 @@
 <template>
-  <Default>
+  <Default ref="default">
     <FarmerDashboard v-if="user && getCurrentUserRole() === 'farmer'"/>
     <BuyerDashboard v-if="user && getCurrentUserRole() === 'buyer'"/>
     <AdminDashboard v-if="user && getCurrentUserRole() === 'admin'"/>
@@ -30,6 +30,7 @@ export default {
   mounted() {
     if (this.user == null || this.user === '') {
       this.$router.push({ name: 'Landing' });
+      this.$refs.default.$refs.avatar.logout();
     }
   },
 };

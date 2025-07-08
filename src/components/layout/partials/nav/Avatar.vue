@@ -72,7 +72,7 @@ export default {
           });
         }
         this.$store.commit('setClient', []);
-        window.location.href = '/';
+        this.$router.push({ name: 'Home' });
       });
     },
   },

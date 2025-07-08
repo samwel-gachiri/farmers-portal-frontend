@@ -13,12 +13,12 @@
 
     <!-- Top bar: Close and Switch Camera -->
     <div class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-flex tw-justify-between tw-items-center tw-p-4 tw-z-20">
-      <button @click="closeCamera" aria-label="Close" class="tw-bg-black/60 tw-rounded-full tw-p-2 hover:tw-bg-black/80 tw-transition">
+      <button @click.prevent="closeCamera" aria-label="Close" class="tw-bg-black/60 tw-rounded-full tw-p-2 hover:tw-bg-black/80 tw-transition">
         <svg class="tw-w-6 tw-h-6 tw-text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
-      <button @click="switchToNextCamera" aria-label="Switch Camera" class="tw-bg-black/60 tw-rounded-full tw-p-2 hover:tw-bg-black/80 tw-transition">
+      <button @click.prevent="switchToNextCamera" aria-label="Switch Camera" class="tw-bg-black/60 tw-rounded-full tw-p-2 hover:tw-bg-black/80 tw-transition">
         <svg class="tw-w-6 tw-h-6 tw-text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -38,7 +38,7 @@
     >
       <div v-for="photo in capturedPhotos" :key="photo.id" class="tw-relative">
         <img :src="photo.url" class="tw-h-16 tw-w-16 tw-object-cover tw-rounded tw-border-2 tw-border-white tw-shadow" alt="Captured photo" />
-        <button @click="deletePhoto(photo.id)" class="tw-absolute tw-top-0 tw-right-0 tw-bg-black/70 tw-rounded-full tw-p-1 tw-m-1 hover:tw-bg-red-600" aria-label="Delete photo">
+        <button @click.prevent="deletePhoto(photo.id)" class="tw-absolute tw-top-0 tw-right-0 tw-bg-black/70 tw-rounded-full tw-p-1 tw-m-1 hover:tw-bg-red-600" aria-label="Delete photo">
           <svg class="tw-w-4 tw-h-4 tw-text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -48,11 +48,11 @@
 
     <!-- Bottom Controls (always visible, overlays video, safe area for mobile) -->
     <div
-      class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-flex tw-justify-center tw-items-center tw-py-6 tw-bg-gradient-to-t tw-from-black/80 tw-to-transparent tw-z-30"
+      class="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-flex tw-justify-center tw-items-center tw-mb-4 tw-py-2 tw-bg-gradient-to-t tw-from-black/80 tw-to-transparent tw-z-30"
       style="padding-bottom: env(safe-area-inset-bottom, 1.5rem);"
     >
       <button
-        @click="capturePhoto"
+        @click.prevent="capturePhoto"
         :disabled="!currentLocation"
         aria-label="Capture Photo"
         class="tw-bg-white tw-rounded-full tw-w-16 tw-h-16 tw-flex tw-items-center tw-justify-center tw-shadow-lg tw-border-4 tw-border-gray-300 tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-400 tw-transition"
@@ -63,7 +63,7 @@
       </button>
       <button
         v-if="capturedPhotos.length"
-        @click="submitPhotos"
+        @click.prevent="submitPhotos"
         aria-label="Submit Photos"
         class="tw-ml-8 tw-bg-blue-600 tw-text-white tw-rounded-full tw-px-6 tw-py-3 tw-shadow hover:tw-bg-blue-700 tw-transition"
       >
@@ -98,7 +98,7 @@
         </div>
       </div>
       <button
-        @click="requestPermissions"
+        @click.prevent="requestPermissions"
         :disabled="loading"
         class="tw-bg-blue-600 tw-text-white tw-rounded-full tw-px-6 tw-py-3 tw-shadow hover:tw-bg-blue-700 tw-transition tw-w-full"
       >
