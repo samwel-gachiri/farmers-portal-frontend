@@ -50,9 +50,7 @@
     <section id="hero" class="hero-section">
       <v-container>
         <div class="tw-flex tw-flex-center tw-flex-col tw-justify-center tw-items-center">
-          <h2 class="tw-text-3xl md:tw-text-6xl lg:tw-text-[72px] tw-font-bold" style="color: #1c8e1d">
-            AGRI<span style="color: #1e1e8e">CONNECT</span>
-          </h2>
+          <h2 style="font-size: 72px; color: #1c8e1d">AGRI<span style="color: #1e1e8e">CONNECT</span></h2>
           <v-img
               src="@/assets/images/landing_page.jpg"
               style="border-radius: 40px;"
@@ -61,14 +59,14 @@
         </div>
         <v-row align="center">
           <v-col cols="12" md="6" class="pr-md-10">
-            <h1 class="tw-text-2xl md:tw-text-4xl lg:tw-text-5xl tw-font-bold tw-mb-6">
+            <h1 class="text-h3 tw-text-md-h2 tw-font-weight-bold tw-mb-6">
               <span class="primary--text">Farmers</span> &
               <span class="secondary--text">Buyers</span>
-              United for Growth
+              Connected
             </h1>
 
-            <p class="tw-text-base md:tw-text-lg tw-mb-8">
-              Empowering agricultural producers and buyers to connect, trade, and thrive together.
+            <p class="tw-text-h6 tw-mb-8">
+              A modern platform bridging the gap between agricultural producers and markets
             </p>
 
             <v-list dense class="transparent mb-8">
@@ -134,9 +132,9 @@
       <v-container>
         <v-row>
           <v-col cols="12" class="text-center mb-10">
-            <h2 class="tw-text-2xl md:tw-text-4xl lg:tw-text-5xl tw-font-bold mb-4">Platform Features</h2>
-            <p class="tw-text-base md:tw-text-lg tw-font-normal mx-auto" style="max-width: 600px">
-              Tools and insights to help farmers and buyers succeed in the modern marketplace.
+            <h2 class="text-h3 tw-font-weight-bold mb-4">Our Platform Features</h2>
+            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
+              Designed to empower both farmers and buyers with modern tools
             </p>
           </v-col>
         </v-row>
@@ -208,9 +206,9 @@
       <v-container>
         <v-row>
           <v-col cols="12" class="text-center mb-10">
-            <h2 class="tw-text-2xl md:tw-text-4xl lg:tw-text-5xl tw-font-bold mb-4">Why Choose AgriConnect?</h2>
-            <p class="tw-text-base md:tw-text-lg tw-font-normal mx-auto" style="max-width: 600px">
-              Discover how our platform is revolutionizing agriculture for everyone.
+            <h2 class="text-h3 tw-font-weight-bold mb-4">Key Benefits</h2>
+            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
+              Why our platform is transforming agricultural commerce
             </p>
           </v-col>
         </v-row>
@@ -244,9 +242,9 @@
       <v-container>
         <v-row>
           <v-col cols="12" class="text-center mb-10">
-            <h2 class="tw-text-2xl md:tw-text-4xl lg:tw-text-5xl tw-font-bold mb-4">Stories of Success</h2>
-            <p class="tw-text-base md:tw-text-lg tw-font-normal mx-auto" style="max-width: 600px">
-              Hear from real farmers and buyers who have grown their businesses with AgriConnect.
+            <h2 class="text-h3 tw-font-weight-bold mb-4">Success Stories</h2>
+            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
+              Real farmers and buyers achieving real results with our platform
             </p>
           </v-col>
         </v-row>
@@ -286,11 +284,9 @@
       <v-container>
         <v-row align="center">
           <v-col cols="12" md="8" class="text-center tw-text-md-left">
-            <h2 class="tw-text-2xl md:tw-text-4xl lg:tw-text-5xl tw-font-bold mb-4">
-              Ready to grow your agricultural business?
-            </h2>
-            <p class="tw-text-base md:tw-text-lg tw-font-normal">
-              Join thousands of farmers and buyers already thriving with AgriConnect.
+            <h2 class="text-h3 tw-font-weight-bold mb-4">Ready to transform your agricultural business?</h2>
+            <p class="text-h6 tw-font-weight-regular">
+              Join thousands of farmers and buyers already benefiting from our platform
             </p>
           </v-col>
 

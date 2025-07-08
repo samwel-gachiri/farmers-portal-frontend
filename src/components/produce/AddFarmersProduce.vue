@@ -184,7 +184,13 @@ export default {
     },
   },
   methods: {
-    // Fetches list of produces from '/produce' endpoint
+    /**
+     * Fetches the list of available produces.
+     *
+     * Endpoint: GET /farmers-service/produce
+     * Purpose: Retrieve all produce items for selection or reference.
+     * Response: { data: [ { id, name, ... }, ... ] }
+     */
     async fetchProduces() {
       this.loading = true;
       try {
@@ -218,8 +224,12 @@ export default {
     handleProduceInput() {
     },
     /**
-     * Adds a new produce to the catalogue and sets newProduceId.
-     * Returns the new produce id.
+     * Adds a new produce to the catalogue.
+     *
+     * Endpoint: POST /farmers-service/produce
+     * Payload: { name, description, farmingType }
+     * Purpose: Create a new produce entry if it does not exist.
+     * Response: { data: { id, name, ... } }
      */
     async addNewProduce() {
       this.loading = true;
@@ -263,8 +273,12 @@ export default {
     },
 
     /**
-     * Adds selected produce to farmer's produces using '/farmer/add-farmer-produce'
-     * Ensures produceId is always supplied.
+     * Adds a produce to the farmer's list.
+     *
+     * Endpoint: POST /farmers-service/farmer/add-farmer-produce
+     * Payload: FormData with farmerId, name, farmProduceId, description, farmingType, images[]
+     * Purpose: Link a produce (existing or new) to the current farmer, including images.
+     * Response: { success: boolean, data: [...], msg?: string }
      */
     async addFarmerProduce() {
       if (!this.newProduce.isValid) {
