@@ -65,7 +65,7 @@
       </v-app-bar>
 
       <!-- Main Content -->
-      <div class="tw-w-full tw-flex tw-flex-row tw-min-h-screen" :class="mode === 'exporter' ? 'tw-bg-gray-50' : 'tw-bg-white'">
+      <div class="tw-w-full tw-flex tw-flex-row" style="height: 100%;" :class="mode === 'exporter' ? 'tw-bg-gray-50' : 'tw-bg-white'">
         <!-- Left Side - Image (hidden on mobile and exporter mode) -->
         <div v-if="mode !== 'exporter'" class="tw-hidden lg:tw-block lg:tw-w-1/2 tw-relative">
           <v-img

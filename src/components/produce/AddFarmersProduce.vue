@@ -42,6 +42,18 @@
               label="Farming type"
               :items="farmingTypes"
           ></v-combobox>
+          <!-- New input for previous yield amount -->
+          <v-text-field
+            v-model="newProduce.previousYield"
+            label="Previous Yield Amount"
+            type="number"
+            min="0"
+            class="data-input"
+            :rules="[value => value === undefined || value === '' || value >= 0 || 'Yield must be positive']"
+            prepend-inner-icon="mdi-scale"
+            dense
+            clearable
+          ></v-text-field>
         </div>
         <div class="tw-flex tw-my-5 tw-flex-col tw-gap-4">
           <v-textarea
@@ -133,6 +145,7 @@ export default {
         desc: '',
         farmingType: '',
         images: [],
+        previousYield: '', // Added field for previous yield
       },
       newProduceId: '', // Used to store the id of a newly created produce
       showCamera: false,
@@ -220,66 +233,6 @@ export default {
       // eslint-disable-next-line no-mixed-operators
       return value.length <= 3 || 'Maximum images is 3';
     },
-    // Handles selection of produce from v-select
-    handleProduceInput() {
-    },
-    /**
-     * Adds a new produce to the catalogue.
-     *
-     * Endpoint: POST /farmers-service/produce
-     * Payload: { name, description, farmingType }
-     * Purpose: Create a new produce entry if it does not exist.
-     * Response: { data: { id, name, ... } }
-     */
-    async addNewProduce() {
-      this.loading = true;
-      try {
-        const response = await axios.post('/farmers-service/produce', {
-          name: this.newProduce.name,
-          description: this.newProduce.desc,
-          farmingType: this.newProduce.farmingType,
-        });
-        const newProduce = response.data.data;
-        // Add new produce to local list for future reference
-        this.produceList.push(newProduce);
-        this.newProduceId = newProduce.id;
-        return newProduce.id;
-      } catch (error) {
-        this.$toast.error('Error adding new produce:', error.message);
-        return '';
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    /**
-     * Gets the produce id for the selected produce name.
-     * If not found, creates a new produce and returns its id.
-     */
-    async getOrCreateProduceId() {
-      const produceName = (this.selectedProduce || '').trim();
-      if (!produceName) return '';
-      // Try to find existing produce by name (case-insensitive)
-      const found = this.produceList.find(
-        (produce) => produce.name.toLowerCase() === produceName.toLowerCase(),
-      );
-      if (found) {
-        return found.id;
-      }
-      // Not found, create new produce
-      this.newProduce.name = produceName;
-      // eslint-disable-next-line no-return-await
-      return await this.addNewProduce();
-    },
-
-    /**
-     * Adds a produce to the farmer's list.
-     *
-     * Endpoint: POST /farmers-service/farmer/add-farmer-produce
-     * Payload: FormData with farmerId, name, farmProduceId, description, farmingType, images[]
-     * Purpose: Link a produce (existing or new) to the current farmer, including images.
-     * Response: { success: boolean, data: [...], msg?: string }
-     */
     async addFarmerProduce() {
       if (!this.newProduce.isValid) {
         this.$toast.error('Give enough information');
@@ -287,17 +240,15 @@ export default {
       }
       this.loading = true;
       try {
-        const produceId = await this.getOrCreateProduceId();
-        if (!produceId) {
-          this.$toast.error('Failed to get or create produce. Please try again.');
-          return;
-        }
         const formData = new FormData();
         formData.append('farmerId', getCurrentUserId());
-        formData.append('name', this.selectedProduce);
-        formData.append('farmProduceId', produceId);
+        formData.append('produceName', this.selectedProduce);
         formData.append('description', this.newProduce.desc);
         formData.append('farmingType', this.newProduce.farmingType);
+        // Add previous yield if provided
+        if (this.newProduce.previousYield !== '' && this.newProduce.previousYield !== undefined) {
+          formData.append('yieldAmount', this.newProduce.previousYield);
+        }
 
         // Use blobs from PhotoCapture as files
         if (this.newProduce.images.length) {
@@ -306,7 +257,7 @@ export default {
           });
         }
 
-        const response = await axios.post('/farmers-service/farmer/add-farmer-produce', formData, {
+        const response = await axios.post('/farmers-service/farmer/add-smart-produce', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
 
