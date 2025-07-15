@@ -105,7 +105,6 @@ export default {
           roleType: getCurrentUserRole().toUpperCase(),
         };
         const response = await axios.post('/api/auth/login', payload);
-        console.log('Login successful:', response.data);
         const data = response.data.data;
         // Dispatch the signIn action with the user data
         await this.$store.dispatch('auth/signIn', {

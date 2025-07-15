@@ -133,7 +133,7 @@ const actions = {
     try {
       await signOut(auth);
     } catch (err) {
-      console.error('Error during sign out:', err);
+      // console.error('Error during sign out:', err);
     }
     commit('clearAuthentication');
   },
