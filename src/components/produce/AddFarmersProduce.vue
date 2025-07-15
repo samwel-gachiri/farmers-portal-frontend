@@ -184,6 +184,11 @@ export default {
         },
       ],
     },
+    // New prop to control save/emit behavior
+    shouldSave: {
+      type: Boolean,
+      default: true,
+    },
   },
   created() {
     this.fetchProduces(); // Fetch produces when component is created
@@ -240,32 +245,45 @@ export default {
       }
       this.loading = true;
       try {
-        const formData = new FormData();
-        formData.append('farmerId', getCurrentUserId());
-        formData.append('produceName', this.selectedProduce);
-        formData.append('description', this.newProduce.desc);
-        formData.append('farmingType', this.newProduce.farmingType);
-        // Add previous yield if provided
-        if (this.newProduce.previousYield !== '' && this.newProduce.previousYield !== undefined) {
-          formData.append('yieldAmount', this.newProduce.previousYield);
-        }
-
-        // Use blobs from PhotoCapture as files
-        if (this.newProduce.images.length) {
-          this.newProduce.images.forEach((blob, idx) => {
-            formData.append('images', blob, `produce-photo-${idx + 1}.jpg`);
+        if (this.shouldSave) {
+          // Save via API as before
+          const formData = new FormData();
+          formData.append('farmerId', getCurrentUserId());
+          formData.append('produceName', this.selectedProduce);
+          formData.append('description', this.newProduce.desc);
+          formData.append('farmingType', this.newProduce.farmingType);
+          // Add previous yield if provided
+          if (this.newProduce.previousYield !== '' && this.newProduce.previousYield !== undefined) {
+            formData.append('yieldAmount', this.newProduce.previousYield);
+          }
+          // Use blobs from PhotoCapture as files
+          if (this.newProduce.images.length) {
+            this.newProduce.images.forEach((blob, idx) => {
+              formData.append('images', blob, `produce-photo-${idx + 1}.jpg`);
+            });
+          }
+          const response = await axios.post('/farmers-service/farmer/add-smart-produce', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
           });
-        }
-
-        const response = await axios.post('/farmers-service/farmer/add-smart-produce', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-
-        if (response.data.success) {
-          this.farmerProduces = response.data.data;
-          this.$toast.success('Added successfully to farmer!');
+          if (response.data.success) {
+            this.$toast.success('Produce added successfully!');
+            this.newProduceId = response.data.produceId; // Store the new produce ID
+            this.closeDialog(); // Close dialog after successful save
+            this.fetchProduces(); // Refresh produce list
+          } else {
+            this.$toast.error('Failed to add produce:', response.data.message);
+          }
         } else {
-          this.$toast.error('Addition failed!', response.data.msg);
+          // Emit the new produce data to parent component
+          this.$emit('add-produce', {
+            name: this.selectedProduce,
+            desc: this.newProduce.desc,
+            farmingType: this.newProduce.farmingType,
+            images: this.newProduce.images,
+            previousYield: this.newProduce.previousYield,
+          });
+          this.closeDialog(); // Close dialog after emitting
+          this.$toast.success('Produce added successfully!');
         }
       } catch (error) {
         this.$toast.error('Error adding produce to farmer!', `${error}`);
