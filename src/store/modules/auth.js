@@ -114,7 +114,7 @@ const actions = {
 
       // Optionally decode the token to get the role (if not using roleSpecificData)
       const decodedToken = jwtDecode(token);
-      const role = decodedToken.role || 'FARMER'; // Fallback to 'FARMER' if role not found
+      const role = decodedToken.role?.toLowerCase() || 'farmer'; // Fallback to 'FARMER' if role not found
 
       // Commit the user data to the store
       commit('setUserAuthenticated', {

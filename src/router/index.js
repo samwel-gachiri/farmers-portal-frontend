@@ -140,12 +140,11 @@ const routes = [
   //   beforeEnter: ifNotAuthenticated,
   //   component: () => import('../views/auth/password/ForgotPassword'),
   // },
-  // {
-  //   path: '/reset-password',
-  //   name: 'ResetPassword',
-  //   beforeEnter: ifNotAuthenticated,
-  //   component: () => import('../views/auth/password/ResetPassword'),
-  // },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: () => import('@/views/auth/ResetPassoword.vue'),
+  },
   {
     path: '/dashboard',
     name: 'Dashboard',
@@ -263,5 +262,4 @@ const router = new VueRouter({
   },
   routes,
 });
-
 export default router;
