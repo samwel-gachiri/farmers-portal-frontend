@@ -8,9 +8,9 @@ import { getFirestore } from 'firebase/firestore';
 // Your Firebase configuration
 const firebaseConfig = {
   apiKey: 'AIzaSyCJNmrYjHN89oXHATjEn-ngYqtnQgbSP8g',
-  authDomain: 'agriconnect-19d2a.firebaseapp.com',
-  projectId: 'agriconnect-19d2a',
-  storageBucket: 'agriconnect-19d2a.firebasestorage.app',
+  authDomain: 'AgriBackup-19d2a.firebaseapp.com',
+  projectId: 'AgriBackup-19d2a',
+  storageBucket: 'AgriBackup-19d2a.firebasestorage.app',
   messagingSenderId: '463127818224',
   appId: '1:463127818224:web:69dea1e25a3ff3d7867735',
 };

@@ -64,6 +64,16 @@
                 </div>
             </template>
         </v-checkbox>
+        <div class="tw-flex tw-justify-end tw-my-2">
+            <v-btn
+                color="primary"
+                class="tw-px-8 tw-py-3 tw-rounded-xl tw-font-semibold tw-text-lg tw-shadow"
+                @click="signUpUser"
+                aria-label="Sign Up"
+            >
+              Sign Up
+            </v-btn>
+        </div>
     </div>
 </template>
 <script>

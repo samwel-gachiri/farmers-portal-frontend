@@ -1,6 +1,6 @@
 {
-  "name": "Agriconnect",
-  "short_name": "Agriconnect",
+  "name": "AgriBackup",
+  "short_name": "AgriBackup",
   "start_url": "/home",
   "display": "standalone",
   "display_override": [

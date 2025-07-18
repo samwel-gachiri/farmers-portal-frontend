@@ -35,7 +35,7 @@ const routes = [
     // beforeEnter: ifAuthenticated,
     component: Landing,
     meta: {
-      title: 'Agriconnect - company',
+      title: 'AgriBackup - company',
       metaDescription: 'Farmers & Buyers Connection platform',
     },
   },

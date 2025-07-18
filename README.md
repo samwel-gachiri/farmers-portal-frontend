@@ -6,11 +6,11 @@
 
 [//]: # (# Academic Year: 2024/2025)
 
-# Agriconnect System 
+# AgriBackup System 
  A web-based application that Provides a platform for farmers to connect, with buyers, and make trade  
 
 ## 📌 Overview
-Agriconnect System Frontend is a Vue.js-based application designed to provide an intuitive and seamless user experience for managing agricultural processes. This project follows best practices for maintainability, scalability, and performance.
+AgriBackup System Frontend is a Vue.js-based application designed to provide an intuitive and seamless user experience for managing agricultural processes. This project follows best practices for maintainability, scalability, and performance.
 
 ## 🚀 Getting Started
 

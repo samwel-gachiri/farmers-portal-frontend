@@ -169,6 +169,7 @@ export default {
         }
       } catch (error) {
         // TODO: handle error (e.g., show error toast)
+        this.$toast.error(`Login failed: ${error.response?.data?.message || error.message}`);
       }
     },
   },

@@ -1,18 +1,17 @@
 <template>
-  <div class="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-white tw-to-gray-100">
-    <div class="tw-bg-white tw-rounded-xl tw-shadow-lg tw-px-8 tw-py-10 tw-w-full tw-max-w-sm tw-flex tw-flex-col tw-items-center">
-      <h1 class="tw-text-2xl tw-font-semibold tw-mb-6 tw-text-gray-800">Sign up</h1>
-      <div class="tw-flex tw-flex-col tw-gap-4 tw-w-full">
-        <!-- Render FarmerSignUp if role is farmer -->
-        <FarmerSignUp v-if="getCurrentUserRole === 'farmer'" />
-        <!-- Render BuyerSignUp if role is buyer -->
-        <BuyerSignUp v-if="getCurrentUserRole === 'buyer'" />
-        <!-- Render ExporterSignUp if role is exporter -->
-        <ExporterSignUp v-if="getCurrentUserRole === 'exporter'" />
-        <!-- ...existing code... -->
-      </div>
-    </div>
-  </div>
+  <v-app class="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-white tw-to-gray-100">
+    <v-card class="tw-px-8 tw-bg-white tw-shadow-xl tw-rounded-2xl tw-max-w-6xl tw-mx-auto tw-mt-10">
+      <CardTitle icon="mdi-account" class="tw-text-blue-600 tw-mb-2">
+        <h2 class="tw-text-xl tw-font-semibold">Sign up</h2>
+      </CardTitle>
+      <!-- Render FarmerSignUp if role is farmer -->
+      <FarmerSignUp v-if="getCurrentUserRole === 'farmer'" />
+      <!-- Render BuyerSignUp if role is buyer -->
+      <BuyerSignUp v-if="getCurrentUserRole === 'buyer'" />
+      <!-- Render ExporterSignUp if role is exporter -->
+      <ExporterSignUp v-if="getCurrentUserRole === 'exporter'" />
+    </v-card>
+  </v-app>
 </template>
 
 <script>
@@ -21,9 +20,11 @@ import { getCurrentUserRole } from '@/utils/roles.js';
 import FarmerSignUp from '@/components/auth/FarmerSignUp.vue';
 import BuyerSignUp from '@/components/auth/BuyerSignUp.vue';
 import ExporterSignUp from '@/components/auth/ExporterSignUp.vue';
+import CardTitle from '@/components/shared/CardTitle.vue';
 
 export default {
   components: {
+    CardTitle,
     FarmerSignUp,
     BuyerSignUp,
     ExporterSignUp,

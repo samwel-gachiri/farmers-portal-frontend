@@ -80,7 +80,7 @@ jobs:
             export ECR_IMAGE=${AWS_DEV_ECR_ENDPOINT}:${CIRCLE_SHA1}
 
             # Fetch the current task definition
-            export TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition agriconnect-frontend-task-def  --region us-east-1)
+            export TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition AgriBackup-frontend-task-def  --region us-east-1)
             echo "Task Definition:"
             echo $TASK_DEFINITION | jq .
             
@@ -114,9 +114,9 @@ jobs:
             
             # Update the ECS service with the new task definition
             aws ecs update-service \
-              --cluster agriconnectcluster \
-              --service agriconnect-service \
-              --task-definition agriconnect-frontend-task-def:$NEW_REVISION \
+              --cluster AgriBackupcluster \
+              --service AgriBackup-service \
+              --task-definition AgriBackup-frontend-task-def:$NEW_REVISION \
               --force-new-deployment \
               --region us-east-1
 # Orchestrate jobs using workflows

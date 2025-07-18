@@ -1,671 +1,311 @@
 <template>
-  <v-app>
-    <!-- Navigation -->
-    <v-app-bar app color="white" elevate-on-scroll>
-      <v-container class="py-0">
-        <v-row align="center">
-          <v-col cols="6" sm="4" md="3">
-            <v-btn text class="pa-0" @click="scrollTo('hero')">
-              <v-avatar size="40" class="mr-2">
-                <v-img src="@/assets/images/logo.png"></v-img>
-              </v-avatar>
-              <span class="text-h6 tw-font-weight-bold primary--text">AgriConnect</span>
-            </v-btn>
-          </v-col>
-
-          <v-col cols="6" sm="8" md="9" class="tw-text-right">
-<!--            <v-app-bar-nav-icon @click="drawer = !drawer" class="tw-hidden-md-and-up"></v-app-bar-nav-icon>-->
-            <div class="tw-hidden-sm-and-down">
-<!--              <v-btn text color="primary" @click="scrollTo('features')">Features</v-btn>-->
-<!--              <v-btn text color="primary" @click="scrollTo('benefits')">Benefits</v-btn>-->
-<!--              <v-btn text color="primary" @click="scrollTo('success')">Success Stories</v-btn>-->
-              <v-btn rounded color="primary" class="ml-3" @click="getStarted">Go to Application</v-btn>
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-app-bar>
-
-    <v-navigation-drawer v-model="drawer" temporary app right>
-      <v-list nav dense>
-        <v-list-item @click="scrollTo('hero')">
-          <v-list-item-title>Home</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scrollTo('features')">
-          <v-list-item-title>Features</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scrollTo('benefits')">
-          <v-list-item-title>Benefits</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scrollTo('success')">
-          <v-list-item-title>Success Stories</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scrollTo('cta')">
-          <v-list-item-title class="primary--text tw-font-weight-bold">Get Started</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
-    <!-- Hero Section -->
-    <section id="hero" class="hero-section">
-      <v-container>
-        <div class="tw-flex tw-flex-center tw-flex-col tw-justify-center tw-items-center">
-          <h2 style="font-size: 72px; color: #1c8e1d">AGRI<span style="color: #1e1e8e">CONNECT</span></h2>
-          <v-img
-              src="@/assets/images/landing_page.jpg"
-              style="border-radius: 40px;"
-              max-height="500px"
-          ></v-img>
+  <div class="tw-bg-gradient-to-br tw-from-[#f7f5ee] tw-to-[#e6f4ea] tw-min-h-screen tw-flex tw-flex-col tw-relative">
+    <!-- Responsive Glassmorphism Navbar -->
+    <nav class="tw-fixed tw-top-0 tw-left-0 tw-w-full tw-z-50 tw-bg-[#f7f5ee] tw-bg-opacity-80 tw-backdrop-blur-lg tw-shadow-lg tw-border-b tw-border-[#e6e1c3]">
+      <div class="tw-max-w-7xl tw-mx-auto tw-flex tw-items-center tw-justify-between tw-px-6 tw-py-3">
+        <div class="tw-flex tw-items-center">
+          <!-- Creative logo: AGRIBackUp with SVG leaf accent -->
+          <span class="tw-font-extrabold tw-text-green-700 tw-text-3xl md:tw-text-4xl tw-tracking-tight tw-select-none tw-drop-shadow-sm tw-flex tw-items-center">
+            AGRI
+            <span class="tw-text-blue-700 tw-bg-gradient-to-r tw-from-blue-700 tw-to-green-900 tw-bg-clip-text tw-text-transparent tw-ml-1">
+              Back
+            </span>
+            <span class="tw-text-yellow-500 tw-ml-1 tw-font-black tw-drop-shadow">Up</span>
+          </span>
         </div>
-        <v-row align="center">
-          <v-col cols="12" md="6" class="pr-md-10">
-            <h1 class="text-h3 tw-text-md-h2 tw-font-weight-bold tw-mb-6">
-              <span class="primary--text">Farmers</span> &
-              <span class="secondary--text">Buyers</span>
-              Connected
-            </h1>
+        <div class="tw-flex tw-items-center tw-space-x-2">
+          <router-link
+            to="/signin"
+            class="tw-hidden sm:tw-inline-block tw-text-green-700 tw-font-semibold tw-px-4 tw-py-2 tw-rounded-lg hover:tw-bg-green-100 tw-transition"
+            aria-label="Login"
+          >
+            Login
+          </router-link>
+          <router-link
+            to="/home"
+            class="tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-font-semibold tw-px-6 tw-py-2 tw-rounded-lg tw-shadow tw-transition"
+            aria-label="Get Started"
+          >
+            Get Started
+          </router-link>
+        </div>
+      </div>
+    </nav>
+    <!-- Spacer for navbar height -->
+    <div class="tw-h-24"></div>
+    <!-- Cozy Curved SVG Line Background with agricultural colors -->
+    <svg
+      class="tw-absolute tw-left-0 tw-w-full tw-h-56 tw-z-0 tw-pointer-events-none"
+      style="top: 90px; min-width:100vw;"
+      viewBox="0 0 1440 224"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M0,112 Q720,224 1440,112"
+        stroke="#b6a16b"
+        stroke-width="12"
+        fill="none"
+        opacity="0.18"
+      />
+      <ellipse cx="200" cy="60" rx="120" ry="32" fill="#e6e1c3" opacity="0.18"/>
+      <ellipse cx="1240" cy="180" rx="80" ry="24" fill="#b6e4a3" opacity="0.18"/>
+    </svg>
 
-            <p class="tw-text-h6 tw-mb-8">
-              A modern platform bridging the gap between agricultural producers and markets
-            </p>
-
-            <v-list dense class="transparent mb-8">
-              <v-list-item v-for="(item, i) in heroPoints" :key="i">
-                <v-list-item-icon>
-                  <v-icon color="success">mdi-check-circle</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title class="text-body-1">{{ item }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-icon>
-                  <v-icon class="gradient-icon">mdi-leaf</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title class="text-body-1"><span class="">FarmAI</span> - AI insights on crop growth and livestock rearing</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-
-            <div class="d-flex flex-wrap">
-              <v-btn x-large color="primary" class="mr-4 mb-4" @click="scrollTo('cta')">
-                Get Started
-                <v-icon right>mdi-arrow-right</v-icon>
-              </v-btn>
-              <v-btn x-large outlined color="primary" class="mb-4" @click="scrollTo('features')">
-                Learn More
-              </v-btn>
-            </div>
-          </v-col>
-
-          <v-col cols="12" md="6" class="text-center">
-            <v-img
-                src="@/assets/images/farmer_buyer_greetings.png"
-                class="d-inline-block farmer-img"
-            ></v-img>
-<!--            <v-img-->
-<!--                src="https://cdn-icons-png.flaticon.com/512/4149/4149685.png"-->
-<!--                max-width="300"-->
-<!--                class="d-inline-block buyer-img ml-n8"-->
-<!--            ></v-img>-->
-
-            <div class="chat-bubble pa-4 rounded-xl secondary lighten-5">
-              <v-icon color="secondary" class="mr-2">mdi-chat</v-icon>
-              <span class="font-weight-medium">Hello! Let's do business</span>
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <div class="hero-wave">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="currentColor"></path>
-          <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="currentColor"></path>
-          <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="currentColor"></path>
-        </svg>
+    <!-- Above the Fold -->
+    <section class="tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-px-10 tw-pt-20 tw-pb-12 tw-max-w-6xl tw-mx-auto">
+      <div class="tw-flex-1 tw-mb-12 md:tw-mb-0">
+        <h1 class="tw-text-4xl md:tw-text-6xl tw-font-bold tw-text-[#3d5a2a] tw-mb-6 tw-drop-shadow">
+          Connect Directly to Buyers and Boost Your Farm’s Profits
+        </h1>
+        <p class="tw-text-xl tw-text-[#6b4f2c] tw-mb-8 tw-drop-shadow-sm">
+          AgriBackup links Kenyan farmers to global markets with fair prices and AI insights.
+        </p>
+        <div class="tw-flex tw-gap-6 tw-mb-6">
+          <button
+            @click="goHome"
+            class="tw-bg-green-900 hover:tw-bg-[#5e9442] tw-text-white tw-font-semibold tw-py-4 tw-px-10 tw-rounded-xl tw-shadow-lg tw-border tw-border-[#e6e1c3] tw-transition tw-text-xl"
+            aria-label="Join Now"
+          >
+            Join Now
+          </button>
+          <button
+            @click="showDialog = true"
+            class="tw-bg-[#f7e9b0] hover:tw-bg-[#f3d97c] tw-text-[#6b4f2c] tw-font-semibold tw-py-4 tw-px-10 tw-rounded-xl tw-shadow-lg tw-border tw-border-[#e6e1c3] tw-transition tw-text-xl"
+            aria-label="Learn How It Works"
+          >
+            Learn How It Works
+          </button>
+        </div>
+      </div>
+      <div class="tw-flex-1 tw-flex tw-justify-center">
+        <img
+          src="@/assets/images/happy-farmer.jpg"
+          alt="Smiling farmer using AgriBackup app"
+          class="tw-rounded-2xl tw-shadow-2xl tw-w-96 tw-h-96 tw-object-cover tw-bg-[#f7f5ee] tw-border-4 tw-border-[#e6e1c3]"
+        />
       </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-12">
-      <v-container>
-        <v-row>
-          <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 tw-font-weight-bold mb-4">Our Platform Features</h2>
-            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
-              Designed to empower both farmers and buyers with modern tools
-            </p>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-card hover class="feature-card pa-6" color="primary lighten-5">
-              <div class="d-flex align-center mb-4">
-                <v-avatar size="60" color="primary" class="mr-4">
-                  <v-icon dark size="32">mdi-sprout</v-icon>
-                </v-avatar>
-                <h3 class="text-h5 tw-font-weight-bold">For Farmers</h3>
-              </div>
-
-              <v-list dense class="transparent">
-                <v-list-item v-for="(feature, i) in farmerFeatures" :key="i">
-                  <v-list-item-icon>
-                    <v-icon color="primary">mdi-check</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title class="text-body-1">{{ feature }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-
-              <v-img
-                  src="https://cdn-icons-png.flaticon.com/512/2920/2920333.png"
-                  max-height="180"
-                  contain
-                  class="mt-4"
-              ></v-img>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <v-card hover class="feature-card pa-6" color="secondary lighten-5">
-              <div class="d-flex align-center mb-4">
-                <v-avatar size="60" color="secondary" class="mr-4">
-                  <v-icon dark size="32">mdi-cart</v-icon>
-                </v-avatar>
-                <h3 class="text-h5 tw-font-weight-bold">For Buyers</h3>
-              </div>
-
-              <v-list dense class="transparent">
-                <v-list-item v-for="(feature, i) in buyerFeatures" :key="i">
-                  <v-list-item-icon>
-                    <v-icon color="secondary">mdi-check</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title class="text-body-1">{{ feature }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-
-              <v-img
-                  src="https://cdn-icons-png.flaticon.com/512/3737/3737721.png"
-                  max-height="180"
-                  contain
-                  class="mt-4"
-              ></v-img>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </section>
-
-    <!-- Benefits Section -->
-    <section id="benefits" class="py-12 primary lighten-5">
-      <v-container>
-        <v-row>
-          <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 tw-font-weight-bold mb-4">Key Benefits</h2>
-            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
-              Why our platform is transforming agricultural commerce
-            </p>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col v-for="(benefit, i) in benefits" :key="i" cols="12" md="4">
-            <v-hover v-slot="{ hover }">
-              <v-card
-                  :elevation="hover ? 12 : 4"
-                  class="pa-6 tw-text-center benefit-card"
-                  :color="benefit.color"
-                  dark
-              >
-                <v-avatar v-if="benefit.class != null" size="80" :color="benefit.iconColor" class="mb-4">
-                  <v-icon :class="benefit.class" size="40">{{ benefit.icon }}</v-icon>
-                </v-avatar>
-                <v-avatar v-else size="80" :color="benefit.iconColor" class="mb-4">
-                  <v-icon size="40">{{ benefit.icon }}</v-icon>
-                </v-avatar>
-                <h3 class="text-h5 tw-font-weight-bold mb-3">{{ benefit.title }}</h3>
-                <p class="text-body-1">{{ benefit.text }}</p>
-              </v-card>
-            </v-hover>
-          </v-col>
-        </v-row>
-      </v-container>
-    </section>
-
-    <!-- Success Stories -->
-    <section id="success" class="py-12">
-      <v-container>
-        <v-row>
-          <v-col cols="12" class="text-center mb-10">
-            <h2 class="text-h3 tw-font-weight-bold mb-4">Success Stories</h2>
-            <p class="text-h6 tw-font-weight-regular mx-auto" style="max-width: 600px">
-              Real farmers and buyers achieving real results with our platform
-            </p>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col v-for="(story, i) in successStories" :key="i" cols="12" md="4">
-            <v-card hover class="h-100">
-              <v-img
-                  :src="story.image"
-                  height="200"
-                  class="align-end"
-                  gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              >
-                <v-card-title class="white--text">{{ story.title }}</v-card-title>
-              </v-img>
-
-              <v-card-text>
-                <p class="text-body-1 mb-4">{{ story.description }}</p>
-
-                <div class="d-flex align-center">
-                  <v-icon color="success" class="mr-2">mdi-trending-up</v-icon>
-                  <span class="font-weight-bold">{{ story.result }}</span>
-                </div>
-              </v-card-text>
-
-              <v-card-actions>
-<!--                <v-btn text color="primary">Read Full Story</v-btn>-->
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </section>
-
-    <!-- CTA Section -->
-    <section id="cta" class="py-12 secondary darken-1 white--text">
-      <v-container>
-        <v-row align="center">
-          <v-col cols="12" md="8" class="text-center tw-text-md-left">
-            <h2 class="text-h3 tw-font-weight-bold mb-4">Ready to transform your agricultural business?</h2>
-            <p class="text-h6 tw-font-weight-regular">
-              Join thousands of farmers and buyers already benefiting from our platform
-            </p>
-          </v-col>
-
-          <v-col cols="12" md="4" class="text-center">
-            <v-btn
-                x-large
-                color="white"
-                class="primary--text tw-font-weight-bold"
-                @click="getStarted"
-            >
-              Get Started Now
-              <v-icon right>mdi-arrow-right</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </section>
-
-    <!-- Footer -->
-    <v-footer color="primary darken-2" dark class="pt-10">
-      <v-container>
-        <v-row>
-          <v-col cols="12" md="4" class="mb-6 mb-md-0">
-            <div class="d-flex align-center mb-4">
-              <v-avatar size="40" class="mr-2">
-                <v-img src="https://cdn-icons-png.flaticon.com/512/3079/3079158.png"></v-img>
-              </v-avatar>
-              <span class="text-h6 tw-font-weight-bold">AgriConnect</span>
-            </div>
-            <p class="text-body-1">
-              Connecting farmers and buyers for sustainable agricultural commerce
-            </p>
-
-            <div class="mt-4">
-              <v-btn
-                  v-for="(social, i) in socialLinks"
-                  :key="i"
-                  icon
-                  :color="social.color"
-                  class="mr-2"
-                  :href="social.link"
-                  target="_blank"
-              >
-                <v-icon>{{ social.icon }}</v-icon>
-              </v-btn>
-            </div>
-          </v-col>
-
-          <v-col cols="6" md="2">
-            <h4 class="text-h6 tw-font-weight-bold mb-4">Quick Links</h4>
-            <v-list dense nav class="transparent">
-              <v-list-item
-                  v-for="(link, i) in quickLinks"
-                  :key="i"
-                  @click="scrollTo(link.target)"
-              >
-                <v-list-item-title>{{ link.title }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-col>
-
-          <v-col cols="6" md="2">
-            <h4 class="text-h6 tw-font-weight-bold mb-4">Company</h4>
-            <v-list dense nav class="transparent">
-              <v-list-item
-                  v-for="(link, i) in companyLinks"
-                  :key="i"
-                  @click="scrollTo(link.target)"
-              >
-                <v-list-item-title>{{ link.title }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-col>
-
-          <v-col cols="12" md="4">
-            <h4 class="text-h6 tw-font-weight-bold mb-4">Newsletter</h4>
-            <p class="text-body-1 mb-4">
-              Subscribe to get updates on new features and agricultural insights
-            </p>
-
-            <v-form @submit.prevent="subscribe">
-              <v-text-field
-                  v-model="email"
-                  label="Your Email"
-                  outlined
-                  dense
-                  type="email"
-                  required
-                  background-color="white"
-                  color="white"
-                  class="mb-2"
-              ></v-text-field>
-              <v-btn
-                  color="secondary"
-                  block
-                  @click="getStarted"
-                  type=""
-              >
-                Subscribe
-              </v-btn>
-            </v-form>
-          </v-col>
-        </v-row>
-
-        <v-divider class="my-6"></v-divider>
-
-        <div class="text-center tw-text-body-2">
-          &copy; {{ new Date().getFullYear() }} AgriConnect. All rights reserved.
+    <!-- For Farmers -->
+      <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row tw-items-start tw-border-2 tw-border-[#b6a16b] tw-w-2/3">
+        <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
+          <h2 class="tw-text-3xl tw-font-semibold tw-text-[#3d5a2a] tw-mb-4">For Farmers</h2>
+          <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
+            <li>Sell directly, earn more</li>
+            <li>Get AI-powered farming tips</li>
+            <li>Access real-time market prices</li>
+          </ul>
+          <button
+            @click="joinAsFarmer"
+            class="tw-bg-green-800 hover:tw-bg-[#5e9442] tw-text-white tw-font-semibold tw-py-3 tw-px-8 tw-rounded-xl tw-shadow tw-border tw-border-[#e6e1c3] tw-transition tw-text-lg"
+            aria-label="Join as a Farmer"
+          >
+            Join as a Farmer
+          </button>
         </div>
-      </v-container>
-    </v-footer>
+        <div class="tw-flex-1 tw-flex tw-justify-center">
+          <img
+            src="@/assets/images/farmer-phone.jpg"
+            alt="Farmer checking prices on phone"
+            class="tw-rounded-2xl tw-shadow-lg tw-w-72 tw-h-72 tw-object-cover tw-bg-[#f7f5ee] tw-border-4 tw-border-[#e6e1c3]"
+          />
+        </div>
+      </section>
 
-    <!-- Signup Dialog -->
-    <v-dialog v-model="showSignup" max-width="500">
-      <v-card>
-        <v-card-title class="text-h5 primary white--text">
-          Get Started
-          <v-spacer></v-spacer>
-          <v-btn icon @click="showSignup = false">
-            <v-icon color="white">mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
+    <!-- For Buyers -->
+    <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row-reverse tw-items-center">
+      <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
+        <h2 class="tw-text-3xl tw-font-semibold tw-text-[#2a4f6b] tw-mb-4">For Buyers</h2>
+        <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
+          <li>Source fresh produce from verified farmers</li>
+          <li>Transparent pricing, direct transactions</li>
+        </ul>
+        <button
+          @click="joinAsBuyer"
+          class="tw-bg-blue-800 hover:tw-bg-[#7bb661] tw-text-white tw-font-semibold tw-py-3 tw-px-8 tw-rounded-xl tw-shadow tw-border tw-border-[#e6e1c3] tw-transition tw-text-lg tw-mb-2"
+          aria-label="Join as a Buyer"
+        >
+          Join as a Buyer
+        </button>
+      </div>
+      <div class="tw-flex-1 tw-flex tw-justify-center tw-px-3">
+        <img
+          src="@/assets/images/buyer-inspect.jpg"
+          alt="Buyer inspecting produce"
+          class="tw-rounded-2xl tw-shadow-lg tw-w-72 tw-h-72 tw-object-cover tw-bg-[#f7f5ee] tw-border-4 tw-border-[#e6e1c3]"
+        />
+      </div>
+    </section>
 
-        <v-card-text class="pa-6">
-          <v-tabs v-model="tab" grow>
-            <v-tab>Farmer</v-tab>
-            <v-tab>Buyer</v-tab>
-          </v-tabs>
+    <!-- For Exporters -->
+    <div class="tw-w-full tw-flex tw-justify-start tw-items-start">
+      <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row-reverse tw-items-center">
+        <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
+          <h2 class="tw-text-3xl tw-font-semibold tw-text-[#b6a16b] tw-mb-4">For Exporters</h2>
+          <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
+            <li>Source fresh produce from verified farmers</li>
+            <li>Transparent pricing, direct transactions</li>
+          </ul>
+          <button
+            @click="becomeExporter"
+            class="tw-bg-black hover:tw-bg-black tw-text-white tw-font-semibold tw-py-3 tw-px-8 tw-rounded-xl tw-shadow tw-border tw-border-[#e6e1c3] tw-transition tw-text-lg"
+            aria-label="Become a Certified Exporter"
+          >
+            Become a Certified Exporter
+          </button>
+        </div>
+        <div class="tw-flex-1 tw-flex tw-justify-center tw-px-3">
+          <img
+            src="@/assets/images/exporter.jpg"
+            alt="Buyer inspecting produce"
+            class="tw-rounded-2xl tw-shadow-lg tw-w-72 tw-h-72 tw-object-cover tw-bg-[#f7f5ee] tw-border-4 tw-border-[#e6e1c3]"
+          />
+        </div>
+      </section>
+    </div>
 
-          <v-tabs-items v-model="tab" class="mt-4">
-            <v-tab-item>
-              <v-form>
-                <v-text-field label="Full Name" outlined dense class="mb-4"></v-text-field>
-                <v-text-field label="Email" outlined dense type="email" class="mb-4"></v-text-field>
-                <v-text-field label="Farm Location" outlined dense class="mb-4"></v-text-field>
-                <v-text-field label="Password" outlined dense type="password" class="mb-4"></v-text-field>
-                <v-btn color="primary" block large>Register as Farmer</v-btn>
-              </v-form>
-            </v-tab-item>
+    <!-- Digital Inclusion / USSD -->
+    <section v-if="false" class="tw-bg-white tw-py-10 tw-px-6 tw-max-w-6xl tw-mx-auto tw-rounded-xl tw-shadow-md tw-mb-8 tw-flex tw-flex-col md:tw-flex-row tw-items-center">
+      <div class="tw-flex-1 tw-mb-6 md:tw-mb-0">
+        <h2 class="tw-text-2xl tw-font-semibold tw-text-yellow-700 tw-mb-2">Digital Inclusion</h2>
+        <ul class="tw-list-disc tw-list-inside tw-text-gray-700 tw-mb-4">
+          <li>No smartphone? Use USSD to connect</li>
+          <li>Text <span class="tw-font-bold tw-text-green-700">*123#</span> to start selling</li>
+          <li>Inclusive for all Kenyan farmers</li>
+        </ul>
+        <router-link
+          to="/ussd"
+          class="tw-bg-yellow-500 hover:tw-bg-yellow-600 tw-text-white tw-font-semibold tw-py-2 tw-px-5 tw-rounded-lg tw-shadow tw-transition"
+          aria-label="Explore USSD Access"
+        >
+          Explore USSD Access
+        </router-link>
+      </div>
+      <!-- <div class="tw-flex-1 tw-flex tw-justify-center">
+        <img
+          src="@/assets/images/farmer-ussd.jpg"
+          alt="Farmer texting on basic phone"
+          class="tw-rounded-xl tw-shadow-md tw-w-64 tw-h-64 tw-object-cover tw-bg-gray-100"
+        />
+      </div> -->
+    </section>
 
-            <v-tab-item>
-              <v-form>
-                <v-text-field label="Full Name" outlined dense class="mb-4"></v-text-field>
-                <v-text-field label="Email" outlined dense type="email" class="mb-4"></v-text-field>
-                <v-text-field label="Business Name" outlined dense class="mb-4"></v-text-field>
-                <v-text-field label="Password" outlined dense type="password" class="mb-4"></v-text-field>
-                <v-btn color="secondary" block large>Register as Buyer</v-btn>
-              </v-form>
-            </v-tab-item>
-          </v-tabs-items>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-  </v-app>
+    <!-- Map Preview & AI Mention -->
+    <section class="tw-max-w-6xl tw-mx-auto tw-px-6 tw-py-8 tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-gap-8">
+      <div class="tw-flex-1 tw-flex tw-flex-col tw-items-start">
+        <h3 class="tw-text-xl tw-font-semibold tw-text-green-700 tw-mb-2">See Connections Near You</h3>
+        <p class="tw-text-gray-700 tw-mb-4">AgriBackup’s map shows buyers and farmers nearby for fast, local deals.</p>
+        <img
+          src="@/assets/images/map-preview.jpg"
+          alt="AgriBackup geolocation map preview"
+          class="tw-rounded-xl tw-shadow-md tw-w-full tw-max-w-md tw-bg-gray-100"
+        />
+      </div>
+      <div class="tw-flex-1 tw-flex tw-flex-col tw-items-start">
+        <h3 class="tw-text-xl tw-font-semibold tw-text-blue-700 tw-mb-2">AI-Powered Farming</h3>
+        <p class="tw-text-gray-700 tw-mb-4">Get personalized crop advice and market insights. <router-link to="/ai" class="tw-text-blue-600 hover:tw-underline">Read More</router-link></p>
+        <img
+          src="@/assets/images/ai-advice.jpg"
+          alt="AI-powered farming tips"
+          class="tw-rounded-xl tw-shadow-md tw-w-full tw-max-w-md tw-bg-gray-100"
+        />
+      </div>
+    </section>
+
+    <!-- Testimonials & Partners -->
+    <section v-if="false" class="tw-bg-gray-50 tw-py-10 tw-px-6 tw-max-w-6xl tw-mx-auto tw-rounded-xl tw-shadow-md tw-mb-8">
+      <h2 class="tw-text-2xl tw-font-semibold tw-text-green-700 tw-mb-6">What Our Users Say</h2>
+      <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8">
+        <div class="tw-bg-white tw-rounded-lg tw-shadow tw-p-6 tw-flex-1">
+          <p class="tw-text-gray-800 tw-italic">“AgriBackup helped me double my profits in 3 months!”</p>
+          <span class="tw-block tw-mt-2 tw-font-semibold tw-text-green-700">– Mary, Smallholder Farmer</span>
+        </div>
+        <div class="tw-bg-white tw-rounded-lg tw-shadow tw-p-6 tw-flex-1">
+          <p class="tw-text-gray-800 tw-italic">“I source fresh produce directly, saving time and money.”</p>
+          <span class="tw-block tw-mt-2 tw-font-semibold tw-text-blue-700">– John, Buyer</span>
+        </div>
+      </div>
+      <div class="tw-flex tw-items-center tw-justify-center tw-mt-8 tw-gap-6">
+        <!-- <img src="@/assets/images/partner-logo1.png" alt="Partner Logo 1" class="tw-h-10 tw-object-contain" />
+        <img src="@/assets/images/partner-logo2.png" alt="Partner Logo 2" class="tw-h-10 tw-object-contain" />
+        <img src="@/assets/images/partner-logo3.png" alt="Partner Logo 3" class="tw-h-10 tw-object-contain" /> -->
+      </div>
+    </section>
+
+    <!-- Final CTA & Footer -->
+    <footer class="tw-bg-green-700 tw-text-white tw-py-8 tw-px-6 tw-mt-auto">
+      <div class="tw-max-w-6xl tw-mx-auto tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between">
+        <div class="tw-mb-4 md:tw-mb-0">
+          <h2 class="tw-text-xl tw-font-semibold">Ready to transform your farm?</h2>
+        </div>
+        <router-link
+          to="/signup"
+          class="tw-bg-white tw-text-green-700 tw-font-semibold tw-py-3 tw-px-6 tw-rounded-lg tw-shadow tw-transition hover:tw-bg-green-100"
+          aria-label="Join AgriBackup Now"
+        >
+          Join Now
+        </router-link>
+      </div>
+      <div class="tw-mt-6 tw-text-center tw-text-sm tw-opacity-80">
+        &copy; 2024 AgriBackup. All rights reserved. | <router-link to="/contact" class="tw-underline tw-text-white">Contact Us</router-link>
+      </div>
+    </footer>
+
+    <!-- Learn How It Works Dialog -->
+    <div v-if="showDialog" class="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-bg-black tw-bg-opacity-40">
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-p-8 tw-max-w-lg tw-w-full tw-relative">
+        <button @click="showDialog = false" class="tw-absolute tw-top-3 tw-right-3 tw-text-gray-400 hover:tw-text-gray-700 tw-text-xl" aria-label="Close">&times;</button>
+        <h2 class="tw-text-2xl tw-font-bold tw-text-green-700 tw-mb-4">How AgriBackup Works</h2>
+        <ul class="tw-list-disc tw-list-inside tw-text-gray-700 tw-mb-4">
+          <li><span class="tw-font-semibold">For Farmers:</span> Sell directly, earn more, get AI-powered tips, access real-time prices.</li>
+          <li><span class="tw-font-semibold">For Buyers:</span> Source fresh produce, transparent pricing, direct transactions.</li>
+          <li><span class="tw-font-semibold">For Exporters:</span> Access certified produce, connect with trusted farmers, easy onboarding.</li>
+        </ul>
+        <div class="tw-flex tw-justify-end">
+          <button @click="showDialog = false" class="tw-bg-green-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-semibold hover:tw-bg-green-700 tw-transition">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
+  name: 'LandingPage',
   data() {
     return {
-      drawer: false,
-      email: '',
-      showSignup: false,
-      tab: 0,
-      heroPoints: [
-        'No need for farmers to create another website',
-        'Eliminate unsold produce with direct connections',
-        'Network with nearby farmers and buyers',
-        'Comprehensive sales tracking and reporting',
-      ],
-      farmerFeatures: [
-        'Map visibility for your farm location',
-        'Sell produce directly to verified buyers',
-        'Real-time market price analytics',
-        'Connect to global markets',
-        'Inventory management tools',
-        'Sales reporting dashboard',
-      ],
-      buyerFeatures: [
-        'Find nearby farmers on interactive map',
-        'Post requests for specific produce',
-        'View farmer profiles and ratings',
-        'Bulk ordering capabilities',
-        'Quality assurance tracking',
-        'Direct messaging with farmers',
-      ],
-      benefits: [
-        {
-          title: 'Reduced Waste',
-          text: 'Farmers sell produce before it perishes, reducing food waste by up to 80%',
-          icon: 'mdi-food-apple',
-          iconColor: 'success',
-          color: 'primary',
-        },
-        {
-          title: 'Increased Profits',
-          text: 'Eliminate middlemen to get better prices for farmers and better deals for buyers',
-          icon: 'mdi-cash-multiple',
-          iconColor: 'amber',
-          color: '#6d7e91',
-        },
-        {
-          title: 'Real-time Data',
-          text: 'Comprehensive analytics help farmers optimize production and buyers plan purchases',
-          icon: 'mdi-chart-line',
-          iconColor: 'info',
-          color: 'accent',
-        },
-        {
-          title: 'Farm AI',
-          text: 'AI analytics for crop growth and livestock rearing',
-          icon: 'mdi-leaf',
-          iconColor: '#fff',
-          color: 'brown',
-          class: 'gradient-icon',
-        },
-      ],
-      successStories: [
-        // {
-        //   title: 'Organic Tomato Farm',
-        //   image: 'https://images.unsplash.com/photo-1582284540020-8acbe03f4924?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-        //   description: 'Increased sales by 120% in first 3 months by connecting directly with local restaurants.',
-        //   result: '+120% Sales Increase',
-        // },
-        // {
-        //   title: 'Dairy Cooperative',
-        //   image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-        //   description: 'Reduced unsold milk by 85% by connecting with local buyers in real-time.',
-        //   result: '85% Less Waste',
-        // },
-        // {
-        //   title: 'Local Grocery Chain',
-        //   image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-        //   description: 'Saved 30% on produce costs by sourcing directly from nearby farms.',
-        //   result: '30% Cost Savings',
-        // },
-      ],
-      socialLinks: [
-        { icon: 'mdi-facebook', color: 'indigo', link: '#' },
-        { icon: 'mdi-twitter', color: 'light-blue', link: '#' },
-        { icon: 'mdi-linkedin', color: 'blue darken-3', link: '#' },
-        { icon: 'mdi-instagram', color: 'pink', link: '#' },
-      ],
-      quickLinks: [
-        { title: 'Home', target: 'hero' },
-        { title: 'Features', target: 'features' },
-        { title: 'Benefits', target: 'benefits' },
-        { title: 'Success Stories', target: 'success' },
-      ],
-      companyLinks: [
-        { title: 'About Us', target: '' },
-        { title: 'Contact', target: '' },
-        { title: 'Privacy Policy', target: '' },
-        { title: 'Terms of Service', target: '' },
-      ],
-      meta: {
-        title: 'Agriconnect - company',
-        metaDescription: 'Farmers & Buyers Connection platform',
-      },
+      showDialog: false,
     };
   },
   methods: {
-    scrollTo(id) {
-      this.drawer = false;
-      document.getElementById(id).scrollIntoView({
-        behavior: 'smooth',
-      });
-    },
-    subscribe() {
-      // Handle subscription logic
-      this.showSignup = true;
-      this.email = '';
-    },
-    getStarted() {
+    goHome() {
       this.$router.push({ name: 'Home' });
+    },
+    joinAsBuyer() {
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      this.$store.dispatch('auth/setViewRole', 'buyer');
+      this.$router.push({ path: '/browse-listings' });
+    },
+    becomeExporter() {
+      this.$store.dispatch('auth/setViewRole', 'exporter');
+      this.$router.push({ name: 'SignIn' });
+    },
+    joinAsFarmer() {
+      this.$store.dispatch('auth/setViewRole', 'farmer');
+      this.$router.push({ name: 'Listings' });
     },
   },
 };
 </script>
 
 <style scoped>
-/* Custom Styles */
-.hero-section {
-  background: linear-gradient(135deg, #f5fdf4 0%, #e8f5e9 100%);
-  padding: 50px 0 40px;
-  position: relative;
+/* Glassmorphism effect for navbar */
+nav {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
 }
-
-.hero-wave {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  line-height: 0;
-  transform: rotate(180deg);
-  color: #f5fdf4;
-}
-
-.hero-wave svg {
-  position: relative;
-  display: block;
-  width: calc(100% + 1.3px);
-  height: 80px;
-}
-
-.farmer-img {
-  /* animation: float 6s ease-in-out infinite; */
-}
-
-.buyer-img {
-  animation: float 6s ease-in-out infinite 1s;
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
-}
-
-.chat-bubble {
-  position: absolute;
-  bottom: 40px;
-  right: 20px;
-  max-width: 200px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.feature-card {
-  transition: all 0.3s ease;
-  border-radius: 16px !important;
-  height: 100%;
-}
-
-.feature-card:hover {
-  transform: translateY(-8px);
-}
-
-.benefit-card {
-  border-radius: 16px !important;
-  transition: all 0.3s ease;
-  height: 100%;
-}
-
-/* Vuetify overrides */
-.v-application .primary {
-  background-color: #2e7d32 !important;
-  border-color: #2e7d32 !important;
-}
-
-.v-application .primary--text {
-  color: #2e7d32 !important;
-  caret-color: #2e7d32 !important;
-}
-
-.v-application .secondary {
-  background-color: #ff8f00 !important;
-  border-color: #ff8f00 !important;
-}
-
-.v-application .secondary--text {
-  color: #ff8f00 !important;
-  caret-color: #ff8f00 !important;
-}
-
-.v-application .accent {
-  background-color: #00acc1 !important;
-  border-color: #00acc1 !important;
-}
-
-.gradient-icon {
-  background: linear-gradient(45deg, #8d08e8, #05d30f);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+/* No extra styles needed; Tailwind handles layout and responsiveness */
 </style>
