@@ -78,7 +78,7 @@ export default {
   methods: {
     async requestReset() {
       try {
-        const response = await axios.post('http://localhost:8080/api/auth/forgot-password', {
+        const response = await axios.post('/api/auth/forgot-password', {
           input: this.email,
         });
         this.message = response.data.msg;

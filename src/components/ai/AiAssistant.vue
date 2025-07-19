@@ -119,7 +119,7 @@ export default {
       stompClient: null,
       userInput: '',
       isListening: false,
-      wsUrl: 'http://localhost:8080/ws',
+      wsUrl: '/ws',
       speechRecognition: null,
       connection: null,
       conversation: [
