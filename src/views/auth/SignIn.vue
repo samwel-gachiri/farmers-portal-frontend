@@ -61,7 +61,8 @@
                     outlined
                     dense
                     required
-                    autocomplete="off"
+                    autocomplete="email"
+                    name="email"
                   />
                 </div>
                 <div v-else class="tw-mb-6">
@@ -73,6 +74,8 @@
                     show-code-on-list
                     aria-label="Phone"
                     @update="onPhoneUpdate"
+                    autocomplete="tel"
+                    name="phone"
                   />
                 </div>
                 <v-text-field
@@ -83,7 +86,8 @@
                   outlined
                   dense
                   required
-                  autocomplete="off"
+                  autocomplete="current-password"
+                  name="password"
                   class="mt-2"
                 />
                 <v-btn
@@ -134,6 +138,41 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import { getCurrentUserRole } from '@/utils/roles.js';
 
 export default {
+  name: 'SignInView',
+  metaInfo: {
+    title: 'Sign In | AgriBackup - Secure Access for Farmers, Buyers, Exporters',
+    meta: [
+      { name: 'description', content: 'Sign in to AgriBackup to securely access your farmer, buyer, exporter, or institution account. Connect directly, eliminate middlemen, and manage your agricultural business globally.' },
+      { name: 'keywords', content: 'AgriBackup sign in, login, farmer portal, buyer portal, exporter portal, agriculture, secure access, global marketplace, direct selling, eliminate middlemen' },
+      { name: 'robots', content: 'index,follow' },
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      { property: 'og:title', content: 'Sign In | AgriBackup' },
+      { property: 'og:description', content: 'Sign in to AgriBackup for secure access to your farmer, buyer, exporter, or institution account. Connect and manage your agricultural business.' },
+      { property: 'og:type', content: 'website' },
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      { property: 'og:url', content: 'https://agribackup.com/signin' },
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      { property: 'og:image', content: 'https://agribackup.com/assets/images/happy-farmer.jpg' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'Sign In | AgriBackup' },
+      { name: 'twitter:description', content: 'Sign in to AgriBackup for secure access to your farmer, buyer, exporter, or institution account.' },
+      { name: 'twitter:image', content: 'https://agribackup.com/assets/images/happy-farmer.jpg' },
+      { rel: 'canonical', href: 'https://agribackup.com/signin' },
+    ],
+    script: [
+      {
+        type: 'application/ld+json',
+        json: {
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: 'Sign In | AgriBackup',
+          url: 'https://agribackup.com/signin',
+          description: 'Sign in to AgriBackup to securely access your farmer, buyer, exporter, or institution account. Connect directly, eliminate middlemen, and manage your agricultural business globally.',
+          image: 'https://agribackup.com/assets/images/happy-farmer.jpg',
+        },
+      },
+    ],
+  },
   components: { VuePhoneNumberInput },
   data() {
     return {
