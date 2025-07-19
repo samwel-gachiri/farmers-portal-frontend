@@ -3,32 +3,47 @@
     <v-form v-model="isValid" class="tw-w-full tw-mt-5">
         <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">
           <div class="tw-w-full tw-flex tw-flex-col tw-justify-between">
-            <v-text-field
-                outlined
-                id="name"
-                type="text"
-                name="name"
-                v-model="fullname"
-                label="Full Name"
-                placeholder="..."
-                class="my-1"
-                :rules="[required('Full Name')]"
-            >
-            </v-text-field>
-    <!--        <v-text-field-->
-    <!--            id="email"-->
-    <!--            type="email"-->
-    <!--            name="email"-->
-    <!--            v-model="email"-->
-    <!--            label="Email Address"-->
-    <!--            :rules="[required('Email'), emailFormat()]"-->
-    <!--            disabled-->
-    <!--        >-->
-    <!--        </v-text-field>-->
-            <div
-                class="tw-fleFx tw-w-full tw-flex-col tw-justify-start tw-items-start"
-            >
-            <div v-if="role != 'exporter'">
+            <!-- Personal Details Section -->
+            <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
+              <h2 class="tw-text-lg tw-font-semibold tw-text-green-600">Personal Details</h2>
+              <v-text-field
+                  label="Full Name"
+                  :outlined="false"
+                  :filled="true"
+                  dense
+                  v-model="fullName"
+                  :rules="[required('Name'), noDigitFormat()]"
+                  :hide-details="false"
+                  class="modern-input tw-w-full"
+                  aria-label="Full Name"
+                  autocomplete="name"
+                  placeholder="e.g. Jane Doe"
+              />
+              <vue-phone-number-input
+                  v-model="phoneNumber"
+                  :default-country-code="'KE'"
+                  :preferred-countries="['KE', 'US', 'GB']"
+                  show-code-on-list
+                  @update="onPhoneUpdate"
+                  aria-label="Phone Number"
+                  class="tw-w-full"
+                  placeholder="e.g. +254712345678"
+              />
+              <v-text-field
+                  v-model="email"
+                  label="Email Address"
+                  :outlined="false"
+                  :filled="true"
+                  dense
+                  :rules="[emailFormat()]"
+                  :hide-details="false"
+                  class="modern-input tw-w-full"
+                  aria-label="Email Address"
+                  autocomplete="email"
+                  placeholder="e.g. jane@email.com"
+              />
+            </div>
+            <div v-if="role != 'exporter'" class="tw-fleFx tw-w-full tw-flex-col tw-justify-start tw-items-start">
                 <h5>{{ loc_name === '' ? "Give in your location details": "Your Location Details"}}</h5>
                 <v-alert
                   type="info"
@@ -60,27 +75,6 @@
                   Use Device Location
                   <v-icon color="linear-gradient(green, red)" >mdi-google-maps</v-icon>
                 </v-btn>
-              </div>
-            </div>
-            <div class="tw-mt-8 tw-flex tw-flex-col tw-gap-5">
-              <h5 class="tw-bold">Set Credentials</h5>
-              <vue-phone-number-input
-                    v-model="phoneNumber"
-                    :default-country-code="'KE'"
-                    :preferred-countries="['KE', 'US', 'GB']"
-                    show-code-on-list
-                    @update="onPhoneUpdate"
-              />
-              <!-- email field -->
-              <v-text-field
-                id="email"
-                type="email"
-                name="email"
-                v-model="email"
-                label="Email Address"
-                :rules="[required('Email'), emailFormat()]"
-                class="my-1"
-                ></v-text-field>
             </div>
           </div>
           <div v-if="false" class="tw-w-full">
@@ -148,9 +142,9 @@ export default {
     //   }
     // });
     // if (this.resizeObserver != null) this.resizeObserver.observe(document.getElementById('map'));
-    this.fullname = this.user.name;
-    this.email = this.user.email;
-    this.phoneNumber = this.user.phoneNumber;
+    this.fullname = this.userProfile.fullName;
+    this.email = this.user.userProfile.email;
+    this.phoneNumber = this.user.userProfile.phoneNumber;
     if (this.user.location && this.role !== 'exporter') {
       this.map.panTo([this.user?.location?.latitude, this.user?.location?.longitude]);
       this.marker = L.marker([this.user?.location?.latitude, this.user?.location?.longitude], {
@@ -250,7 +244,7 @@ export default {
         }
       }).finally(async () => {
         if (this.role === 'exporter') {
-          axios.put(`/farmers-service/exporter/${getCurrentUserId()}`, {
+          axios.put(`/exporters-service/exporter/${getCurrentUserId()}`, {
             name: this.fullname,
             email: this.email,
             phoneNumber: this.fullPhoneNumber ? this.fullPhoneNumber : '',

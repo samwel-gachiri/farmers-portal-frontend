@@ -613,7 +613,7 @@ export default {
       this.loading = true;
       try {
         // eslint-disable-next-line no-unused-vars
-        const response = await axios.post('/farmers-service/exporter/zones', {
+        const response = await axios.post('/exporters-service/exporter/zones', {
           exporterId: getCurrentUserId(),
           name: this.newZone.name,
           produceType: this.newZone.produceType,
@@ -654,7 +654,7 @@ export default {
 
       this.loading = true;
       try {
-        const response = await axios.get(`/farmers-service/exporter/${getCurrentUserId()}/zones`);
+        const response = await axios.get(`/exporters-service/exporter/${getCurrentUserId()}/zones`);
         this.allZones = response.data.data;
         this.initializeAllZonesMap();
         this.resizeMap(this.allZonesMapView);
@@ -750,7 +750,7 @@ export default {
       this.loading = true;
       try {
         await axios.put(
-          `/farmers-service/exporter/zones/${this.selectedZone.id}`,
+          `/exporters-service/exporter/zones/${this.selectedZone.id}`,
           {
             name: this.editZone.name,
             produceType: this.editZone.produceType,
@@ -781,7 +781,7 @@ export default {
 
       this.loadingZones = true;
       try {
-        const response = await axios.get(`/farmers-service/exporter/${getCurrentUserId()}/zones`);
+        const response = await axios.get(`/exporters-service/exporter/${getCurrentUserId()}/zones`);
         this.zoneOptions = response.data.data.map((zone) => ({
           id: zone.id,
           name: zone.name,
@@ -802,7 +802,7 @@ export default {
 
       this.loading = true;
       try {
-        const response = await axios.get(`/farmers-service/exporter/zones/${this.selectedZoneFarmersZone.id}/farmers`);
+        const response = await axios.get(`/exporters-service/exporter/zones/${this.selectedZoneFarmersZone.id}/farmers`);
         this.zoneFarmers = response.data.data;
         this.displayFarmersOnMap();
         this.initializeFarmersMap();
