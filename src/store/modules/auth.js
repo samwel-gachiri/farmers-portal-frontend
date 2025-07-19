@@ -73,12 +73,12 @@ const mutations = {
     state.user = roleSpecificData;
     state.token = token;
     state.role = role;
-    console.log('COOKIE USER', USER);
-    console.log(roleSpecificData);
+    // console.log('COOKIE USER', USER);
+    // console.log(roleSpecificData);
     // Persist to cookies
     cookie.set(USER, JSON.stringify(roleSpecificData));
-    console.log('cookie user');
-    console.log(cookie.get(USER));
+    // console.log('cookie user');
+    // console.log(cookie.get(USER));
     cookie.set(ACCESS_TOKEN, token);
     cookie.set(ROLE, role);
   },
