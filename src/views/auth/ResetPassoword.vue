@@ -13,17 +13,30 @@
           <v-col cols="12" sm="8" md="4">
             <v-card class="pa-6" elevation="10" rounded="xl">
               <v-card-title class="justify-center">
-                <v-icon color="primary" size="40">mdi-lock-reset</v-icon>
+                <v-icon color="primary" size="40">mdi-lock</v-icon>
               </v-card-title>
               <v-card-subtitle class="text-center text-h5 font-weight-bold mb-2">
-                Forgot Password
+                Reset Password
               </v-card-subtitle>
               <v-card-text>
-                <form @submit.prevent="requestReset">
+                <form @submit.prevent="resetPassword">
                   <v-text-field
-                    v-model="email"
-                    label="Email or Phone"
-                    prepend-inner-icon="mdi-account-circle-outline"
+                    v-if="!otpProvided"
+                    v-model="otp"
+                    label="OTP"
+                    prepend-inner-icon="mdi-shield-key-outline"
+                    outlined
+                    rounded
+                    dense
+                    required
+                    autocomplete="off"
+                    class="mb-2"
+                  />
+                  <v-text-field
+                    v-model="newPassword"
+                    label="New Password"
+                    type="password"
+                    prepend-inner-icon="mdi-lock-outline"
                     outlined
                     rounded
                     dense
@@ -38,7 +51,7 @@
                     class="mt-4"
                     type="submit"
                   >
-                    Send Reset Link
+                    Reset Password
                   </v-btn>
                   <v-alert
                     v-if="message"
@@ -71,21 +84,30 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      email: '',
+      otp: '',
+      otpProvided: false,
+      newPassword: '',
       message: '',
     };
   },
+  created() {
+    // Extract otp from URL query parameter
+    const otpFromUrl = new URLSearchParams(window.location.search).get('token') || '';
+    if (otpFromUrl) {
+      this.otp = otpFromUrl;
+      this.otpProvided = true;
+    }
+  },
   methods: {
-    async requestReset() {
+    async resetPassword() {
       try {
-        const response = await axios.post('http://localhost:8080/api/auth/forgot-password', {
-          input: this.email,
+        const response = await axios.post('http://localhost:8080/api/auth/reset-password', {
+          otp: this.otp,
+          newPassword: this.newPassword,
         });
         this.message = response.data.msg;
-        if (response.data.success) {
-          // Navigate to reset password with otp as query param
-          this.$router.push({ name: 'ResetPassword' });
-        }
+        // Redirect to login page after success
+        setTimeout(() => this.$router.push({ name: 'SignIn' }), 2000);
       } catch (error) {
         this.message = error.response?.data || 'An error occurred';
       }

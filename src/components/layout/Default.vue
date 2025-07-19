@@ -1,17 +1,16 @@
 <template>
   <v-app id="agri-future">
-    <!-- Navigation Drawer (Desktop/Tablet Only) -->
+    <!-- Navigation Drawer (Toggles on nav icon click) -->
     <v-navigation-drawer
         class="sidebar futuristic-drawer"
         :clipped="false"
         v-model="drawer"
         app
         :mini-variant.sync="mini"
-        :permanent="$vuetify.breakpoint.mdAndUp"
-        :temporary="$vuetify.breakpoint.smAndDown"
+        :permanent="false"
+        :temporary="!drawer"
         @mouseover="mini = false"
         @mouseleave="mini = true"
-        v-if="$vuetify.breakpoint.mdAndUp"
     >
       <drawer :mini="mini" />
     </v-navigation-drawer>
@@ -26,7 +25,7 @@
     >
       <v-app-bar-nav-icon
           class="tw-block"
-          @click.stop="drawer = !drawer"
+          @click="drawer = !drawer"
       >
         <v-icon>mdi-menu</v-icon>
       </v-app-bar-nav-icon>

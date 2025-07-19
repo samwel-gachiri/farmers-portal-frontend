@@ -1,19 +1,24 @@
 module.exports = {
   prefix: 'tw-',
-  content: [ // <-- RENAME 'purge' to 'content'
-    './src/**/*.html',
-    './src/**/*.vue',
-    './src/**/*.jsx',
-    './src/**/*.js',
+  content: [
+    './src/**/*.{vue,js,ts,jsx,tsx}',
+    './public/index.html',
   ],
   theme: {
     extend: {
       screens: {
         '2xl': '1536px',
       },
+      colors: {
+        'agri-green': '#3d5a2a',
+        'agri-brown': '#6b4f2c',
+        'agri-light': '#f7f5ee',
+        'agri-yellow': '#f7e9b0',
+        'agri-border': '#e6e1c3',
+        'agri-accent': '#b6a16b',
+        'agri-softgreen': '#b6e4a3',
+      },
     },
   },
-  // variants: {}, // Variants is also deprecated in v3, but usually doesn't cause a direct error
   plugins: [],
-  // future: {} // The 'future' key is also deprecated in v3 as these features are now default
 };

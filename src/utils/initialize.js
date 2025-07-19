@@ -26,7 +26,7 @@ export default {
               });
           }
         } else {
-          config.headers.auth = token;
+          config.headers.Authorization = `Bearer ${token}`;
         }
       }
       // if (process.env.NODE_ENV === 'production') config.baseURL = '/api';
@@ -44,10 +44,10 @@ export default {
 
     axios.interceptors.response.use(null, async (error) => {
       if (error.response) {
-      /*
-      * The request was made and the server responded with a
-      * status code that falls out of the range of 2xx
-      */
+        /*
+        * The request was made and the server responded with a
+        * status code that falls out of the range of 2xx
+        */
         if (error.response.status === 401) {
           const config = { retryAttempts: 1, ...error.config };
 

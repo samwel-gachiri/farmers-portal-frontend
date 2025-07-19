@@ -4,7 +4,7 @@ export default {
   props: {
     text: {
       type: String,
-      default: 'Agriconnect',
+      default: 'AgriBackup',
     },
   },
 };

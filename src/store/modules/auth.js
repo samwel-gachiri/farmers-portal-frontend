@@ -1,24 +1,18 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 /* eslint no-shadow:0 */
-// import Auth from '@aws-amplify/auth';
-// import Amplify from '@aws-amplify/core';
 import cookie from 'vue-cookies';
 import axios from 'axios';
 /* eslint import/named:0 */
 import {
   ACCESS_TOKEN, APP_CODE, CR_KEY, ROLE, USER, USER_EMAIL, USER_OTP,
 } from '@/utils/const.js';
-
-// await context.dispatch('auth/generateOtp', { email: params.attributes.email, mobile: params.attributes.phone_number }, { root: true });
-// keep user cred
 import CryptoJS from 'crypto-js';
 // eslint-disable-next-line import/extensions
 import { signOut } from 'firebase/auth';
 import { auth } from '@/firebase.js';
 
-// const { Logger } = Amplify;
-// Logger.LOG_LEVEL = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' ? 'ERROR' : 'DEBUG'; // to show detailed logs from Amplify library
-// const logger = new Logger('store:auth');
+// Optional: If you need to decode the JWT token client-side
+import jwtDecode from 'jwt-decode';
 
 const data = {
   user: cookie.get(USER) || null,
@@ -58,7 +52,6 @@ const mutations = {
     }
   },
   setAuthenticationError(state, err) {
-    // logger.debug('auth error: {}', err);
     state.authenticationStatus = {
       state: 'failed',
       message: err.message,
@@ -75,14 +68,16 @@ const mutations = {
   clearAuthenticationStatus: (state) => {
     state.authenticationStatus = null;
   },
-  setUserAuthenticated(state, user) {
-    // const token = user.signInUserSession.idToken.jwtToken;
-    const token = user.accessToken;
-    cookie.set(USER, user);
-    cookie.set(ROLE, state.role);
-    cookie.set(ACCESS_TOKEN, token);
-    state.user = user;
+  setUserAuthenticated(state, { token, roleSpecificData, role }) {
+    // Store roleSpecificData as the user object
+    state.user = roleSpecificData;
     state.token = token;
+    state.role = role;
+
+    // Persist to cookies
+    cookie.set(USER, roleSpecificData);
+    cookie.set(ACCESS_TOKEN, token);
+    cookie.set(ROLE, role);
   },
   setUserToken(state, token) {
     cookie.set(ACCESS_TOKEN, token);
@@ -95,8 +90,10 @@ const mutations = {
   clearAuthentication(state) {
     cookie.remove(USER);
     cookie.remove(ACCESS_TOKEN);
+    cookie.remove(ROLE);
     state.token = '';
     state.user = null;
+    state.role = '';
   },
 };
 
@@ -104,34 +101,41 @@ const actions = {
   updateUserLocation({ commit }, location) {
     commit('UPDATE_USER_LOCATION', location);
   },
-  setViewRole: async (context, text) => {
-    context.commit('setUserRole', text);
+  setViewRole: async ({ commit }, text) => {
+    commit('setUserRole', text);
   },
-  clearAuthenticationStatus: (context) => {
-    context.commit('clearAuthenticationStatus', null);
+  clearAuthenticationStatus: ({ commit }) => {
+    commit('clearAuthenticationStatus', null);
   },
-  signIn: async (context, params) => {
-    // logger.debug('signIn for {}', params.username);
-    context.commit('auth/clearAuthenticationStatus', null, { root: true });
+  signIn: async ({ commit }, { data }) => {
     try {
-      // const user = await Auth.signIn(params.username, params.password);
-      context.commit('setUserAuthenticated', params.user);
-      context.commit('auth/setAuthenticationSuccess', 'logged in', { root: true });
-      // SUSPEND USER LOGIN STATE HERE FOR OTP VERIFICATION
-      // return params.user;
+      // Extract token and roleSpecificData from the response
+      const { token, roleSpecificData } = data;
+
+      // Optionally decode the token to get the role (if not using roleSpecificData)
+      const decodedToken = jwtDecode(token);
+      const role = decodedToken.role?.toLowerCase() || 'farmer'; // Fallback to 'FARMER' if role not found
+
+      // Commit the user data to the store
+      commit('setUserAuthenticated', {
+        token,
+        roleSpecificData,
+        role,
+      });
+
+      commit('setAuthenticationSuccess', 'Logged in successfully');
     } catch (err) {
-      context.commit('auth/setAuthenticationError', err, { root: true });
+      commit('setAuthenticationError', { message: err.message || 'Login failed' });
       throw err;
     }
   },
-  signOut: async (context) => {
+  signOut: async ({ commit }) => {
     try {
-      // await Auth.signOut();
       await signOut(auth);
     } catch (err) {
-      // logger.debug('error during sign out: {}', err);
+      // console.error('Error during sign out:', err);
     }
-    context.commit('auth/clearAuthentication', null, { root: true });
+    commit('clearAuthentication');
   },
   signUp: async (context, params) => {
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
@@ -151,7 +155,7 @@ const actions = {
     }
   },
   refresh: async () => {
-  // refresh: async (context) => {
+    // refresh: async (context) => {
     try {
       // const currentSession = await Auth.currentSession();
       // context.commit('setUserToken', currentSession.idToken.jwtToken);

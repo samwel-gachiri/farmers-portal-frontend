@@ -58,3 +58,5 @@ store_icon.png
 twa-manifest.json
 
 app2/
+src/views/auth/SignInOld.vue
+src/views/auth/SignInOriginal.vue
