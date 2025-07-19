@@ -26,6 +26,41 @@ import ExporterSignUp from '@/components/auth/ExporterSignUp.vue';
 import CardTitle from '@/components/shared/CardTitle.vue';
 
 export default {
+  name: 'SignUpView',
+  metaInfo: {
+    title: 'Sign Up | AgriBackup - Register as Farmer, Buyer, Exporter or Institution',
+    meta: [
+      { name: 'description', content: 'Create your AgriBackup account and join the global agricultural marketplace. Register as a farmer, buyer, exporter, institution, or government. Sell and buy farm produce directly, eliminate middlemen, and access AI-powered insights.' },
+      { name: 'keywords', content: 'AgriBackup sign up, register, create account, farmer registration, buyer registration, exporter registration, institution, government, agriculture, global marketplace, direct selling, eliminate middlemen' },
+      { name: 'robots', content: 'index,follow' },
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      { property: 'og:title', content: 'Sign Up | AgriBackup' },
+      { property: 'og:description', content: 'Create your AgriBackup account and join the global agricultural marketplace. Register as a farmer, buyer, exporter, institution, or government.' },
+      { property: 'og:type', content: 'website' },
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      { property: 'og:url', content: 'https://agribackup.com/signup' },
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      { property: 'og:image', content: 'https://agribackup.com/assets/images/happy-farmer.jpg' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'Sign Up | AgriBackup' },
+      { name: 'twitter:description', content: 'Create your AgriBackup account and join the global agricultural marketplace.' },
+      { name: 'twitter:image', content: 'https://agribackup.com/assets/images/happy-farmer.jpg' },
+      { rel: 'canonical', href: 'https://agribackup.com/signup' },
+    ],
+    script: [
+      {
+        type: 'application/ld+json',
+        json: {
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: 'Sign Up | AgriBackup',
+          url: 'https://agribackup.com/signup',
+          description: 'Create your AgriBackup account and join the global agricultural marketplace. Register as a farmer, buyer, exporter, institution, or government. Sell and buy farm produce directly, eliminate middlemen, and access AI-powered insights.',
+          image: 'https://agribackup.com/assets/images/happy-farmer.jpg',
+        },
+      },
+    ],
+  },
   components: {
     CardTitle,
     FarmerSignUp,

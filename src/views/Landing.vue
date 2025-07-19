@@ -1,3 +1,4 @@
+<!-- eslint-disable sonarjs/no-duplicate-string -->
 <template>
   <div class="tw-bg-gradient-to-br tw-from-[#f7f5ee] tw-to-[#e6f4ea] tw-min-h-screen tw-flex tw-flex-col tw-relative">
     <!-- Responsive Glassmorphism Navbar -->
@@ -291,6 +292,44 @@
 <script>
 export default {
   name: 'LandingPage',
+  metaInfo: {
+    title: 'AgriBackup - Connect Farmers, Buyers, Exporters & Institutions | Eliminate Middlemen',
+    meta: [
+      { name: 'description', content: 'AgriBackup connects farmers, buyers, exporters, governments, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, access AI-powered insights, and join a global agricultural marketplace.' },
+      { name: 'keywords', content: 'AgriBackup, farmers, buyers, exporters, agriculture, farm produce, direct selling, global marketplace, AI farming, eliminate middlemen, institutions, government, food security' },
+      { name: 'robots', content: 'index,follow' },
+      { property: 'og:title', content: 'AgriBackup - Global Agricultural Marketplace' },
+      { property: 'og:description', content: 'Join AgriBackup to connect farmers, buyers, exporters, and institutions. Sell and buy farm produce directly, eliminate middlemen, and access AI-powered insights.' },
+      { property: 'og:type', content: 'website' },
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      { property: 'og:url', content: 'https://agribackup.com/' },
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      { property: 'og:image', content: 'https://agribackup.com/assets/images/happy-farmer.jpg' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'AgriBackup - Global Agricultural Marketplace' },
+      { name: 'twitter:description', content: 'Connect farmers, buyers, exporters, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, and access AI-powered insights.' },
+      { name: 'twitter:image', content: 'https://agribackup.com/assets/images/happy-farmer.jpg' },
+      { rel: 'canonical', href: 'https://agribackup.com/' },
+    ],
+    script: [
+      {
+        type: 'application/ld+json',
+        json: {
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'AgriBackup',
+          url: 'https://agribackup.com/',
+          description: 'AgriBackup connects farmers, buyers, exporters, governments, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, access AI-powered insights, and join a global agricultural marketplace.',
+          image: 'https://agribackup.com/assets/images/happy-farmer.jpg',
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: 'https://agribackup.com/search?q={search_term_string}',
+            'query-input': 'required name=search_term_string',
+          },
+        },
+      },
+    ],
+  },
   data() {
     return {
       showDialog: false,
