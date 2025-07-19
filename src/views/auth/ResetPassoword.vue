@@ -101,7 +101,7 @@ export default {
   methods: {
     async resetPassword() {
       try {
-        const response = await axios.post('http://localhost:8080/api/auth/reset-password', {
+        const response = await axios.post('/api/auth/reset-password', {
           otp: this.otp,
           newPassword: this.newPassword,
         });
