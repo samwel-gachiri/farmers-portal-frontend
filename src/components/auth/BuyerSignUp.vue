@@ -1,5 +1,5 @@
 <template>
-    <v-app class="tw-p-8 tw-bg-white tw-shadow-xl tw-rounded-2xl tw-max-w-5xl tw-mx-auto tw-mt-10">
+    <v-app class="tw-p-8 tw-bg-white tw-rounded-2xl tw-max-w-5xl tw-mx-auto tw-mt-10">
         <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8">
             <!-- Personal Details Section -->
             <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
@@ -62,7 +62,7 @@
                 <h2 class="tw-text-lg tw-font-semibold tw-text-green-600">Password</h2>
                 <v-text-field
                     label="Password"
-                    type="password"
+                    :type="showPassword ? 'text' : 'password'"
                     v-model="form.password"
                     :outlined="false"
                     :filled="true"
@@ -73,46 +73,44 @@
                     aria-label="Password"
                     autocomplete="new-password"
                     placeholder="e.g. ********"
+                    :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append="showPassword = !showPassword"
                 />
             </div>
         </div>
         <!-- Terms and Button Section -->
         <div class="tw-mt-8">
-            <v-checkbox
-                id="checkbox"
-                dense
-                v-model="form.terms"
-                :rules="[check()]"
-                :color="mode === 'exporter' ? 'teal' : 'primary'"
-                :hide-details="mode === 'exporter' ? 'auto' : false"
-                aria-checked="form.terms"
-                aria-label="Agree to Terms and Conditions"
+          <h2 class="tw-text-lg tw-font-semibold">Terms and Conditions</h2>
+          <p>I hereby Confirm that the information set is correct and accurate</p>
+          <v-checkbox
+              id="checkbox"
+              dense
+              v-model="form.terms"
+              :rules="[check()]"
+              :color="'primary'"
+              :hide-details="false"
+              aria-checked="form.terms"
+              aria-label="Agree to Terms and Conditions"
+              :label="`I agree to the Terms and Conditions`"
+          />
+          <a
+            class="tw-text-blue-600 hover:tw-text-blue-800 tw-underline tw-ml-2"
+            href="#"
+            @click.prevent="openTermsDialog"
+            aria-label="Open Terms and Conditions"
+          >
+            Terms and Conditions
+          </a>
+        </div>
+        <div class="tw-flex tw-justify-end tw-my-2">
+            <v-btn
+                color="primary"
+                class="tw-px-8 tw-py-3 tw-rounded-xl tw-font-semibold tw-text-lg tw-shadow"
+                @click="signUpUser"
+                aria-label="Sign Up"
             >
-                <template v-slot:label>
-                    <div class="tw-text-sm" :class="mode === 'exporter' ? 'tw-text-gray-700' : 'tw-text-gray-600'">
-                    I agree to the
-                    <a
-                        :class="mode === 'exporter' ? 'tw-text-teal-600 hover:tw-text-teal-800' : 'tw-text-green-600 hover:tw-text-blue-800'"
-                        href="#"
-                        @click.prevent="openTermsDialog"
-                        class="tw-underline"
-                        aria-label="Open Terms and Conditions"
-                    >
-                        Terms and Conditions
-                    </a>
-                    </div>
-                </template>
-            </v-checkbox>
-            <div class="tw-flex tw-justify-end tw-my-2">
-                <v-btn
-                    color="primary"
-                    class="tw-px-8 tw-py-3 tw-rounded-xl tw-font-semibold tw-text-lg tw-shadow"
-                    @click="signUpUser"
-                    aria-label="Sign Up"
-                >
-                  Sign Up
-                </v-btn>
-            </div>
+              Sign Up
+            </v-btn>
         </div>
         <terms-and-conditions ref="termsDialog"/>
     </v-app>
@@ -140,30 +138,27 @@ export default {
       },
       ...validations,
       mode: 'exporter', // or 'farmer' based on your logic
+      showPassword: false,
     };
   },
   methods: {
     async signUpUser() {
       try {
-        const user = {
-          id: this.user.uid,
-          uid: this.user.uid,
-          name: this.form.name,
-          email: this.form.email,
-          phoneNumber: this.form.fullPhoneNumber,
-          createdAt: '',
-          preferredProduces: [],
-          location: {
-            latitude: this.form.location.lat,
-            longitude: this.form.location.lng,
-            customName: '',
+        const userPayload = {
+          user: {
+            fullName: this.form.name,
+            email: this.form.email,
+            phoneNumber: this.form.fullPhoneNumber,
+            password: this.form.password,
           },
+          companyName: this.form.businessName,
+          businessType: '',
         };
-        const saveResponse = await axios.post('/buyers-service/buyer',
-          user);
+        const saveResponse = await axios.post('/api/auth/register/buyer', userPayload);
         if (saveResponse.data.success === true) {
           this.user = { ...this.user, ...saveResponse.data.data };
-          this.$toast.success('Buyer\'s profile set up', 'success');
+          this.$router.push({ name: 'SignIn' });
+          this.$toast.success(`${this.userRole} profile set up`, 'success');
         } else {
           this.$toast.error(saveResponse.data.msg, 'Error');
         }

@@ -144,6 +144,22 @@ export default {
       password: '',
     };
   },
+  mounted() {
+    // If role is empty, redirect to Home with redirect to SignIn
+    const role = getCurrentUserRole();
+    if (!role) {
+      this.$toast.info('Please select a role to sign in');
+      const currentPath = window.location.pathname + window.location.search + window.location.hash;
+      this.$router.push({
+        name: 'Home',
+        query: {
+          redirect: btoa(currentPath),
+        },
+      });
+    } else {
+      this.$toast.info(`Signing in as ${role}`);
+    }
+  },
   methods: {
     onPhoneUpdate(phoneData) {
       // Get the full international number with country code

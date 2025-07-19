@@ -1,6 +1,9 @@
 <template>
-  <v-app class="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-white tw-to-gray-100">
-    <v-card class="tw-px-8 tw-bg-white tw-shadow-xl tw-rounded-2xl tw-max-w-6xl tw-mx-auto tw-mt-10">
+  <v-app class="tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-white tw-to-gray-100">
+    <v-card
+      class="tw-px-10 tw-pb-8 tw-bg-white tw-shadow-2xl tw-rounded-3xl tw-max-w-4xl tw-mx-auto tw-mt-10 tw-border tw-border-gray-200 tw-flex tw-flex-col tw-items-center"
+      elevation="1"
+    >
       <CardTitle icon="mdi-account" class="tw-text-blue-600 tw-mb-2">
         <h2 class="tw-text-2xl tw-font-semibold">Sign up</h2>
       </CardTitle>
@@ -29,7 +32,20 @@ export default {
     BuyerSignUp,
     ExporterSignUp,
   },
-  methods: {
+  mounted() {
+    const role = getCurrentUserRole();
+    if (!role) {
+      this.$toast.info('Please select a role to sign in');
+      const currentPath = window.location.pathname + window.location.search + window.location.hash;
+      this.$router.push({
+        name: 'Home',
+        query: {
+          redirect: btoa(currentPath),
+        },
+      });
+    } else {
+      this.$toast.info(`Signing in as ${role}`);
+    }
   },
   computed: {
     getCurrentUserRole,

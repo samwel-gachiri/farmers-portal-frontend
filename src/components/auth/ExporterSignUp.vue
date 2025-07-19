@@ -1,9 +1,9 @@
 <template>
-    <v-app class="tw-p-8 tw-bg-white tw-shadow-xl tw-rounded-2xl tw-max-w-5xl tw-mx-auto tw-mt-10">
+    <v-app class="tw-p-8 tw-bg-white tw-rounded-2xl tw-max-w-5xl tw-mx-auto tw-mt-3 ">
         <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8">
             <!-- Personal Details Section -->
             <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
-                <h2 class="tw-text-2xl tw-font-semibold tw-text-blue-600">Exporter Sign Up</h2>
+                <h2 class="tw-text-lg tw-font-semibold tw-text-green-600">Exporter Sign Up</h2>
                 <v-text-field
                     label="Full Name"
                     :outlined="false"
@@ -43,7 +43,7 @@
             </div>
             <!-- Company Details Section -->
             <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
-                <h2 class="tw-text-2xl tw-font-semibold tw-text-blue-600">Company Details</h2>
+                <h2 class="tw-text-lg tw-font-semibold tw-text-green-600">Company Details</h2>
                 <v-text-field
                     label="Company Name"
                     dense
@@ -56,10 +56,6 @@
                     aria-label="Company Name"
                     placeholder="e.g. Exporters Ltd"
                 />
-            </div>
-            <!-- License & Agreement Section -->
-            <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
-                <h2 class="tw-text-2xl tw-font-semibold tw-text-blue-600">License & Agreement</h2>
                 <v-text-field
                     label="License ID"
                     dense
@@ -71,6 +67,26 @@
                     class="modern-input tw-w-full"
                     aria-label="License ID"
                     placeholder="e.g. LIC123456"
+                />
+            </div>
+            <!-- Password Section -->
+            <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
+                <h2 class="tw-text-lg tw-font-semibold tw-text-green-600">Password</h2>
+                <v-text-field
+                    label="Password"
+                    :type="showPassword ? 'text' : 'password'"
+                    v-model="form.password"
+                    :outlined="false"
+                    :filled="true"
+                    dense
+                    :rules="[required('Password')]"
+                    :hide-details="false"
+                    class="modern-input tw-w-full"
+                    aria-label="Password"
+                    autocomplete="new-password"
+                    placeholder="e.g. ********"
+                    :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append="showPassword = !showPassword"
                 />
             </div>
         </div>
@@ -90,7 +106,7 @@
                     <div class="tw-text-sm tw-text-gray-600">
                     I agree to the
                     <a
-                        class="tw-text-blue-600 hover:tw-text-blue-800 tw-underline"
+                        class="tw-text-green-600 hover:tw-text-blue-800 tw-underline"
                         href="#"
                         @click.prevent="openTermsDialog"
                         aria-label="Open Terms and Conditions"
@@ -130,30 +146,38 @@ export default {
         email: '',
         businessName: '',
         licenseId: '',
+        password: '',
+        terms: false,
+        fullPhoneNumber: '',
       },
+      showPassword: false,
       ...validations,
     };
   },
   methods: {
     async signUpUser() {
       try {
-        const user = {
-          id: this.user.uid,
-          name: this.form.name,
-          email: this.form.email,
-          phoneNumber: this.form.fullPhoneNumber,
+        const userPayload = {
+          user: {
+            fullName: this.form.name,
+            email: this.form.email,
+            phoneNumber: this.form.fullPhoneNumber,
+            password: this.form.password,
+          },
+          companyDesc: '',
           licenseId: this.form.licenseId,
+          businessType: '',
         };
-        const saveResponse = await axios.post('/farmers-service/exporter',
-          user);
+        const saveResponse = await axios.post('/api/auth/register/exporter', userPayload);
         if (saveResponse.data.success === true) {
           this.user = { ...this.user, ...saveResponse.data.data };
+          this.$router.push({ name: 'SignIn' });
           this.$toast.success(`${this.userRole} profile set up`, 'success');
         } else {
           this.$toast.error(saveResponse.data.msg, 'Error');
         }
-      } catch (e) {
-        this.$toast.error(e.message, 'Error');
+      } catch (error) {
+        this.$toast.error('Error signing up user:', error.message);
       }
     },
     onPhoneUpdate(phoneData) {

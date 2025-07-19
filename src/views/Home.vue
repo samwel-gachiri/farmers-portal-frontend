@@ -57,35 +57,46 @@ export default {
       const userName = name.toString().toLowerCase();
       if (getCurrentUserRole() !== userName) {
         await this.$store.dispatch('auth/signOut');
-        if (localStorage != null) {
-          // localStorage.removeItem(NOTIFICATIONS);
-          try {
-            // if (caches) {
-            //   caches.keys().then((arr) => {
-            //     arr.forEach((key) => {
-            //       caches.delete(key);
-            //     });
-            //   });
-            // }
-          } catch (error) {
-            this.$toast.error('Error clearing caches:', error.message);
-          }
-        }
+        // if (localStorage != null) {
+        //   // localStorage.removeItem(NOTIFICATIONS);
+        //   try {
+        //     // if (caches) {
+        //     //   caches.keys().then((arr) => {
+        //     //     arr.forEach((key) => {
+        //     //       caches.delete(key);
+        //     //     });
+        //     //   });
+        //     // }
+        //   } catch (error) {
+        //     this.$toast.error('Error clearing caches:', error.message);
+        //   }
+        // }
       }
       await this.$store.dispatch('auth/setViewRole', userName);
-      let redirect;
-      if (userName === 'exporter') {
-        redirect = { name: 'OperatingZonesManagement' };
+      // Check for redirect query param and decode if present
+      let redirectPath = this.$route.query.redirect;
+      if (redirectPath) {
+        try {
+          redirectPath = atob(redirectPath);
+        } catch (e) {
+          // fallback: use as is if not base64
+        }
+        await this.$router.push(redirectPath);
       } else {
-        redirect = { name: 'Dashboard' };
+        let defaultRedirect;
+        if (userName === 'exporter') {
+          defaultRedirect = this.$router.resolve({ name: 'OperatingZonesManagement' }).route.fullPath;
+        } else {
+          defaultRedirect = this.$router.resolve({ name: 'Dashboard' }).route.fullPath;
+        }
+        await this.$router.push({
+          name: 'SignIn',
+          query: {
+            mode: 'self',
+            redirect: defaultRedirect,
+          },
+        });
       }
-      await this.$router.push({
-        name: 'SignIn',
-        query: {
-          mode: 'self',
-          redirect: this.$router.resolve(redirect).route.fullPath,
-        },
-      });
     },
   },
   computed: {

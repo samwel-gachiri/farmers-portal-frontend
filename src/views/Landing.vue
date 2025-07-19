@@ -14,20 +14,20 @@
           </span>
         </div>
         <div class="tw-flex tw-items-center tw-space-x-2">
-          <router-link
-            to="/signin"
+          <button
             class="tw-hidden sm:tw-inline-block tw-text-green-700 tw-font-semibold tw-px-4 tw-py-2 tw-rounded-lg hover:tw-bg-green-100 tw-transition"
             aria-label="Login"
+            @click="handleLogin"
           >
             Login
-          </router-link>
-          <router-link
-            to="/home"
+          </button>
+          <button
             class="tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-font-semibold tw-px-6 tw-py-2 tw-rounded-lg tw-shadow tw-transition"
             aria-label="Get Started"
+            @click="handleSignup"
           >
             Get Started
-          </router-link>
+          </button>
         </div>
       </div>
     </nav>
@@ -56,7 +56,7 @@
     <!-- Above the Fold -->
     <section class="tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-px-10 tw-pt-20 tw-pb-12 tw-max-w-6xl tw-mx-auto">
       <div class="tw-flex-1 tw-mb-12 md:tw-mb-0">
-        <h1 class="tw-text-4xl md:tw-text-6xl tw-font-bold tw-text-[#3d5a2a] tw-mb-6 tw-drop-shadow">
+        <h1 class="tw-text-4xl md:tw-text-6xl tw-font-bold tw-text-green-900 tw-mb-6 tw-drop-shadow">
           Connect Directly to Buyers and Boost Your Farm’s Profits
         </h1>
         <p class="tw-text-xl tw-text-[#6b4f2c] tw-mb-8 tw-drop-shadow-sm">
@@ -254,17 +254,34 @@
     </footer>
 
     <!-- Learn How It Works Dialog -->
-    <div v-if="showDialog" class="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-bg-black tw-bg-opacity-40">
-      <div class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-p-8 tw-max-w-lg tw-w-full tw-relative">
-        <button @click="showDialog = false" class="tw-absolute tw-top-3 tw-right-3 tw-text-gray-400 hover:tw-text-gray-700 tw-text-xl" aria-label="Close">&times;</button>
+    <div
+      v-if="showDialog"
+      class="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-start tw-justify-center tw-pt-16 tw-bg-transparent"
+      style="backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);"
+    >
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-p-8 tw-max-w-lg tw-w-full tw-relative tw-mx-4">
+        <button
+          @click="showDialog = false"
+          class="tw-absolute tw-top-3 tw-right-3 tw-text-gray-400 hover:tw-text-gray-700 tw-text-xl"
+          aria-label="Close"
+        >&times;</button>
         <h2 class="tw-text-2xl tw-font-bold tw-text-green-700 tw-mb-4">How AgriBackup Works</h2>
         <ul class="tw-list-disc tw-list-inside tw-text-gray-700 tw-mb-4">
-          <li><span class="tw-font-semibold">For Farmers:</span> Sell directly, earn more, get AI-powered tips, access real-time prices.</li>
-          <li><span class="tw-font-semibold">For Buyers:</span> Source fresh produce, transparent pricing, direct transactions.</li>
-          <li><span class="tw-font-semibold">For Exporters:</span> Access certified produce, connect with trusted farmers, easy onboarding.</li>
+          <li><span class="tw-font-semibold">For Farmers:</span>
+            We connect you to buyers without the need of middlemen for you to make more profit from your farm
+          </li>
+          <li><span class="tw-font-semibold">For Buyers:</span>
+            Source fresh quality produce from nearby farmers at transparent prices with secure payment system
+          </li>
+          <li><span class="tw-font-semibold">For Exporters:</span>
+            Register your own farmers and be able to source quality produce in bulk from farmers, and get QR code of produce vendors
+          </li>
         </ul>
         <div class="tw-flex tw-justify-end">
-          <button @click="showDialog = false" class="tw-bg-green-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-semibold hover:tw-bg-green-700 tw-transition">Close</button>
+          <button
+            @click="showDialog = false"
+            class="tw-bg-green-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-semibold hover:tw-bg-green-700 tw-transition"
+          >Close</button>
         </div>
       </div>
     </div>
@@ -280,6 +297,18 @@ export default {
     };
   },
   methods: {
+    clearViewRole() {
+      // eslint-disable-next-line sonarjs/no-duplicate-string
+      this.$store.dispatch('auth/setViewRole', '');
+    },
+    handleLogin() {
+      this.clearViewRole();
+      this.$router.push({ name: 'SignIn' });
+    },
+    handleSignup() {
+      this.clearViewRole();
+      this.$router.push({ name: 'SignUp' });
+    },
     goHome() {
       this.$router.push({ name: 'Home' });
     },

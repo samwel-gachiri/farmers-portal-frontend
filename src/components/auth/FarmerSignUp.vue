@@ -3,7 +3,7 @@
         <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8">
             <!-- Personal Details Section -->
             <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
-              <h2 class="tw-text-lg tw-font-semibold">Personal Details</h2>
+              <h2 class="tw-text-lg tw-text-green-600 tw-font-semibold">Personal Details</h2>
                 <v-text-field
                     label="Full Name"
                     :outlined="false"
@@ -43,7 +43,7 @@
             </div>
             <!-- Farm Details Section -->
             <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
-                <h2 class="tw-text-lg tw-font-semibold">Farm Details</h2>
+                <h2 class="tw-text-lg tw-text-green-600 tw-font-semibold">Farm Details</h2>
                 <v-text-field
                     label="Farm Name"
                     dense
@@ -85,10 +85,10 @@
             </div>
             <!-- Password Section -->
             <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
-                <h2 class="tw-text-lg tw-font-semibold">Password</h2>
+                <h2 class="tw-text-lg tw-text-green-600 tw-font-semibold">Password</h2>
                 <v-text-field
                     label="Password"
-                    type="password"
+                    :type="showPassword ? 'text' : 'password'"
                     v-model="form.password"
                     :outlined="false"
                     :filled="true"
@@ -99,45 +99,44 @@
                     aria-label="Password"
                     autocomplete="new-password"
                     placeholder="e.g. ********"
+                    :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append="showPassword = !showPassword"
                 />
             </div>
         </div>
         <!-- Terms and Button Section -->
         <div class="tw-mt-8">
-            <v-checkbox
-                id="checkbox"
-                dense
-                v-model="form.terms"
-                :rules="[check()]"
-                :color="'primary'"
-                :hide-details="false"
-                aria-checked="form.terms"
-                aria-label="Agree to Terms and Conditions"
+          <h2 class="tw-text-lg tw-text-green-600 tw-font-semibold">Terms and Conditions</h2>
+          <p>I hereby Confirm that the information set is correct and accurate</p>
+          <v-checkbox
+              id="checkbox"
+              dense
+              v-model="form.terms"
+              :rules="[check()]"
+              :color="'primary'"
+              :hide-details="false"
+              aria-checked="form.terms"
+              aria-label="Agree to Terms and Conditions"
+              :label="`I agree to the Terms and Conditions`"
+          />
+          <a
+            class="tw-text-blue-600 hover:tw-text-blue-800 tw-underline tw-ml-2"
+            href="#"
+            @click.prevent="openTermsDialog"
+            aria-label="Open Terms and Conditions"
+          >
+            Terms and Conditions
+          </a>
+        </div>
+        <div class="tw-flex tw-justify-center tw-mt-4">
+            <v-btn
+                color="primary"
+                class="tw-py-3 tw-px-10 tw-rounded-xl tw-text-lg tw-font-semibold tw-shadow-lg"
+                @click="signUpUser"
+                aria-label="Sign Up"
             >
-                <template v-slot:label>
-                    <div class="tw-text-sm tw-text-gray-600">
-                    I agree to the
-                    <a
-                        class="tw-text-blue-600 hover:tw-text-blue-800 tw-underline"
-                        href="#"
-                        @click.prevent="openTermsDialog"
-                        aria-label="Open Terms and Conditions"
-                    >
-                        Terms and Conditions
-                    </a>
-                    </div>
-                </template>
-            </v-checkbox>
-            <div class="tw-flex tw-justify-end tw-mt-4">
-                <v-btn
-                    color="primary"
-                    class="tw-py-3 tw-px-10 tw-rounded-xl tw-text-lg tw-font-semibold tw-shadow-lg"
-                    @click="signUpUser"
-                    aria-label="Sign Up"
-                >
-                    Sign Up
-                </v-btn>
-            </div>
+                Sign Up
+            </v-btn>
         </div>
         <v-dialog v-model="farmMapDialog" aria-modal="true" role="dialog">
             <FarmMap
@@ -184,6 +183,7 @@ export default {
       },
       userRole: 'farmer',
       farmMapDialog: false,
+      showPassword: false,
       ...validations,
     };
   },
@@ -222,6 +222,7 @@ export default {
         const saveResponse = await axios.post('/api/auth/register/farmer', userPayload);
         if (saveResponse.data.success === true) {
           this.user = { ...this.user, ...saveResponse.data.data };
+          this.$router.push({ name: 'SignIn' });
           this.$toast.success(`${this.userRole} profile set up`, 'success');
         } else {
           this.$toast.error(saveResponse.data.msg, 'Error');
