@@ -38,7 +38,12 @@
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
-            <v-card class="pa-6" elevation="12" rounded="xl">
+            <v-card
+              class="pa-6"
+              elevation="12"
+              rounded="xl"
+              >
+              <!-- :class="{ 'expensive-exporter-card': isExporter }" -->
               <v-card-title class="justify-center">
                 <v-avatar size="64">
                   <v-img src="@/assets/images/happy-farmer.jpg" alt="Happy Farmer" />
@@ -80,15 +85,18 @@
                 </div>
                 <v-text-field
                   v-model="password"
+                  :type="showPassword ? 'text' : 'password'"
                   label="Password"
-                  type="password"
                   prepend-inner-icon="mdi-lock-outline"
+                  :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                   outlined
                   dense
                   required
                   autocomplete="current-password"
                   name="password"
                   class="mt-2"
+                  @keydown.enter="signIn"
+                  @click:append-inner="showPassword = !showPassword"
                 />
                 <v-btn
                   color="primary"
@@ -100,6 +108,32 @@
                 >
                   Sign In
                 </v-btn>
+                <!-- Error message display -->
+                <div v-if="errorMessage" class="tw-mt-4 tw-text-red-600 tw-text-center tw-font-semibold">
+                  {{ errorMessage }}
+                  <div v-if="showCreateAccountBtn" class="tw-mt-2">
+                    <v-btn
+                      color="success"
+                      rounded
+                      block
+                      @click="goToSignUp"
+                      class="tw-bg-green-600 tw-text-white tw-font-bold tw-shadow-lg"
+                    >
+                      Create Account
+                    </v-btn>
+                  </div>
+                  <div v-else-if="showCreateRoleBtn" class="tw-mt-2">
+                    <v-btn
+                      color="warning"
+                      rounded
+                      block
+                      @click="goToSignUp"
+                      class="tw-bg-yellow-500 tw-text-black tw-font-bold tw-shadow-lg"
+                    >
+                      Create {{ roleName }} Role
+                    </v-btn>
+                  </div>
+                </div>
                 <div class="mt-3 text-center">
                   <span class="text-caption">Forgot password?</span>
                   <v-btn
@@ -181,7 +215,17 @@ export default {
       phoneNumber: '',
       fullPhoneNumber: '',
       password: '',
+      showPassword: false, // password visibility toggle
+      errorMessage: '',
+      showCreateAccountBtn: false,
+      showCreateRoleBtn: false,
+      roleName: '', // for dynamic role button
     };
+  },
+  computed: {
+    isExporter() {
+      return getCurrentUserRole() === 'exporter';
+    },
   },
   mounted() {
     // If role is empty, redirect to Home with redirect to SignIn
@@ -206,6 +250,10 @@ export default {
       this.emailOrPhone = this.fullPhoneNumber;
     },
     async signIn() {
+      this.errorMessage = '';
+      this.showCreateAccountBtn = false;
+      this.showCreateRoleBtn = false;
+      this.roleName = '';
       try {
         const payload = {
           emailOrPhone: this.emailOrPhone,
@@ -213,19 +261,43 @@ export default {
           roleType: getCurrentUserRole().toUpperCase(),
         };
         const response = await axios.post('/api/auth/login', payload);
-        const data = response.data.data;
-        await this.$store.dispatch('auth/signIn', { data });
-        // Redirect to intended route or dashboard
-        const redirect = this.$route.query.redirect;
-        if (redirect) {
-          this.$router.push(redirect);
+        if (response.data.success) {
+          const data = response.data.data;
+          await this.$store.dispatch('auth/signIn', { data });
+          // Redirect to intended route or dashboard
+          const redirect = this.$route.query.redirect;
+          if (redirect) {
+            this.$router.push(redirect);
+          } else {
+            this.$router.push({ name: 'Dashboard' });
+          }
         } else {
-          this.$router.push({ name: 'Dashboard' });
+          this.handleSignInError(response.data.msg || 'Login failed');
         }
       } catch (error) {
-        // TODO: handle error (e.g., show error toast)
-        this.$toast.error(`Login failed: ${error.response?.data?.message || error.message}`);
+        const msg = error.response?.data?.message || error.message;
+        this.handleSignInError(msg);
       }
+    },
+    handleSignInError(msg) {
+      this.errorMessage = msg;
+      // Check for "user not found"
+      if (/user not found/i.test(msg)) {
+        this.showCreateAccountBtn = true;
+      }
+      // Check for "User does not have {role} role" or "User does not have role: {ROLE}"
+      let roleMatch = msg.match(/User does not have ([\w\s]+) role/i);
+      if (!roleMatch) {
+        roleMatch = msg.match(/User does not have role:\s*([\w\s]+)/i);
+      }
+      if (roleMatch) {
+        this.showCreateRoleBtn = true;
+        // Format role name for display (capitalize, remove underscores)
+        this.roleName = roleMatch[1].replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+      }
+    },
+    goToSignUp() {
+      this.$router.push({ name: 'SignUp' });
     },
   },
 };
@@ -275,5 +347,23 @@ export default {
   top: 0;
   z-index: 0;
   display: block;
+}
+
+/* Expensive styling for exporter role */
+.expensive-exporter-card {
+  background: linear-gradient(135deg, #f7e9a0 0%, #e3c888 100%);
+  border: 2px solid #bfa14a;
+  box-shadow: 0 8px 32px 0 rgba(191, 161, 74, 0.25);
+  color: #7c6a2c;
+  position: relative;
+}
+.expensive-exporter-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 3px double #d4af37;
+  opacity: 0.5;
 }
 </style>

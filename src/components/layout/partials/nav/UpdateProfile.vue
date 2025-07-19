@@ -27,25 +27,18 @@
             <v-tab class="tw-p-1" href="#tab-1">
               Profile
             </v-tab>
-
-            <v-tab v-if="bankEnabled" href="#tab-2">
-              Bank Details
-            </v-tab>
-            <v-tab href="#tab-3">
+            <!-- <v-tab href="#tab-3">
               Change Password
-            </v-tab>
+            </v-tab> -->
           </v-tabs>
 
           <v-tabs-items v-model="tab">
             <v-tab-item value="tab-1">
               <user-form />
             </v-tab-item>
-            <v-tab-item value="tab-2">
-              <bank-form v-if="dialog" />
-            </v-tab-item>
-            <v-tab-item value="tab-3">
+            <!-- <v-tab-item value="tab-2">
               <password-form />
-            </v-tab-item>
+            </v-tab-item> -->
           </v-tabs-items>
         </div>
         <v-card-actions>
@@ -67,19 +60,17 @@
 import { mapState } from 'vuex';
 import AvatarIcon from 'vue-avatar';
 import UserForm from '@/components/layout/partials/nav/UserForm.vue';
-import BankForm from '@/components/layout/partials/nav/BankForm.vue';
-import PasswordForm from '@/components/layout/partials/nav/PasswordForm.vue';
+// import PasswordForm from '@/components/layout/partials/nav/PasswordForm.vue';
 
 export default {
   name: 'UpdateProfile',
   components: {
-    PasswordForm, BankForm, UserForm, AvatarIcon,
+    UserForm, AvatarIcon,
   },
   data() {
     return {
       dialog: false,
       tab: null,
-      bankEnabled: false,
     };
   },
   computed: {

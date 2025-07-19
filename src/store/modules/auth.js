@@ -73,9 +73,12 @@ const mutations = {
     state.user = roleSpecificData;
     state.token = token;
     state.role = role;
-
+    // console.log('COOKIE USER', USER);
+    // console.log(roleSpecificData);
     // Persist to cookies
-    cookie.set(USER, roleSpecificData);
+    cookie.set(USER, JSON.stringify(roleSpecificData));
+    // console.log('cookie user');
+    // console.log(cookie.get(USER));
     cookie.set(ACCESS_TOKEN, token);
     cookie.set(ROLE, role);
   },
@@ -111,7 +114,6 @@ const actions = {
     try {
       // Extract token and roleSpecificData from the response
       const { token, roleSpecificData } = data;
-
       // Optionally decode the token to get the role (if not using roleSpecificData)
       const decodedToken = jwtDecode(token);
       const role = decodedToken.role?.toLowerCase() || 'farmer'; // Fallback to 'FARMER' if role not found

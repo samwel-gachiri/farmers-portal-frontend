@@ -19,7 +19,7 @@ export default {
     // add farmer to zone method here
     async addFarmerToZone() {
       try {
-        await axios.post(`/farmers-service/exporter/zones/${zoneId}/farmers/${this.user.id}`);
+        await axios.post(`/exporters-service/exporter/zones/${zoneId}/farmers/${this.user.id}`);
         this.$toast.success('Farmer added to zone successfully');
       } catch (error) {
         this.$toast.error(`Failed to add farmer to zone: ${error.message}`);
