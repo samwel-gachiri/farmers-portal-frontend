@@ -23,19 +23,13 @@
 
         <div class="tw-space-y-3">
           <button
-              @click="selectRole('farmer')"
-              class="tw-w-full tw-py-3 tw-px-4 tw-bg-green-500 tw-text-white tw-rounded-lg tw-font-medium tw-hover:tw-bg-green-600 tw-transition-colors tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-green-500 tw-focus:tw-ring-offset-2"
-              :class="{ 'tw-ring-2 tw-ring-green-500': role === 'farmer' }"
+            v-for="roleOption in decodedRoles"
+            :key="roleOption"
+            @click="selectRole(roleOption)"
+            class="tw-w-full tw-py-3 tw-px-4 tw-bg-blue-500 tw-text-white tw-rounded-lg tw-font-medium tw-hover:tw-bg-blue-600 tw-transition-colors tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-blue-500 tw-focus:tw-ring-offset-2"
+            :class="{ 'tw-ring-2 tw-ring-blue-500': role === roleOption }"
           >
-            🌾 Farmer
-          </button>
-
-          <button
-              @click="selectRole('buyer')"
-              class="tw-w-full tw-py-3 tw-px-4 tw-bg-blue-500 tw-text-white tw-rounded-lg tw-font-medium tw-hover:tw-bg-blue-600 tw-transition-colors tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-blue-500 tw-focus:tw-ring-offset-2"
-              :class="{ 'tw-ring-2 tw-ring-blue-500': role === 'buyer' }"
-          >
-            🛒 Buyer
+            {{ getRoleEmoji(roleOption) }} {{ formatRole(roleOption) }}
           </button>
         </div>
 
@@ -52,6 +46,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
+import jwtDecode from 'jwt-decode';
 
 export default {
   data() {
@@ -62,22 +57,49 @@ export default {
   computed: {
     ...mapState({
       role: (state) => state.auth.role,
+      token: (state) => state.auth.token,
     }),
+    decodedRoles() {
+      // Decode token and extract user roles array
+      if (!this.token) return [];
+      try {
+        const decoded = jwtDecode(this.token);
+        // Prefer user.roles, fallback to [decoded.role]
+        if (decoded.user && Array.isArray(decoded.user.roles)) {
+          return decoded.user.roles.map((r) => r.replace(/^ROLE_/, '').toLowerCase());
+        }
+        if (decoded.role) {
+          return [decoded.role.toLowerCase()];
+        }
+        return [];
+      } catch (e) {
+        return [];
+      }
+    },
   },
   methods: {
     ...mapMutations('auth', ['setUserRole']),
-
     showRoleSelector() {
       this.isRoleSelectorVisible = true;
     },
-
     hideRoleSelector() {
       this.isRoleSelectorVisible = false;
     },
-
     selectRole(selectedRole) {
       this.setUserRole(selectedRole);
       this.hideRoleSelector();
+    },
+    formatRole(role) {
+      // Capitalize and prettify role string
+      return role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, ' ');
+    },
+    getRoleEmoji(role) {
+      // Simple emoji mapping
+      if (role.includes('farmer')) return '🌾';
+      if (role.includes('buyer')) return '🛒';
+      if (role.includes('exporter')) return '🚚';
+      if (role.includes('institution')) return '🏢';
+      return '👤';
     },
   },
 };
