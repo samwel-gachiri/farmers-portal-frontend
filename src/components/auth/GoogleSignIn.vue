@@ -2,7 +2,7 @@
   <div>
     <div id="google-signin-button" class="tw-border"></div>
     <div v-if="user">
-      <h2>Welcome, {{ user.name }}!</h2>
+      <h2>Welcome, {{ user.userProfile.fullName }}!</h2>
       <img :src="user.picture" alt="Profile Picture" />
       <p>Email: {{ user.email }}</p>
       <button @click="signOut">Sign Out</button>
