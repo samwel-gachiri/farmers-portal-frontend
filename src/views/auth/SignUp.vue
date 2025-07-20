@@ -8,7 +8,7 @@
         <h2 class="tw-text-2xl tw-font-semibold">Sign up</h2>
       </CardTitle>
       <!-- Render FarmerSignUp if role is farmer -->
-      <FarmerSignUp v-if="getCurrentUserRole === 'farmer'" />
+      <FarmerSignUp v-if="getCurrentUserRole === 'farmer'" @farmer-registered="handleFarmerRegistered" />
       <!-- Render BuyerSignUp if role is buyer -->
       <BuyerSignUp v-if="getCurrentUserRole === 'buyer'" />
       <!-- Render ExporterSignUp if role is exporter -->
@@ -84,6 +84,12 @@ export default {
   },
   computed: {
     getCurrentUserRole,
+  },
+  methods: {
+    // eslint-disable-next-line no-unused-vars
+    handleFarmerRegistered(farmer) {
+      this.$router.push({ name: 'SignIn' });
+    },
   },
 };
 </script>
