@@ -132,7 +132,7 @@ export default {
   },
   mounted() {
     this.role = getCurrentUserRole();
-    this.fullname = this.user.name;
+    this.fullname = this.user.userProfile.fullName;
     this.email = this.user.email;
     this.phone_number = this.user.phone_number;
     axios.get(`${getCurrentUserRole()}s-service/location/${this.role}?${this.role}Id=${getCurrentUserId()}`).then((response) => {

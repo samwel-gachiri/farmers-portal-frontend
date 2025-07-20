@@ -42,6 +42,80 @@
               label="Farming type"
               :items="farmingTypes"
           ></v-combobox>
+        </div>
+        <div class="tw-flex tw-my-5 tw-flex-col tw-gap-4">
+          <!-- <v-textarea
+              v-model="newProduce.desc"
+              dense
+              rounded
+              class="data-input"
+              label="Input produce description"
+              :auto-grow="true"
+              rows="2"
+          ></v-textarea> -->
+          <div class="tw-flex tw-justify-center tw-items-center">
+            <v-btn
+              small
+              rounded
+              color="success"
+              class="tw-mb-2 tw-mt-[-8px] tw-w-fit"
+              :loading="descLoading"
+              @click="generateProduceDescription"
+              :disabled="!selectedProduce"
+            >
+              <v-icon left size="18px">mdi-robot</v-icon>
+              Generate Description
+            </v-btn>
+          </div>
+          <div v-if="descError" class="tw-text-red-600 tw-text-xs tw-mt-1">{{ descError }}</div>
+          <!-- Markdown preview below the textarea -->
+          <div
+            v-if="newProduce.desc"
+            ref="descPreview"
+            class="tw-bg-white tw-border tw-border-gray-200 tw-rounded tw-p-3 tw-mb-2 tw-text-sm"
+            v-html="descPreview"
+            aria-live="polite"
+          ></div>
+          <!-- Edit Description Button and Editable Description -->
+          <div v-if="newProduce.desc">
+            <v-btn
+              small
+              color="primary"
+              class="tw-mb-2"
+              @click="editingDesc = true"
+              v-if="!editingDesc"
+            >
+              <v-icon left size="18px">mdi-pencil</v-icon>
+              Edit Description
+            </v-btn>
+            <div v-if="editingDesc" class="tw-mt-2">
+              <v-textarea
+                v-model="editableDesc"
+                label="Edit Description"
+                auto-grow
+                rows="3"
+                dense
+                outlined
+                class="data-input"
+              ></v-textarea>
+              <div class="tw-flex tw-gap-2 tw-mt-2">
+                <v-btn
+                  small
+                  color="success"
+                  @click="saveEditedDesc"
+                >
+                  Save
+                </v-btn>
+                <v-btn
+                  small
+                  color="error"
+                  @click="cancelEditedDesc"
+                >
+                  Cancel
+                </v-btn>
+              </div>
+            </div>
+          </div>
           <!-- New input for previous yield amount -->
           <v-text-field
             v-model="newProduce.previousYield"
@@ -51,39 +125,11 @@
             class="data-input"
             :rules="[value => value === undefined || value === '' || value >= 0 || 'Yield must be positive']"
             prepend-inner-icon="mdi-scale"
+            append-text="kg"
+            :append-outer-icon="newProduce.previousYield ? 'mdi-check' : ''"
             dense
             clearable
           ></v-text-field>
-        </div>
-        <div class="tw-flex tw-my-5 tw-flex-col tw-gap-4">
-          <v-textarea
-              v-model="newProduce.desc"
-              dense
-              rounded
-              class="data-input"
-              label="Input produce description"
-              :auto-grow="true"
-              rows="2"
-          ></v-textarea>
-          <v-btn
-            small
-            color="success"
-            class="tw-mb-2 tw-mt-[-8px] tw-w-fit"
-            :loading="descLoading"
-            @click="generateProduceDescription"
-            :disabled="!selectedProduce"
-          >
-            <v-icon left size="18px">mdi-robot</v-icon>
-            Generate Description
-          </v-btn>
-          <div v-if="descError" class="tw-text-red-600 tw-text-xs tw-mt-1">{{ descError }}</div>
-          <!-- Markdown preview below the textarea -->
-          <div
-            v-if="newProduce.desc"
-            class="tw-bg-white tw-border tw-border-gray-200 tw-rounded tw-p-3 tw-mb-2 tw-text-sm"
-            v-html="descPreview"
-            aria-live="polite"
-          ></div>
           <h6 class="tw-font-bold">{{newProduce.images.length > 1 ? 'Images': 'Image'}} Preview</h6>
           <!-- Camera PhotoCapture integration -->
           <div class="tw-mb-2">
@@ -165,6 +211,8 @@ export default {
       }),
       geminiApiKey: process.env.VUE_APP_GOOGLE_API_KEY,
       gemini: null,
+      editingDesc: false,
+      editableDesc: '',
     };
   },
   props: {
@@ -291,6 +339,14 @@ export default {
         this.loading = false;
       }
     },
+    saveEditedDesc() {
+      this.newProduce.desc = this.editableDesc;
+      this.editingDesc = false;
+    },
+    cancelEditedDesc() {
+      this.editableDesc = this.newProduce.desc;
+      this.editingDesc = false;
+    },
     async generateProduceDescription() {
       this.descError = '';
       if (!this.selectedProduce) {
@@ -307,6 +363,7 @@ export default {
         const text = response.text();
         // Store plain text (Markdown source) in textarea
         this.newProduce.desc = text;
+        this.editableDesc = text; // sync editable with generated
       } catch (err) {
         this.descError = 'Failed to generate description. Try again.';
       } finally {
@@ -315,6 +372,9 @@ export default {
     },
     openDialog() {
       this.dialog = true;
+      // Reset editable description state when dialog opens
+      this.editingDesc = false;
+      this.editableDesc = this.newProduce.desc;
     },
     closeDialog() {
       this.dialog = false;
@@ -323,6 +383,13 @@ export default {
   },
   components: {
     PhotoCapture,
+  },
+  watch: {
+    // Watch for changes in selectedProduce to update newProduce.name
+    selectedProduce(newValue) {
+      this.newProduce.name = newValue || '';
+      this.generateProduceDescription();
+    },
   },
 };
 </script>

@@ -15,7 +15,7 @@
 <!--      <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>-->
 <!--      <v-row class="tw-mb-3">-->
 <!--        <v-col cols="12">-->
-<!--&lt;!&ndash;          <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>&ndash;&gt;-->
+<!--&lt;!&ndash;          <p class="tw-text-gray-600">Welcome back, {{ user.userProfile.fullName }}! Here's your overview.</p>&ndash;&gt;-->
 <!--        </v-col>-->
 <!--      </v-row>-->
 

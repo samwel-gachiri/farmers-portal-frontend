@@ -15,7 +15,7 @@ import { auth } from '@/firebase.js';
 import jwtDecode from 'jwt-decode';
 
 const data = {
-  user: cookie.get(USER) || null,
+  user: JSON.parse(localStorage.getItem(USER)) || null,
   token: cookie.get(ACCESS_TOKEN) || '',
   role: cookie.get(ROLE) || '',
   authenticationStatus: null,
@@ -73,12 +73,9 @@ const mutations = {
     state.user = roleSpecificData;
     state.token = token;
     state.role = role;
-    // console.log('COOKIE USER', USER);
-    // console.log(roleSpecificData);
-    // Persist to cookies
-    cookie.set(USER, JSON.stringify(roleSpecificData));
-    // console.log('cookie user');
-    // console.log(cookie.get(USER));
+
+    // Persist to cookies with error handlin
+    localStorage.setItem(USER, JSON.stringify(roleSpecificData));
     cookie.set(ACCESS_TOKEN, token);
     cookie.set(ROLE, role);
   },
@@ -91,7 +88,7 @@ const mutations = {
     state.userConfirmed = status;
   },
   clearAuthentication(state) {
-    cookie.remove(USER);
+    localStorage.removeItem(USER);
     cookie.remove(ACCESS_TOKEN);
     cookie.remove(ROLE);
     state.token = '';
@@ -188,7 +185,7 @@ const actions = {
     }
   },
   passwordChange: async (context) => {
-    // logger.debug('password change for {}', context.state.user.name);
+    // logger.debug('password change for {}', context.state.user.userProfile.fullName);
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
       // const user = await Auth.currentAuthenticatedUser();
@@ -203,7 +200,7 @@ const actions = {
     }
   },
   updateUser: async (context) => {
-    // logger.debug('update user >> {}', context.state.user.name);
+    // logger.debug('update user >> {}', context.state.user.userProfile.fullName);
     context.commit('auth/clearAuthenticationStatus', null, { root: true });
     try {
       // const user1 = await Auth.currentAuthenticatedUser();

@@ -5,7 +5,8 @@
       <add-farmer-produce
           :farmer-produces="farmer.farmerProduces"
           ref="addFarmerProduce"
-          @close="this.addProduceDialog = false"
+          v-model="addProduceDialog"
+          @close="addProduceDialog = false"
       ></add-farmer-produce>
 
       <v-dialog v-model="listingDialog" max-width="500px">
@@ -50,46 +51,36 @@
 
         <!-- Responsive Produces Display -->
         <div v-if="!isMobile">
-          <!-- Table for desktop -->
+          <!-- Table for desktop/tablet -->
           <v-data-table
             :headers="produceTableHeaders"
             :items="farmer.farmerProduces"
             :loading="loading"
             class="elevation-1"
           >
-            <!--            :server-items-length="totalElements"-->
-            <!-- Custom Row Template -->
-
-<!--          <template v-slot:item.actions="{ item }">-->
-<!--                :src="item.imageUrls.length > 0 ? item.imageUrls[0]: ''"-->
-          <template v-slot:item.images="{ item }">
-            <v-img
+            <template v-slot:item.images="{ item }">
+              <v-img
                 v-for="(imageUrl, i) in item.imageUrls"
                 :key="i"
                 :src="imageUrl"
                 width="100px"
                 height="100px"
-            />
-          </template>
-          <template v-slot:item.edit="{ item }">
-            <v-btn small @click="()=>{editProduceDialog = true; selectedFarmerProduce = item}">
-              <v-icon color="mdi-edit">mdi-pencil</v-icon>
-              Edit
-            </v-btn>
-          </template>
-          <template v-slot:item.delete="{  }">
-            <v-btn small @click="listingDialog = true">
-              <v-icon color="red">mdi-trash-can</v-icon>
-              Delete
-            </v-btn>
-          </template>
-          <template v-slot:item.actions="{  }">
-            <v-btn small color="secondary" @click="listingDialog = true">sell</v-btn>
-          </template>
-          <template v-slot:item.description="{ item }">
-            <div v-html="renderMarkdown(item.description)"></div>
-          </template>
-        </v-data-table>
+              />
+            </template>
+            <template v-slot:item.description="{ item }">
+              <div v-html="renderMarkdown(item.description)"></div>
+            </template>
+            // eslint-disable-next-line vue/no-unused-vars
+            <template v-slot:item.actions="">
+              <v-btn small color="secondary" @click="listingDialog = true">Sell</v-btn>
+            </template>
+            <template v-slot:item.edit="{ item }">
+              <v-btn small @click="()=>{editProduceDialog = true; selectedFarmerProduce = item}">
+                <v-icon color="mdi-edit">mdi-pencil</v-icon>
+                Edit
+              </v-btn>
+            </template>
+          </v-data-table>
         </div>
         <div v-else>
           <!-- Cards for mobile -->
@@ -111,19 +102,12 @@
                 />
                 <div>
                   <div class="tw-font-bold tw-text-lg">{{ item.farmProduce.name }}</div>
-                  <div class="tw-text-xs tw-text-gray-500">{{ item.farmingType }}</div>
                 </div>
               </div>
               <div class="tw-mt-2 tw-text-gray-700 tw-text-sm" v-html="renderMarkdown(item.description)"></div>
-              <div class="tw-flex tw-items-center tw-gap-2 tw-mt-1">
-                <span class="tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-bg-green-100 tw-text-green-700">{{ item.status }}</span>
-              </div>
               <div class="tw-flex tw-gap-2 tw-mt-3">
                 <v-btn small color="primary" @click="()=>{editProduceDialog = true; selectedFarmerProduce = item}" aria-label="Edit">
                   <v-icon left>mdi-pencil</v-icon>Edit
-                </v-btn>
-                <v-btn small color="error" @click="listingDialog = true" aria-label="Delete">
-                  <v-icon left>mdi-trash-can</v-icon>Delete
                 </v-btn>
                 <v-btn small color="secondary" @click="listingDialog = true" aria-label="Sell">
                   Sell
@@ -184,7 +168,6 @@ import axios from 'axios';
 import CreateListing from '@/components/listing/CreateListing.vue';
 import AddFarmerProduce from '@/components/produce/AddFarmersProduce.vue';
 import Default from '@/components/layout/Default.vue';
-import Auth from '@aws-amplify/auth';
 import EditProduceForm from '@/components/produce/EditProduceForm.vue';
 import CardTitle from '@/components/shared/CardTitle.vue';
 import MarkdownIt from 'markdown-it';
@@ -245,8 +228,8 @@ export default {
   mounted() {
     this.loading = true;
     this.fetchFarmerDetails();
-    this.handleResize();
-    window.addEventListener('resize', this.handleResize);
+    // this.handleResize();
+    // window.addEventListener('resize', this.handleResize);
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
@@ -258,40 +241,14 @@ export default {
     fetchFarmerDetails() {
       axios.get(`/farmers-service/farmer?farmerId=${this.$route.params.farmerId}`)
         .then(async (response) => {
-          if (response.data.data == null) {
-            await this.$store.dispatch('auth/signOut').then(() => {
-              // localStorage.removeItem(NOTIFICATIONS);
-              if (caches) {
-                caches.keys().then((arr) => {
-                  arr.forEach((key) => {
-                    caches.delete(key);
-                  });
-                });
-              }
-              this.$store.commit('setClient', []);
-              window.location.href = '/';
-              this.$router.push({ name: 'Landing' });
-            });
-            const user = await Auth.currentAuthenticatedUser();
-            if (user !== null && user.attributes.sub === this.$route.params.farmerId) {
-              this.farmer = {
-                id: user.attributes.sub,
-                name: user.attributes.name,
-                email: '',
-                phoneNumber: user.attributes.phone_number,
-                createdAt: '',
-                farmerProduces: [],
-              };
-              axios.post('/farmers-service/farmer', this.farmer).then((res) => {
-                if (res.data.success === true) {
-                  this.$toast.success('User added to database');
-                }
-              });
-            }
-            this.$toast.error('User not found');
-            this.$router.go(-1);
-          }
           this.farmer = { ...this.farmer, ...response.data.data };
+          // Show add produce dialog if user is owner and has no produces
+          if (
+            this.$route.params.farmerId === getCurrentUserId()
+            && (!this.farmer.farmerProduces || this.farmer.farmerProduces.length === 0)
+          ) {
+            this.addProduceDialog = true;
+          }
         })
         .catch((e) => {
           this.$toast.error(e.message);
@@ -350,6 +307,15 @@ export default {
 };
 </script>
 
+<style scoped>
+.tw-bg-gradient-to-r {
+  background: linear-gradient(to right, #e0f7fa, #e8f5e9);
+}
+/* Add subtle card hover for mobile cards */
+.tw-card-hover:hover {
+  box-shadow: 0 4px 14px 0 rgba(0,0,0,0.09);
+}
+</style>
 <style scoped>
 .tw-bg-gradient-to-r {
   background: linear-gradient(to right, #e0f7fa, #e8f5e9);

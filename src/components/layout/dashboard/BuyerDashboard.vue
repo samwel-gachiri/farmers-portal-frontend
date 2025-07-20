@@ -15,7 +15,7 @@
     <v-row class="tw-mb-3">
       <v-col cols="12">
         <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Buyer Dashboard</h1>
-        <p class="tw-text-gray-600">Welcome back, {{ user.name }}! Here's your overview.</p>
+        <p class="tw-text-gray-600">Welcome back, {{ user.userProfile.fullName }}! Here's your overview.</p>
       </v-col>
     </v-row>
 

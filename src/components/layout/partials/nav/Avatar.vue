@@ -11,7 +11,7 @@
           class="tw-flex tw-px-2 tw-items-center tw-cursor-pointer"
           v-on="on"
       >
-        <div :class="['tw-px-2 tw-hidden md:tw-block', $route.name === 'Landing' ? 'tw-text-white' : 'c-gray-text']">{{ user.name }} <v-icon :color="$route.name === 'Landing' ? '#fff' : 'gray'">mdi-chevron-down</v-icon></div>
+        <div :class="['tw-px-2 tw-hidden md:tw-block', $route.name === 'Landing' ? 'tw-text-white' : 'c-gray-text']">{{ user.userProfile.fullName }} <v-icon :color="$route.name === 'Landing' ? '#fff' : 'gray'">mdi-chevron-down</v-icon></div>
         <avatar-icon :username="user.userProfile.fullName" :size="32" :color="$route.name === 'Landing' ? '#4aac11' : 'white'" :backgroundColor="$route.name === 'Landing' ? 'white' : '#2dac11'" />
         <div class="tw-absolute tw-block md:tw-hidden tw-mt-6 tw-ml-6">
           <v-icon :color="$route.name === 'Landing' ? '#fff' : 'gray'">mdi-chevron-down</v-icon>
