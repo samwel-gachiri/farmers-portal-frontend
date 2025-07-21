@@ -298,6 +298,14 @@
             </div>
           </div>
         </div>
+        <!-- AssistedFarmerRegistration Dialog -->
+        <AssistedFarmerRegistration
+          v-model="showAFRDialog"
+          :key="selectedZoneFarmersZone?.id"
+          :zoneId="selectedZoneFarmersZone?.id"
+          :zone="selectedZoneFarmersZone"
+          @closed="fetchZoneFarmers"
+        />
       </div>
 
       <!-- Success/Error Snackbar -->
@@ -322,11 +330,14 @@
 import axios from 'axios';
 import Default from '@/components/layout/Default.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
+// Add import:
+import AssistedFarmerRegistration from '@/components/AssistedFarmerRegistration.vue';
 
 export default {
   name: 'OperatingZonesManagement',
   components: {
     Default,
+    AssistedFarmerRegistration, // register component
   },
   data() {
     return {
@@ -394,6 +405,9 @@ export default {
         message: '',
         color: 'success',
       },
+
+      // dialog state
+      showAFRDialog: false,
     };
   },
 
@@ -823,17 +837,8 @@ export default {
         this.showSnackbar('Please select a zone', 'warning');
         return;
       }
-      // Extract only the path portion
-      const currentPath = window.location.pathname + window.location.search + window.location.hash;
-      await this.$router.push({
-        name: 'SignIn',
-        query: {
-          mode: 'exporter',
-          zoneId: this.selectedZoneFarmersZone.id,
-          r: btoa(currentPath), // Encode the current path
-        },
-      });
-      this.showSnackbar('Redirecting to add farmers', 'info');
+      // Open AssistedFarmerRegistration dialog
+      this.showAFRDialog = true;
     },
     displayFarmersOnMap() {
       if (!this.farmersMapView) return;

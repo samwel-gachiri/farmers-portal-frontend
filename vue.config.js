@@ -52,4 +52,5 @@ module.exports = {
       ],
     },
   },
+  // No changes needed for offline page caching if swSrc is set and /offline is part of your build
 };
