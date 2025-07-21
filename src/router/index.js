@@ -6,6 +6,7 @@ import VueMeta from 'vue-meta';
 import Landing from '@/views/Landing.vue';
 import Connection from '@/views/errors/Connection.vue';
 import Home from '@/views/Home.vue';
+import Offline from '@/views/Offline.vue';
 
 Vue.use(VueMeta);
 
@@ -242,6 +243,12 @@ const routes = [
     path: '/no-internet',
     name: 'NoInternet',
     component: Connection,
+  },
+  {
+    path: '/offline',
+    name: 'Offline',
+    component: Offline,
+    meta: { public: true },
   },
   {
     path: '*',

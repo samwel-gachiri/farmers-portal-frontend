@@ -86,11 +86,14 @@ workbox.routing.registerRoute(
 
 // This "catch" handler is triggered when any of the other routes fail to
 // generate a response.
-// eslint-disable-next-line no-unused-vars, sonarjs/no-duplicate-string
-workbox.routing.setCatchHandler(({ event }) => caches.match('/no-internet'));
+// eslint-disable-next-line no-unused-vars
+workbox.routing.setCatchHandler(({ event }) => caches.match('/offline'));
 
+// Precache manifest, include offline page
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
-workbox.precaching.precacheAndRoute(self.__precacheManifest, '/no-internet', {});
+self.__precacheManifest.push({ url: '/offline', revision: '1' }); // ensure offline page is cached
+
+workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 workbox.routing.registerNavigationRoute('/index.html');
 
 self.addEventListener('message', (msg) => {
