@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === 'production') {
         banner.style.cursor = 'pointer';
         banner.style.zIndex = '9999';
         banner.onclick = () => window.location.reload();
-        document.body.appendChild(banner);
+        // document.body.appendChild(banner);
       }
     },
     offline() {

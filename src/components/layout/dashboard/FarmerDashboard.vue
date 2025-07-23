@@ -1,191 +1,262 @@
 <template>
-  <v-container class="tw-bg-gray-50">
-      <v-dialog v-model="listingDialog" max-width="500px">
-        <create-listing/>
-        <v-btn
-            class="tw-bg-white"
-            color="error"
-            text
-            @click="listingDialog = false"
-        >
-          Close
-        </v-btn>
-      </v-dialog>
-      <!-- Dashboard Header -->
-<!--      <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Farmer Dashboard</h1>-->
-<!--      <v-row class="tw-mb-3">-->
-<!--        <v-col cols="12">-->
-<!--&lt;!&ndash;          <p class="tw-text-gray-600">Welcome back, {{ user.userProfile.fullName }}! Here's your overview.</p>&ndash;&gt;-->
-<!--        </v-col>-->
-<!--      </v-row>-->
-
-      <!-- Stats Cards -->
-      <div v-if="liveCount.activeListings > 0" class="tw-flex tw-w-full tw-flex-row tw-gap-5 tw-mb-4">
-          <v-card color="transparent" rounded="lg" class="tw-border-2 tw-w-full tw-pl-4 tw-pt-2 tw-shadow-md hover:shadow-lg transition-shadow">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Sales Made</h2>
-            <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>
-<!--            <p class="tw-text-gray-500">Active listings</p>-->
-          </v-card>
-          <v-card color="transparent" rounded="lg" class="tw-border-2 tw-w-full tw-pl-4 tw-pt-2 tw-shadow-md hover:shadow-lg transition-shadow">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800"><v-icon>mdi-account-group</v-icon> Interactions</h2>
-            <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>
-<!--            <p class="tw-text-gray-500">This month</p>-->
-          </v-card>
-          <v-card color="transparent" rounded="lg" class="tw-border-2 tw-w-full tw-pl-4 tw-pt-2 tw-shadow-md hover:shadow-lg transition-shadow">
-            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800"><v-icon>mdi-cash-multiple</v-icon> Revenue</h2>
-            <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{liveCount.revenue30Days.currency + liveCount.revenue30Days.price.toLocaleString()}}</p>
-<!--            <p class="tw-text-gray-500">Last 30 days</p>-->
-          </v-card>
+  <div class="tw-min-h-screen tw-bg-gradient-to-br tw-from-gray-50 tw-to-green-50 tw-p-6 tw-pb-16">
+    <!-- Stats Overview -->
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-6 tw-mb-8">
+      <!-- Active Listings -->
+      <div class="tw-bg-green-50 tw-border tw-border-green-100 tw-rounded-xl tw-p-5 tw-shadow-sm hover:tw-shadow-md tw-transition">
+        <div class="tw-flex tw-justify-between tw-items-center">
+          <div>
+            <p class="tw-text-green-700 tw-text-xs tw-font-medium">Active Listings</p>
+            <h3 class="tw-text-2xl tw-font-bold tw-mt-1 tw-text-green-900">{{ liveCount.activeListings }}</h3>
+          </div>
+          <i class="mdi mdi-sprout tw-text-green-400 tw-text-2xl"></i>
+        </div>
       </div>
-    <v-row v-if="false">
-      <v-col v-for="(quickLink, i) in quickLinks" :key="i" cols="12" md="4"
-      >
-        <v-hover v-slot="{ hover }">
-          <v-card
-              rounded="lg"
-              :elevation="hover ? 12 : 4"
-              class="pa-6 tw-text-center benefit-card"
-              :color="quickLink.color"
-              dark
-              @click="quickLinkClicked(quickLink.link)"
-          >
-            <v-avatar v-if="quickLink.class != null" size="80" :color="quickLink.iconColor" class="mb-4">
-              <v-icon :class="quickLink.class" size="40">{{ quickLink.icon }}</v-icon>
-            </v-avatar>
-            <v-avatar v-else size="80" :color="quickLink.iconColor" class="mb-4">
-              <v-icon size="40">{{ quickLink.icon }}</v-icon>
-            </v-avatar>
-            <h3 class="text-h5 tw-font-weight-bold mb-3">{{ quickLink.title }}</h3>
-            <p class="text-body-1">{{ quickLink.text }}</p>
-          </v-card>
-        </v-hover>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" sm="6">
-        <v-card>
-          <card-title
-              icon="mdi-corn"
-          >
-            <h1 class="tw-text-lg tw-font-bold tw-text-gray-800">Post Produce</h1>
-          </card-title>
-          <v-card-text>
-            <div>
-              <v-text-field
-                  v-model="newProducePost.name"
-                  label="name"
-              ></v-text-field>
-              <!-- add a div below with quantity and price arranged horizontally -->
-              <div class="tw-flex tw-gap-4">
-                <v-text-field
-                    v-model="newProducePost.quantity"
-                  label="Quantity"
-                  class="tw-flex-1"
-                ></v-text-field>
-                <v-text-field
-                  v-model="newProducePost.price"
-                  label="Price"
-                  class="tw-flex-1"
-                ></v-text-field>
-              </div>
-              <v-card-actions>
+      <!-- Buyer Interactions -->
+      <div class="tw-bg-blue-50 tw-border tw-border-blue-100 tw-rounded-xl tw-p-5 tw-shadow-sm hover:tw-shadow-md tw-transition">
+        <div class="tw-flex tw-justify-between tw-items-center">
+          <div>
+            <p class="tw-text-blue-700 tw-text-xs tw-font-medium">Buyer Interactions</p>
+            <h3 class="tw-text-2xl tw-font-bold tw-mt-1 tw-text-blue-900">{{ liveCount.buyersInteraction }}</h3>
+          </div>
+          <i class="mdi mdi-account-group tw-text-blue-400 tw-text-2xl"></i>
+        </div>
+      </div>
+      <!-- 30-Day Revenue -->
+      <div class="tw-bg-purple-50 tw-border tw-border-purple-100 tw-rounded-xl tw-p-5 tw-shadow-sm hover:tw-shadow-md tw-transition">
+        <div class="tw-flex tw-justify-between tw-items-center">
+          <div>
+            <p class="tw-text-purple-700 tw-text-xs tw-font-medium">30-Day Revenue</p>
+            <h3 class="tw-text-2xl tw-font-bold tw-mt-1 tw-text-purple-900">{{ liveCount.revenue30Days.currency }} {{ liveCount.revenue30Days.price }}</h3>
+          </div>
+          <i class="mdi mdi-cash-multiple tw-text-purple-400 tw-text-2xl"></i>
+        </div>
+      </div>
 
-              </v-card-actions>
+      <!-- Advertise Section -->
+      <div class="tw-bg-gradient-to-r tw-from-indigo-400 tw-to-purple-400 tw-rounded-xl tw-shadow-sm tw-overflow-hidden hover:tw-shadow-md tw-transition md:tw-col-span-3">
+        <div class="tw-p-5 tw-text-white">
+          <h2 class="tw-text-lg tw-font-semibold tw-mb-2">Boost Sales</h2>
+          <p class="tw-mb-3 tw-text-xs">Promote your listings for more visibility.</p>
+          <button class="tw-bg-white tw-text-indigo-600 tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium tw-text-xs hover:tw-bg-gray-100 tw-transition">
+            Advertise
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-3 tw-gap-8">
+      <!-- Left Column -->
+      <div class="lg:tw-col-span-2 tw-space-y-8">
+        <!-- Sales Chart -->
+        <div class="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-p-6 tw-shadow-sm hover:tw-shadow-md tw-transition">
+          <div class="tw-flex tw-justify-between tw-items-center tw-mb-4">
+            <h2 class="tw-text-lg tw-font-semibold tw-text-gray-800">Sales Analytics</h2>
+            <div class="tw-flex tw-gap-2">
+              <button class="tw-px-3 tw-py-1 tw-bg-green-100 tw-text-green-700 tw-rounded-lg tw-text-xs hover:tw-bg-green-200">Monthly</button>
+              <button class="tw-px-3 tw-py-1 tw-bg-gray-100 tw-text-gray-500 tw-rounded-lg tw-text-xs hover:tw-bg-gray-200">Yearly</button>
             </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="6">
-        <v-card>
-          <card-title
-              icon="mdi-basket"
-          >
-            <h1 class="tw-text-lg tw-font-bold tw-text-gray-800">Buyers Requests</h1>
-          </card-title>
-          <v-card-text>
-            <h6>no request made</h6>
-            <v-icon>mdi-clock</v-icon>
-          </v-card-text>
-        </v-card>
-        <v-card
-            rounded
-        >
-        </v-card>
-      </v-col>
-    </v-row>
-      <!-- Stats Cards -->
-<!--      <v-row class="tw-mb-8">-->
-        <!--      <v-col cols="12" md="4">-->
-        <!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
-        <!--          <h2 class="tw-text-xl font-semibold text-gray-800">Total Listings</h2>-->
-        <!--          <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{liveCount.activeListings}}</p>-->
-        <!--          <p class="tw-text-gray-500">Active listings</p>-->
-        <!--        </v-card>-->
-        <!--      </v-col>-->
-        <!--      <v-col cols="12" md="4">-->
-        <!--        <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
-        <!--          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Buyer Interactions</h2>-->
-        <!--          <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{liveCount.buyersInteraction}}</p>-->
-        <!--          <p class="tw-text-gray-500">This month</p>-->
-        <!--        </v-card>-->
-        <!--      </v-col>-->
-<!--        <v-col cols="12">-->
-<!--          <v-card rounded="xl" class="tw-pl-4 tw-pt-2 tw-rounded-lg tw-shadow-md hover:shadow-lg transition-shadow">-->
-<!--            <apexchart-->
-<!--                type="bar"-->
-<!--                height="400"-->
-<!--                :options="chartOptions"-->
-<!--                :series="series"-->
-<!--            ></apexchart>-->
-<!--            <v-data-table-->
-<!--              :headers="headers"-->
-<!--              :items="listings"-->
-<!--              :loading="loading"-->
-<!--              :items-per-page="size"-->
-<!--              :page.sync="page"-->
-<!--              @update:page="fetchListings"-->
-<!--              class="elevation-1"-->
-<!--            >-->
-<!--              <template v-slot:item.createdAt="{ item }">-->
-<!--                <h2>{{ formatToHumanWithTime(item.createdAt) }}</h2>-->
-<!--              </template>-->
-<!--            </v-data-table>-->
-<!--            <v-pagination v-model="page" :length="totalPages-1" @input="fetchListings" />-->
-<!--          </v-card>-->
-<!--        </v-col>-->
-<!--      </v-row>-->
-      <!-- Quick Actions -->
-<!--      <v-row>-->
-<!--        <v-col cols="12">-->
-<!--          <v-card class="tw-p-6 tw-rounded-lg tw-shadow-md">-->
-<!--            <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">Quick Actions</h2>-->
-<!--            <div class="tw-flex md:tw-flex-row tw-flex-col tw-gap-5">-->
-<!--              <v-btn color="primary" class="flex-1" @click="listingDialog = true">-->
-<!--                <v-icon left>mdi-plus</v-icon>-->
-<!--                Add New Listing-->
-<!--              </v-btn>-->
-<!--            </div>-->
-<!--          </v-card>-->
-<!--        </v-col>-->
-<!--      </v-row>-->
-    </v-container>
+          </div>
+          <div class="tw-h-64">
+            <apexchart
+              type="bar"
+              height="100%"
+              :options="chartOptions"
+              :series="series"
+            ></apexchart>
+          </div>
+        </div>
+
+        <!-- Recent Listings -->
+        <div class="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-shadow-sm tw-overflow-hidden hover:tw-shadow-md tw-transition">
+          <div class="tw-p-6 tw-pb-0">
+            <div class="tw-flex tw-justify-between tw-items-center">
+              <h2 class="tw-text-lg tw-font-semibold tw-text-gray-800">Recent Listings</h2>
+              <button
+                @click="fetchListings"
+                class="tw-text-green-600 hover:tw-text-green-700 tw-flex tw-items-center tw-gap-1 tw-text-xs"
+              >
+                <i class="mdi mdi-refresh"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+          </div>
+          <div class="tw-overflow-x-auto">
+            <table class="tw-min-w-full tw-divide-y tw-divide-gray-100">
+              <thead class="tw-bg-gray-50">
+                <tr>
+                  <th
+                    v-for="header in headers"
+                    :key="header.text"
+                    class="tw-px-4 tw-py-2 tw-text-left tw-text-xs tw-font-medium tw-text-gray-400 tw-uppercase"
+                  >
+                    {{ header.text }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="tw-bg-white tw-divide-y tw-divide-gray-100">
+                <tr v-for="(item, index) in listings" :key="index" class="hover:tw-bg-gray-50">
+                  <td class="tw-px-4 tw-py-3 tw-whitespace-nowrap">
+                    <div class="tw-flex tw-items-center">
+                      <div class="tw-flex-shrink-0 tw-h-8 tw-w-8">
+                        <img
+                          v-if="item.farmerProduce?.farmProduce?.photo"
+                          :src="item.farmerProduce.farmProduce.photo"
+                          class="tw-h-8 tw-w-8 tw-rounded-full tw-border tw-border-gray-200"
+                        >
+                        <div v-else class="tw-h-8 tw-w-8 tw-rounded-full tw-bg-gray-100 tw-flex tw-items-center tw-justify-center">
+                          <i class="mdi mdi-leaf tw-text-gray-300"></i>
+                        </div>
+                      </div>
+                      <div class="tw-ml-3">
+                        <div class="tw-text-xs tw-font-medium tw-text-gray-900">
+                          {{ item.farmerProduce?.farmProduce?.name || 'N/A' }}
+                        </div>
+                        <div class="tw-text-xs tw-text-gray-400">
+                          {{ item.status }}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="tw-px-4 tw-py-3 tw-whitespace-nowrap">
+                    <div class="tw-text-xs tw-text-gray-900">{{ item.quantityWithUnit }}</div>
+                  </td>
+                  <td class="tw-px-4 tw-py-3 tw-whitespace-nowrap">
+                    <div class="tw-text-xs tw-text-gray-900">{{ item.priceWithCurrency }}</div>
+                  </td>
+                  <td class="tw-px-4 tw-py-3 tw-whitespace-nowrap">
+                    <div class="tw-text-xs tw-text-gray-900">{{ formatToHumanWithTime(item.createdAt) }}</div>
+                  </td>
+                  <td class="tw-px-4 tw-py-3 tw-whitespace-nowrap">
+                    <span
+                      :class="{
+                        'tw-bg-green-100 tw-text-green-700': item.status === 'ACTIVE',
+                        'tw-bg-yellow-100 tw-text-yellow-700': item.status === 'PENDING',
+                        'tw-bg-red-100 tw-text-red-700': item.status === 'REJECTED',
+                        'tw-bg-blue-100 tw-text-blue-700': item.status === 'SOLD'
+                      }"
+                      class="tw-px-2 tw-py-1 tw-text-xs tw-font-medium tw-rounded-lg"
+                    >
+                      {{ item.status }}
+                    </span>
+                  </td>
+                  <td class="tw-px-4 tw-py-3 tw-whitespace-nowrap tw-text-xs tw-text-gray-900">
+                    {{ item.totalPrice }}
+                  </td>
+                </tr>
+                <tr v-if="listings.length === 0">
+                  <td colspan="6" class="tw-px-4 tw-py-3 tw-text-center tw-text-gray-400 tw-text-xs">
+                    No listings found. Create your first one!
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tw-px-6 tw-py-4 tw-bg-gray-50 tw-flex tw-items-center tw-justify-between tw-border-t tw-border-gray-100">
+            <div class="tw-text-xs tw-text-gray-400">
+              Showing <span class="tw-font-medium">{{ listings.length }}</span> of <span class="tw-font-medium">{{ totalElements }}</span>
+            </div>
+            <div class="tw-flex tw-gap-2">
+              <button
+                @click="page = Math.max(0, page - 1)"
+                :disabled="page === 0"
+                class="tw-px-3 tw-py-1 tw-border tw-border-gray-200 tw-rounded-lg tw-text-xs tw-bg-white hover:tw-bg-gray-100 disabled:tw-opacity-50"
+              >
+                Prev
+              </button>
+              <button
+                @click="page = page + 1"
+                :disabled="page >= totalPages - 1"
+                class="tw-px-3 tw-py-1 tw-border tw-border-gray-200 tw-rounded-lg tw-text-xs tw-bg-white hover:tw-bg-gray-100 disabled:tw-opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="tw-space-y-8">
+        <!-- Quick Actions -->
+        <div class="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-shadow-sm tw-overflow-hidden hover:tw-shadow-md tw-transition">
+          <div class="tw-p-6">
+            <h2 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-mb-4">Quick Actions</h2>
+            <div class="tw-space-y-2">
+              <div
+                v-for="(link, index) in quickLinks"
+                :key="index"
+                @click="quickLinkClicked(link.link)"
+                class="tw-p-3 tw-rounded-lg tw-cursor-pointer tw-transition hover:tw-bg-gray-100"
+              >
+                <div class="tw-flex tw-items-center tw-gap-3">
+                  <i
+                    :class="link.icon"
+                    class="tw-text-xl"
+                    :style="{ color: link.iconColor }"
+                  ></i>
+                  <div>
+                    <h3 class="tw-font-medium tw-text-gray-800 tw-text-sm">{{ link.title }}</h3>
+                    <p class="tw-text-xs tw-text-gray-400">{{ link.text }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Farm Tips -->
+        <div class="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-shadow-sm tw-overflow-hidden hover:tw-shadow-md tw-transition">
+          <div class="tw-p-6">
+            <h2 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-mb-4">Farm Tips</h2>
+            <div class="tw-space-y-2">
+              <div class="tw-p-3 tw-bg-green-100 tw-rounded-lg">
+                <div class="tw-flex tw-items-start tw-gap-2">
+                  <i class="mdi mdi-weather-partly-cloudy tw-text-xl tw-text-green-500"></i>
+                  <div>
+                    <h3 class="tw-font-medium tw-text-gray-800 tw-text-xs">Weather</h3>
+                    <p class="tw-text-xs tw-text-gray-500 tw-mt-1">Moderate rainfall expected. Good for planting.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tw-p-3 tw-bg-blue-100 tw-rounded-lg">
+                <div class="tw-flex tw-items-start tw-gap-2">
+                  <i class="mdi mdi-cart-outline tw-text-xl tw-text-blue-500"></i>
+                  <div>
+                    <h3 class="tw-font-medium tw-text-gray-800 tw-text-xs">Market</h3>
+                    <p class="tw-text-xs tw-text-gray-500 tw-mt-1">Organic tomatoes in high demand locally.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tw-p-3 tw-bg-purple-100 tw-rounded-lg">
+                <div class="tw-flex tw-items-start tw-gap-2">
+                  <i class="mdi mdi-leaf tw-text-xl tw-text-purple-500"></i>
+                  <div>
+                    <h3 class="tw-font-medium tw-text-gray-800 tw-text-xs">Pest Alert</h3>
+                    <p class="tw-text-xs tw-text-gray-500 tw-mt-1">Monitor crops for aphids this week.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
-import CreateListing from '@/components/listing/CreateListing.vue';
 import pluralize from 'pluralize';
 import { formatToHumanWithTime } from '@/utils/time.js';
-import CardTitle from '@/components/shared/CardTitle.vue';
-// import VueApexCharts from 'vue-apexcharts';
+import VueApexCharts from 'vue-apexcharts';
 
 export default {
   components: {
-    CardTitle,
-    CreateListing,
-    // apexchart: VueApexCharts,
+    apexchart: VueApexCharts,
   },
   data() {
     return {
@@ -199,7 +270,6 @@ export default {
         { text: 'Status', value: 'status' },
         { text: 'Total Price', value: 'totalPrice' },
       ],
-      // Data
       listings: [],
       totalElements: 0,
       totalPages: 0,
@@ -214,20 +284,12 @@ export default {
           currency: 'KSH',
         },
       },
-      newProducePost: {
-        name: '',
-        quantity: '',
-        price: '',
-        photos: [],
-      },
       quickLinks: [
         {
           title: 'Farm AI',
           text: 'Get Advice on Farming Practices',
-          icon: 'mdi-react',
-          class: 'gradient-icon',
-          iconColor: 'success',
-          color: 'primary',
+          icon: 'mdi-robot',
+          iconColor: '#10B981',
           link: {
             name: 'FarmAI',
           },
@@ -236,8 +298,7 @@ export default {
           title: 'Community',
           text: 'View farmers and buyers near you!',
           icon: 'mdi-account-group',
-          iconColor: '#2064af',
-          color: 'brown',
+          iconColor: '#3B82F6',
           link: {
             name: 'Community',
           },
@@ -246,8 +307,7 @@ export default {
           title: 'Sales',
           text: 'Sell your produce, view what you sold',
           icon: 'mdi-cash-multiple',
-          iconColor: 'info',
-          color: 'darkblue',
+          iconColor: '#8B5CF6',
           link: {
             name: 'Listings',
           },
@@ -256,45 +316,113 @@ export default {
       chartOptions: {
         chart: {
           type: 'bar',
+          height: 350,
           stacked: false,
           toolbar: { show: false },
+          fontFamily: 'Inter, sans-serif',
+          foreColor: '#6B7280',
         },
-        xaxis: {
-          categories: [], // Will be populated dynamically
-          title: { text: 'Sale Month' },
-          labels: { rotate: -45 },
-        },
-        yaxis: [
-          {
-            title: { text: 'Total Revenue ($)' },
-            labels: { formatter: (value) => `$${value.toFixed(2)}` },
-          },
-          {
-            opposite: true,
-            title: { text: 'Total Sold (kg)' },
-            labels: { formatter: (value) => `${value.toFixed(1)} kg` },
-          },
-        ],
         plotOptions: {
           bar: {
-            columnWidth: '50%',
-            dataLabels: {
-              position: 'top',
-            },
+            columnWidth: '45%',
+            borderRadius: 4,
           },
         },
         dataLabels: {
-          enabled: true,
-          formatter: (val) => val.toFixed(1),
+          enabled: false,
         },
-        title: {
-          text: 'Produce Sales Report',
-          align: 'center',
+        stroke: {
+          width: [0, 2],
+          curve: 'smooth',
         },
-        legend: { position: 'top' },
-        stroke: { width: [0, 2] }, // No stroke for bar, 2px for line
+        xaxis: {
+          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          axisTicks: {
+            show: false,
+          },
+          axisBorder: {
+            show: false,
+          },
+        },
+        yaxis: [
+          {
+            title: {
+              text: 'Revenue (KSH)',
+              style: {
+                color: '#10B981',
+              },
+            },
+            labels: {
+              formatter: (value) => `KSH ${value.toLocaleString()}`,
+              style: {
+                colors: '#10B981',
+              },
+            },
+          },
+          {
+            opposite: true,
+            title: {
+              text: 'Quantity (kg)',
+              style: {
+                color: '#3B82F6',
+              },
+            },
+            labels: {
+              formatter: (value) => `${value.toLocaleString()} kg`,
+              style: {
+                colors: '#3B82F6',
+              },
+            },
+          },
+        ],
+        fill: {
+          opacity: 1,
+          colors: ['#10B981'],
+        },
+        colors: ['#10B981', '#3B82F6'],
+        tooltip: {
+          shared: true,
+          intersect: false,
+          y: {
+            formatter(y) {
+              if (typeof y !== 'undefined') {
+                return y.toFixed(0) + (this.seriesIndex === 0 ? ' KSH' : ' kg');
+              }
+              return y;
+            },
+          },
+        },
+        legend: {
+          position: 'top',
+          horizontalAlign: 'right',
+          offsetY: 0,
+          markers: {
+            radius: 2,
+          },
+        },
+        grid: {
+          borderColor: '#F3F4F6',
+          strokeDashArray: 2,
+          padding: {
+            top: 0,
+            right: 20,
+            bottom: 0,
+            left: 20,
+          },
+        },
       },
-      series: [],
+      series: [
+        {
+          name: 'Revenue',
+          type: 'column',
+          data: [44000, 55000, 41000, 67000, 58000, 80000, 72000],
+        },
+        {
+          name: 'Quantity Sold',
+          type: 'line',
+          data: [1200, 1500, 1100, 1700, 1500, 2000, 1900],
+        },
+      ],
     };
   },
   computed: {
@@ -304,8 +432,7 @@ export default {
   },
   mounted() {
     this.fetchLiveCount();
-    // this.fetchSalesReport();
-    // this.fetchListings();
+    this.fetchListings();
   },
   methods: {
     formatToHumanWithTime,
@@ -338,55 +465,6 @@ export default {
         this.loading = false;
       }
     },
-    async fetchSalesReport() {
-      try {
-        await axios.get(`/farmers-service/api/dashboard/sales-report?farmerId=${getCurrentUserId()}`);
-        const groupedData = {};
-
-        // Organize data by saleMonth and produce
-        this.salesData.forEach((item) => {
-          if (!groupedData[item.saleMonth]) {
-            groupedData[item.saleMonth] = {};
-          }
-          groupedData[item.saleMonth][item.produceName] = {
-            totalSold: item.totalSold,
-            totalRevenue: item.totalRevenue,
-          };
-        });
-
-        // Extract unique produce names
-        const allProduceNames = [...new Set(this.salesData.map((item) => item.produceName))];
-        const categories = Object.keys(groupedData).sort(); // Sorted sale months
-
-        // Prepare series data for revenue (bars) and total sold (line)
-        const revenueSeries = {
-          name: 'Total Revenue',
-          type: 'column',
-          data: categories.map((month) => allProduceNames.reduce((sum, produce) => sum + (groupedData[month][produce]?.totalRevenue || 0), 0)),
-        };
-
-        const soldSeries = {
-          name: 'Total Sold',
-          type: 'line',
-          data: categories.map((month) => allProduceNames.reduce((sum, produce) => sum + (groupedData[month][produce]?.totalSold || 0), 0)),
-        };
-
-        this.chartOptions.xaxis.categories = categories;
-        this.series = [revenueSeries, soldSeries];
-      } catch (error) {
-        this.$toast.error('Error fetching sales data:', error.message);
-      }
-    },
-    // fetchListings() {
-    //   axios.get(`/listing/farmer?farmerId=${getCurrentUserId()}`)
-    //     .then((response) => {
-    //       console.log(response.data.data);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // },
-    // Fetch listings from the API
     async fetchLiveCount() {
       this.loading = true;
       try {
@@ -415,4 +493,34 @@ export default {
 </script>
 
 <style>
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Smooth transitions */
+.tw-transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Gradient icon for Farm AI */
+.gradient-icon {
+  background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 </style>
