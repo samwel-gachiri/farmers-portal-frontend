@@ -66,7 +66,8 @@ export default {
           }
         }
         if (error.response.status === 500 || error.response.status === 502 || error.response.status === 504 || error.response.status === 403) {
-          router.push({ name: 'ServerError' });
+          NProgress.done();
+          // router.push({ name: 'ServerError' });
         }
       } else if (error.request) {
         /*

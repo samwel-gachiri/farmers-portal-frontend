@@ -1,6 +1,18 @@
 <template>
   <Default>
-    <div class="tw-bg-white tw-min-h-screen tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-2">
+    <div class="tw-bg-white tw-min-h-screen tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-2 tw-relative">
+      <!-- AI-themed background graphics -->
+      <div aria-hidden="true" class="tw-absolute tw-inset-0 tw-pointer-events-none tw-z-0">
+        <svg class="tw-absolute tw-top-0 tw-left-1/2 tw-transform -tw-translate-x-1/2 tw-opacity-20" width="480" height="180" viewBox="0 0 480 180" fill="none">
+          <ellipse cx="240" cy="90" rx="220" ry="70" fill="#34d399"/>
+          <ellipse cx="120" cy="40" rx="60" ry="20" fill="#10b981"/>
+          <ellipse cx="360" cy="140" rx="80" ry="30" fill="#6ee7b7"/>
+        </svg>
+        <svg class="tw-absolute tw-bottom-0 tw-right-0 tw-opacity-10" width="180" height="120" viewBox="0 0 180 120" fill="none">
+          <ellipse cx="90" cy="60" rx="80" ry="40" fill="#34d399"/>
+          <ellipse cx="140" cy="100" rx="30" ry="10" fill="#10b981"/>
+        </svg>
+      </div>
       <div class="tw-w-full tw-max-w-xl tw-mt-10 tw-mb-6">
         <div class="tw-flex tw-items-center tw-space-x-3 tw-mb-2">
           <v-icon class="tw-text-green-600" size="32px">mdi-sprout</v-icon>
@@ -10,7 +22,7 @@
           Uliza maswali kuhusu ukulima hapa
         </div>
       </div>
-      <div class="tw-w-full tw-max-w-xl tw-bg-gray-50 tw-rounded-xl tw-shadow-sm tw-flex tw-flex-col tw-h-[480px]">
+      <div class="tw-w-full tw-max-w-xl tw-bg-gray-50 tw-rounded-xl tw-shadow-sm tw-flex tw-flex-col tw-h-[480px] tw-relative tw-z-10">
         <div id="chat-messages" class="tw-flex-1 tw-p-4 tw-overflow-y-auto tw-space-y-3 tw-text-base tw-text-gray-800 tw-bg-transparent">
           <!-- Messages will appear here -->
         </div>
@@ -164,5 +176,22 @@ export default {
 }
 #chat-messages::-webkit-scrollbar-track {
   background: #f9fafb;
+}
+
+/* Ensure background graphics do not overlap content */
+.tw-relative {
+  position: relative;
+}
+.tw-absolute {
+  position: absolute;
+}
+.tw-z-0 {
+  z-index: 0;
+}
+.tw-z-10 {
+  z-index: 10;
+}
+.tw-pointer-events-none {
+  pointer-events: none;
 }
 </style>
