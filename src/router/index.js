@@ -123,6 +123,11 @@ const routes = [
     name: 'OperatingZonesManagement',
     component: () => import('../views/exporter/OperatingZonesManagement.vue'),
   },
+  {
+    path: '/zone-management',
+    name: 'ZoneManagement',
+    component: () => import('../views/exporter/ZoneManagement.vue'),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',
@@ -172,6 +177,11 @@ const routes = [
     path: '/buyer-report',
     name: 'BuyerReport',
     component: () => import('../views/report/buyer_report.vue'),
+  },
+  {
+    path: '/ad',
+    name: 'Advertisement',
+    component: () => import('../views/advertisement.vue'),
   },
   // {
   //   path: '/buy-cover',

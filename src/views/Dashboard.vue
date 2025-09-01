@@ -3,6 +3,9 @@
     <FarmerDashboard v-if="user && getCurrentUserRole() === 'farmer'"/>
     <BuyerDashboard v-if="user && getCurrentUserRole() === 'buyer'"/>
     <AdminDashboard v-if="user && getCurrentUserRole() === 'admin'"/>
+    <ExporterDashboard v-if="user && getCurrentUserRole() === 'exporter'"/>
+    <SystemAdminDashboard v-if="user && getCurrentUserRole() === 'system_admin'"/>
+    <ZoneSupervisorDashboard v-if="user && getCurrentUserRole() === 'zone_supervisor'"/>
   </Default>
 </template>
 
@@ -12,6 +15,9 @@ import { mapState } from 'vuex';
 import FarmerDashboard from '@/components/layout/dashboard/FarmerDashboard.vue';
 import AdminDashboard from '@/components/layout/dashboard/AdminDashboard.vue';
 import BuyerDashboard from '@/components/layout/dashboard/BuyerDashboard.vue';
+import ExporterDashboard from '@/components/layout/dashboard/ExporterDashboard.vue';
+import SystemAdminDashboard from '@/components/layout/dashboard/SystemAdminDashboard.vue';
+import ZoneSupervisorDashboard from '@/components/layout/dashboard/ZoneSupervisorDashboard.vue';
 import { getCurrentUserRole } from '@/utils/roles.js';
 
 export default {
@@ -20,6 +26,9 @@ export default {
     BuyerDashboard,
     AdminDashboard,
     FarmerDashboard,
+    ExporterDashboard,
+    SystemAdminDashboard,
+    ZoneSupervisorDashboard,
     Default,
   },
   computed: {

@@ -627,13 +627,13 @@ export default {
       this.loading = true;
       try {
         // eslint-disable-next-line no-unused-vars
-        const response = await axios.post('/exporters-service/exporter/zones', {
-          exporterId: getCurrentUserId(),
+        const response = await axios.post('/api/admin-service/zones', {
           name: this.newZone.name,
           produceType: this.newZone.produceType,
           centerLatitude: this.newZone.centerLatitude,
           centerLongitude: this.newZone.centerLongitude,
           radiusKm: this.newZone.radiusKm,
+          exporterId: getCurrentUserId(),
         });
 
         this.showSnackbar('Zone created successfully!', 'success');

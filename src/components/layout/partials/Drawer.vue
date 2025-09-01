@@ -55,7 +55,7 @@
       <!-- Regular Navigation Items -->
       <template v-for="(item, i) in items">
         <v-menu
-            v-if="viewPermissions((item.roles))"
+            v-if="hasPermission(item.permissions)"
             :key="i"
             right
             offset-x
@@ -190,42 +190,17 @@
 
 <script>
 import {
-  getCurrentUserId, getCurrentUserRole, isAuthenticated, viewPermissions,
+  getCurrentUserId,
+  getCurrentUserRole,
+  isAuthenticated,
 } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
-import axios from 'axios';
 import UserRole from '@/components/layout/partials/nav/UserRole.vue';
+import axios from 'axios';
+import jwtDecode from 'jwt-decode';
 
 export default {
   name: 'FuturisticDrawer',
-  methods: {
-    viewPermissions,
-    updateOnlineStatus() {
-      this.isOnline = navigator.onLine;
-      this.connectionStatus = this.isOnline ? 'Connected' : 'Offline';
-    },
-    async submitFeatureRequest() {
-      if (!this.featureRequest.trim()) return;
-
-      this.isSubmitting = true;
-      try {
-        // Here you would typically send to your backend
-        await axios.post('/api/feature-requests', {
-          requestType: this.requestType.toUpperCase(),
-          message: this.featureRequest,
-          userId: getCurrentUserId(),
-          userSection: getCurrentUserRole(),
-        });
-        this.featureRequest = '';
-        this.requestType = 'feature';
-        this.$toast.success('Thank you for your suggestion!');
-      } catch (error) {
-        this.$toast.error('Failed to submit request. Please try again.');
-      } finally {
-        this.isSubmitting = false;
-      }
-    },
-  },
   components: { UserRole, LogoTitle },
   data: () => ({
     items: [
@@ -233,104 +208,83 @@ export default {
         icon: 'mdi-view-dashboard',
         text: 'Dashboard',
         link: { name: 'Dashboard' },
-        roles: ['buyer', 'admin'],
+        permissions: ['VIEW_EXPORTER', 'VIEW_ZONE_SUPERVISOR', 'VIEW_ZONE_FARMERS'],
         iconColor: 'black',
-      },
-      {
-        icon: 'mdi-account-group',
-        text: 'Community',
-        desc: 'Look for farmers and buyers here',
-        link: { name: 'Community' },
-        roles: ['farmer', 'buyer', 'anybody'],
-        iconColor: 'primary',
-      },
-      {
-        icon: 'mdi-cash-multiple',
-        text: 'My Sales',
-        desc: 'Post your produce here',
-        link: { name: 'Listings' },
-        roles: ['farmer'],
-        iconColor: 'black',
-        notifications: 0,
-      },
-      {
-        icon: 'mdi-cash-multiple',
-        text: 'My Requests',
-        desc: 'Post what you want supplied here',
-        link: { name: 'Requests' },
-        roles: ['buyer'],
-        iconColor: 'black',
-        notifications: 0,
-      },
-      {
-        icon: 'mdi-magnify',
-        text: 'Browse Listings',
-        desc: 'Look for produce here',
-        link: { name: 'BrowseListings' },
-        roles: ['buyer', 'anybody'],
-        iconColor: 'black',
-      },
-      {
-        icon: 'mdi-magnify',
-        text: 'Browse Request',
-        desc: 'Look for buyers request here and make a bid to supply',
-        link: { name: 'BrowseRequests' },
-        roles: ['farmer', 'anybody'],
-        iconColor: 'black',
-      },
-      {
-        icon: 'mdi-cart',
-        text: 'My Orders',
-        desc: 'View what you ordered here',
-        link: { name: 'BuyerOrders' },
-        roles: ['buyer'],
-        iconColor: 'black',
-      },
-      {
-        icon: 'mdi-sprout',
-        text: 'My Farm',
-        desc: 'View your farm here',
-        link: { name: 'Produces', params: { farmerId: getCurrentUserId() } },
-        roles: ['farmer'],
-        iconColor: 'darkgreen',
-      },
-      {
-        icon: 'mdi-chart-areaspline',
-        text: 'Reports',
-        desc: 'View your sales report here',
-        link: { name: 'FarmerReport' },
-        roles: ['farmer'],
-        iconColor: 'black',
-      },
-      {
-        icon: 'mdi-chart-bar',
-        text: 'Reports',
-        desc: 'View your spending report here',
-        link: { name: 'BuyerReport' },
-        roles: ['buyer'],
-        iconColor: 'black',
-      },
-      {
-        icon: 'mdi-account-supervisor',
-        text: 'Users',
-        desc: 'View active users and sign in graph here',
-        link: { name: 'UsersReport' },
-        roles: ['admin'],
-        iconColor: 'red',
-      },
-      {
-        icon: 'mdi-package-variant',
-        text: 'Orders',
-        link: { name: 'OrdersReport' },
-        roles: ['admin'],
-        iconColor: 'deep-orange',
+        desc: 'View your dashboard based on your role',
       },
       {
         icon: 'mdi-map-marker-radius',
         text: 'Zone Management',
-        link: { name: 'OperatingZonesManagement' },
-        roles: ['exporter'],
+        link: { name: 'ZoneManagement' },
+        permissions: ['CREATE_ZONE', 'UPDATE_ZONE', 'VIEW_ZONE_SUPERVISOR'],
         iconColor: 'green',
+        desc: 'Manage operating zones and their details',
+      },
+      {
+        icon: 'mdi-account-group',
+        text: 'Farmers Management',
+        link: { name: 'FarmersManagement' },
+        permissions: ['ADD_FARMER', 'EDIT_FARMER', 'VIEW_ZONE_FARMERS'],
+        iconColor: 'primary',
+        desc: 'Add or manage farmers in zones',
+      },
+      {
+        icon: 'mdi-account-supervisor',
+        text: 'Zone Supervisors',
+        link: { name: 'ZoneSupervisorsManagement' },
+        permissions: ['MANAGE_ZONE_SUPERVISOR', 'ADD_ZONE_SUPERVISOR', 'VIEW_ZONE_SUPERVISOR'],
+        iconColor: 'purple',
+        desc: 'Manage zone supervisors and their assignments',
+      },
+      {
+        icon: 'mdi-account-cog',
+        text: 'System Admins',
+        link: { name: 'SystemAdminsManagement' },
+        permissions: ['MANAGE_SYSTEM_ADMIN'],
+        iconColor: 'red',
+        desc: 'Manage system administrators',
+      },
+      {
+        icon: 'mdi-truck-delivery',
+        text: 'Pickup Schedules',
+        link: { name: 'PickupSchedulesManagement' },
+        permissions: ['SCHEDULE_PICKUP', 'VIEW_PICKUP_SCHEDULES'],
+        iconColor: 'orange',
+        desc: 'Schedule and view pickups for farmers',
+      },
+      {
+        icon: 'mdi-comment-text-outline',
+        text: 'Zone Comments',
+        link: { name: 'ZoneCommentsManagement' },
+        permissions: ['ADD_ZONE_COMMENT'],
+        iconColor: 'blue',
+        desc: 'Add or view comments on zones',
+      },
+      {
+        icon: 'mdi-account-details',
+        text: 'Exporter Profile',
+        link: { name: 'ExporterProfile' },
+        permissions: ['VIEW_EXPORTER', 'UPDATE_EXPORTER', 'VERIFY_EXPORTER'],
+        iconColor: 'teal',
+        desc: 'View or update your exporter profile',
+      },
+      {
+        icon: 'mdi-sprout',
+        text: 'My Farm',
+        link: { name: 'MyFarm', params: { farmerId: getCurrentUserId() } },
+        permissions: [],
+        roles: ['FARMER'],
+        iconColor: 'darkgreen',
+        desc: 'View your farm details',
+      },
+      {
+        icon: 'mdi-chart-areaspline',
+        text: 'Reports',
+        link: { name: 'FarmerReport' },
+        permissions: [],
+        roles: ['FARMER'],
+        iconColor: 'black',
+        desc: 'View your farming reports',
       },
     ],
     featureRequest: '',
@@ -357,13 +311,70 @@ export default {
     isOnline: true,
   }),
   computed: {
-    isAuthenticated,
+    isAuthenticated() {
+      return isAuthenticated();
+    },
     connectionColor() {
       return this.isOnline ? 'success' : 'error';
     },
+    userPermissions() {
+      const token = this.$store.state.auth.token;
+      if (!token) return [];
+      try {
+        const decoded = jwtDecode(token);
+        return decoded.user?.permissions || [];
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        return [];
+      }
+    },
+    userRole() {
+      const token = this.$store.state.auth.token;
+      if (!token) return null;
+      try {
+        const decoded = jwtDecode(token);
+        return decoded.role || null;
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        return null;
+      }
+    },
+  },
+  methods: {
+    hasPermission(requiredPermissions) {
+      // If roles are specified, check if the user has the required role
+      if (requiredPermissions.length === 0) {
+        return this.userRole && this.items.find((item) => item.permissions === requiredPermissions)?.roles?.includes(this.userRole);
+      }
+      // Check if the user has any of the required permissions
+      return requiredPermissions.some((permission) => this.userPermissions.includes(permission));
+    },
+    async submitFeatureRequest() {
+      if (!this.featureRequest.trim()) return;
+
+      this.isSubmitting = true;
+      try {
+        await axios.post('/api/feature-requests', {
+          requestType: this.requestType.toUpperCase(),
+          message: this.featureRequest,
+          userId: getCurrentUserId(),
+          userSection: getCurrentUserRole(),
+        });
+        this.featureRequest = '';
+        this.requestType = 'feature';
+        this.$toast.success('Thank you for your suggestion!');
+      } catch (error) {
+        this.$toast.error('Failed to submit request. Please try again.');
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+    updateOnlineStatus() {
+      this.isOnline = navigator.onLine;
+      this.connectionStatus = this.isOnline ? 'Connected' : 'Offline';
+    },
   },
   mounted() {
-    // Check online status
     this.isOnline = navigator.onLine;
     window.addEventListener('online', this.updateOnlineStatus);
     window.addEventListener('offline', this.updateOnlineStatus);
@@ -376,6 +387,7 @@ export default {
 </script>
 
 <style scoped>
+/* Existing styles unchanged */
 .hover-menu-card {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -388,34 +400,27 @@ export default {
   border-right: 1px solid rgba(255, 255, 255, 0.3);
   padding-left: 0;
 }
-
 .drawer-header {
   position: relative;
   padding-left: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
-
 .holographic-logo {
   /* filter: drop-shadow(0 0 5px rgba(100, 255, 100, 0.3)); */
-  /* transition: all 0.3s ease; */
 }
-
 .holographic-logo:hover {
   filter: drop-shadow(0 0 10px rgba(100, 255, 100, 0.5));
 }
-
 .connection-status {
   position: absolute;
   bottom: 5px;
   right: 0;
 }
-
 .status-chip {
   font-size: 0.6rem;
   height: 20px;
   border-radius: 10px;
 }
-
 .nav-list {
   flex-grow: 1;
   overflow-y: auto;
@@ -423,55 +428,38 @@ export default {
   padding-left: 5px;
   padding-right: 5px;
 }
-
 .nav-item {
   border-radius: 8px;
-  /* transition: all 0.3s ease; */
 }
-
 .nav-item:hover {
   background: rgba(0, 0, 0, 0.03) !important;
-  /* transform: translateX(3px); */
 }
-
 .nav-active {
   background: rgba(226,232,240,255) !important;
   margin-right: 8px !important;
-  /* color: var(--v-primary-base) !important; */
 }
-
 .nav-active .nav-text {
-  /* color: var(--v-primary-base) !important; */
   font-weight: 800;
 }
-
 .nav-text {
   font-weight: 800;
   font-size: 0.9rem;
 }
-
 .ai-nav-item {
-  /* background: #0D2B1D !important; */
-  /* border: 1px dashed rgba(100, 200, 100, 0.3); */
   margin-bottom: 8px !important;
 }
-
 .ai-icon-container {
-  /* position: relative; */
   padding: 0;
 }
-
 .gradient-icon {
   background: linear-gradient(45deg, #8d08e8, #05d30f);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
 }
-
 .pulse-icon {
   animation: pulse 2s infinite;
 }
-
 .ai-pulse {
   position: absolute;
   top: -5px;
@@ -480,53 +468,35 @@ export default {
   bottom: -5px;
   background: rgba(232, 232, 232, 0.2);
   border-radius: 50%;
-  /* animation: pulse 2s infinite; */
   z-index: 1;
 }
-
 @keyframes pulse {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.7;
-  }
-  70% {
-    transform: scale(1.1);
-    opacity: 0.3;
-  }
-  100% {
-    transform: scale(0.95);
-    opacity: 0.7;
-  }
+  0% { transform: scale(0.95); opacity: 0.7; }
+  70% { transform: scale(1.1); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.7; }
 }
-
 .feedback-section {
   padding: 8px;
   margin-top: auto;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
-
 .feedback-panel {
   background: transparent !important;
 }
-
 .feedback-header {
   font-size: 0.8rem;
   font-weight: 500;
   padding: 8px;
 }
-
 .feedback-content {
   padding: 8px 0;
 }
-
 .request-input {
   font-size: 0.8rem;
 }
-
 .submit-btn {
   margin-top: 8px;
 }
-
 .weather-widget {
   padding: 8px;
   margin: 8px;
@@ -536,90 +506,72 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .weather-widget:hover {
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
 .weather-content {
   display: flex;
   align-items: center;
 }
-
 .weather-info {
   margin-left: 8px;
 }
-
 .weather-temp {
   font-weight: 600;
   font-size: 1.1rem;
 }
-
 .weather-location {
   font-size: 0.7rem;
   opacity: 0.8;
 }
-
 .weather-dialog {
   border-radius: 12px !important;
 }
-
 .weather-dialog-title {
   background: linear-gradient(to right, #00c853, #00b0ff);
   color: white !important;
 }
-
 .weather-stats {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
 }
-
 .weather-stat {
   display: flex;
   align-items: center;
 }
-
 .weather-stat .v-icon {
   margin-right: 8px;
   color: var(--v-primary-base);
 }
-
 .forecast-title {
   margin-bottom: 8px;
   font-weight: 500;
 }
-
 .forecast-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   text-align: center;
 }
-
 .forecast-day {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
-/* Responsive Adjustments */
 @media (max-width: 960px) {
   .nav-text {
     font-size: 0.8rem;
     font-weight: bold;
   }
-
   .nav-item {
     margin: 2px 4px;
     min-height: 40px;
   }
-
   .ai-nav-item {
     margin-bottom: 8px !important;
   }
-
   .feedback-header {
     font-size: 0.7rem;
   }
