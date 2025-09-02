@@ -34,10 +34,10 @@
 <script>
 /* eslint-disable no-unused-vars */
 
-import { FB_PUSH_NOTIFICATION, FB_PUSH_NOTIFICATION_PAY, NOTIFICATIONS } from '@/utils/const.js';
 // import firebase from '@/services/firebase/firebase.js';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
+import { FB_PUSH_NOTIFICATION, FB_PUSH_NOTIFICATION_PAY, NOTIFICATIONS } from '@/utils/const.js';
 // import NewPolicyPrompt from '@/components/shared/NewPolicyPrompt.js';
 
 export default {

@@ -5,11 +5,11 @@
         <v-icon class="tw-mr-2">mdi-map-marker</v-icon>
         Select Location
       </v-card-title>
-      
+
       <v-card-text class="tw-p-0">
         <!-- Map Container -->
         <div :id="mapId" class="tw-h-80 tw-w-full"></div>
-        
+
         <!-- Search Box -->
         <div class="tw-absolute tw-top-16 tw-left-4 tw-right-4 tw-z-10">
           <v-text-field
@@ -51,9 +51,9 @@
       <v-card-actions class="tw-px-4 tw-py-2">
         <v-spacer />
         <v-btn size="small" @click="$emit('cancel')">Cancel</v-btn>
-        <v-btn 
-          size="small" 
-          color="primary" 
+        <v-btn
+          size="small"
+          color="primary"
           @click="confirmLocation"
           :disabled="!selectedLocation"
         >
@@ -75,12 +75,12 @@ export default {
   props: {
     initialLocation: {
       type: Object,
-      default: null
+      default: null,
     },
     allowSearch: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
@@ -96,104 +96,102 @@ export default {
       Graphic: null,
       Point: null,
       SimpleMarkerSymbol: null,
-      Locator: null
-    }
+      Locator: null,
+    };
   },
   mounted() {
     this.loadArcGIS().then(() => {
-      this.initializeMap()
-    })
+      this.initializeMap();
+    });
   },
   beforeDestroy() {
-    this.destroyMap()
+    this.destroyMap();
   },
   methods: {
     async loadArcGIS() {
       return new Promise((resolve) => {
         if (window.require) {
-          resolve()
-          return
+          resolve();
+          return;
         }
-        
-        const script = document.createElement('script')
-        script.src = 'https://js.arcgis.com/4.28/init.js'
-        script.onload = resolve
-        document.head.appendChild(script)
-        
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = 'https://js.arcgis.com/4.28/esri/themes/light/main.css'
-        document.head.appendChild(link)
-      }).then(() => {
-        return new Promise((resolve) => {
-          window.require([
-            'esri/Map',
-            'esri/views/MapView',
-            'esri/Graphic',
-            'esri/geometry/Point',
-            'esri/symbols/SimpleMarkerSymbol',
-            'esri/tasks/Locator'
-          ], (Map, MapView, Graphic, Point, SimpleMarkerSymbol, Locator) => {
-            this.Map = Map
-            this.MapView = MapView
-            this.Graphic = Graphic
-            this.Point = Point
-            this.SimpleMarkerSymbol = SimpleMarkerSymbol
-            this.Locator = Locator
-            resolve()
-          })
-        })
-      })
+
+        const script = document.createElement('script');
+        script.src = 'https://js.arcgis.com/4.28/init.js';
+        script.onload = resolve;
+        document.head.appendChild(script);
+
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://js.arcgis.com/4.28/esri/themes/light/main.css';
+        document.head.appendChild(link);
+      }).then(() => new Promise((resolve) => {
+        window.require([
+          'esri/Map',
+          'esri/views/MapView',
+          'esri/Graphic',
+          'esri/geometry/Point',
+          'esri/symbols/SimpleMarkerSymbol',
+          'esri/tasks/Locator',
+        ], (Map, MapView, Graphic, Point, SimpleMarkerSymbol, Locator) => {
+          this.Map = Map;
+          this.MapView = MapView;
+          this.Graphic = Graphic;
+          this.Point = Point;
+          this.SimpleMarkerSymbol = SimpleMarkerSymbol;
+          this.Locator = Locator;
+          resolve();
+        });
+      }));
     },
 
     initializeMap() {
-      if (this.mapView || !document.getElementById(this.mapId)) return
+      if (this.mapView || !document.getElementById(this.mapId)) return;
 
       const map = new this.Map({
-        basemap: 'streets-navigation-vector'
-      })
+        basemap: 'streets-navigation-vector',
+      });
 
-      const center = this.initialLocation 
+      const center = this.initialLocation
         ? [this.initialLocation.longitude, this.initialLocation.latitude]
-        : [36.8219, -1.2921] // Nairobi, Kenya
+        : [36.8219, -1.2921]; // Nairobi, Kenya
 
       this.mapView = new this.MapView({
         container: this.mapId,
-        map: map,
-        center: center,
+        map,
+        center,
         zoom: this.initialLocation ? 15 : 10,
         ui: {
-          components: ['attribution']
-        }
-      })
+          components: ['attribution'],
+        },
+      });
 
       // Map click handler
       this.mapView.on('click', (event) => {
-        this.setLocation(event.mapPoint.longitude, event.mapPoint.latitude)
-      })
+        this.setLocation(event.mapPoint.longitude, event.mapPoint.latitude);
+      });
 
       // Set initial location if provided
       if (this.initialLocation) {
-        this.setLocation(this.initialLocation.longitude, this.initialLocation.latitude)
+        this.setLocation(this.initialLocation.longitude, this.initialLocation.latitude);
       }
     },
 
     setLocation(longitude, latitude) {
-      this.selectedLocation = { longitude, latitude }
-      this.updateLocationMarker()
-      this.$emit('location-changed', this.selectedLocation)
+      this.selectedLocation = { longitude, latitude };
+      this.updateLocationMarker();
+      this.$emit('location-changed', this.selectedLocation);
     },
 
     updateLocationMarker() {
-      if (!this.selectedLocation || !this.mapView) return
+      if (!this.selectedLocation || !this.mapView) return;
 
       // Clear existing graphics
-      this.mapView.graphics.removeAll()
+      this.mapView.graphics.removeAll();
 
       const point = new this.Point({
         longitude: this.selectedLocation.longitude,
-        latitude: this.selectedLocation.latitude
-      })
+        latitude: this.selectedLocation.latitude,
+      });
 
       const marker = new this.Graphic({
         geometry: point,
@@ -202,126 +200,126 @@ export default {
           size: 12,
           outline: {
             color: 'white',
-            width: 2
-          }
-        })
-      })
+            width: 2,
+          },
+        }),
+      });
 
-      this.mapView.graphics.add(marker)
-      
+      this.mapView.graphics.add(marker);
+
       // Center map on location
       this.mapView.goTo({
         center: point,
-        zoom: 15
-      })
+        zoom: 15,
+      });
     },
 
     async searchLocation() {
-      if (!this.searchQuery.trim()) return
+      if (!this.searchQuery.trim()) return;
 
-      this.loading = true
+      this.loading = true;
 
       try {
         const locator = new this.Locator({
-          url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer'
-        })
+          url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
+        });
 
         const results = await locator.addressToLocations({
           address: {
-            SingleLine: this.searchQuery
+            SingleLine: this.searchQuery,
           },
           maxLocations: 1,
-          outFields: ['*']
-        })
+          outFields: ['*'],
+        });
 
         if (results.length > 0) {
-          const result = results[0]
-          this.setLocation(result.location.longitude, result.location.latitude)
-          this.$emit('show-message', { 
-            type: 'success', 
-            text: `Found: ${result.attributes.LongLabel || this.searchQuery}` 
-          })
+          const result = results[0];
+          this.setLocation(result.location.longitude, result.location.latitude);
+          this.$emit('show-message', {
+            type: 'success',
+            text: `Found: ${result.attributes.LongLabel || this.searchQuery}`,
+          });
         } else {
-          this.$emit('show-message', { 
-            type: 'warning', 
-            text: 'Location not found. Please try a different search term.' 
-          })
+          this.$emit('show-message', {
+            type: 'warning',
+            text: 'Location not found. Please try a different search term.',
+          });
         }
       } catch (error) {
-        console.error('Geocoding error:', error)
-        this.$emit('show-message', { 
-          type: 'error', 
-          text: 'Failed to search location. Please try again.' 
-        })
+        console.error('Geocoding error:', error);
+        this.$emit('show-message', {
+          type: 'error',
+          text: 'Failed to search location. Please try again.',
+        });
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     getCurrentLocation() {
       if (!navigator.geolocation) {
-        this.$emit('show-message', { 
-          type: 'error', 
-          text: 'Geolocation is not supported by this browser.' 
-        })
-        return
+        this.$emit('show-message', {
+          type: 'error',
+          text: 'Geolocation is not supported by this browser.',
+        });
+        return;
       }
 
-      this.gettingLocation = true
+      this.gettingLocation = true;
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          this.setLocation(position.coords.longitude, position.coords.latitude)
-          this.$emit('show-message', { 
-            type: 'success', 
-            text: 'Current location detected successfully.' 
-          })
-          this.gettingLocation = false
+          this.setLocation(position.coords.longitude, position.coords.latitude);
+          this.$emit('show-message', {
+            type: 'success',
+            text: 'Current location detected successfully.',
+          });
+          this.gettingLocation = false;
         },
         (error) => {
-          console.error('Geolocation error:', error)
-          let message = 'Failed to get current location.'
-          
+          console.error('Geolocation error:', error);
+          let message = 'Failed to get current location.';
+
           switch (error.code) {
             case error.PERMISSION_DENIED:
-              message = 'Location access denied. Please enable location services.'
-              break
+              message = 'Location access denied. Please enable location services.';
+              break;
             case error.POSITION_UNAVAILABLE:
-              message = 'Location information unavailable.'
-              break
+              message = 'Location information unavailable.';
+              break;
             case error.TIMEOUT:
-              message = 'Location request timed out.'
-              break
+              message = 'Location request timed out.';
+              break;
           }
-          
-          this.$emit('show-message', { type: 'error', text: message })
-          this.gettingLocation = false
+
+          this.$emit('show-message', { type: 'error', text: message });
+          this.gettingLocation = false;
         },
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 60000
-        }
-      )
+          maximumAge: 60000,
+        },
+      );
     },
 
     confirmLocation() {
       if (this.selectedLocation) {
         this.$emit('location-selected', {
           latitude: this.selectedLocation.latitude,
-          longitude: this.selectedLocation.longitude
-        })
+          longitude: this.selectedLocation.longitude,
+        });
       }
     },
 
     destroyMap() {
       if (this.mapView) {
-        this.mapView.destroy()
-        this.mapView = null
+        this.mapView.destroy();
+        this.mapView = null;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>

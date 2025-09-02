@@ -106,12 +106,12 @@
 
 <script>
 import axios from 'axios';
-import Default from '@/components/layout/Default.vue';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime.js';
+import pluralize from 'pluralize';
+import Default from '@/components/layout/Default.vue';
 import NumberInput from '@/components/shared/NumberInput.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
-import pluralize from 'pluralize';
 
 // Extend dayjs with relativeTime
 dayjs.extend(relativeTime);

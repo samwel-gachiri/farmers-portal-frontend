@@ -95,11 +95,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Drawer from '@/components/layout/partials/Drawer.vue';
 import Avatar from '@/components/layout/partials/nav/Avatar.vue';
 import ScreenIdle from '@/components/shared/ScreenIdle.vue';
 import { isAuthenticated } from '@/utils/roles.js';
-import { mapGetters } from 'vuex';
 import NotificationBell from '@/components/layout/partials/nav/NotificationBell.vue';
 import AiAssistant from '@/components/ai/AiAssistant.vue';
 // Import the new BottomNav component

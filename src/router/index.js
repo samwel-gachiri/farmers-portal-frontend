@@ -41,6 +41,11 @@ const routes = [
     },
   },
   {
+    path: '/pickup-routes',
+    name: 'PickupRoutes',
+    component: () => import('../views/PickupRoutes.vue'),
+  },
+  {
     path: '/home',
     name: 'Home',
     // beforeEnter: ifAuthenticated,
@@ -119,14 +124,39 @@ const routes = [
     component: () => import('../views/admin/OrdersReport.vue'),
   },
   {
-    path: '/op-zones',
-    name: 'OperatingZonesManagement',
-    component: () => import('../views/exporter/OperatingZonesManagement.vue'),
-  },
-  {
     path: '/zone-management',
     name: 'ZoneManagement',
     component: () => import('../views/exporter/ZoneManagement.vue'),
+  },
+  {
+    path: '/exporter/system-admins',
+    name: 'SystemAdminsManagement',
+    component: () => import('../views/exporter/SystemAdminsManagement.vue'),
+  },
+  {
+    path: '/exporter/zone-supervisors',
+    name: 'ZoneSupervisorsManagement',
+    component: () => import('../views/exporter/ZoneSupervisorsManagement.vue'),
+  },
+  {
+    path: '/exporter/farmers',
+    name: 'FarmersManagement',
+    component: () => import('../views/exporter/FarmersManagement.vue'),
+  },
+  {
+    path: '/exporter/pickup-schedules',
+    name: 'PickupSchedulesManagement',
+    component: () => import('../views/exporter/PickupSchedulesManagement.vue'),
+  },
+  {
+    path: '/exporter/zone-comments',
+    name: 'ZoneCommentsManagement',
+    component: () => import('../views/exporter/ZoneCommentsManagement.vue'),
+  },
+  {
+    path: '/exporter/profile',
+    name: 'ExporterProfile',
+    component: () => import('../views/exporter/ExporterProfile.vue'),
   },
   // {
   //   path: '/confirm-otp',

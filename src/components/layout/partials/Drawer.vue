@@ -189,6 +189,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+import jwtDecode from 'jwt-decode';
 import {
   getCurrentUserId,
   getCurrentUserRole,
@@ -196,8 +198,6 @@ import {
 } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import UserRole from '@/components/layout/partials/nav/UserRole.vue';
-import axios from 'axios';
-import jwtDecode from 'jwt-decode';
 
 export default {
   name: 'FuturisticDrawer',

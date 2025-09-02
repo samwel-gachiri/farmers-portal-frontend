@@ -66,12 +66,12 @@
 
 <script>
 
+import axios from 'axios';
+import pluralize from 'pluralize';
 import Default from '@/components/layout/Default.vue';
 import CreateListing from '@/components/listing/CreateListing.vue';
-import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
 import Listing from '@/components/listing/Listing.vue';
-import pluralize from 'pluralize';
 
 export default {
   components: {

@@ -159,7 +159,7 @@
             </v-card-title>
             <v-card-text>
               <div class="tw-space-y-3">
-                <div v-for="zone in analytics.zoneBreakdown" :key="zone.zoneId" 
+                <div v-for="zone in analytics.zoneBreakdown" :key="zone.zoneId"
                      class="tw-flex tw-justify-between tw-items-center tw-p-3 tw-bg-gray-50 tw-rounded-lg">
                   <div>
                     <p class="tw-font-medium tw-text-sm">{{ zone.zoneName }}</p>
@@ -199,6 +199,64 @@
       </v-col>
     </v-row>
 
+    <!-- Data Lists Row -->
+    <v-row class="tw-mt-8">
+      <v-col cols="12" md="6">
+        <ZoneList
+          :zones="zones"
+          :loading="loading"
+          @select="onZoneSelected"
+        />
+      </v-col>
+      <v-col cols="12" md="6">
+        <FarmerList
+          :farmers="farmers"
+          :loading="loading"
+          @select="onFarmerSelected"
+        />
+      </v-col>
+    </v-row>
+
+    <!-- Harvest Predictions -->
+    <v-row class="tw-mt-4">
+      <v-col cols="12">
+        <v-card class="tw-rounded-xl tw-shadow-md">
+          <v-card-title class="tw-flex tw-items-center tw-justify-between">
+            <div class="tw-flex tw-items-center">
+              <v-icon class="tw-mr-2" color="teal">mdi-sprout</v-icon>
+              <span class="tw-font-semibold">Upcoming Harvests</span>
+            </div>
+            <v-btn size="small" variant="text" @click="loadHarvestPredictions" :loading="loadingHarvests">
+              <v-icon left>mdi-refresh</v-icon>Refresh
+            </v-btn>
+          </v-card-title>
+          <v-data-table
+            :items="harvestPredictions"
+            :headers="harvestHeaders"
+            density="comfortable"
+            class="elevation-0"
+            :loading="loadingHarvests"
+          >
+            <template #item.predictedHarvestDate="{ item }">
+              <span v-if="item.predictedHarvestDate">{{ formatDate(item.predictedHarvestDate) }}</span>
+              <span v-else class="tw-text-gray-400">Pending</span>
+            </template>
+            <template #item.plantingDate="{ item }">
+              <span v-if="item.plantingDate">{{ formatDate(item.plantingDate) }}</span>
+              <span v-else class="tw-text-gray-400">—</span>
+            </template>
+            <template #item.status="{ item }">
+              <v-chip size="small" :color="statusColor(item.status)" variant="flat">{{ item.status }}</v-chip>
+            </template>
+            <template #item.confidence="{ item }">
+              <span v-if="item.confidence">{{ (item.confidence * 100).toFixed(0) }}%</span>
+              <span v-else class="tw-text-gray-400">—</span>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
+
     <!-- System Admin Management Dialog -->
     <v-dialog v-model="createSystemAdminDialog" max-width="500">
       <v-card>
@@ -227,8 +285,8 @@
         <v-card-actions>
           <v-spacer />
           <v-btn @click="createSystemAdminDialog = false">Cancel</v-btn>
-          <v-btn 
-            color="primary" 
+          <v-btn
+            color="primary"
             @click="createSystemAdmin"
             :loading="creatingSystemAdmin"
             :disabled="!systemAdminFormValid"
@@ -267,8 +325,8 @@
         <v-card-actions>
           <v-spacer />
           <v-btn @click="createZoneSupervisorDialog = false">Cancel</v-btn>
-          <v-btn 
-            color="primary" 
+          <v-btn
+            color="primary"
             @click="createZoneSupervisor"
             :loading="creatingZoneSupervisor"
             :disabled="!zoneSupervisorFormValid"
@@ -279,6 +337,17 @@
       </v-card>
     </v-dialog>
 
+  <!-- Role Permissions Dialog -->
+  <RolePermissionsDialog v-model="rolePermissionsDialog" />
+  <!-- Farmer Detail Drawer -->
+  <FarmerDetailDrawer
+    v-model="farmerDrawer"
+    :farmer="selectedFarmer"
+    @locate="centerOnFarmer"
+    @message="messageFarmer"
+    @flag="flagFarmer"
+  />
+
     <!-- Snackbar for messages -->
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="4000">
       {{ snackbar.text }}
@@ -287,14 +356,29 @@
       </template>
     </v-snackbar>
   </v-container>
-</template><
-script>
-import ArcGISZoneManager from '@/components/zone/ArcGISZoneManager.vue'
+</template>
+<script>
+import ArcGISZoneManager from '@/components/zone/ArcGISZoneManager.vue';
+import ZoneList from '@/components/exporter/ZoneList.vue';
+import FarmerList from '@/components/exporter/FarmerList.vue';
+import RolePermissionsDialog from '@/components/exporter/RolePermissionsDialog.vue';
+import FarmerDetailDrawer from '@/components/exporter/FarmerDetailDrawer.vue';
+import axios from 'axios';
+import harvestService from '@/services/harvestPrediction.service.js';
 
 export default {
-  name: 'ExporterDashboard',
+  name: 'ExporterDashboardLayout',
   components: {
-    ArcGISZoneManager
+    ArcGISZoneManager,
+    ZoneList,
+    FarmerList,
+    RolePermissionsDialog,
+    FarmerDetailDrawer,
+  },
+  computed: {
+    exporterId() {
+      return this.$store.getters.currentUser?.exporterId || null;
+    },
   },
   data() {
     return {
@@ -304,104 +388,143 @@ export default {
         totalFarmers: 0,
         activeSystemAdmins: 0,
         activeZoneSupervisors: 0,
-        zoneBreakdown: []
+        zoneBreakdown: [],
       },
       zones: [],
       farmers: [],
       recentActivities: [],
-      
+
       // Dialog states
       createSystemAdminDialog: false,
       createZoneSupervisorDialog: false,
       rolePermissionsDialog: false,
-      
+      farmerDrawer: false,
+
       // Form data
       newSystemAdmin: {
         fullName: '',
         email: '',
-        phoneNumber: ''
+        phoneNumber: '',
       },
       newZoneSupervisor: {
         fullName: '',
         email: '',
-        phoneNumber: ''
+        phoneNumber: '',
       },
-      
+      selectedFarmer: null,
+
       // Form validation
       systemAdminFormValid: false,
       zoneSupervisorFormValid: false,
       creatingSystemAdmin: false,
       creatingZoneSupervisor: false,
-      
+
       // Validation rules
       rules: {
-        required: value => !!value || 'Required.',
-        email: value => {
-          const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-          return pattern.test(value) || 'Invalid email.'
-        }
+        required: (value) => !!value || 'Required.',
+        email: (value) => {
+          const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return pattern.test(value) || 'Invalid email.';
+        },
       },
-      
+
       // Snackbar
       snackbar: {
         show: false,
         text: '',
-        color: 'success'
-      }
-    }
+        color: 'success',
+      },
+
+      // Harvest predictions
+      harvestPredictions: [],
+      loadingHarvests: false,
+      harvestHeaders: [
+        { title: 'Produce', key: 'produceName' },
+        { title: 'Farmer', key: 'farmerName' },
+        { title: 'Planting', key: 'plantingDate' },
+        { title: 'Predicted Harvest', key: 'predictedHarvestDate' },
+        { title: 'Species', key: 'predictedSpecies' },
+        { title: 'Confidence', key: 'confidence' },
+        { title: 'Status', key: 'status' },
+      ],
+    };
   },
   mounted() {
-    this.loadDashboardData()
+    this.loadDashboardData();
+    this.loadHarvestPredictions();
   },
   methods: {
     async loadDashboardData() {
-      this.loading = true
-      
+      this.loading = true;
+
       try {
         await Promise.all([
           this.loadAnalytics(),
           this.loadZones(),
           this.loadFarmers(),
-          this.loadRecentActivities()
-        ])
+          this.loadRecentActivities(),
+          this.loadHarvestPredictions(),
+        ]);
       } catch (error) {
-        console.error('Error loading dashboard data:', error)
-        this.showMessage({ type: 'error', text: 'Failed to load dashboard data' })
+        console.error('Error loading dashboard data:', error);
+        this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
       } finally {
-        this.loading = false
+        this.loading = false;
+      }
+    },
+    async loadHarvestPredictions() {
+      if (!this.exporterId) return;
+      this.loadingHarvests = true;
+      try {
+        const res = await harvestService.listExporterPredictions(this.exporterId);
+        if (res.success) this.harvestPredictions = res.data;
+      } catch (e) {
+        console.error('Error loading harvest predictions', e);
+      } finally {
+        this.loadingHarvests = false;
       }
     },
 
     async loadAnalytics() {
       try {
-        const response = await this.$http.get('/api/exporters-service/exporter/analytics')
+        const response = await axios.get('/api/exporters-service/exporter/analytics');
         if (response.data.success) {
-          this.analytics = response.data.data
+          this.analytics = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading analytics:', error)
+        console.error('Error loading analytics:', error);
       }
     },
 
     async loadZones() {
       try {
-        const response = await this.$http.get('/api/admin-service/zones')
+        const response = await axios.get('/api/admin-service/zones', {
+          params: this.exporterId ? { exporterId: this.exporterId } : {},
+        });
         if (response.data.success) {
-          this.zones = response.data.data
+          this.zones = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading zones:', error)
+        console.error('Error loading zones:', error);
+        if (error.response && error.response.status === 403) {
+          this.showMessage({ type: 'error', text: 'Access denied loading zones.' });
+        }
       }
     },
 
     async loadFarmers() {
       try {
-        const response = await this.$http.get('/api/zone-supervisor-service/farmers')
+        const response = await axios.get('/api/zone-supervisor-service/farmers', {
+          params: this.exporterId ? { exporterId: this.exporterId } : {},
+        });
         if (response.data.success) {
-          this.farmers = response.data.data
+          this.farmers = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading farmers:', error)
+        console.error('Error loading farmers:', error);
+        if (error.response && error.response.status === 403) {
+          this.showMessage({ type: 'error', text: 'Access denied loading farmers.' });
+        }
       }
     },
 
@@ -412,147 +535,188 @@ export default {
           id: 1,
           title: 'New zone "North Region" created',
           timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-          color: 'blue'
+          color: 'blue',
         },
         {
           id: 2,
           title: 'System Admin John Doe added',
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-          color: 'green'
+          color: 'green',
         },
         {
           id: 3,
           title: 'Zone Supervisor assigned to Central Zone',
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
-          color: 'orange'
+          color: 'orange',
         },
         {
           id: 4,
           title: 'Permissions updated for Zone Supervisor role',
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-          color: 'purple'
-        }
-      ]
+          color: 'purple',
+        },
+      ];
     },
 
     async refreshData() {
-      await this.loadDashboardData()
-      this.showMessage({ type: 'success', text: 'Dashboard data refreshed' })
+      await this.loadDashboardData();
+      this.showMessage({ type: 'success', text: 'Dashboard data refreshed' });
     },
 
     exportReport() {
       // Mock export functionality
-      this.showMessage({ type: 'info', text: 'Export functionality coming soon' })
+      this.showMessage({ type: 'info', text: 'Export functionality coming soon' });
     },
 
     openCreateSystemAdminDialog() {
-      this.newSystemAdmin = { fullName: '', email: '', phoneNumber: '' }
-      this.createSystemAdminDialog = true
+      this.newSystemAdmin = { fullName: '', email: '', phoneNumber: '' };
+      this.createSystemAdminDialog = true;
     },
 
     openCreateZoneSupervisorDialog() {
-      this.newZoneSupervisor = { fullName: '', email: '', phoneNumber: '' }
-      this.createZoneSupervisorDialog = true
+      this.newZoneSupervisor = { fullName: '', email: '', phoneNumber: '' };
+      this.createZoneSupervisorDialog = true;
     },
 
     openRolePermissionsDialog() {
-      this.showMessage({ type: 'info', text: 'Role permissions management coming soon' })
+      this.rolePermissionsDialog = true;
     },
 
     async createSystemAdmin() {
-      if (!this.systemAdminFormValid) return
+      if (!this.systemAdminFormValid) return;
 
-      this.creatingSystemAdmin = true
+      this.creatingSystemAdmin = true;
 
       try {
-        const response = await this.$http.post('/api/exporters-service/exporter/system-admins', this.newSystemAdmin)
-        
+        const payload = {
+          ...this.newSystemAdmin,
+          exporterId: this.exporterId,
+        };
+        const response = await axios.post('/api/admin-service/system-admins', payload);
+
         if (response.data.success) {
-          this.showMessage({ type: 'success', text: 'System Admin created successfully' })
-          this.createSystemAdminDialog = false
-          await this.loadAnalytics()
+          this.showMessage({ type: 'success', text: 'System Admin created successfully' });
+          this.createSystemAdminDialog = false;
+          await this.loadAnalytics();
         }
       } catch (error) {
-        console.error('Error creating system admin:', error)
-        this.showMessage({ type: 'error', text: 'Failed to create System Admin' })
+        console.error('Error creating system admin:', error);
+        if (error.response && error.response.status === 403) {
+          this.showMessage({ type: 'error', text: 'Access denied creating System Admin' });
+        } else {
+          this.showMessage({ type: 'error', text: 'Failed to create System Admin' });
+        }
       } finally {
-        this.creatingSystemAdmin = false
+        this.creatingSystemAdmin = false;
       }
     },
 
     async createZoneSupervisor() {
-      if (!this.zoneSupervisorFormValid) return
+      if (!this.zoneSupervisorFormValid) return;
 
-      this.creatingZoneSupervisor = true
+      this.creatingZoneSupervisor = true;
 
       try {
-        const response = await this.$http.post('/api/exporters-service/exporter/zone-supervisors', this.newZoneSupervisor)
-        
+        const payload = {
+          ...this.newZoneSupervisor,
+          exporterId: this.exporterId,
+        };
+        const response = await axios.post('/api/admin-service/zone-supervisors', payload);
+
         if (response.data.success) {
-          this.showMessage({ type: 'success', text: 'Zone Supervisor created successfully' })
-          this.createZoneSupervisorDialog = false
-          await this.loadAnalytics()
+          this.showMessage({ type: 'success', text: 'Zone Supervisor created successfully' });
+          this.createZoneSupervisorDialog = false;
+          await this.loadAnalytics();
         }
       } catch (error) {
-        console.error('Error creating zone supervisor:', error)
-        this.showMessage({ type: 'error', text: 'Failed to create Zone Supervisor' })
+        console.error('Error creating zone supervisor:', error);
+        if (error.response && error.response.status === 403) {
+          this.showMessage({ type: 'error', text: 'Access denied creating Zone Supervisor' });
+        } else {
+          this.showMessage({ type: 'error', text: 'Failed to create Zone Supervisor' });
+        }
       } finally {
-        this.creatingZoneSupervisor = false
+        this.creatingZoneSupervisor = false;
       }
     },
 
     onZoneSelected(zone) {
-      console.log('Zone selected:', zone)
+      console.log('Zone selected:', zone);
     },
 
     async onZoneCreated(zone) {
-      this.zones.push(zone)
-      await this.loadAnalytics()
-      this.showMessage({ type: 'success', text: `Zone "${zone.name}" created successfully` })
+      this.zones.push(zone);
+      await this.loadAnalytics();
+      this.showMessage({ type: 'success', text: `Zone "${zone.name}" created successfully` });
     },
 
     async onZoneUpdated(zone) {
-      const index = this.zones.findIndex(z => z.id === zone.id)
+      const index = this.zones.findIndex((z) => z.id === zone.id);
       if (index !== -1) {
-        this.zones.splice(index, 1, zone)
+        this.zones.splice(index, 1, zone);
       }
-      this.showMessage({ type: 'success', text: `Zone "${zone.name}" updated successfully` })
+      this.showMessage({ type: 'success', text: `Zone "${zone.name}" updated successfully` });
     },
 
     async onZoneDeleted(zoneId) {
-      this.zones = this.zones.filter(z => z.id !== zoneId)
-      await this.loadAnalytics()
-      this.showMessage({ type: 'success', text: 'Zone deleted successfully' })
+      this.zones = this.zones.filter((z) => z.id !== zoneId);
+      await this.loadAnalytics();
+      this.showMessage({ type: 'success', text: 'Zone deleted successfully' });
     },
 
     getZoneStatusColor(farmerCount) {
-      if (farmerCount === 0) return 'grey'
-      if (farmerCount < 5) return 'orange'
-      if (farmerCount < 15) return 'blue'
-      return 'green'
+      if (farmerCount === 0) return 'grey';
+      if (farmerCount < 5) return 'orange';
+      if (farmerCount < 15) return 'blue';
+      return 'green';
     },
 
     formatTime(timestamp) {
-      const now = new Date()
-      const diff = now - timestamp
-      const minutes = Math.floor(diff / (1000 * 60))
-      const hours = Math.floor(diff / (1000 * 60 * 60))
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+      const now = new Date();
+      const diff = now - timestamp;
+      const minutes = Math.floor(diff / (1000 * 60));
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      if (minutes < 60) return `${minutes}m ago`
-      if (hours < 24) return `${hours}h ago`
-      return `${days}d ago`
+      if (minutes < 60) return `${minutes}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      return `${days}d ago`;
     },
 
     showMessage(message) {
       this.snackbar = {
         show: true,
         text: message.text,
-        color: message.type === 'error' ? 'error' : message.type === 'warning' ? 'warning' : 'success'
-      }
-    }
-  }
-}
+        color: (() => {
+          if (message.type === 'error') return 'error';
+          if (message.type === 'warning') return 'warning';
+          return 'success';
+        })(),
+      };
+    },
+    onFarmerSelected(farmer) {
+      this.selectedFarmer = farmer;
+      this.farmerDrawer = true;
+    },
+    centerOnFarmer(farmer) {
+      this.showMessage({ type: 'success', text: `Centering map on ${farmer.farmerName || farmer.name}` });
+    },
+    messageFarmer(farmer) {
+      this.showMessage({ type: 'info', text: `Messaging ${farmer.farmerName || farmer.name} (stub)` });
+    },
+    flagFarmer(farmer) {
+      this.showMessage({ type: 'warning', text: `Flagged ${farmer.farmerName || farmer.name} (stub)` });
+    },
+    formatDate(dt) {
+      try { return new Date(dt).toLocaleDateString(); } catch { return dt; }
+    },
+    statusColor(status) {
+      if (status === 'HARVEST_PLANNED') return 'teal';
+      if (status === 'HARVESTED') return 'green';
+      return 'grey';
+    },
+  },
+};
 </script>
 
 <style scoped>

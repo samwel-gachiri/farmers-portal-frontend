@@ -100,12 +100,12 @@
 </template>
 
 <script>
-import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
 // import AppAssistant from '@/components/ai/AIApp.vue';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import L from 'leaflet';
 import axios from 'axios';
+import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
 // eslint-disable-next-line import/extensions
 import helperMixins from '@/mixins/helperMixins';
 

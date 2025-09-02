@@ -17,7 +17,7 @@ export default {
         if (Date.now() > exp * 1000) {
           try {
             await store.dispatch('auth/refresh').then(() => {
-              config.headers.auth = store.getters['auth/accessToken'];
+              config.headers.Authorization = `Bearer ${store.getters['auth/accessToken']}`;
             });
           } catch (e) {
             await store.dispatch('auth/signOut')

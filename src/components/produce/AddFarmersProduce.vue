@@ -170,12 +170,12 @@
 
 <script>
 import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles.js';
-import { farmingTypes } from '@/assets/data/farmingTypes.js';
-import validations from '@/utils/validations.js';
 import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getCurrentUserId } from '@/utils/roles.js';
+import { farmingTypes } from '@/assets/data/farmingTypes.js';
+import validations from '@/utils/validations.js';
 import PhotoCapture from '@/components/pictures/PhotoCapture.vue';
 
 export default {

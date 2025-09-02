@@ -66,12 +66,13 @@
 </template>
 
 <script>
-import Default from '@/components/layout/Default.vue';
 // eslint-disable-next-line no-unused-vars
-import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
 import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+// eslint-disable-next-line no-unused-vars
+import { getCurrentUserId, getCurrentUserRole } from '@/utils/roles.js';
+import Default from '@/components/layout/Default.vue';
 
 export default {
   components: {

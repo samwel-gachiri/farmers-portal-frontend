@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 // Reusable constants to reduce duplicate literals
 const LAYER = Object.freeze({
   ZONES: 'Zones',
@@ -516,7 +517,7 @@ export default {
 
       try {
         // Get optimal route from backend
-        const response = await this.$http.get(`/api/admin-service/zones/${this.selectedZone.id}/optimal-route`);
+        const response = await axios.get(`/api/admin-service/zones/${this.selectedZone.id}/optimal-route`);
 
         if (response.data.success) {
           this.displayOptimalRoute(response.data.data);
@@ -634,7 +635,7 @@ export default {
           exporterId: this.$store.getters.currentUser.exporterId,
         };
 
-        const response = await this.$http.post('/api/admin-service/zones', zoneData);
+        const response = await axios.post('/api/admin-service/zones', zoneData);
 
         if (response.data.success) {
           this.$emit('zone-created', response.data.data);
@@ -656,7 +657,7 @@ export default {
       this.loading = true;
 
       try {
-        const response = await this.$http.put(
+        const response = await axios.put(
           `/api/admin-service/zones/${this.selectedZone.id}/comments`,
           { comments: this.selectedZone.comments },
         );
@@ -688,7 +689,7 @@ export default {
       this.loading = true;
 
       try {
-        const response = await this.$http.delete(`/api/admin-service/zones/${this.selectedZone.id}`);
+        const response = await axios.delete(`/api/admin-service/zones/${this.selectedZone.id}`);
 
         if (response.data.success) {
           this.$emit('zone-deleted', this.selectedZone.id);

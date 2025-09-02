@@ -98,12 +98,12 @@
 </template>
 
 <script>
-import validations from '@/utils/validations.js';
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import { mapGetters, mapState } from 'vuex';
-import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
 import L from 'leaflet';
+import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
+import validations from '@/utils/validations.js';
 
 export default {
   name: 'UserForm',

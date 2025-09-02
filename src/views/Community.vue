@@ -185,13 +185,13 @@
 </template>
 
 <script>
-import Default from '@/components/layout/Default.vue';
 import { mapGetters, mapState } from 'vuex';
+import L from 'leaflet';
+import axios from 'axios';
+import Default from '@/components/layout/Default.vue';
 import FarmerListingsDialog from '@/components/listing/FarmerListingsDialog.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
 import BuyerRequestsDialog from '@/components/request/BuyerRequestsDialog.vue';
-import L from 'leaflet';
-import axios from 'axios';
 
 // Fix for default markers in Leaflet
 // eslint-disable-next-line no-underscore-dangle

@@ -7,7 +7,7 @@
           <v-icon v-if="icon" :color="iconColor">{{ icon }}</v-icon>
           <h3 class="tw-text-lg tw-font-semibold">{{ title }}</h3>
         </div>
-        
+
         <div class="tw-flex tw-flex-col sm:tw-flex-row tw-gap-3 tw-w-full sm:tw-w-auto">
           <!-- Search -->
           <v-text-field
@@ -20,7 +20,7 @@
             class="tw-min-w-64"
             clearable
           />
-          
+
           <!-- Actions -->
           <div class="tw-flex tw-gap-2">
             <v-btn
@@ -76,62 +76,64 @@
         </template>
 
         <!-- Custom column rendering -->
-        <template v-for="header in headers" :key="header.key" v-slot:[`item.${header.key}`]="{ item }">
-          <slot :name="`item.${header.key}`" :item="item" :value="item[header.key]">
-            <!-- Default rendering based on column type -->
-            <div v-if="header.type === 'avatar'" class="tw-flex tw-items-center tw-gap-3">
-              <v-avatar :size="header.avatarSize || 32" :color="getAvatarColor(item[header.key])">
-                <v-img v-if="item[header.avatarSrc]" :src="item[header.avatarSrc]" />
-                <span v-else class="tw-text-white tw-font-medium">
-                  {{ getInitials(item[header.key]) }}
-                </span>
-              </v-avatar>
-              <span class="tw-font-medium">{{ item[header.key] }}</span>
-            </div>
+        <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
+          <span :key="header.key" class="tw-inline-block tw-w-full">
+            <slot :name="`item.${header.key}`" :item="item" :value="item[header.key]">
+              <!-- Default rendering based on column type -->
+              <div v-if="header.type === 'avatar'" class="tw-flex tw-items-center tw-gap-3">
+                <v-avatar :size="header.avatarSize || 32" :color="getAvatarColor(item[header.key])">
+                  <v-img v-if="item[header.avatarSrc]" :src="item[header.avatarSrc]" />
+                  <span v-else class="tw-text-white tw-font-medium">
+                    {{ getInitials(item[header.key]) }}
+                  </span>
+                </v-avatar>
+                <span class="tw-font-medium">{{ item[header.key] }}</span>
+              </div>
 
-            <v-chip
-              v-else-if="header.type === 'status'"
-              :color="getStatusColor(item[header.key], header.statusColors)"
-              size="small"
-              variant="flat"
-            >
-              {{ item[header.key] }}
-            </v-chip>
-
-            <div v-else-if="header.type === 'currency'" class="tw-font-mono">
-              {{ formatCurrency(item[header.key], header.currency) }}
-            </div>
-
-            <div v-else-if="header.type === 'date'" class="tw-text-sm">
-              {{ formatDate(item[header.key], header.dateFormat) }}
-            </div>
-
-            <div v-else-if="header.type === 'progress'" class="tw-w-full">
-              <v-progress-linear
-                :model-value="item[header.key]"
-                :color="getProgressColor(item[header.key])"
-                height="8"
-                rounded
-              />
-              <span class="tw-text-xs tw-text-gray-600 tw-mt-1">{{ item[header.key] }}%</span>
-            </div>
-
-            <div v-else-if="header.type === 'actions'" class="tw-flex tw-gap-1">
-              <v-btn
-                v-for="action in header.actions"
-                :key="action.key"
-                :color="action.color || 'primary'"
-                :variant="action.variant || 'text'"
-                :size="action.size || 'small'"
-                @click="$emit('row-action', { action: action.key, item })"
-                :disabled="action.disabled && action.disabled(item)"
+              <v-chip
+                v-else-if="header.type === 'status'"
+                :color="getStatusColor(item[header.key], header.statusColors)"
+                size="small"
+                variant="flat"
               >
-                <v-icon>{{ action.icon }}</v-icon>
-              </v-btn>
-            </div>
+                {{ item[header.key] }}
+              </v-chip>
 
-            <span v-else>{{ item[header.key] }}</span>
-          </slot>
+              <div v-else-if="header.type === 'currency'" class="tw-font-mono">
+                {{ formatCurrency(item[header.key], header.currency) }}
+              </div>
+
+              <div v-else-if="header.type === 'date'" class="tw-text-sm">
+                {{ formatDate(item[header.key], header.dateFormat) }}
+              </div>
+
+              <div v-else-if="header.type === 'progress'" class="tw-w-full">
+                <v-progress-linear
+                  :model-value="item[header.key]"
+                  :color="getProgressColor(item[header.key])"
+                  height="8"
+                  rounded
+                />
+                <span class="tw-text-xs tw-text-gray-600 tw-mt-1">{{ item[header.key] }}%</span>
+              </div>
+
+              <div v-else-if="header.type === 'actions'" class="tw-flex tw-gap-1">
+                <v-btn
+                  v-for="action in header.actions"
+                  :key="action.key"
+                  :color="action.color || 'primary'"
+                  :variant="action.variant || 'text'"
+                  :size="action.size || 'small'"
+                  @click="$emit('row-action', { action: action.key, item })"
+                  :disabled="action.disabled && action.disabled(item)"
+                >
+                  <v-icon>{{ action.icon }}</v-icon>
+                </v-btn>
+              </div>
+
+              <span v-else>{{ item[header.key] }}</span>
+            </slot>
+          </span>
         </template>
 
         <!-- Expandable rows -->
@@ -161,7 +163,7 @@
                       </slot>
                     </div>
                   </div>
-                  
+
                   <!-- Mobile actions -->
                   <div v-if="mobileActions.length > 0" class="tw-flex tw-gap-2 tw-mt-4 tw-pt-3 tw-border-t">
                     <v-btn
@@ -184,123 +186,122 @@
       </v-data-table>
     </v-card>
   </div>
-</template><
-script>
+</template>
+<script>
 export default {
   name: 'DataTable',
   props: {
     title: {
       type: String,
-      default: ''
+      default: '',
     },
     icon: {
       type: String,
-      default: null
+      default: null,
     },
     iconColor: {
       type: String,
-      default: 'primary'
+      default: 'primary',
     },
     headers: {
       type: Array,
-      required: true
+      required: true,
     },
     items: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     loading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     searchable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     showHeader: {
       type: Boolean,
-      default: true
+      default: true,
     },
     actions: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     itemsPerPage: {
       type: Number,
-      default: 10
+      default: 10,
     },
     sortBy: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     multiSort: {
       type: Boolean,
-      default: false
+      default: false,
     },
     expandable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     noDataText: {
       type: String,
-      default: 'No data available'
+      default: 'No data available',
     },
     noDataIcon: {
       type: String,
-      default: 'mdi-database-off'
+      default: 'mdi-database-off',
     },
     showRefreshOnEmpty: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
-      searchQuery: ''
-    }
+      searchQuery: '',
+    };
   },
   computed: {
     computedHeaders() {
-      return this.headers.map(header => ({
+      return this.headers.map((header) => ({
         ...header,
-        sortable: header.sortable !== false
-      }))
+        sortable: header.sortable !== false,
+      }));
     },
-    
+
     filteredItems() {
-      if (!this.searchQuery) return this.items
-      
-      const query = this.searchQuery.toLowerCase()
-      return this.items.filter(item => {
-        return this.headers.some(header => {
-          const value = item[header.key]
-          return value && value.toString().toLowerCase().includes(query)
-        })
-      })
+      if (!this.searchQuery) return this.items;
+
+      const query = this.searchQuery.toLowerCase();
+      return this.items.filter((item) => this.headers.some((header) => {
+        const value = item[header.key];
+        return value && value.toString().toLowerCase().includes(query);
+      }));
     },
-    
+
     mobileHeaders() {
-      return this.headers.filter(header => header.showOnMobile !== false)
+      return this.headers.filter((header) => header.showOnMobile !== false);
     },
-    
+
     mobileActions() {
-      const actionsHeader = this.headers.find(header => header.type === 'actions')
-      return actionsHeader ? actionsHeader.actions || [] : []
-    }
+      const actionsHeader = this.headers.find((header) => header.type === 'actions');
+      return actionsHeader ? actionsHeader.actions || [] : [];
+    },
   },
   methods: {
     getInitials(name) {
-      if (!name) return '?'
-      return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2)
+      if (!name) return '?';
+      return name.split(' ').map((word) => word[0]).join('').toUpperCase()
+        .slice(0, 2);
     },
-    
+
     getAvatarColor(name) {
-      if (!name) return 'grey'
-      const colors = ['red', 'pink', 'purple', 'indigo', 'blue', 'cyan', 'teal', 'green', 'orange', 'brown']
-      const index = name.length % colors.length
-      return colors[index]
+      if (!name) return 'grey';
+      const colors = ['red', 'pink', 'purple', 'indigo', 'blue', 'cyan', 'teal', 'green', 'orange', 'brown'];
+      const index = name.length % colors.length;
+      return colors[index];
     },
-    
+
     getStatusColor(status, statusColors = {}) {
       const defaultColors = {
         active: 'green',
@@ -311,51 +312,51 @@ export default {
         success: 'green',
         error: 'red',
         warning: 'orange',
-        info: 'blue'
-      }
-      
-      const colors = { ...defaultColors, ...statusColors }
-      return colors[status?.toLowerCase()] || 'grey'
+        info: 'blue',
+      };
+
+      const colors = { ...defaultColors, ...statusColors };
+      return colors[status?.toLowerCase()] || 'grey';
     },
-    
+
     formatCurrency(value, currency = 'USD') {
-      if (value == null) return '-'
+      if (value == null) return '-';
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: currency
-      }).format(value)
+        currency,
+      }).format(value);
     },
-    
+
     formatDate(value, format = 'short') {
-      if (!value) return '-'
-      const date = new Date(value)
-      
+      if (!value) return '-';
+      const date = new Date(value);
+
       switch (format) {
         case 'short':
-          return date.toLocaleDateString()
+          return date.toLocaleDateString();
         case 'long':
           return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
-          })
+            day: 'numeric',
+          });
         case 'datetime':
-          return date.toLocaleString()
+          return date.toLocaleString();
         case 'time':
-          return date.toLocaleTimeString()
+          return date.toLocaleTimeString();
         default:
-          return date.toLocaleDateString()
+          return date.toLocaleDateString();
       }
     },
-    
+
     getProgressColor(value) {
-      if (value >= 80) return 'green'
-      if (value >= 60) return 'orange'
-      if (value >= 40) return 'yellow'
-      return 'red'
-    }
-  }
-}
+      if (value >= 80) return 'green';
+      if (value >= 60) return 'orange';
+      if (value >= 40) return 'yellow';
+      return 'red';
+    },
+  },
+};
 </script>
 
 <style scoped>

@@ -250,8 +250,8 @@
         <v-card-actions>
           <v-spacer />
           <v-btn @click="createZoneDialog = false">Cancel</v-btn>
-          <v-btn 
-            color="primary" 
+          <v-btn
+            color="primary"
             @click="createZone"
             :loading="creatingZone"
             :disabled="!zoneFormValid"
@@ -270,14 +270,15 @@
       </template>
     </v-snackbar>
   </v-container>
-</template><scri
-pt>
-import ArcGISZoneManager from '@/components/zone/ArcGISZoneManager.vue'
+ </template>
+<script>
+import axios from 'axios';
+import ArcGISZoneManager from '@/components/zone/ArcGISZoneManager.vue';
 
 export default {
   name: 'SystemAdminDashboard',
   components: {
-    ArcGISZoneManager
+    ArcGISZoneManager,
   },
   data() {
     return {
@@ -289,91 +290,91 @@ export default {
       totalFarmers: 0,
       pendingTasks: 0,
       recentActivities: [],
-      
+
       // Dialog states
       createZoneDialog: false,
       assignSupervisorDialog: false,
       addFarmerDialog: false,
-      
+
       // Form data
       newZone: {
         name: '',
         produceType: '',
         centerLatitude: null,
         centerLongitude: null,
-        radiusKm: 5
+        radiusKm: 5,
       },
-      
+
       // Form validation
       zoneFormValid: false,
       creatingZone: false,
-      
+
       // Validation rules
       rules: {
-        required: value => !!value || 'Required.'
+        required: (value) => !!value || 'Required.',
       },
-      
+
       // Snackbar
       snackbar: {
         show: false,
         text: '',
-        color: 'success'
-      }
-    }
+        color: 'success',
+      },
+    };
   },
   mounted() {
-    this.loadDashboardData()
+    this.loadDashboardData();
   },
   methods: {
     async loadDashboardData() {
-      this.loading = true
-      
+      this.loading = true;
+
       try {
         await Promise.all([
           this.loadMyZones(),
           this.loadFarmers(),
           this.loadZoneSupervisors(),
-          this.loadRecentActivities()
-        ])
-        this.calculateMetrics()
+          this.loadRecentActivities(),
+        ]);
+        this.calculateMetrics();
       } catch (error) {
-        console.error('Error loading dashboard data:', error)
-        this.showMessage({ type: 'error', text: 'Failed to load dashboard data' })
+        console.error('Error loading dashboard data:', error);
+        this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async loadMyZones() {
       try {
-        const response = await this.$http.get('/api/admin-service/zones/my-zones')
+        const response = await axios.get('/api/admin-service/zones/my-zones');
         if (response.data.success) {
-          this.myZones = response.data.data
+          this.myZones = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading zones:', error)
+        console.error('Error loading zones:', error);
       }
     },
 
     async loadFarmers() {
       try {
-        const response = await this.$http.get('/api/admin-service/farmers')
+        const response = await axios.get('/api/admin-service/farmers');
         if (response.data.success) {
-          this.farmers = response.data.data
+          this.farmers = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading farmers:', error)
+        console.error('Error loading farmers:', error);
       }
     },
 
     async loadZoneSupervisors() {
       try {
-        const response = await this.$http.get('/api/admin-service/zone-supervisors')
+        const response = await axios.get('/api/admin-service/zone-supervisors');
         if (response.data.success) {
-          this.zoneSupervisors = response.data.data
+          this.zoneSupervisors = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading zone supervisors:', error)
+        console.error('Error loading zone supervisors:', error);
       }
     },
 
@@ -384,37 +385,37 @@ export default {
           id: 1,
           title: 'Zone "East Region" created',
           timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
-          color: 'blue'
+          color: 'blue',
         },
         {
           id: 2,
           title: 'Supervisor assigned to Central Zone',
           timestamp: new Date(Date.now() - 1000 * 60 * 45), // 45 minutes ago
-          color: 'green'
+          color: 'green',
         },
         {
           id: 3,
           title: 'Farmer John added to North Zone',
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-          color: 'orange'
+          color: 'orange',
         },
         {
           id: 4,
           title: 'Zone comments updated',
           timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
-          color: 'purple'
-        }
-      ]
+          color: 'purple',
+        },
+      ];
     },
 
     calculateMetrics() {
-      this.totalFarmers = this.farmers.length
-      this.pendingTasks = Math.floor(Math.random() * 10) + 1 // Mock pending tasks
+      this.totalFarmers = this.farmers.length;
+      this.pendingTasks = Math.floor(Math.random() * 10) + 1; // Mock pending tasks
     },
 
     async refreshData() {
-      await this.loadDashboardData()
-      this.showMessage({ type: 'success', text: 'Dashboard data refreshed' })
+      await this.loadDashboardData();
+      this.showMessage({ type: 'success', text: 'Dashboard data refreshed' });
     },
 
     openCreateZoneDialog() {
@@ -423,92 +424,93 @@ export default {
         produceType: '',
         centerLatitude: null,
         centerLongitude: null,
-        radiusKm: 5
-      }
-      this.createZoneDialog = true
+        radiusKm: 5,
+      };
+      this.createZoneDialog = true;
     },
 
     openAssignSupervisorDialog() {
       if (!this.selectedZone) {
-        this.showMessage({ type: 'warning', text: 'Please select a zone first' })
-        return
+        this.showMessage({ type: 'warning', text: 'Please select a zone first' });
+        return;
       }
-      this.showMessage({ type: 'info', text: 'Assign supervisor functionality coming soon' })
+      this.showMessage({ type: 'info', text: 'Assign supervisor functionality coming soon' });
     },
 
     openAddFarmerDialog() {
       if (!this.selectedZone) {
-        this.showMessage({ type: 'warning', text: 'Please select a zone first' })
-        return
+        this.showMessage({ type: 'warning', text: 'Please select a zone first' });
+        return;
       }
-      this.showMessage({ type: 'info', text: 'Add farmer functionality coming soon' })
+      this.showMessage({ type: 'info', text: 'Add farmer functionality coming soon' });
     },
 
     async createZone() {
-      if (!this.zoneFormValid) return
+      if (!this.zoneFormValid) return;
 
-      this.creatingZone = true
+      this.creatingZone = true;
 
       try {
         const zoneData = {
           ...this.newZone,
-          exporterId: this.$store.getters.currentUser.exporterId
-        }
+          exporterId: this.$store.getters.currentUser.exporterId,
+        };
 
-        const response = await this.$http.post('/api/admin-service/zones', zoneData)
-        
+        const response = await axios.post('/api/admin-service/zones', zoneData);
+
         if (response.data.success) {
-          this.showMessage({ type: 'success', text: 'Zone created successfully' })
-          this.createZoneDialog = false
-          await this.loadMyZones()
+          this.showMessage({ type: 'success', text: 'Zone created successfully' });
+          this.createZoneDialog = false;
+          await this.loadMyZones();
         }
       } catch (error) {
-        console.error('Error creating zone:', error)
-        this.showMessage({ type: 'error', text: 'Failed to create zone' })
+        console.error('Error creating zone:', error);
+        this.showMessage({ type: 'error', text: 'Failed to create zone' });
       } finally {
-        this.creatingZone = false
+        this.creatingZone = false;
       }
     },
 
     onZoneSelected(zone) {
-      this.selectedZone = zone
-      console.log('Zone selected:', zone)
+      this.selectedZone = zone;
+      console.log('Zone selected:', zone);
     },
 
     async onZoneCreated(zone) {
-      this.myZones.push(zone)
-      this.showMessage({ type: 'success', text: `Zone "${zone.name}" created successfully` })
+      this.myZones.push(zone);
+      this.showMessage({ type: 'success', text: `Zone "${zone.name}" created successfully` });
     },
 
     async onZoneUpdated(zone) {
-      const index = this.myZones.findIndex(z => z.id === zone.id)
+      const index = this.myZones.findIndex((z) => z.id === zone.id);
       if (index !== -1) {
-        this.myZones.splice(index, 1, zone)
+        this.myZones.splice(index, 1, zone);
       }
-      this.showMessage({ type: 'success', text: `Zone "${zone.name}" updated successfully` })
+      this.showMessage({ type: 'success', text: `Zone "${zone.name}" updated successfully` });
     },
 
     formatTime(timestamp) {
-      const now = new Date()
-      const diff = now - timestamp
-      const minutes = Math.floor(diff / (1000 * 60))
-      const hours = Math.floor(diff / (1000 * 60 * 60))
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+      const now = new Date();
+      const diff = now - timestamp;
+      const minutes = Math.floor(diff / (1000 * 60));
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      if (minutes < 60) return `${minutes}m ago`
-      if (hours < 24) return `${hours}h ago`
-      return `${days}d ago`
+      if (minutes < 60) return `${minutes}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      return `${days}d ago`;
     },
 
     showMessage(message) {
       this.snackbar = {
         show: true,
         text: message.text,
-        color: message.type === 'error' ? 'error' : message.type === 'warning' ? 'warning' : 'success'
-      }
-    }
-  }
-}
+        // eslint-disable-next-line no-nested-ternary
+        color: message.type === 'error' ? 'error' : message.type === 'warning' ? 'warning' : 'success',
+      };
+    },
+  },
+};
 </script>
 
 <style scoped>

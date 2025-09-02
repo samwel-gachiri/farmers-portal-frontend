@@ -35,9 +35,14 @@ export default {
     };
   },
   mounted() {
-    this.loadArcGIS().then(() => {
-      this.initializeMap();
-    });
+    this.loadArcGIS()
+      .then(() => {
+        this.initializeMap();
+      })
+      .catch((e) => {
+        // eslint-disable-next-line no-console
+        console.error('ArcGIS load failed', e);
+      });
   },
   watch: {
     center() {
@@ -55,45 +60,59 @@ export default {
   },
   methods: {
     async loadArcGIS() {
-      return new Promise((resolve) => {
-        if (window.require) {
-          resolve();
-          return;
-        }
-        const script = document.createElement('script');
-        script.src = 'https://js.arcgis.com/4.25/init.js';
-        script.onload = resolve;
-        document.head.appendChild(script);
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://js.arcgis.com/4.25/esri/themes/light/main.css';
-        document.head.appendChild(link);
-      }).then(() => {
-        window.require([
-          'esri/Map',
-          'esri/views/MapView',
-          'esri/Graphic',
-          'esri/geometry/Circle',
-          'esri/geometry/Point',
-        ], (Map, MapView, Graphic, Circle, Point) => {
-          this.Map = Map;
-          this.MapView = MapView;
-          this.Graphic = Graphic;
-          this.Circle = Circle;
-          this.Point = Point;
+      if (this.Map && this.MapView) return; // already loaded
+      if (!window.require) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://js.arcgis.com/4.25/init.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = 'https://js.arcgis.com/4.25/esri/themes/light/main.css';
+          document.head.appendChild(link);
         });
+      }
+      await new Promise((resolve, reject) => {
+        try {
+          window.require([
+            'esri/Map',
+            'esri/views/MapView',
+            'esri/Graphic',
+            'esri/geometry/Circle',
+            'esri/geometry/Point',
+          ], (Map, MapView, Graphic, Circle, Point) => {
+            this.Map = Map;
+            this.MapView = MapView;
+            this.Graphic = Graphic;
+            this.Circle = Circle;
+            this.Point = Point;
+            resolve();
+          });
+        } catch (err) {
+          reject(err);
+        }
       });
     },
     initializeMap() {
-      if (this.mapView || !document.getElementById(this.mapId)) return;
-      const map = new this.Map({
-        basemap: 'streets-navigation-vector',
-      });
+      if (this.mapView) return; // already initialized
+      if (!this.Map || !this.MapView) {
+        // Modules not yet ready, retry shortly
+        setTimeout(this.initializeMap, 60);
+        return;
+      }
+      const fallbackCenter = Array.isArray(this.center) && this.center[0] && this.center[1]
+        ? this.center
+        : [36.8219, -1.2921]; // Nairobi default
+      const map = new this.Map({ basemap: 'streets-navigation-vector' });
       this.mapView = new this.MapView({
         container: this.mapId,
         map,
-        center: this.center,
+        center: fallbackCenter,
         zoom: this.zones.length ? 8 : 10,
+        popupEnabled: true,
+        constraints: { snapToZoom: false },
       });
       this.mapView.on('click', (event) => {
         this.$emit('click', {
@@ -108,11 +127,13 @@ export default {
       }
     },
     updatePreview() {
-      if (!this.mapView || !this.center[0] || !this.center[1]) return;
+      if (!this.mapView) return;
+      const valid = Array.isArray(this.center) && this.center[0] && this.center[1];
+      const coords = valid ? this.center : [36.8219, -1.2921];
       this.mapView.graphics.removeAll();
       const center = new this.Point({
-        longitude: this.center[0],
-        latitude: this.center[1],
+        longitude: coords[0],
+        latitude: coords[1],
       });
       const centerGraphic = new this.Graphic({
         geometry: center,
@@ -140,7 +161,7 @@ export default {
         this.mapView.graphics.add(circleGraphic);
         this.mapView.goTo(circle.extent);
       } else {
-        this.mapView.goTo({ center, zoom: 12 });
+        this.mapView.goTo({ center, zoom: 12 }).catch(() => {});
       }
     },
     displayZones() {
@@ -185,7 +206,7 @@ export default {
         this.mapView.graphics.add(centerGraphic);
       });
       if (this.zones.length > 0) {
-        this.mapView.goTo(this.mapView.graphics.items);
+        this.mapView.goTo(this.mapView.graphics.items).catch(() => {});
       }
     },
     centerOnZone(zone) {

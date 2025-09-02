@@ -83,12 +83,7 @@ export default {
         }
         await this.$router.push(redirectPath);
       } else {
-        let defaultRedirect;
-        if (userName === 'exporter') {
-          defaultRedirect = this.$router.resolve({ name: 'OperatingZonesManagement' }).route.fullPath;
-        } else {
-          defaultRedirect = this.$router.resolve({ name: 'Dashboard' }).route.fullPath;
-        }
+        const defaultRedirect = this.$router.resolve({ name: 'Dashboard' }).route.fullPath;
         await this.$router.push({
           name: 'SignIn',
           query: {

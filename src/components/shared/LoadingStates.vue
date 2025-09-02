@@ -34,7 +34,7 @@
       <div v-else-if="variant === 'dashboard'" class="tw-space-y-6">
         <!-- Header -->
         <v-skeleton-loader type="heading" class="tw-mb-4" />
-        
+
         <!-- Metrics Cards -->
         <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4 tw-mb-6">
           <v-skeleton-loader
@@ -44,7 +44,7 @@
             class="tw-rounded-xl tw-shadow-md tw-h-24"
           />
         </div>
-        
+
         <!-- Main Content -->
         <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-3 tw-gap-6">
           <div class="lg:tw-col-span-2">
@@ -94,7 +94,7 @@
           {{ message }}
         </p>
       </div>
-      
+
       <div v-if="actions.length > 0" class="tw-space-x-3">
         <v-btn
           v-for="action in actions"
@@ -249,7 +249,7 @@ export default {
     margin-left: 0;
     margin-top: 0.75rem;
   }
-  
+
   .tw-space-x-3 {
     display: flex;
     flex-direction: column;

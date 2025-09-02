@@ -241,6 +241,8 @@
             </div>
           </div>
         </div>
+  <!-- Harvest Predictions Panel -->
+  <FarmerHarvestPanel class="tw-mt-4" />
       </div>
     </div>
   </div>
@@ -249,14 +251,16 @@
 <script>
 import { mapState } from 'vuex';
 import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles.js';
 import pluralize from 'pluralize';
-import { formatToHumanWithTime } from '@/utils/time.js';
 import VueApexCharts from 'vue-apexcharts';
+import { getCurrentUserId } from '@/utils/roles.js';
+import { formatToHumanWithTime } from '@/utils/time.js';
+import FarmerHarvestPanel from '@/components/farmer/FarmerHarvestPanel.vue';
 
 export default {
   components: {
     apexchart: VueApexCharts,
+    FarmerHarvestPanel,
   },
   data() {
     return {

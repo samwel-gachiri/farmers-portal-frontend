@@ -15,7 +15,7 @@
               {{ getIcon(notification.type) }}
             </v-icon>
           </div>
-          
+
           <!-- Content -->
           <div class="tw-flex-1 tw-min-w-0">
             <h4 v-if="notification.title" class="tw-font-medium tw-text-sm tw-mb-1">
@@ -24,7 +24,7 @@
             <p class="tw-text-sm tw-opacity-90">
               {{ notification.message }}
             </p>
-            
+
             <!-- Actions -->
             <div v-if="notification.actions && notification.actions.length > 0" class="tw-mt-3 tw-flex tw-gap-2">
               <button
@@ -37,7 +37,7 @@
               </button>
             </div>
           </div>
-          
+
           <!-- Close Button -->
           <button
             v-if="notification.closable !== false"
@@ -67,7 +67,7 @@
               </p>
             </div>
           </div>
-          
+
           <div class="tw-flex tw-items-center tw-gap-3">
             <!-- Banner Actions -->
             <div v-if="bannerNotification.actions && bannerNotification.actions.length > 0" class="tw-flex tw-gap-2">
@@ -80,7 +80,7 @@
                 {{ action.label }}
               </button>
             </div>
-            
+
             <!-- Close Button -->
             <button
               v-if="bannerNotification.closable !== false"
@@ -103,11 +103,11 @@
           </v-icon>
           {{ currentModal.title }}
         </v-card-title>
-        
+
         <v-card-text class="tw-py-4">
           <p>{{ currentModal.message }}</p>
         </v-card-text>
-        
+
         <v-card-actions class="tw-px-6 tw-pb-4">
           <v-spacer />
           <v-btn
@@ -159,9 +159,9 @@ export default {
         actions: options.actions || [],
         persistent: options.persistent || false
       }
-      
+
       this.notifications.push(notification)
-      
+
       // Auto remove after duration (unless persistent)
       if (!notification.persistent && notification.duration > 0) {
         setTimeout(() => {
@@ -188,7 +188,7 @@ width:ar {
 }ne-offset: 2);
   outli, 0.5 255, 25555,lid rgba(2line: 2px sos {
   outon:focu
-butt */sibilityfor accesus styles 
+butt */sibilityfor accesus styles
 }
 
 /* Foce; 0.2s easion: all  transit 0.15);
@@ -200,7 +200,7 @@ butt */sibilityfor accesus styles
 
 /*g);
   }0de(36rm: rotate transfo  to {
- 
+
   }
   eg);te(0d rotansform: {
     tra
@@ -219,12 +219,12 @@ butt */sibilityfor accesus styles
  irection: ro flex-dd {
    st-chillex:lar .tw-f  .banne
   }
-  
+
 m;re  gap: 1;
-  flex-startitems: 
+  flex-startitems:
     align-lumn;tion: colex-direcex {
     f-flbanner .tw
-  
+
   .ne;
   }th: noax-wid
     m
@@ -232,7 +232,7 @@ m;re  gap: 1;
  1rem;
    top: em;
       right: 1r1rem;
- 
+
     left: ntainer {
   .toast-co{40px) idth: 6media (max-ws */
 @stmentsive adju* Respon.1);
@@ -242,11 +242,11 @@ m;re  gap: 1;
 r(r: blufilteop- backdranner {
  yling */
 .bnner StBa
-/* 
+/*
 }
 1);55, 255, 0.55, 2ba(2rg: 1px solid ;
   borderblur(10px)op-filter: kdrbacst {
-  
+
 .toaing */t Styl
 
 /* Toas
@@ -279,8 +279,8 @@ oast-leave
   }s.info}`
  asseypeCl || ttype]tification.peClasses[nos} ${tyeClasse{bas  return `$
       }0'
-    -bg-gray-60g: 'twloadin      
-  ',bg-blue-600info: 'tw-  
+    -bg-gray-60g: 'twloadin
+  ',bg-blue-600info: 'tw-
       ge-600',oran-bg-ng: 'twni  war',
       g-red-600w-bor: 't   err   ,
   g-green-600'ccess: 'tw-b
@@ -302,7 +302,7 @@ w-shadoite twh-text-= 'twasses eCl basonst  c{
     getTo
     o
     },nf| colors.itype] |olors[return c  }
-      
+
     ry'ng: 'prima      loadi
    'primary',nfo:
         irning',wa  warning: '   r',
@@ -310,37 +310,37 @@ w-shadoite twh-text-= 'twasses eCl basonst  c{
         e,cess': 'suc    successrs = {
      const colo
      (type) {ctionColor  getA
-    
+
   info
     },olors.e] || cors[typolurn cet
       r
-      }imary'g: 'prloadin      
-  nfo',  info: 'i  
+      }imary'g: 'prloadin
+  nfo',  info: 'i
     g',arninarning: 'w    w,
     rror'or: 'e err
        ss',cess: 'succe    suc = {
     const colors
-      or(type) {ColtIcon   ge  
+      or(type) {ColtIcon   ge
  ,
      }o
-  icons.infe] ||icons[typ return 
+  icons.infe] ||icons[typ return
          }
   ading'-loading: 'mdi       lon',
- matio: 'mdi-infor  info     
+ matio: 'mdi-infor  info
  lert',g: 'mdi-a    warnin   circle',
- -alert-error: 'mdi  
+ -alert-error: 'mdi
       cle',check-ciri-ess: 'md        succns = {
    const ico  pe) {
- etIcon(ty   
+ etIcon(ty
     g
      },()
 loseModal.cis
       th }ck()
      n.callba    actio  lback) {
   ion.cal if (acttion)
-     -action', acit('modalthis.$em     
+     -action', acit('modalthis.$em
  (action) {alActionod  handleM
-    
+
      },     }
  )
  er(closeBann  this.  e) {
@@ -359,43 +359,41 @@ Idionn(notificatficatioremoveNoti this.   e) {
       lback(ion.calct a) {
        ckballon.ca   if (action })
    onId, actinotificatiction', { ification-as.$emit('not     thiction) {
- ionId, aotificatAction(ndle   han  
+ ionId, aotificatAction(ndle   han
      },
   dal = null
 is.currentMo      th
 on = falseicatiotifhis.modalN{
-      tl()  closeModa  
+      tl()  closeModa
       },
  = null
    ionnerNotificat  this.ban
      {r()eBanne    clos },
-    
+
    }
    1)
    e(index, ic.splnsnotificatiois.      th> -1) {
    if (index = id)
      => n.id ==ndIndex(n ications.fi= this.notif index onst) {
-      c(idtionNotificaemove    
+      c(idtionNotificaemove
     r
 },ue
     n = trioificatodalNothis.m     t }
- 
-     
-        ]imary' }r: 'prK', colo 'O'ok', label:key:         { 
+
+        ]imary' }r: 'prK', colo 'O'ok', label:key:         {
   tions || [ns.acios: opt  action
       ons.message,age: optiess        m
 tle,s.ti: optionle   titnfo',
-     'i || tions.type  type: op  
+     'i || tions.type  type: op
      = {dalMothis.current) {
       (optionsModalow   sh },
-    
+
  }
-   
+
       ] || [onsptions.acti actions: o       ,
  falseable !==.closions: optlosable     c  e,
  ns.messag: optio    messagee,
     titls.optione: itl
         tinfo',ype || '.ttions opype:
         tn = {iocatnerNotifithis.ban     {
-  ptions)er(oBann  show 
-     
+  ptions)er(oBann  show

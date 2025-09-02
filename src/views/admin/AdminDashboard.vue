@@ -136,9 +136,9 @@
                     />
                     <div class="tw-flex tw-justify-end tw-space-x-2">
                       <v-btn size="small" @click="resetZoneForm">Reset</v-btn>
-                      <v-btn 
-                        size="small" 
-                        color="primary" 
+                      <v-btn
+                        size="small"
+                        color="primary"
                         @click="createZone"
                         :disabled="!zoneFormValid"
                         :loading="creatingZone"
@@ -154,7 +154,7 @@
             <!-- Recent Zones -->
             <div class="tw-space-y-3">
               <h4 class="tw-font-medium tw-text-gray-900">Recent Zones</h4>
-              <div v-for="zone in recentZones" :key="zone.id" 
+              <div v-for="zone in recentZones" :key="zone.id"
                    class="tw-flex tw-items-center tw-justify-between tw-p-3 tw-bg-gray-50 tw-rounded-lg">
                 <div class="tw-flex tw-items-center">
                   <div class="tw-w-3 tw-h-3 tw-bg-indigo-500 tw-rounded-full tw-mr-3"></div>
@@ -219,9 +219,9 @@
                     />
                     <div class="tw-flex tw-justify-end tw-space-x-2">
                       <v-btn size="small" @click="resetFarmerForm">Reset</v-btn>
-                      <v-btn 
-                        size="small" 
-                        color="primary" 
+                      <v-btn
+                        size="small"
+                        color="primary"
                         @click="addFarmerToZone"
                         :disabled="!farmerFormValid"
                         :loading="addingFarmer"
@@ -237,7 +237,7 @@
             <!-- Recent Farmer Activities -->
             <div class="tw-space-y-3">
               <h4 class="tw-font-medium tw-text-gray-900">Recent Farmer Activities</h4>
-              <div v-for="activity in farmerActivities" :key="activity.id" 
+              <div v-for="activity in farmerActivities" :key="activity.id"
                    class="tw-flex tw-items-center tw-justify-between tw-p-3 tw-bg-gray-50 tw-rounded-lg">
                 <div class="tw-flex tw-items-center">
                   <v-icon :color="activity.color" class="tw-mr-3">{{ activity.icon }}</v-icon>
@@ -268,7 +268,7 @@
           </v-card-title>
           <v-card-text>
             <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
-              <div v-for="supervisor in zoneSupervisors" :key="supervisor.id" 
+              <div v-for="supervisor in zoneSupervisors" :key="supervisor.id"
                    class="tw-p-4 tw-bg-gray-50 tw-rounded-lg">
                 <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
                   <h5 class="tw-font-medium tw-text-gray-900">{{ supervisor.fullName }}</h5>

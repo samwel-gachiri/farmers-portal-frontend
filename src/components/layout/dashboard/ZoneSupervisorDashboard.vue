@@ -240,16 +240,17 @@
       </template>
     </v-snackbar>
   </v-container>
-</template><sc
-ript>
-import ArcGISZoneManager from '@/components/zone/ArcGISZoneManager.vue'
-import RouteOptimizer from '@/components/zone/RouteOptimizer.vue'
+ </template>
+<script>
+import axios from 'axios';
+import ArcGISZoneManager from '@/components/zone/ArcGISZoneManager.vue';
+import RouteOptimizer from '@/components/zone/RouteOptimizer.vue';
 
 export default {
   name: 'ZoneSupervisorDashboard',
   components: {
     ArcGISZoneManager,
-    RouteOptimizer
+    RouteOptimizer,
   },
   data() {
     return {
@@ -262,122 +263,122 @@ export default {
       todaysPickups: 0,
       completionRate: 85,
       todaysSchedule: [],
-      
+
       // Dialog states
       schedulePickupDialog: false,
       editFarmerDialog: false,
       zoneCommentsDialog: false,
-      
+
       // Form data
       newPickup: {
         farmerId: null,
         date: new Date().toISOString().substr(0, 10),
         time: '09:00',
-        notes: ''
+        notes: '',
       },
-      
+
       // Form validation
       pickupFormValid: false,
       schedulingPickup: false,
-      
+
       // Validation rules
       rules: {
-        required: value => !!value || 'Required.'
+        required: (value) => !!value || 'Required.',
       },
-      
+
       // Snackbar
       snackbar: {
         show: false,
         text: '',
-        color: 'success'
-      }
-    }
+        color: 'success',
+      },
+    };
   },
   mounted() {
-    this.loadDashboardData()
+    this.loadDashboardData();
   },
   methods: {
     async loadDashboardData() {
-      this.loading = true
-      
+      this.loading = true;
+
       try {
         await Promise.all([
           this.loadAssignedZones(),
           this.loadFarmersInZones(),
-          this.loadTodaysSchedule()
-        ])
-        this.calculateMetrics()
+          this.loadTodaysSchedule(),
+        ]);
+        this.calculateMetrics();
       } catch (error) {
-        console.error('Error loading dashboard data:', error)
-        this.showMessage({ type: 'error', text: 'Failed to load dashboard data' })
+        console.error('Error loading dashboard data:', error);
+        this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async loadAssignedZones() {
       try {
-        const response = await this.$http.get('/api/zone-supervisor-service/zones')
+        const response = await axios.get('/api/zone-supervisor-service/zones');
         if (response.data.success) {
-          this.assignedZones = response.data.data
+          this.assignedZones = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading assigned zones:', error)
+        console.error('Error loading assigned zones:', error);
       }
     },
 
     async loadFarmersInZones() {
       try {
-        const response = await this.$http.get('/api/zone-supervisor-service/farmers')
+        const response = await axios.get('/api/zone-supervisor-service/farmers');
         if (response.data.success) {
-          this.farmersInZones = response.data.data
+          this.farmersInZones = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading farmers:', error)
+        console.error('Error loading farmers:', error);
       }
     },
 
     async loadTodaysSchedule() {
       try {
-        const today = new Date().toISOString().split('T')[0]
-        const response = await this.$http.get(`/api/zone-supervisor-service/pickup-schedules?date=${today}`)
+        const today = new Date().toISOString().split('T')[0];
+        const response = await axios.get(`/api/zone-supervisor-service/pickup-schedules?date=${today}`);
         if (response.data.success) {
-          this.todaysSchedule = response.data.data.map(pickup => ({
+          this.todaysSchedule = response.data.data.map((pickup) => ({
             id: pickup.id,
             farmerName: pickup.farmerName,
             scheduledTime: new Date(pickup.scheduledDate),
-            status: pickup.status
-          }))
+            status: pickup.status,
+          }));
         }
       } catch (error) {
-        console.error('Error loading today\'s schedule:', error)
+        console.error('Error loading today\'s schedule:', error);
         // Mock data for demonstration
         this.todaysSchedule = [
           {
             id: 1,
             farmerName: 'John Doe',
             scheduledTime: new Date(Date.now() + 1000 * 60 * 60 * 2), // 2 hours from now
-            status: 'SCHEDULED'
+            status: 'SCHEDULED',
           },
           {
             id: 2,
             farmerName: 'Jane Smith',
             scheduledTime: new Date(Date.now() + 1000 * 60 * 60 * 4), // 4 hours from now
-            status: 'SCHEDULED'
-          }
-        ]
+            status: 'SCHEDULED',
+          },
+        ];
       }
     },
 
     calculateMetrics() {
-      this.todaysPickups = this.todaysSchedule.length
+      this.todaysPickups = this.todaysSchedule.length;
       // Mock completion rate calculation
-      this.completionRate = Math.floor(Math.random() * 20) + 80 // 80-100%
+      this.completionRate = Math.floor(Math.random() * 20) + 80; // 80-100%
     },
 
     async refreshData() {
-      await this.loadDashboardData()
-      this.showMessage({ type: 'success', text: 'Dashboard data refreshed' })
+      await this.loadDashboardData();
+      this.showMessage({ type: 'success', text: 'Dashboard data refreshed' });
     },
 
     openSchedulePickupDialog() {
@@ -385,110 +386,110 @@ export default {
         farmerId: null,
         date: new Date().toISOString().substr(0, 10),
         time: '09:00',
-        notes: ''
-      }
-      this.schedulePickupDialog = true
+        notes: '',
+      };
+      this.schedulePickupDialog = true;
     },
 
     openEditFarmerDialog() {
       if (!this.selectedFarmer) {
-        this.showMessage({ type: 'warning', text: 'Please select a farmer first' })
-        return
+        this.showMessage({ type: 'warning', text: 'Please select a farmer first' });
+        return;
       }
-      this.showMessage({ type: 'info', text: 'Edit farmer functionality coming soon' })
+      this.showMessage({ type: 'info', text: 'Edit farmer functionality coming soon' });
     },
 
     openZoneCommentsDialog() {
       if (!this.selectedZone) {
-        this.showMessage({ type: 'warning', text: 'Please select a zone first' })
-        return
+        this.showMessage({ type: 'warning', text: 'Please select a zone first' });
+        return;
       }
-      this.showMessage({ type: 'info', text: 'Zone comments functionality coming soon' })
+      this.showMessage({ type: 'info', text: 'Zone comments functionality coming soon' });
     },
 
     async schedulePickup() {
-      if (!this.pickupFormValid) return
+      if (!this.pickupFormValid) return;
 
-      this.schedulingPickup = true
+      this.schedulingPickup = true;
 
       try {
-        const pickupDateTime = new Date(`${this.newPickup.date}T${this.newPickup.time}:00`)
-        
-        const response = await this.$http.post('/api/zone-supervisor-service/pickup-schedules', {
+        const pickupDateTime = new Date(`${this.newPickup.date}T${this.newPickup.time}:00`);
+
+        const response = await axios.post('/api/zone-supervisor-service/pickup-schedules', {
           farmerId: this.newPickup.farmerId,
           exporterId: this.$store.getters.currentUser.exporterId,
           produceListingId: 'default', // This should come from farmer's active listing
           scheduledDate: pickupDateTime.toISOString(),
-          pickupNotes: this.newPickup.notes
-        })
-        
+          pickupNotes: this.newPickup.notes,
+        });
+
         if (response.data.success) {
-          this.showMessage({ type: 'success', text: 'Pickup scheduled successfully' })
-          this.schedulePickupDialog = false
-          await this.loadTodaysSchedule()
+          this.showMessage({ type: 'success', text: 'Pickup scheduled successfully' });
+          this.schedulePickupDialog = false;
+          await this.loadTodaysSchedule();
         }
       } catch (error) {
-        console.error('Error scheduling pickup:', error)
-        this.showMessage({ type: 'error', text: 'Failed to schedule pickup' })
+        console.error('Error scheduling pickup:', error);
+        this.showMessage({ type: 'error', text: 'Failed to schedule pickup' });
       } finally {
-        this.schedulingPickup = false
+        this.schedulingPickup = false;
       }
     },
 
     onZoneSelected(zone) {
-      this.selectedZone = zone
-      console.log('Zone selected:', zone)
+      this.selectedZone = zone;
+      console.log('Zone selected:', zone);
     },
 
     onFarmerSelected(farmer) {
-      this.selectedFarmer = farmer
-      console.log('Farmer selected:', farmer)
+      this.selectedFarmer = farmer;
+      console.log('Farmer selected:', farmer);
     },
 
     onRouteOptimized(route) {
-      console.log('Route optimized:', route)
-      this.showMessage({ 
-        type: 'success', 
-        text: `Route optimized: ${route.estimatedDistance}km, ${route.estimatedDuration}min` 
-      })
+      console.log('Route optimized:', route);
+      this.showMessage({
+        type: 'success',
+        text: `Route optimized: ${route.estimatedDistance}km, ${route.estimatedDuration}min`,
+      });
     },
 
     onPickupsScheduled(data) {
-      console.log('Pickups scheduled:', data)
-      this.loadTodaysSchedule()
+      console.log('Pickups scheduled:', data);
+      this.loadTodaysSchedule();
     },
 
     selectFarmer(farmer) {
-      this.selectedFarmer = farmer
+      this.selectedFarmer = farmer;
     },
 
     getFarmerStatus(farmer) {
-      if (!farmer.lastPickupDate) return 'New'
-      
-      const daysSince = Math.floor((Date.now() - new Date(farmer.lastPickupDate)) / (1000 * 60 * 60 * 24))
-      if (daysSince < 7) return 'Recent'
-      if (daysSince < 30) return 'Regular'
-      return 'Overdue'
+      if (!farmer.lastPickupDate) return 'New';
+
+      const daysSince = Math.floor((Date.now() - new Date(farmer.lastPickupDate)) / (1000 * 60 * 60 * 24));
+      if (daysSince < 7) return 'Recent';
+      if (daysSince < 30) return 'Regular';
+      return 'Overdue';
     },
 
     getFarmerStatusColor(farmer) {
-      const status = this.getFarmerStatus(farmer)
+      const status = this.getFarmerStatus(farmer);
       switch (status) {
-        case 'New': return 'blue'
-        case 'Recent': return 'green'
-        case 'Regular': return 'orange'
-        case 'Overdue': return 'red'
-        default: return 'grey'
+        case 'New': return 'blue';
+        case 'Recent': return 'green';
+        case 'Regular': return 'orange';
+        case 'Overdue': return 'red';
+        default: return 'grey';
       }
     },
 
     getPickupStatusColor(status) {
       switch (status) {
-        case 'SCHEDULED': return 'blue'
-        case 'IN_PROGRESS': return 'orange'
-        case 'COMPLETED': return 'green'
-        case 'CANCELLED': return 'red'
-        default: return 'grey'
+        case 'SCHEDULED': return 'blue';
+        case 'IN_PROGRESS': return 'orange';
+        case 'COMPLETED': return 'green';
+        case 'CANCELLED': return 'red';
+        default: return 'grey';
       }
     },
 
@@ -496,19 +497,20 @@ export default {
       return new Date(timestamp).toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false
-      })
+        hour12: false,
+      });
     },
 
     showMessage(message) {
       this.snackbar = {
         show: true,
         text: message.text,
-        color: message.type === 'error' ? 'error' : message.type === 'warning' ? 'warning' : 'success'
-      }
-    }
-  }
-}
+        // eslint-disable-next-line no-nested-ternary
+        color: message.type === 'error' ? 'error' : message.type === 'warning' ? 'warning' : 'success',
+      };
+    },
+  },
+};
 </script>
 
 <style scoped>

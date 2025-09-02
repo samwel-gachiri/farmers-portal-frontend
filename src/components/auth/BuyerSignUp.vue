@@ -118,9 +118,9 @@
 <script>
 // add default and phone number prop here
 import axios from 'axios';
+import VuePhoneNumberInput from 'vue-phone-number-input';
 import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
 import validations from '@/utils/validations.js';
-import VuePhoneNumberInput from 'vue-phone-number-input';
 
 export default {
   components: { TermsAndConditions, VuePhoneNumberInput },

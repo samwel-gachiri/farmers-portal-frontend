@@ -118,8 +118,8 @@
 
 <script>
 import VueApexCharts from 'vue-apexcharts';
-import Default from '@/components/layout/Default.vue';
 import axios from 'axios';
+import Default from '@/components/layout/Default.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
 import { formatToHumanWithTime } from '@/utils/time.js';
 

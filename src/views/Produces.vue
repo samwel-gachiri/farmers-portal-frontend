@@ -163,15 +163,15 @@
 </template>
 
 <script>
-import { getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
+import MarkdownIt from 'markdown-it';
+import DOMPurify from 'dompurify';
+import { getCurrentUserId } from '@/utils/roles.js';
 import CreateListing from '@/components/listing/CreateListing.vue';
 import AddFarmerProduce from '@/components/produce/AddFarmersProduce.vue';
 import Default from '@/components/layout/Default.vue';
 import EditProduceForm from '@/components/produce/EditProduceForm.vue';
 import CardTitle from '@/components/shared/CardTitle.vue';
-import MarkdownIt from 'markdown-it';
-import DOMPurify from 'dompurify';
 
 export default {
   components: {
