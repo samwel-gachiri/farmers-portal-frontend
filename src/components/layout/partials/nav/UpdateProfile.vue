@@ -12,8 +12,8 @@
             <avatar-icon :username="user.userProfile.fullName" :size="70" color="white" backgroundColor="#114cac" />
           </div>
           <div class="tw-text-center tw-mt-6">
-            <p class="c-green-text">{{ user.userProfile.fullName }}</p>
-            <small class="c-gray-text">{{ user.email }}</small>
+            <p class="c-green-text">{{ user?.userProfile?.fullName || 'User' }}</p>
+            <small class="c-gray-text">{{ user?.email || '—' }}</small>
           </div>
         </div>
         <div>

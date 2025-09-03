@@ -17,7 +17,7 @@ import jwtDecode from 'jwt-decode';
 const data = {
   user: JSON.parse(localStorage.getItem(USER)) || null,
   token: cookie.get(ACCESS_TOKEN) || '',
-  role: cookie.get(ROLE) || '',
+  role: cookie.get(ROLE) || jwtDecode(cookie.get(ACCESS_TOKEN) || '').role.toLowerCase() || '',
   authenticationStatus: null,
   userConfirmed: false,
 };

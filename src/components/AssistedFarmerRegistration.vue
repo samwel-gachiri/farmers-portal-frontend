@@ -67,8 +67,13 @@ export default {
     value(val) { this.dialog = val; },
     dialog(val) { this.$emit('input', val); },
   },
+  computed: {
+    canLookup() {
+      const l = this.lookup || {}; // defensive
+      return ((l.email && l.email.trim()) || (l.phoneNumber && l.phoneNumber.trim())) && !this.lookupLoading;
+    },
+  },
   methods: {
-    get canLookup() { return (this.lookup.email || this.lookup.phoneNumber) && !this.lookupLoading; },
     async handleFarmerRegistered(farmer) {
       // farmer: { id, name, phoneNumber, ... }
       this.lastFarmer = farmer;
@@ -82,11 +87,18 @@ export default {
       }
     },
     async lookupAndAddExisting() {
-      this.lookupError = ''; this.lookupSuccess = '';
-      if (!this.lookup.email && !this.lookup.phoneNumber) { this.lookupError = 'Provide email or phone'; return; }
+      // Ensure lookup object exists
+      if (!this.lookup) this.lookup = { email: '', phoneNumber: '' };
+      this.lookupError = '';
+      this.lookupSuccess = '';
+      const email = (this.lookup.email || '').trim();
+      const phone = (this.lookup.phoneNumber || '').trim();
+      if (!email && !phone) { this.lookupError = 'Provide email or phone'; return; }
+      // Basic email format guard (optional: keeps backend from choking on undefined)
+      if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { this.lookupError = 'Invalid email format'; return; }
       this.lookupLoading = true;
       try {
-        const payload = { email: this.lookup.email || null, phoneNumber: this.lookup.phoneNumber || null };
+        const payload = { email: email || null, phoneNumber: phone || null };
         const res = await axios.post(`/api/admin-service/zones/${this.zoneId}/farmers/lookup`, payload);
         if (res.data && res.data.success) {
           const farmerDto = res.data.data;
@@ -104,6 +116,7 @@ export default {
     resetForm() {
       // Reset FarmerSignUp by emitting event or using key
       this.lastFarmer = null;
+      this.lookup = { email: '', phoneNumber: '' };
       // Optionally, you can use a key prop on FarmerSignUp to force re-render
     },
     closeDialog() {
