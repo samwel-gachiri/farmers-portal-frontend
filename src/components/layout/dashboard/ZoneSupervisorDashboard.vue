@@ -400,11 +400,8 @@ export default {
     },
 
     openZoneCommentsDialog() {
-      if (!this.selectedZone) {
-        this.showMessage({ type: 'warning', text: 'Please select a zone first' });
-        return;
-      }
-      this.showMessage({ type: 'info', text: 'Zone comments functionality coming soon' });
+      const zoneId = this.selectedZone ? this.selectedZone.id : null;
+      this.$router.push({ name: 'ZoneCommentsManagement', query: zoneId ? { zoneId } : {} });
     },
 
     async schedulePickup() {

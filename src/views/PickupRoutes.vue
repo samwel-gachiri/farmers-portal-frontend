@@ -1,41 +1,49 @@
 <template>
-  <div class="p-4">
-    <h1 class="text-2xl font-semibold mb-4">Pickup Routes</h1>
-    <div class="flex items-center gap-2 mb-4">
-      <input type="date" v-model="selectedDate" class="border p-2 rounded" />
-      <button @click="openCreate" class="bg-green-600 text-white px-3 py-2 rounded">New Route</button>
+  <div class="tw-p-6 tw-space-y-6">
+    <!-- Header -->
+    <div class="tw-flex tw-items-end tw-justify-between tw-flex-wrap tw-gap-4">
+      <div class="tw-space-y-1">
+        <h1 class="tw-text-2xl tw-font-bold tw-text-gray-900">Pickup Routes</h1>
+        <p class="tw-text-sm tw-text-gray-500">Plan and track multi-stop pickups with an optimized route.</p>
+      </div>
+      <div class="tw-flex tw-items-center tw-gap-3">
+        <input type="date" v-model="selectedDate" class="tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 tw-text-sm tw-text-gray-800 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-green-500" />
+        <button @click="openCreate" class="tw-inline-flex tw-items-center tw-gap-2 tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-font-medium tw-px-4 tw-py-2 tw-rounded-lg tw-shadow-sm tw-transition">
+          <span>Plan Route</span>
+        </button>
+      </div>
     </div>
-    <div v-if="loading" class="text-gray-500">Loading...</div>
-    <div v-else-if="routes.length === 0" class="text-gray-500">No routes for selected date.</div>
-    <table v-else class="min-w-full bg-white shadow rounded">
-      <thead>
-        <tr class="bg-gray-100 text-left text-sm uppercase tracking-wider">
-          <th class="px-4 py-2">Route ID</th>
-          <th class="px-4 py-2">Scheduled</th>
-          <th class="px-4 py-2">Stops</th>
-          <th class="px-4 py-2">Status</th>
-          <th class="px-4 py-2"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="r in routes" :key="r.routeId" class="border-t hover:bg-gray-50">
-          <td class="px-4 py-2 font-mono text-xs">{{ r.routeId }}</td>
-          <td class="px-4 py-2">{{ formatDateTime(r.scheduledDate) }}</td>
-          <td class="px-4 py-2">{{ r.stops.length }}</td>
-          <td class="px-4 py-2">
-            <span :class="statusClass(r.status)" class="px-2 py-1 rounded text-xs font-semibold">{{ r.status }}</span>
-          </td>
-          <td class="px-4 py-2 text-right">
-            <button @click="selectRoute(r.routeId)" class="text-blue-600 hover:underline text-sm">View</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
 
+    <!-- Loading / Empty -->
+    <div v-if="loading" class="tw-text-gray-500">Loading routes…</div>
+    <div v-else-if="routes.length === 0" class="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-shadow-sm tw-p-8 tw-text-center tw-space-y-3">
+      <div class="tw-text-lg tw-font-medium tw-text-gray-800">No routes on {{ selectedDate }}</div>
+      <p class="tw-text-gray-500 tw-text-sm">Create your first pickup route using predictions and smart ordering.</p>
+      <button @click="openCreate" class="tw-inline-flex tw-items-center tw-gap-2 tw-bg-gray-900 hover:tw-bg-black tw-text-white tw-font-medium tw-px-4 tw-py-2 tw-rounded-lg tw-transition">Plan a new route</button>
+    </div>
+
+    <!-- Routes Grid -->
+    <div v-else class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 xl:tw-grid-cols-3 tw-gap-4">
+      <div v-for="r in routes" :key="r.routeId" class="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-shadow-sm tw-p-5 tw-space-y-3 hover:tw-shadow-md tw-transition">
+        <div class="tw-flex tw-items-start tw-justify-between">
+          <div class="tw-space-y-1">
+            <div class="tw-text-[11px] tw-font-mono tw-text-gray-400">{{ r.routeId }}</div>
+            <div class="tw-text-sm tw-text-gray-500">{{ formatDateTime(r.scheduledDate) }}</div>
+          </div>
+          <span :class="statusClass(r.status)" class="tw-text-[11px] tw-font-semibold tw-rounded-full tw-px-2 tw-py-1">{{ r.status }}</span>
+        </div>
+        <div class="tw-flex tw-items-center tw-justify-between tw-pt-2">
+          <div class="tw-text-sm tw-text-gray-700"><span class="tw-font-semibold">{{ (r.stops && r.stops.length) || r.stopCount || 0 }}</span> stops</div>
+          <button @click="selectRoute(r.routeId)" class="tw-text-sm tw-text-green-700 hover:tw-text-green-800 tw-font-medium">Open</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawers / Modals -->
     <PickupRouteDetail v-if="activeRoute" :route-id="activeRoute" @close="activeRoute=null" />
     <CreatePickupRouteModal v-if="showCreate" @close="showCreate=false" @created="onCreated" />
   </div>
-</template>
+ </template>
 
 <script>
 import pickupRouteService from '@/services/pickupRoute.service.js';
@@ -56,6 +64,11 @@ export default {
   created() {
     this.fetchRoutes();
   },
+  watch: {
+    selectedDate() {
+      this.fetchRoutes();
+    },
+  },
   methods: {
     async fetchRoutes() {
       this.loading = true;
@@ -67,17 +80,19 @@ export default {
     },
     openCreate() { this.showCreate = true; },
     onCreated(route) {
-      this.routes.unshift(route);
+      // If API returns full route detail, refresh list; otherwise push summary card
+      if (!route || !route.routeId) { this.fetchRoutes(); return; }
+      this.fetchRoutes();
       this.showCreate = false;
     },
     selectRoute(id) { this.activeRoute = id; },
     statusClass(status) {
       switch (status) {
-        case 'PLANNED': return 'bg-blue-100 text-blue-700';
-        case 'IN_PROGRESS': return 'bg-yellow-100 text-yellow-700';
-        case 'COMPLETED': return 'bg-green-100 text-green-700';
-        case 'CANCELLED': return 'bg-red-100 text-red-700';
-        default: return 'bg-gray-100 text-gray-600';
+        case 'PLANNED': return 'tw-bg-blue-100 tw-text-blue-700';
+        case 'IN_PROGRESS': return 'tw-bg-yellow-100 tw-text-yellow-700';
+        case 'COMPLETED': return 'tw-bg-green-100 tw-text-green-700';
+        case 'CANCELLED': return 'tw-bg-red-100 tw-text-red-700';
+        default: return 'tw-bg-gray-100 tw-text-gray-600';
       }
     },
     formatDateTime(dt) {
@@ -89,5 +104,4 @@ export default {
 </script>
 
 <style scoped>
-table { border-collapse: separate; border-spacing: 0; }
 </style>
