@@ -14,10 +14,26 @@ import { auth } from '@/firebase.js';
 // Optional: If you need to decode the JWT token client-side
 import jwtDecode from 'jwt-decode';
 
+// Safely resolve initial role without throwing if token is missing/invalid
+function getInitialRole() {
+  const roleFromCookie = cookie.get(ROLE);
+  if (roleFromCookie) return roleFromCookie;
+
+  const token = cookie.get(ACCESS_TOKEN);
+  if (!token || typeof token !== 'string') return '';
+  try {
+    const decoded = jwtDecode(token);
+    const rawRole = decoded?.role;
+    return typeof rawRole === 'string' ? rawRole.toLowerCase() : '';
+  } catch (_) {
+    return '';
+  }
+}
+
 const data = {
   user: JSON.parse(localStorage.getItem(USER)) || null,
   token: cookie.get(ACCESS_TOKEN) || '',
-  role: cookie.get(ROLE) || jwtDecode(cookie.get(ACCESS_TOKEN) || '').role.toLowerCase() || '',
+  role: getInitialRole(),
   authenticationStatus: null,
   userConfirmed: false,
 };
@@ -112,8 +128,14 @@ const actions = {
       // Extract token and roleSpecificData from the response
       const { token, roleSpecificData } = data;
       // Optionally decode the token to get the role (if not using roleSpecificData)
-      const decodedToken = jwtDecode(token);
-      const role = decodedToken.role?.toLowerCase() || 'farmer'; // Fallback to 'FARMER' if role not found
+      let role = '';
+      try {
+        const decodedToken = jwtDecode(token);
+        role = decodedToken?.role ? String(decodedToken.role).toLowerCase() : '';
+      } catch (_) {
+        // Fallback to persisted ROLE cookie if present; else keep empty
+        role = cookie.get(ROLE) || '';
+      }
 
       // Commit the user data to the store
       commit('setUserAuthenticated', {

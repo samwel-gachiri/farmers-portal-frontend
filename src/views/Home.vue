@@ -43,6 +43,26 @@
         >
           Exporter
         </button>
+        <!-- Staff login (minimal, collapsible) -->
+        <details class="tw-w-full tw-text-center tw-text-sm tw-text-gray-600 tw-select-none">
+          <summary class="tw-cursor-pointer tw-outline-none">Staff login (System Admin or Zone Supervisor)</summary>
+          <div class="tw-mt-3 tw-flex tw-flex-col tw-gap-2">
+            <button
+              class="tw-w-full tw-py-2 tw-bg-gray-800 hover:tw-bg-black tw-text-white tw-rounded-md tw-font-medium tw-transition tw-outline-none focus:tw-ring-2 focus:tw-ring-gray-400"
+              @click="openSignIn('system_admin')"
+              aria-label="Sign in as System Admin"
+            >
+              System Admin
+            </button>
+            <button
+              class="tw-w-full tw-py-2 tw-bg-gray-700 hover:tw-bg-gray-800 tw-text-white tw-rounded-md tw-font-medium tw-transition tw-outline-none focus:tw-ring-2 focus:tw-ring-gray-300"
+              @click="openSignIn('zone_supervisor')"
+              aria-label="Sign in as Zone Supervisor"
+            >
+              Zone Supervisor
+            </button>
+          </div>
+        </details>
       </div>
     </div>
   </div>

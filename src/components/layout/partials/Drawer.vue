@@ -53,9 +53,9 @@
       </v-menu>
 
       <!-- Regular Navigation Items -->
-      <template v-for="(item, i) in items">
+  <template v-for="(item, i) in items">
         <v-menu
-            v-if="hasPermission(item.permissions)"
+    v-if="canView(item)"
             :key="i"
             right
             offset-x
@@ -278,6 +278,33 @@ export default {
         desc: 'View your farm details',
       },
       {
+        icon: 'mdi-format-list-bulleted',
+        text: 'Listings',
+        link: { name: 'Listings' },
+        permissions: [],
+        roles: ['FARMER'],
+        iconColor: 'indigo',
+        desc: 'Manage and view your listings',
+      },
+      {
+        icon: 'mdi-truck-fast',
+        text: 'Orders',
+        link: { name: 'FarmerOrders' },
+        permissions: [],
+        roles: ['FARMER'],
+        iconColor: 'orange',
+        desc: 'Track orders for your listings',
+      },
+      {
+        icon: 'mdi-magnify',
+        text: 'Browse Requests',
+        link: { name: 'BrowseRequests' },
+        permissions: [],
+        roles: ['FARMER'],
+        iconColor: 'blue',
+        desc: 'Find buyer requests to fulfill',
+      },
+      {
         icon: 'mdi-chart-areaspline',
         text: 'Reports',
         link: { name: 'FarmerReport' },
@@ -341,6 +368,19 @@ export default {
     },
   },
   methods: {
+    // New: combine role + permission checks per item
+    canView(item) {
+      const roleOk = !item.roles || item.roles.length === 0
+        ? true
+        : (this.userRole && item.roles.includes(this.userRole));
+
+      const perms = Array.isArray(item.permissions) ? item.permissions : [];
+      const permOk = perms.length === 0
+        ? true
+        : perms.some((p) => this.userPermissions.includes(p));
+
+      return roleOk && permOk;
+    },
     hasPermission(requiredPermissions) {
       // If roles are specified, check if the user has the required role
       if (requiredPermissions.length === 0) {
@@ -405,9 +445,6 @@ export default {
   padding-left: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
-.holographic-logo {
-  /* filter: drop-shadow(0 0 5px rgba(100, 255, 100, 0.3)); */
-}
 .holographic-logo:hover {
   filter: drop-shadow(0 0 10px rgba(100, 255, 100, 0.5));
 }
@@ -453,6 +490,7 @@ export default {
 }
 .gradient-icon {
   background: linear-gradient(45deg, #8d08e8, #05d30f);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
