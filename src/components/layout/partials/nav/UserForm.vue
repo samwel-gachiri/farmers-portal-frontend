@@ -142,9 +142,9 @@ export default {
     //   }
     // });
     // if (this.resizeObserver != null) this.resizeObserver.observe(document.getElementById('map'));
-    this.fullname = this.userProfile.fullName;
-    this.email = this.user.userProfile.email;
-    this.phoneNumber = this.user.userProfile.phoneNumber;
+    this.fullname = this.fullName;
+    this.email = this.user.email;
+    this.phoneNumber = this.user.phoneNumber;
     if (this.user.location && this.role !== 'exporter') {
       this.map.panTo([this.user?.location?.latitude, this.user?.location?.longitude]);
       this.marker = L.marker([this.user?.location?.latitude, this.user?.location?.longitude], {

@@ -121,12 +121,21 @@
               @close="addProduceDialog = false"
           />
 
-          <v-dialog v-model="listingDialog" max-width="500px">
+          <v-dialog
+            v-model="listingDialog"
+            :max-width="$vuetify.breakpoint.smAndDown ? 'calc(100vw - 24px)' : '500px'"
+            :fullscreen="$vuetify.breakpoint.xsOnly"
+          >
             <create-listing />
           </v-dialog>
 
           <!-- Details Dialog -->
-          <v-dialog v-model="detailsDialog" max-width="900px">
+          <v-dialog
+            v-model="detailsDialog"
+            :max-width="$vuetify.breakpoint.smAndDown ? 'calc(100vw - 24px)' : '900px'"
+            :fullscreen="$vuetify.breakpoint.xsOnly"
+            scrollable
+          >
             <v-card class="glass-surface">
               <v-card-title class="tw-items-start tw-gap-2 tw-flex tw-flex-col md:tw-flex-row md:tw-items-center md:tw-justify-between">
                 <div>
@@ -138,15 +147,19 @@
               <v-card-text>
                 <!-- Gallery -->
                 <div class="details-gallery">
-                  <v-carousel hide-delimiters height="320" v-if="(selectedFarmerProduce?.imageUrls?.length || 0) > 0">
+                  <v-carousel
+                    hide-delimiters
+                    :height="$vuetify.breakpoint.smAndDown ? 220 : 320"
+                    v-if="(selectedFarmerProduce?.imageUrls?.length || 0) > 0"
+                  >
                     <v-carousel-item
                       v-for="(img, i) in selectedFarmerProduce.imageUrls"
                       :key="i"
                     >
-                      <v-img :src="img" class="tw-rounded-xl" cover height="320" />
+                      <v-img :src="img" class="tw-rounded-xl" cover :height="$vuetify.breakpoint.smAndDown ? 220 : 320" />
                     </v-carousel-item>
                   </v-carousel>
-                  <v-img v-else :src="(selectedFarmerProduce?.imageUrls && selectedFarmerProduce?.imageUrls[0]) || 'https://via.placeholder.com/1200x600?text=No+Image'" height="320" class="tw-rounded-xl" cover />
+                  <v-img v-else :src="(selectedFarmerProduce?.imageUrls && selectedFarmerProduce?.imageUrls[0]) || 'https://via.placeholder.com/1200x600?text=No+Image'" :height="$vuetify.breakpoint.smAndDown ? 220 : 320" class="tw-rounded-xl" cover />
                 </div>
                 <!-- Meta -->
                 <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-mt-4">
@@ -190,7 +203,12 @@
             </v-card>
           </v-dialog>
 
-          <v-dialog v-model="editProduceDialog" max-width="560px">
+          <v-dialog
+            v-model="editProduceDialog"
+            :max-width="$vuetify.breakpoint.smAndDown ? 'calc(100vw - 24px)' : '560px'"
+            :fullscreen="$vuetify.breakpoint.xsOnly"
+            scrollable
+          >
             <v-card class="glass-surface">
               <v-card-title class="dialog-title">
                 <div class="tw-flex tw-items-center tw-gap-2">
@@ -211,7 +229,11 @@
           </v-dialog>
 
           <!-- Share Dialog -->
-          <v-dialog v-model="showDialog" max-width="400">
+          <v-dialog
+            v-model="showDialog"
+            :max-width="$vuetify.breakpoint.smAndDown ? 'calc(100vw - 24px)' : '400px'"
+            :fullscreen="$vuetify.breakpoint.xsOnly"
+          >
             <v-card class="glass-surface">
               <v-card-title>Share this profile</v-card-title>
               <v-card-text>

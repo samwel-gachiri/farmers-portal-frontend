@@ -473,7 +473,7 @@ export default {
 
     onZoneSelected(zone) {
       this.selectedZone = zone;
-      console.log('Zone selected:', zone);
+      // console.log('Zone selected:', zone);
     },
 
     async onZoneCreated(zone) {

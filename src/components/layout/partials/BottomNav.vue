@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { getCurrentUserId, viewPermissions } from '@/utils/roles.js';
+import { getCurrentUserId, viewPermissions, getCurrentUserRole } from '@/utils/roles.js';
 
 export default {
   name: 'BottomNav',
@@ -33,7 +33,7 @@ export default {
   computed: {
     navItems() {
       // Only show a subset of main navigation items for mobile
-      return [
+      const items = [
         {
           icon: 'mdi-view-dashboard',
           text: 'Dashboard',
@@ -56,13 +56,6 @@ export default {
           roles: ['farmer'],
         },
         {
-          icon: 'mdi-cart',
-          text: 'My Orders',
-          short: 'Orders',
-          link: { name: 'BuyerOrders' },
-          roles: ['buyer'],
-        },
-        {
           icon: 'mdi-sprout',
           text: 'My Farm',
           short: 'Farm',
@@ -70,6 +63,12 @@ export default {
           roles: ['farmer'],
         },
       ];
+      // If farmer, ensure Orders/Browse Requests aren't present
+      const role = getCurrentUserRole && getCurrentUserRole();
+      if (role === 'FARMER') {
+        return items.filter((i) => !['My Orders', 'Browse Requests'].includes(i.text));
+      }
+      return items;
     },
     filteredNavItems() {
       // Filter nav items based on permissions

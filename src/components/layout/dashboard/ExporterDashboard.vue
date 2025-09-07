@@ -640,8 +640,9 @@ export default {
       }
     },
 
+    // eslint-disable-next-line no-unused-vars
     onZoneSelected(zone) {
-      console.log('Zone selected:', zone);
+      // console.log('Zone selected:', zone);
     },
 
     async onZoneCreated(zone) {

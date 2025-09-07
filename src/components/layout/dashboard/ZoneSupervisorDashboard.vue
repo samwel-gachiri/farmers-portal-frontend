@@ -435,24 +435,24 @@ export default {
 
     onZoneSelected(zone) {
       this.selectedZone = zone;
-      console.log('Zone selected:', zone);
+      // console.log('Zone selected:', zone);
     },
 
     onFarmerSelected(farmer) {
       this.selectedFarmer = farmer;
-      console.log('Farmer selected:', farmer);
+      // console.log('Farmer selected:', farmer);
     },
 
     onRouteOptimized(route) {
-      console.log('Route optimized:', route);
+      // console.log('Route optimized:', route);
       this.showMessage({
         type: 'success',
         text: `Route optimized: ${route.estimatedDistance}km, ${route.estimatedDuration}min`,
       });
     },
 
-    onPickupsScheduled(data) {
-      console.log('Pickups scheduled:', data);
+    onPickupsScheduled() {
+      // console.log('Pickups scheduled:', data);
       this.loadTodaysSchedule();
     },
 

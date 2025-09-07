@@ -9,10 +9,10 @@
       <v-card>
         <div class="tw-py-4 tw-flex tw-flex-col tw-justify-center">
           <div class="tw-w-full tw-flex tw-justify-center">
-            <avatar-icon :username="user.userProfile.fullName" :size="70" color="white" backgroundColor="#114cac" />
+            <avatar-icon :username="user.fullName" :size="70" color="white" backgroundColor="#114cac" />
           </div>
           <div class="tw-text-center tw-mt-6">
-            <p class="c-green-text">{{ user?.userProfile?.fullName || 'User' }}</p>
+            <p class="c-green-text">{{ user?.fullName || 'User' }}</p>
             <small class="c-gray-text">{{ user?.email || '—' }}</small>
           </div>
         </div>

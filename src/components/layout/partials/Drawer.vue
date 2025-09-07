@@ -1,101 +1,62 @@
 <template>
   <div class="futuristic-drawer tw-border-l-5">
-    <!-- Drawer Header with Holographic Effect -->
+    <!-- Drawer Header, brand + user card -->
     <div class="drawer-header">
-      <logo-title class="holographic-logo"></logo-title>
-      <UserRole/>
-      <div class="connection-status">
-        <v-chip v-if="false" small label class="status-chip" :color="connectionColor">
-          <v-icon small left>mdi-access-point</v-icon>
-          {{ connectionStatus }}
-        </v-chip>
+      <div class="brand-row">
+        <logo-title class="brand" />
+        <span class="brand-badge">Portal</span>
+      </div>
+      <div class="user-mini" v-if="displayName || userRole">
+        <avatar class="mr-3" />
+        <div class="user-info">
+          <div class="name">{{ displayName || 'User' }}</div>
+          <div class="role-chip">
+            <v-icon x-small left>mdi-shield-account</v-icon>
+            <span>{{ userRole || 'Guest' }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Main Navigation -->
+    <div class="section-label">Navigation</div>
     <v-list dense class="nav-list">
-      <!-- Farm AI Special Item -->
-      <v-menu
-          right
-          offset-x
-          open-on-hover
-          close-delay="100"
-          open-delay="300"
+      <v-list-item
+        key="aiagent"
+        link
+        :to="{ name: 'FarmAI' }"
+        active-class="nav-active"
+        class="nav-item ai-nav-item"
       >
-        <template v-slot:activator="{ on, attrs }">
-          <v-list-item
-              key="aiagent"
-              link
-              :to="{ name: 'FarmAI' }"
-              active-class="nav-active"
-              class="nav-item ai-nav-item"
-              v-bind="attrs"
-              v-on="on"
-          >
-            <v-list-item-action>
-              <div class="ai-icon-container">
-                <v-icon left class="gradient-icon">mdi-sparkles</v-icon>
-              </div>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title class="nav-text">
-                Farm AI
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </template>
-        <v-card class="hover-menu-card" max-width="250">
-          <v-card-text class="py-2">
-            <div class="font-weight-medium mb-1">Farm AI</div>
-            <div class="text-caption">AI-powered farming insights and recommendations</div>
-          </v-card-text>
-        </v-card>
-      </v-menu>
+        <v-list-item-action>
+          <v-icon left class="gradient-icon">mdi-sparkles</v-icon>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title class="nav-text">Farm AI</v-list-item-title>
+          <v-list-item-subtitle class="nav-sub">Insights & recommendations</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
 
-      <!-- Regular Navigation Items -->
-  <template v-for="(item, i) in items">
-        <v-menu
-    v-if="canView(item)"
-            :key="i"
-            right
-            offset-x
-            open-on-hover
-            close-delay="100"
-            open-delay="300"
+      <template v-for="(item, i) in items">
+        <v-list-item
+          v-if="canView(item)"
+          :key="i"
+          link
+          :to="item.link"
+          active-class="nav-active"
+          class="nav-item"
         >
-          <template v-slot:activator="{ on, attrs }">
-            <v-list-item
-                link
-                :to="item.link"
-                active-class="nav-active"
-                class="nav-item"
-                v-bind="attrs"
-                v-on="on"
-            >
-              <v-list-item-action>
-                <v-icon :color="item.iconColor || 'primary'">{{ item.icon }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title class="nav-text">
-                  {{ item.text }}
-                </v-list-item-title>
-              </v-list-item-content>
-              <v-list-item-action v-if="item.notifications" class="notification-badge">
-                <v-badge
-                    color="error"
-                    :content="item.notifications"
-                    inline
-                ></v-badge>
-              </v-list-item-action>
-            </v-list-item>
-          </template>
-          <v-card class="hover-menu-card" max-width="250">
-            <v-card-text class="py-2">
-              <div class="font-weight-medium mb-1">{{ item.text }}</div>
-              <div class="text-caption">{{ item.desc || 'Navigate to ' + item.text }}</div>
-            </v-card-text>
-          </v-card>
-        </v-menu>
+          <v-list-item-action>
+            <v-icon :color="item.iconColor || 'primary'">{{ item.icon }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title class="nav-text">{{ item.text }}</v-list-item-title>
+            <v-list-item-subtitle v-if="item.desc" class="nav-sub">{{ item.desc }}</v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action v-if="item.notifications" class="notification-badge">
+            <v-badge color="error" :content="item.notifications" inline></v-badge>
+          </v-list-item-action>
+        </v-list-item>
       </template>
     </v-list>
 
@@ -198,10 +159,12 @@ import {
 } from '@/utils/roles.js';
 import LogoTitle from '@/components/shared/LogoText.vue';
 import UserRole from '@/components/layout/partials/nav/UserRole.vue';
+import Avatar from '@/components/layout/partials/nav/Avatar.vue';
 
 export default {
   name: 'FuturisticDrawer',
-  components: { UserRole, LogoTitle },
+  // eslint-disable-next-line vue/no-unused-components
+  components: { UserRole, LogoTitle, Avatar },
   data: () => ({
     items: [
       {
@@ -287,24 +250,6 @@ export default {
         desc: 'Manage and view your listings',
       },
       {
-        icon: 'mdi-truck-fast',
-        text: 'Orders',
-        link: { name: 'FarmerOrders' },
-        permissions: [],
-        roles: ['FARMER'],
-        iconColor: 'orange',
-        desc: 'Track orders for your listings',
-      },
-      {
-        icon: 'mdi-magnify',
-        text: 'Browse Requests',
-        link: { name: 'BrowseRequests' },
-        permissions: [],
-        roles: ['FARMER'],
-        iconColor: 'blue',
-        desc: 'Find buyer requests to fulfill',
-      },
-      {
         icon: 'mdi-chart-areaspline',
         text: 'Reports',
         link: { name: 'FarmerReport' },
@@ -341,6 +286,15 @@ export default {
     isAuthenticated() {
       return isAuthenticated();
     },
+    displayName() {
+      const token = this.$store.state.auth.token;
+      if (!token) return '';
+      try {
+        const decoded = jwtDecode(token);
+        const user = decoded.user || {};
+        return user.fullName || [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || '';
+      } catch (e) { return ''; }
+    },
     connectionColor() {
       return this.isOnline ? 'success' : 'error';
     },
@@ -360,7 +314,7 @@ export default {
       if (!token) return null;
       try {
         const decoded = jwtDecode(token);
-        return decoded.role || null;
+        return decoded.role || decoded.user?.role || null;
       } catch (error) {
         console.error('Error decoding token:', error);
         return null;
@@ -380,14 +334,6 @@ export default {
         : perms.some((p) => this.userPermissions.includes(p));
 
       return roleOk && permOk;
-    },
-    hasPermission(requiredPermissions) {
-      // If roles are specified, check if the user has the required role
-      if (requiredPermissions.length === 0) {
-        return this.userRole && this.items.find((item) => item.permissions === requiredPermissions)?.roles?.includes(this.userRole);
-      }
-      // Check if the user has any of the required permissions
-      return requiredPermissions.some((permission) => this.userPermissions.includes(permission));
     },
     async submitFeatureRequest() {
       if (!this.featureRequest.trim()) return;
@@ -427,61 +373,54 @@ export default {
 </script>
 
 <style scoped>
-/* Existing styles unchanged */
-.hover-menu-card {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+/* Modernized Drawer */
 .futuristic-drawer {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(245, 250, 240, 0.95)) !important;
-  backdrop-filter: blur(5px);
-  border-right: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.96), rgba(245, 250, 240, 0.96)) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-right: 1px solid rgba(15, 23, 42, 0.06);
   padding-left: 0;
 }
 .drawer-header {
   position: relative;
-  padding-left: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 12px 12px 8px 12px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
-.holographic-logo:hover {
-  filter: drop-shadow(0 0 10px rgba(100, 255, 100, 0.5));
-}
-.connection-status {
-  position: absolute;
-  bottom: 5px;
-  right: 0;
-}
-.status-chip {
-  font-size: 0.6rem;
-  height: 20px;
-  border-radius: 10px;
-}
+.brand-row { display: flex; align-items: center; justify-content: space-between; }
+.brand-badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: rgba(34,197,94,0.12); color: #16a34a; border: 1px solid rgba(34,197,94,0.25); font-weight: 700; }
+.user-mini { display: flex; align-items: center; margin-top: 10px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.7); border: 1px solid rgba(15,23,42,0.06); }
+.user-info { display: flex; flex-direction: column; }
+.user-info .name { font-weight: 800; font-size: 0.95rem; color: #0f172a; }
+.role-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #334155; background: rgba(15,23,42,0.03); border: 1px solid rgba(15,23,42,0.06); padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
+
+.section-label { font-size: 0.68rem; letter-spacing: .12em; text-transform: uppercase; color: #64748b; padding: 10px 16px 4px; }
 .nav-list {
   flex-grow: 1;
   overflow-y: auto;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 4px 6px 8px;
 }
 .nav-item {
-  border-radius: 8px;
+  border-radius: 12px;
 }
 .nav-item:hover {
-  background: rgba(0, 0, 0, 0.03) !important;
+  background: rgba(15, 23, 42, 0.035) !important;
 }
 .nav-active {
-  background: rgba(226,232,240,255) !important;
-  margin-right: 8px !important;
+  background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(59,130,246,0.18)) !important;
+  border: 1px solid rgba(15,23,42,0.06);
+  margin-right: 4px !important;
 }
 .nav-active .nav-text {
   font-weight: 800;
 }
 .nav-text {
   font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
 }
+.nav-sub { font-size: 0.72rem; color: #64748b; }
 .ai-nav-item {
   margin-bottom: 8px !important;
 }

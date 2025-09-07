@@ -34,14 +34,14 @@
               :allow-new="true"
           >
           </v-combobox>
-          <v-combobox
-              v-if="false"
-              dense
-              class="data-input"
-              v-model="newProduce.farmingType"
-              label="Farming type"
-              :items="farmingTypes"
-          ></v-combobox>
+          <!-- Category selector: Crop vs Livestock -->
+          <div>
+            <div class="tw-text-xs tw-text-gray-600 tw-mb-1">Category</div>
+            <v-btn-toggle v-model="category" mandatory dense class="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200">
+              <v-btn small value="CROP">Crop</v-btn>
+              <v-btn small value="LIVESTOCK">Livestock</v-btn>
+            </v-btn-toggle>
+          </div>
         </div>
         <div class="tw-flex tw-my-5 tw-flex-col tw-gap-4">
           <!-- <v-textarea
@@ -130,6 +130,75 @@
             dense
             clearable
           ></v-text-field>
+
+          <!-- Crop: Planted date -->
+          <div v-if="category === 'CROP'">
+            <div class="tw-text-xs tw-text-gray-600 tw-mb-1">Planted on (for prediction)</div>
+            <v-menu v-model="plantedMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="plantedDate"
+                  label="Planted date"
+                  readonly
+                  dense
+                  outlined
+                  class="data-input"
+                  prepend-inner-icon="mdi-calendar"
+                  v-bind="attrs"
+                  v-on="on"
+                />
+              </template>
+              <v-date-picker v-model="plantedDate" no-title scrollable @input="plantedMenu = false" />
+            </v-menu>
+          </div>
+
+          <!-- Livestock: Animal age -->
+          <div v-if="category === 'LIVESTOCK'" class="tw-grid tw-grid-cols-2 tw-gap-3">
+            <v-text-field
+              v-model.number="animalAgeValue"
+              label="Animal age"
+              type="number"
+              min="0"
+              dense
+              outlined
+              class="data-input"
+              prepend-inner-icon="mdi-cow"
+            />
+            <v-select
+              v-model="animalAgeUnit"
+              :items="ageUnits"
+              label="Age unit"
+              dense
+              outlined
+              class="data-input"
+            />
+          </div>
+
+          <!-- Optional: user-specified time to harvest -->
+          <div>
+            <div class="tw-text-xs tw-text-gray-600 tw-mb-1">Optional: specify time to harvest</div>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              <v-text-field
+                v-model.number="harvestOverrideValue"
+                label="Time value"
+                type="number"
+                min="0"
+                dense
+                outlined
+                class="data-input"
+                prepend-inner-icon="mdi-timer-outline"
+              />
+              <v-select
+                v-model="harvestOverrideUnit"
+                :items="harvestUnits"
+                label="Unit"
+                dense
+                outlined
+                class="data-input"
+              />
+            </div>
+            <div class="tw-text-xs tw-text-gray-500 tw-mt-1">If provided, we'll use this to predict/plan harvest instead of defaults.</div>
+          </div>
           <h6 class="tw-font-bold">{{newProduce.images.length > 1 ? 'Images': 'Image'}} Preview</h6>
           <!-- Camera PhotoCapture integration -->
           <div class="tw-mb-2">
@@ -193,6 +262,16 @@ export default {
         images: [],
         previousYield: '', // Added field for previous yield
       },
+      // New predictive fields
+      category: 'CROP',
+      plantedDate: '',
+      plantedMenu: false,
+      animalAgeValue: null,
+      animalAgeUnit: 'months',
+      ageUnits: ['days', 'weeks', 'months', 'years'],
+      harvestOverrideValue: null,
+      harvestOverrideUnit: 'days',
+      harvestUnits: ['days', 'weeks', 'months'],
       newProduceId: '', // Used to store the id of a newly created produce
       showCamera: false,
       imagePreviews: [],
@@ -300,6 +379,18 @@ export default {
           formData.append('produceName', this.selectedProduce);
           formData.append('description', this.newProduce.desc);
           formData.append('farmingType', this.newProduce.farmingType);
+          formData.append('category', this.category);
+          if (this.category === 'CROP' && this.plantedDate) {
+            formData.append('plantedDate', this.plantedDate);
+          }
+          if (this.category === 'LIVESTOCK' && this.animalAgeValue !== null && this.animalAgeValue !== '') {
+            formData.append('animalAgeValue', String(this.animalAgeValue));
+            formData.append('animalAgeUnit', this.animalAgeUnit);
+          }
+          if (this.harvestOverrideValue !== null && this.harvestOverrideValue !== '') {
+            formData.append('customHarvestValue', String(this.harvestOverrideValue));
+            formData.append('customHarvestUnit', this.harvestOverrideUnit);
+          }
           // Add previous yield if provided
           if (this.newProduce.previousYield !== '' && this.newProduce.previousYield !== undefined) {
             formData.append('yieldAmount', this.newProduce.previousYield);
