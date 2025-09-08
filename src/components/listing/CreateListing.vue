@@ -260,6 +260,8 @@ export default {
     return {
       units: ['KG', 'L', 'Bunch', 'Crate'],
       selectedProduce: null,
+      selectedYield: null,
+      availableYields: [],
       farmer: {
         id: 'string',
         name: 'string',
@@ -329,13 +331,36 @@ export default {
     },
   },
   methods: {
-    farmProduceListingChanged(farmProduce) {
-      if (farmProduce) {
-        this.selectedProduce = farmProduce;
-        this.units = ['KG', 'L', 'Bunch', 'Crate'];
-        this.listing.unit = 'KG';
-        this.listing.farmerProduceId = farmProduce.id;
+    async farmProduceListingChanged(farmProduce) {
+      if (!farmProduce) return;
+      this.selectedProduce = farmProduce;
+      this.units = ['KG', 'L', 'Bunch', 'Crate'];
+      this.listing.unit = 'KG';
+      this.listing.farmerProduceId = farmProduce.id;
+      this.selectedYield = null;
+      this.availableYields = [];
+      // Fetch available yields for this produce
+      try {
+        const { data } = await axios.get(`/api/yields/farmer-produce/${farmProduce.id}`);
+        this.availableYields = (data.data || []).map((y) => ({
+          ...y,
+          display: `${y.yieldAmount} ${y.yieldUnit} (${this.formatDate(y.harvestDate)})`,
+        })).filter((y) => y.remainingAmount > 0);
+      } catch {
+        this.availableYields = [];
       }
+    },
+    yieldSelectionChanged(yieldObj) {
+      if (!yieldObj) return;
+      this.selectedYield = yieldObj;
+      this.listing.unit = yieldObj.yieldUnit;
+      this.listing.quantity = yieldObj.remainingAmount;
+      this.listing.farmerProduceId = yieldObj.farmerProduceId;
+      // Optionally pre-fill price or other fields
+    },
+    formatDate(date) {
+      if (!date) return '-';
+      try { return new Date(date).toLocaleDateString(); } catch { return String(date); }
     },
     handleCapturedPhotos(photos) {
       this.listing.photos = [...photos];
@@ -361,6 +386,11 @@ export default {
       return value.length >= 1 && value.length <= 3 || 'You must upload between 1 and 3 images';
     },
     async postListing() {
+      // Validate against yield availability if yield is selected
+      if (this.selectedYield && Number(this.listing.quantity) > Number(this.selectedYield.remainingAmount)) {
+        this.$toast.error('Listing quantity exceeds available yield amount.');
+        return;
+      }
       if (!this.isValid || this.listing.farmerProduceId === '' || this.listing.price.price <= 0) {
         this.$toast.error('Please fill in all required information');
         return;
@@ -374,6 +404,9 @@ export default {
         formData.append('quantity', this.listing.quantity);
         formData.append('price', this.listing.price.price);
         formData.append('currency', this.listing.price.currency);
+        if (this.selectedYield) {
+          formData.append('produceYieldId', this.selectedYield.id);
+        }
 
         if (this.listing.photos.length) {
           // Prefer blobs/files; fallback to fetching blob URLs

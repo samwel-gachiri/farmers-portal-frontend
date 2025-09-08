@@ -91,6 +91,33 @@
                   </h3>
                   <v-chip x-small :color="statusColor(item.status)" class="tw-text-white chip-elevated">{{ item.status }}</v-chip>
                 </div>
+                <div class="tw-mt-2 tw-flex tw-items-center tw-gap-2">
+                  <v-progress-linear
+                    v-if="item.status === 'GROWING' && item.plantingDate && item.predictedHarvestDate"
+                    :value="growthProgress(item)"
+                    height="6"
+                    color="green"
+                    rounded
+                    style="width: 80%"
+                  ></v-progress-linear>
+                  <span v-if="item.status === 'GROWING' && item.plantingDate && item.predictedHarvestDate" class="tw-text-xs tw-text-green-700">{{ growthProgress(item) }}%</span>
+                </div>
+                <div v-if="item.status === 'PLANTED' || item.status === 'READY_TO_HARVEST' || item.status === 'GROWING'" class="tw-mt-1 tw-text-xs tw-text-gray-500">
+                  <span v-if="item.predictedHarvestDate">Predicted Harvest: {{ formatDate(item.predictedHarvestDate) }}</span>
+                  <span v-if="item.predictionConfidence"> (Confidence: {{ (item.predictionConfidence * 100).toFixed(0) }}%)</span>
+                </div>
+                <v-btn
+                  v-if="item.status === 'PLANTED' || !item.plantingDate"
+                  x-small
+                  color="primary"
+                  class="tw-mt-2"
+                  @click.stop="openStartGrowth(item)"
+                >
+                  <v-icon left x-small>mdi-seed</v-icon>
+                  Start Growth
+                </v-btn>
+                <!-- ...existing code... -->
+
                 <div class="desc-clamp tw-mt-2" v-html="renderMarkdown(item.description)"></div>
                 <div class="tw-flex tw-items-center tw-justify-between tw-mt-3 tw-text-[11px] tw-text-gray-500">
                   <span>{{ isLivestock(item) ? 'Acquired' : 'Planted' }}: {{ formatDate(getPlantedOrAcquiredDate(item)) || '—' }}</span>
@@ -114,8 +141,22 @@
           </div>
 
           <!-- Dialogs -->
+          <v-dialog v-model="startGrowthDialog" max-width="400">
+            <v-card>
+              <v-card-title>Start Growth</v-card-title>
+              <v-card-text>
+                <v-date-picker v-model="plantingDate" :max="new Date().toISOString().substr(0, 10)" label="Planting Date" required></v-date-picker>
+                <div v-if="plantingDateError" class="tw-text-red-600 tw-text-xs tw-mt-2">{{ plantingDateError }}</div>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn text @click="startGrowthDialog = false">Cancel</v-btn>
+                <v-btn color="primary" @click="submitStartGrowth">Start</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <add-farmer-produce
-              :farmer-produces="farmer.farmerProduces"
+          :farmer-produces="farmer.farmerProduces"
               ref="addFarmerProduce"
               v-model="addProduceDialog"
               @close="addProduceDialog = false"
@@ -324,6 +365,11 @@ export default {
       detailsDialog: false,
       historyLoading: false,
       history: { entries: [] },
+      // Start Growth dialog state
+      startGrowthDialog: false,
+      selectedProduce: null,
+      plantingDate: '',
+      plantingDateError: '',
     };
   },
   mounted() {
@@ -337,7 +383,7 @@ export default {
   // reserved for future derived state
   },
   methods: {
-  // expose function for both template and script
+    // expose function for both template and script
     getCurrentUserId,
     openDetails(item) {
       this.selectedFarmerProduce = item;
@@ -407,6 +453,41 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+    // Start Growth dialog methods
+    openStartGrowth(item) {
+      this.selectedProduce = item;
+      this.plantingDate = '';
+      this.plantingDateError = '';
+      this.startGrowthDialog = true;
+    },
+    async submitStartGrowth() {
+      if (!this.plantingDate) {
+        this.plantingDateError = 'Please select a planting date.';
+        return;
+      }
+      if (new Date(this.plantingDate) > new Date()) {
+        this.plantingDateError = 'Planting date cannot be in the future.';
+        return;
+      }
+      try {
+        await this.$axios.post('/api/harvest/start-growth', {
+          farmerProduceId: this.selectedProduce.id,
+          plantingDate: this.plantingDate,
+          notes: null,
+        });
+        this.$toast.success('Growth started!');
+        this.startGrowthDialog = false;
+        this.fetchFarmerDetails();
+      } catch (e) {
+        this.plantingDateError = e.response?.data?.message || 'Failed to start growth.';
+      }
+    },
+    growthProgress(item) {
+      if (!item.plantingDate || !item.predictedHarvestDate) return 0;
+      const total = (new Date(item.predictedHarvestDate) - new Date(item.plantingDate)) / (1000 * 60 * 60 * 24);
+      const elapsed = (new Date() - new Date(item.plantingDate)) / (1000 * 60 * 60 * 24);
+      return Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
     },
     openShareDialog() {
       this.showDialog = true;

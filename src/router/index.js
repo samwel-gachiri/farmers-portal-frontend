@@ -31,6 +31,42 @@ const ifNotAuthenticated = (_to, _from, next) => {
 
 const routes = [
   {
+    path: '/harvest-yields',
+    name: 'HarvestAndYields',
+    component: () => import('../views/HarvestAndYields.vue'),
+    meta: {
+      title: 'Harvest & Yields',
+      requiresAuth: true,
+      roles: ['FARMER'],
+      description: 'Manage harvests, yields, and analytics',
+      icon: 'mdi-food-apple',
+    },
+  },
+  {
+    path: '/yield-recording',
+    name: 'YieldRecording',
+    component: () => import('../views/YieldRecording.vue'),
+    meta: {
+      title: 'Yield Recording',
+      requiresAuth: true,
+      roles: ['FARMER'],
+      description: 'Record and manage produce yields',
+      icon: 'mdi-chart-bar',
+    },
+  },
+  {
+    path: '/harvest-analytics',
+    name: 'HarvestAnalytics',
+    component: () => import('../views/HarvestAnalytics.vue'),
+    meta: {
+      title: 'Harvest Analytics',
+      requiresAuth: true,
+      roles: ['FARMER'],
+      description: 'View analytics and insights for harvests and yields',
+      icon: 'mdi-chart-areaspline',
+    },
+  },
+  {
     path: '/',
     name: 'Landing',
     // beforeEnter: ifAuthenticated,
