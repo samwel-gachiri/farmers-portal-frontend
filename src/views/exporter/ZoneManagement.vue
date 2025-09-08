@@ -307,8 +307,9 @@ export default {
       try {
         const decoded = jwtDecode(token);
         return decoded.user?.permissions || [];
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        console.error('Error decoding token:', error);
+        // console.error('Error decoding token:', error);
         return [];
       }
     },

@@ -21,21 +21,6 @@
     <!-- Main Navigation -->
     <div class="section-label">Navigation</div>
     <v-list dense class="nav-list">
-      <v-list-item
-        key="aiagent"
-        link
-        :to="{ name: 'FarmAI' }"
-        active-class="nav-active"
-        class="nav-item ai-nav-item"
-      >
-        <v-list-item-action>
-          <v-icon left class="gradient-icon">mdi-sparkles</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title class="nav-text">Farm AI</v-list-item-title>
-          <v-list-item-subtitle class="nav-sub">Insights & recommendations</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
 
       <template v-for="(item, i) in items">
         <v-list-item
