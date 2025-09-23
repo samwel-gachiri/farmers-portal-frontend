@@ -471,7 +471,7 @@ export default {
         return;
       }
       try {
-        await this.$axios.post('/api/harvest/start-growth', {
+        await axios.post('/api/harvest/start-growth', {
           farmerProduceId: this.selectedProduce.id,
           plantingDate: this.plantingDate,
           notes: null,
