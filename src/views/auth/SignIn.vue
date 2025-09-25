@@ -50,8 +50,20 @@
                 </v-avatar>
               </v-card-title>
               <v-card-subtitle class="text-center text-h5 font-weight-bold mb-2">
-                Login
+                {{ getPortalTitle() }}
               </v-card-subtitle>
+              <!-- Portal Context Display -->
+              <div v-if="portalContext" class="text-center mb-4">
+                <v-chip
+                  :color="getPortalColor()"
+                  text-color="white"
+                  small
+                  class="ma-1"
+                >
+                  <v-icon left small>{{ getPortalIcon() }}</v-icon>
+                  {{ getPortalDisplayName() }}
+                </v-chip>
+              </div>
               <v-card-text>
                 <v-btn-toggle v-model="inputType" class="mb-4" mandatory>
                   <v-btn value="email" variant="outlined">Email</v-btn>
@@ -104,36 +116,74 @@
                   block
                   large
                   rounded
+                  :loading="isLoading"
+                  :disabled="!isFormValid"
                   @click="signIn"
                 >
-                  Sign In
+                  <v-icon left>mdi-login</v-icon>
+                  Sign In{{ portalContext ? ` to ${getPortalDisplayName()}` : '' }}
                 </v-btn>
                 <!-- Error message display -->
-                <div v-if="errorMessage" class="tw-mt-4 tw-text-red-600 tw-text-center tw-font-semibold">
-                  {{ errorMessage }}
-                  <div v-if="showCreateAccountBtn" class="tw-mt-2">
+                <v-alert
+                  v-if="errorMessage"
+                  type="error"
+                  class="mt-4"
+                  dense
+                  outlined
+                >
+                  <div class="d-flex align-center">
+                    <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
+                    <span>{{ errorMessage }}</span>
+                  </div>
+                  <div v-if="showCreateAccountBtn" class="mt-3">
                     <v-btn
                       color="success"
                       rounded
                       block
                       @click="goToSignUp"
-                      class="tw-bg-green-600 tw-text-white tw-font-bold tw-shadow-lg"
                     >
+                      <v-icon left>mdi-account-plus</v-icon>
                       Create Account
                     </v-btn>
                   </div>
-                  <div v-else-if="showCreateRoleBtn" class="tw-mt-2">
+                  <div v-else-if="showCreateRoleBtn" class="mt-3">
                     <v-btn
                       color="warning"
                       rounded
                       block
                       @click="goToSignUp"
-                      class="tw-bg-yellow-500 tw-text-black tw-font-bold tw-shadow-lg"
                     >
+                      <v-icon left>mdi-account-cog</v-icon>
                       Create {{ roleName }} Role
                     </v-btn>
                   </div>
-                </div>
+                  <div v-if="showRetryBtn" class="mt-3">
+                    <v-btn
+                      color="primary"
+                      rounded
+                      block
+                      outlined
+                      @click="retrySignIn"
+                    >
+                      <v-icon left>mdi-refresh</v-icon>
+                      Try Again
+                    </v-btn>
+                  </div>
+                </v-alert>
+
+                <!-- Success message display -->
+                <v-alert
+                  v-if="successMessage"
+                  type="success"
+                  class="mt-4"
+                  dense
+                  outlined
+                >
+                  <div class="d-flex align-center">
+                    <v-icon color="success" class="mr-2">mdi-check-circle</v-icon>
+                    <span>{{ successMessage }}</span>
+                  </div>
+                </v-alert>
                 <div class="mt-3 text-center">
                   <span class="text-caption">Forgot password?</span>
                   <v-btn
@@ -215,23 +265,36 @@ export default {
       phoneNumber: '',
       fullPhoneNumber: '',
       password: '',
-      showPassword: false, // password visibility toggle
+      showPassword: false,
       errorMessage: '',
+      successMessage: '',
       showCreateAccountBtn: false,
       showCreateRoleBtn: false,
-      roleName: '', // for dynamic role button
+      showRetryBtn: false,
+      roleName: '',
+      isLoading: false,
+      retryCount: 0,
+      maxRetries: 3,
     };
   },
   computed: {
     isExporter() {
       return getCurrentUserRole() === 'exporter';
     },
+    portalContext() {
+      return this.$route.query.portal || this.$store.getters['auth/portalContext']?.portal;
+    },
+    roleContext() {
+      return this.$route.query.role || this.$store.getters['auth/portalContext']?.role;
+    },
+    isFormValid() {
+      return this.emailOrPhone.trim() && this.password.trim();
+    },
   },
   mounted() {
-    // If role is empty, redirect to Home with redirect to SignIn
-    const role = getCurrentUserRole();
-    if (!role) {
-      this.$toast.info('Please select a role to sign in');
+    // Check for portal context from route or store
+    if (!this.portalContext) {
+      this.$toast.info('Please select a portal to sign in');
       const currentPath = window.location.pathname + window.location.search + window.location.hash;
       this.$router.push({
         name: 'Home',
@@ -240,7 +303,10 @@ export default {
         },
       });
     } else {
-      this.$toast.info(`Signing in as ${role}`);
+      this.successMessage = `Welcome to ${this.getPortalDisplayName()}`;
+      setTimeout(() => {
+        this.successMessage = '';
+      }, 3000);
     }
   },
   methods: {
@@ -250,37 +316,73 @@ export default {
       this.emailOrPhone = this.fullPhoneNumber;
     },
     async signIn() {
+      if (!this.isFormValid) {
+        this.errorMessage = 'Please fill in all required fields';
+        return;
+      }
+
+      this.isLoading = true;
       this.errorMessage = '';
+      this.successMessage = '';
       this.showCreateAccountBtn = false;
       this.showCreateRoleBtn = false;
+      this.showRetryBtn = false;
       this.roleName = '';
+
       try {
+        const roleType = this.getRoleForAuth();
         const payload = {
-          emailOrPhone: this.emailOrPhone,
+          emailOrPhone: this.emailOrPhone.trim(),
           password: this.password,
-          roleType: getCurrentUserRole().toUpperCase(),
+          roleType,
+          portalContext: this.portalContext,
         };
+
         const response = await axios.post('/api/auth/login', payload);
+
         if (response.data.success) {
           const data = response.data.data;
+
+          // Store portal and role context
+          await this.$store.dispatch('auth/setPortalContext', {
+            portal: this.portalContext,
+            role: this.roleContext,
+          });
+
           await this.$store.dispatch('auth/signIn', { data });
-          // Redirect to intended route or dashboard
-          const redirect = this.$route.query.redirect;
-          if (redirect) {
-            this.$router.push(redirect);
-          } else {
+
+          this.successMessage = 'Sign in successful! Redirecting...';
+
+          // Redirect after a short delay
+          setTimeout(() => {
+            // const redirect = this.$route.query.redirect;
+            // if (redirect) {
+            //   try {
+            //     this.$router.push(atob(redirect));
+            //   } catch {
+            //     this.$router.push({ name: 'Dashboard' });
+            //   }
+            // } else {
+            //   this.$router.push({ name: 'Dashboard' });
+            // }
             this.$router.push({ name: 'Dashboard' });
-          }
+          }, 1500);
         } else {
           this.handleSignInError(response.data.msg || 'Login failed');
         }
       } catch (error) {
-        const msg = error.response?.data?.message || error.message;
+        console.error('Sign in error:', error);
+        const msg = error.response?.data?.message || error.message || 'Network error occurred';
         this.handleSignInError(msg);
+      } finally {
+        this.isLoading = false;
       }
     },
     handleSignInError(msg) {
       this.errorMessage = msg;
+      // eslint-disable-next-line no-plusplus
+      this.retryCount++;
+
       // Check for "user not found"
       if (/user not found/i.test(msg)) {
         this.showCreateAccountBtn = true;
@@ -295,9 +397,96 @@ export default {
         // Format role name for display (capitalize, remove underscores)
         this.roleName = roleMatch[1].replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
       }
+
+      // Show retry button for network errors
+      if (/network|timeout|connection/i.test(msg) && this.retryCount < this.maxRetries) {
+        this.showRetryBtn = true;
+      }
     },
+
+    retrySignIn() {
+      this.signIn();
+    },
+
     goToSignUp() {
-      this.$router.push({ name: 'SignUp' });
+      const query = {};
+      if (this.portalContext) query.portal = this.portalContext;
+      if (this.roleContext) query.role = this.roleContext;
+
+      this.$router.push({
+        name: 'SignUp',
+        query,
+      });
+    },
+
+    getPortalTitle() {
+      if (!this.portalContext) return 'Login';
+
+      const titles = {
+        farmer: 'Farmer Login',
+        buyer: 'Buyer Login',
+        exporter: 'Exporter Login',
+      };
+
+      return titles[this.portalContext] || 'Login';
+    },
+
+    getPortalDisplayName() {
+      if (!this.portalContext) return '';
+
+      const names = {
+        farmer: 'Farmer Portal',
+        buyer: 'Buyer Portal',
+        exporter: this.getRoleDisplayName(),
+      };
+
+      return names[this.portalContext] || '';
+    },
+
+    getRoleDisplayName() {
+      if (this.portalContext !== 'exporter' || !this.roleContext) return 'Exporter Portal';
+
+      const roleNames = {
+        exporter: 'Super Admin Portal',
+        system_admin: 'System Admin Portal',
+        zone_supervisor: 'Zone Supervisor Portal',
+      };
+
+      return roleNames[this.roleContext] || 'Exporter Portal';
+    },
+
+    getPortalColor() {
+      const colors = {
+        farmer: 'green',
+        buyer: 'blue',
+        exporter: 'purple',
+      };
+
+      return colors[this.portalContext] || 'primary';
+    },
+
+    getPortalIcon() {
+      const icons = {
+        farmer: 'mdi-barn',
+        buyer: 'mdi-cart',
+        exporter: 'mdi-crown',
+      };
+
+      return icons[this.portalContext] || 'mdi-account';
+    },
+
+    getRoleForAuth() {
+      if (this.portalContext === 'exporter' && this.roleContext) {
+        return this.roleContext.toUpperCase();
+      }
+
+      const roleMap = {
+        farmer: 'FARMER',
+        buyer: 'BUYER',
+        exporter: 'EXPORTER',
+      };
+
+      return roleMap[this.portalContext] || 'FARMER';
     },
   },
 };

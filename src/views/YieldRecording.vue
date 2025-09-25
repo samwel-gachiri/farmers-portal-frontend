@@ -5,12 +5,13 @@
       <div class="bg-shape bg-2"></div>
       <div class="bg-shape bg-3"></div>
       <v-container class="glass-container py-10 px-4" fluid>
-        <v-row class="mb-8" align="center" justify="space-between">
-          <v-col cols="12" md="7">
-            <h1 class="display-2 font-weight-bold text-primary mb-2 d-flex align-center">
-              <v-icon color="primary" large class="mr-3">mdi-seed</v-icon>
+        <v-row class="mb-8" align="center" justify="center">
+          <v-col cols="12" class="text-center">
+            <h1 class="display-2 font-weight-bold text-primary mb-2 d-flex align-center justify-center">
+              <v-icon color="primary" large class="mr-3">mdi-sprout</v-icon>
               Record Harvest Yield
             </h1>
+            <p class="text-subtitle-1 text-grey-darken-1">Track your harvest yields and manage your farm production</p>
           </v-col>
         </v-row>
         <v-row class="mb-10" dense>
@@ -160,6 +161,7 @@ export default {
         yieldAmount: '',
         yieldUnit: '',
         harvestDate: '',
+        plantingDate: '',
         seasonYear: '',
         seasonName: '',
         notes: '',
@@ -195,10 +197,18 @@ export default {
     async fetchProduces() {
       try {
         const farmerId = this.$store.state.user?.id || this.$route.params.farmerId;
-        const { data } = await axios.get(`/farmers-service/farmer/${farmerId}/produces`);
+        const { data } = await axios.get(`/api/farmers/${farmerId}/produces/for-yield-recording`);
         this.produces = data.data || [];
-      } catch {
-        this.produces = [];
+      } catch (error) {
+        console.error('Error fetching produces:', error);
+        // Fallback to existing endpoint if new one doesn't exist yet
+        try {
+          const { data } = await axios.get(`/farmers-service/farmer/${farmerId}/produces`);
+          this.produces = data.data || [];
+        } catch {
+          this.produces = [];
+          this.$toast.error('Failed to load your produces. Please try again.');
+        }
       }
     },
     async fetchYieldHistory() {
@@ -232,21 +242,25 @@ export default {
     async submitYield() {
       if (!this.validateForm()) return;
       try {
-        await axios.post('/api/yields/record', {
+        await axios.post('/api/yields/record-enhanced', {
           ...this.form,
           yieldAmount: Number(this.form.yieldAmount),
           seasonYear: this.form.seasonYear ? Number(this.form.seasonYear) : null,
+          plantingDate: this.form.plantingDate || null,
         });
-        this.$toast.success('Yield recorded!');
+        this.$toast.success('Yield recorded successfully!');
+        // Reset form
         this.form.yieldAmount = '';
         this.form.yieldUnit = '';
         this.form.harvestDate = '';
+        this.form.plantingDate = '';
         this.form.seasonYear = '';
         this.form.seasonName = '';
         this.form.notes = '';
         this.fetchYieldHistory();
       } catch (e) {
-        this.$toast.error(e.response?.data?.message || 'Failed to record yield.');
+        console.error('Error recording yield:', e);
+        this.$toast.error(e.response?.data?.message || 'Failed to record yield. Please try again.');
       }
     },
     // eslint-disable-next-line no-unused-vars
@@ -312,23 +326,21 @@ export default {
 <style scoped>
 .million-dollar-bg {
   min-height: 100vh;
-  background: linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%);
+  background: #f8fafc;
   position: relative;
   overflow-x: hidden;
 }
 .glass-container {
-  background: rgba(255,255,255,0.7);
-  border-radius: 2rem;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-  backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.95);
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 .glass-modal {
-  background: rgba(255,255,255,0.95);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-  border-radius: 1.5rem;
-  border: 1.5px solid rgba(255,255,255,0.25);
-  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.98);
+  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 .bg-shape {
   position: absolute;
@@ -340,8 +352,8 @@ export default {
   left: -120px;
   width: 340px;
   height: 340px;
-  background: radial-gradient(circle, #a5b4fc 0%, #818cf8 100%);
-  opacity: 0.25;
+  background: #e2e8f0;
+  opacity: 0.3;
   border-radius: 50%;
 }
 .bg-2 {
@@ -349,8 +361,8 @@ export default {
   right: -100px;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, #6ee7b7 0%, #34d399 100%);
-  opacity: 0.18;
+  background: #f1f5f9;
+  opacity: 0.4;
   border-radius: 50%;
 }
 .bg-3 {
@@ -358,8 +370,8 @@ export default {
   left: 50%;
   width: 220px;
   height: 220px;
-  background: radial-gradient(circle, #fde68a 0%, #fbbf24 100%);
-  opacity: 0.13;
+  background: #f8fafc;
+  opacity: 0.5;
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }

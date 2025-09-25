@@ -1,42 +1,126 @@
 <template>
-  <form @submit.prevent="submit" class="yield-entry-form flex flex-col gap-4 p-4 rounded shadow bg-white">
-    <div>
-      <label class="block font-semibold mb-1">Produce</label>
-      <select v-model="form.farmerProduceId" class="input w-full" required>
-        <option value="" disabled>Select produce</option>
-        <option v-for="produce in produces" :key="produce.id" :value="produce.id">
-          {{ produce.name }}
-        </option>
-      </select>
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">Yield Amount</label>
-      <input v-model.number="form.yieldAmount" type="number" min="0.01" step="0.01" class="input w-full" required />
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">Unit</label>
-      <select v-model="form.yieldUnit" class="input w-full" required>
-        <option value="" disabled>Select unit</option>
-        <option v-for="unit in units" :key="unit" :value="unit">{{ unit }}</option>
-      </select>
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">Harvest Date</label>
-      <input v-model="form.harvestDate" type="date" class="input w-full" required />
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">Season (optional)</label>
-      <div class="flex gap-2">
-        <input v-model="form.seasonYear" type="number" min="2000" max="2100" class="input w-1/2" placeholder="Year" />
-        <input v-model="form.seasonName" type="text" class="input w-1/2" placeholder="Season name (e.g. Long Rains)" />
-      </div>
-    </div>
-    <div>
-      <label class="block font-semibold mb-1">Notes (optional)</label>
-      <textarea v-model="form.notes" class="input w-full" rows="2" placeholder="Any notes about this harvest..."></textarea>
-    </div>
-    <button type="submit" class="btn btn-success w-full">Save Yield</button>
-  </form>
+  <div class="yield-entry-form">
+    <h3 class="text-h6 font-weight-bold mb-4 d-flex align-center">
+      <v-icon color="primary" class="mr-2">mdi-plus-circle</v-icon>
+      Record New Yield
+    </h3>
+    <v-form @submit.prevent="submit">
+      <v-select
+        v-model="form.farmerProduceId"
+        :items="produces"
+        item-title="name"
+        item-value="id"
+        label="Select Produce"
+        outlined
+        dense
+        required
+        class="mb-4"
+        prepend-icon="mdi-sprout"
+      >
+        <template v-slot:no-data>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>
+                No produces found. Add some produces first.
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+      </v-select>
+
+      <v-text-field
+        v-model.number="form.yieldAmount"
+        label="Yield Amount"
+        type="number"
+        min="0.01"
+        step="0.01"
+        outlined
+        dense
+        required
+        class="mb-4"
+        prepend-icon="mdi-weight"
+      />
+
+      <v-select
+        v-model="form.yieldUnit"
+        :items="units"
+        label="Unit"
+        outlined
+        dense
+        required
+        class="mb-4"
+        prepend-icon="mdi-scale-balance"
+      />
+
+      <v-text-field
+        v-model="form.plantingDate"
+        label="Planting Date (optional)"
+        type="date"
+        outlined
+        dense
+        class="mb-4"
+        prepend-icon="mdi-seed"
+      />
+
+      <v-text-field
+        v-model="form.harvestDate"
+        label="Harvest Date"
+        type="date"
+        outlined
+        dense
+        required
+        class="mb-4"
+        prepend-icon="mdi-calendar-check"
+      />
+
+      <v-row class="mb-4">
+        <v-col cols="6">
+          <v-text-field
+            v-model.number="form.seasonYear"
+            label="Season Year"
+            type="number"
+            min="2000"
+            max="2100"
+            outlined
+            dense
+            prepend-icon="mdi-calendar"
+          />
+        </v-col>
+        <v-col cols="6">
+          <v-text-field
+            v-model="form.seasonName"
+            label="Season Name"
+            placeholder="e.g. Long Rains"
+            outlined
+            dense
+            prepend-icon="mdi-weather-rainy"
+          />
+        </v-col>
+      </v-row>
+
+      <v-textarea
+        v-model="form.notes"
+        label="Notes (optional)"
+        outlined
+        dense
+        rows="2"
+        class="mb-4"
+        prepend-icon="mdi-note-text"
+        placeholder="Any notes about this harvest..."
+      />
+
+      <v-btn
+        type="submit"
+        color="success"
+        block
+        large
+        class="font-weight-bold"
+      >
+        <v-icon left>mdi-content-save</v-icon>
+        Record Yield
+      </v-btn>
+    </v-form>
+  </div>
 </template>
 
 <script>
@@ -53,22 +137,8 @@ export default {
 
 <style scoped>
 .yield-entry-form {
-  max-width: 420px;
-}
-.input {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-}
-.btn-success {
-  background: #059669;
-  color: #fff;
-  border: none;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
+  background: white;
+  border-radius: 8px;
+  padding: 0;
 }
 </style>

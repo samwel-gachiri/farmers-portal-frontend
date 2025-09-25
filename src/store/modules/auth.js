@@ -34,6 +34,8 @@ const data = {
   user: JSON.parse(localStorage.getItem(USER)) || null,
   token: cookie.get(ACCESS_TOKEN) || '',
   role: getInitialRole(),
+  // Persist portalContext so SignIn/SignUp can read the selected portal/role
+  portalContext: JSON.parse(localStorage.getItem('portalContext')) || { portal: '', role: '' },
   authenticationStatus: null,
   userConfirmed: false,
 };
@@ -44,6 +46,7 @@ const getters = {
   isAuthenticated: (state) => !!state.token,
   accessToken: (state) => state.token,
   role: (state) => state.role,
+  portalContext: (state) => state.portalContext,
   authenticationStatus: (state) => (state.authenticationStatus
     ? state.authenticationStatus
     : { variant: 'secondary' }),
@@ -95,6 +98,14 @@ const mutations = {
     cookie.set(ACCESS_TOKEN, token);
     cookie.set(ROLE, role);
   },
+  setPortalContext(state, { portal, role }) {
+    state.portalContext = { portal: portal || '', role: role || '' };
+    try {
+      localStorage.setItem('portalContext', JSON.stringify(state.portalContext));
+    } catch (e) {
+      // ignore storage errors
+    }
+  },
   setUserToken(state, token) {
     cookie.set(ACCESS_TOKEN, token);
     state.token = token;
@@ -105,6 +116,11 @@ const mutations = {
   },
   clearAuthentication(state) {
     localStorage.removeItem(USER);
+    try {
+      localStorage.removeItem('portalContext');
+    } catch (e) {
+      // ignore
+    }
     cookie.remove(ACCESS_TOKEN);
     cookie.remove(ROLE);
     state.token = '';
@@ -119,6 +135,10 @@ const actions = {
   },
   setViewRole: async ({ commit }, text) => {
     commit('setUserRole', text);
+  },
+  setPortalContext: async ({ commit }, payload) => {
+    // payload: { portal: 'farmer'|'buyer'|'exporter', role: 'system_admin'|... }
+    commit('setPortalContext', payload);
   },
   clearAuthenticationStatus: ({ commit }) => {
     commit('clearAuthenticationStatus', null);

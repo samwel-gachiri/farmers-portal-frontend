@@ -1,84 +1,80 @@
 <template>
-  <v-container fluid class="tw-p-6 tw-bg-gray-50 tw-min-h-screen">
+  <v-container fluid class="exporter-dashboard">
     <!-- Header Section -->
-    <div class="tw-flex tw-flex-col sm:tw-flex-row tw-justify-between tw-items-start sm:tw-items-center tw-mb-8">
-      <div>
-        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-mb-2">Exporter Dashboard</h1>
-        <p class="tw-text-gray-600">Comprehensive system oversight and management</p>
-      </div>
-      <div class="tw-flex tw-gap-3 tw-mt-4 sm:tw-mt-0">
-        <v-btn color="primary" @click="refreshData" :loading="loading">
-          <v-icon left>mdi-refresh</v-icon>
-          Refresh
-        </v-btn>
-        <v-btn color="success" @click="exportReport">
-          <v-icon left>mdi-download</v-icon>
-          Export
-        </v-btn>
-      </div>
+    <div class="dashboard-header mb-8">
+      <v-row align="center" justify="space-between">
+        <v-col cols="12" md="8">
+          <h1 class="text-h4 font-weight-bold text-primary mb-2">Exporter Dashboard</h1>
+          <p class="text-subtitle-1 text--secondary">Comprehensive system oversight and management</p>
+        </v-col>
+        <v-col cols="12" md="4" class="text-right">
+          <div class="d-flex justify-end">
+            <v-btn color="primary" @click="refreshData" :loading="loading" class="mr-2">
+              <v-icon left>mdi-refresh</v-icon>
+              Refresh
+            </v-btn>
+            <v-btn color="success" @click="exportReport">
+              <v-icon left>mdi-download</v-icon>
+              Export
+            </v-btn>
+          </div>
+        </v-col>
+      </v-row>
     </div>
 
     <!-- Key Metrics Cards -->
-    <v-row class="tw-mb-8">
+    <v-row class="mb-8">
       <v-col cols="12" sm="6" md="3">
-        <v-card class="tw-rounded-xl tw-shadow-md hover:tw-shadow-lg tw-transition-shadow tw-h-full">
-          <v-card-text class="tw-p-6">
-            <div class="tw-flex tw-items-center tw-justify-between">
-              <div>
-                <p class="tw-text-sm tw-text-gray-600 tw-mb-1">Total Zones</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-blue-600">{{ analytics.totalZones }}</p>
+        <v-card class="metric-card elevation-2" color="primary">
+          <v-card-text class="white--text">
+            <div class="d-flex align-center">
+              <div class="flex-grow-1">
+                <div class="text-h4 font-weight-bold">{{ analytics.totalZones }}</div>
+                <div class="text-subtitle-2">Total Zones</div>
               </div>
-              <v-avatar color="blue" class="tw-bg-blue-100">
-                <v-icon color="blue">mdi-map-marker-multiple</v-icon>
-              </v-avatar>
+              <v-icon size="48" color="white" class="ml-3">mdi-map-marker-multiple</v-icon>
             </div>
           </v-card-text>
         </v-card>
       </v-col>
 
       <v-col cols="12" sm="6" md="3">
-        <v-card class="tw-rounded-xl tw-shadow-md hover:tw-shadow-lg tw-transition-shadow tw-h-full">
-          <v-card-text class="tw-p-6">
-            <div class="tw-flex tw-items-center tw-justify-between">
-              <div>
-                <p class="tw-text-sm tw-text-gray-600 tw-mb-1">Active Farmers</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{ analytics.totalFarmers }}</p>
+        <v-card class="metric-card elevation-2" color="success">
+          <v-card-text class="white--text">
+            <div class="d-flex align-center">
+              <div class="flex-grow-1">
+                <div class="text-h4 font-weight-bold">{{ analytics.totalFarmers }}</div>
+                <div class="text-subtitle-2">Active Farmers</div>
               </div>
-              <v-avatar color="green" class="tw-bg-green-100">
-                <v-icon color="green">mdi-account-group</v-icon>
-              </v-avatar>
+              <v-icon size="48" color="white" class="ml-3">mdi-account-group</v-icon>
             </div>
           </v-card-text>
         </v-card>
       </v-col>
 
       <v-col cols="12" sm="6" md="3">
-        <v-card class="tw-rounded-xl tw-shadow-md hover:tw-shadow-lg tw-transition-shadow tw-h-full">
-          <v-card-text class="tw-p-6">
-            <div class="tw-flex tw-items-center tw-justify-between">
-              <div>
-                <p class="tw-text-sm tw-text-gray-600 tw-mb-1">System Admins</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-purple-600">{{ analytics.activeSystemAdmins }}</p>
+        <v-card class="metric-card elevation-2" color="purple">
+          <v-card-text class="white--text">
+            <div class="d-flex align-center">
+              <div class="flex-grow-1">
+                <div class="text-h4 font-weight-bold">{{ analytics.activeSystemAdmins }}</div>
+                <div class="text-subtitle-2">System Admins</div>
               </div>
-              <v-avatar color="purple" class="tw-bg-purple-100">
-                <v-icon color="purple">mdi-account-tie</v-icon>
-              </v-avatar>
+              <v-icon size="48" color="white" class="ml-3">mdi-account-tie</v-icon>
             </div>
           </v-card-text>
         </v-card>
       </v-col>
 
       <v-col cols="12" sm="6" md="3">
-        <v-card class="tw-rounded-xl tw-shadow-md hover:tw-shadow-lg tw-transition-shadow tw-h-full">
-          <v-card-text class="tw-p-6">
-            <div class="tw-flex tw-items-center tw-justify-between">
-              <div>
-                <p class="tw-text-sm tw-text-gray-600 tw-mb-1">Zone Supervisors</p>
-                <p class="tw-text-3xl tw-font-bold tw-text-orange-600">{{ analytics.activeZoneSupervisors }}</p>
+        <v-card class="metric-card elevation-2" color="orange">
+          <v-card-text class="white--text">
+            <div class="d-flex align-center">
+              <div class="flex-grow-1">
+                <div class="text-h4 font-weight-bold">{{ analytics.activeZoneSupervisors }}</div>
+                <div class="text-subtitle-2">Zone Supervisors</div>
               </div>
-              <v-avatar color="orange" class="tw-bg-orange-100">
-                <v-icon color="orange">mdi-account-supervisor</v-icon>
-              </v-avatar>
+              <v-icon size="48" color="white" class="ml-3">mdi-account-supervisor</v-icon>
             </div>
           </v-card-text>
         </v-card>
@@ -89,12 +85,12 @@
     <v-row>
       <!-- Zone Management -->
       <v-col cols="12" lg="8">
-        <v-card class="tw-rounded-xl tw-shadow-md tw-h-full">
-          <v-card-title class="tw-bg-gradient-to-r tw-from-blue-500 tw-to-green-500 tw-text-white tw-rounded-t-xl">
-            <v-icon class="tw-mr-2">mdi-map</v-icon>
+        <v-card class="elevation-2">
+          <v-card-title class="primary white--text">
+            <v-icon left color="white">mdi-map</v-icon>
             Zone Management
           </v-card-title>
-          <v-card-text class="tw-p-0">
+          <v-card-text class="pa-0">
             <ArcGISZoneManager
               :zones="zones"
               :farmers="farmers"
@@ -111,20 +107,21 @@
 
       <!-- Quick Actions & Analytics -->
       <v-col cols="12" lg="4">
-        <div class="tw-space-y-6">
+        <v-row>
           <!-- Quick Actions -->
-          <v-card class="tw-rounded-xl tw-shadow-md">
-            <v-card-title class="tw-text-lg tw-font-semibold">
-              <v-icon class="tw-mr-2">mdi-lightning-bolt</v-icon>
-              Quick Actions
-            </v-card-title>
-            <v-card-text>
-              <div class="tw-space-y-3">
+          <v-col cols="12">
+            <v-card class="elevation-2 mb-4">
+              <v-card-title class="info white--text">
+                <v-icon left color="white">mdi-lightning-bolt</v-icon>
+                Quick Actions
+              </v-card-title>
+              <v-card-text class="pa-4">
                 <v-btn
                   block
                   color="primary"
-                  variant="outlined"
+                  outlined
                   @click="openCreateSystemAdminDialog"
+                  class="mb-3"
                 >
                   <v-icon left>mdi-account-plus</v-icon>
                   Add System Admin
@@ -132,8 +129,9 @@
                 <v-btn
                   block
                   color="success"
-                  variant="outlined"
+                  outlined
                   @click="openCreateZoneSupervisorDialog"
+                  class="mb-3"
                 >
                   <v-icon left>mdi-account-supervisor</v-icon>
                   Add Zone Supervisor
@@ -141,61 +139,92 @@
                 <v-btn
                   block
                   color="info"
-                  variant="outlined"
+                  outlined
                   @click="openRolePermissionsDialog"
+                  class="mb-3"
                 >
                   <v-icon left>mdi-shield-account</v-icon>
                   Manage Permissions
                 </v-btn>
-              </div>
-            </v-card-text>
-          </v-card>
+                <v-btn
+                  block
+                  color="warning"
+                  outlined
+                  @click="checkDataIntegrity"
+                  class="mb-3"
+                >
+                  <v-icon left>mdi-database-check</v-icon>
+                  Check Data Integrity
+                </v-btn>
+                <v-btn
+                  block
+                  color="error"
+                  outlined
+                  @click="fixDataIntegrityIssues"
+                >
+                  <v-icon left>mdi-database-sync</v-icon>
+                  Fix Data Issues
+                </v-btn>
+              </v-card-text>
+            </v-card>
+          </v-col>
 
           <!-- Zone Breakdown -->
-          <v-card class="tw-rounded-xl tw-shadow-md">
-            <v-card-title class="tw-text-lg tw-font-semibold">
-              <v-icon class="tw-mr-2">mdi-chart-pie</v-icon>
-              Zone Breakdown
-            </v-card-title>
-            <v-card-text>
-              <div class="tw-space-y-3">
-                <div v-for="zone in analytics.zoneBreakdown" :key="zone.zoneId"
-                     class="tw-flex tw-justify-between tw-items-center tw-p-3 tw-bg-gray-50 tw-rounded-lg">
-                  <div>
-                    <p class="tw-font-medium tw-text-sm">{{ zone.zoneName }}</p>
-                    <p class="tw-text-xs tw-text-gray-600">{{ zone.farmerCount }} farmers</p>
+          <v-col cols="12">
+            <v-card class="elevation-2 mb-4">
+              <v-card-title class="warning white--text">
+                <v-icon left color="white">mdi-chart-pie</v-icon>
+                Zone Breakdown
+              </v-card-title>
+              <v-card-text class="pa-4">
+                <div v-if="analytics.zoneBreakdown && analytics.zoneBreakdown.length > 0">
+                  <div v-for="zone in analytics.zoneBreakdown" :key="zone.zoneId" class="zone-item mb-3">
+                    <div class="d-flex justify-space-between align-center pa-3 grey lighten-4 rounded">
+                      <div>
+                        <div class="font-weight-medium">{{ zone.zoneName }}</div>
+                        <div class="text-caption text--secondary">{{ zone.farmerCount }} farmers</div>
+                      </div>
+                      <v-chip small :color="getZoneStatusColor(zone.farmerCount)" text-color="white">
+                        {{ zone.supervisorCount }} supervisors
+                      </v-chip>
+                    </div>
                   </div>
-                  <v-chip size="small" :color="getZoneStatusColor(zone.farmerCount)">
-                    {{ zone.supervisorCount }} supervisors
-                  </v-chip>
                 </div>
-              </div>
-            </v-card-text>
-          </v-card>
+                <div v-else class="text-center text--secondary">
+                  No zone data available
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
 
           <!-- Recent Activity -->
-          <v-card class="tw-rounded-xl tw-shadow-md">
-            <v-card-title class="tw-text-lg tw-font-semibold">
-              <v-icon class="tw-mr-2">mdi-history</v-icon>
-              Recent Activity
-            </v-card-title>
-            <v-card-text>
-              <v-timeline density="compact" class="tw-mt-2">
-                <v-timeline-item
-                  v-for="activity in recentActivities"
-                  :key="activity.id"
-                  :dot-color="activity.color"
-                  size="small"
-                >
-                  <div class="tw-text-sm">
-                    <p class="tw-font-medium">{{ activity.title }}</p>
-                    <p class="tw-text-gray-600 tw-text-xs">{{ formatTime(activity.timestamp) }}</p>
-                  </div>
-                </v-timeline-item>
-              </v-timeline>
-            </v-card-text>
-          </v-card>
-        </div>
+          <v-col cols="12">
+            <v-card class="elevation-2">
+              <v-card-title class="grey darken-2 white--text">
+                <v-icon left color="white">mdi-history</v-icon>
+                Recent Activity
+              </v-card-title>
+              <v-card-text class="pa-4">
+                <v-timeline dense>
+                  <v-timeline-item
+                    v-for="activity in recentActivities"
+                    :key="activity.id"
+                    :color="activity.color"
+                    small
+                  >
+                    <template v-slot:icon>
+                      <v-icon color="white" small>mdi-circle</v-icon>
+                    </template>
+                    <div>
+                      <div class="font-weight-medium">{{ activity.title }}</div>
+                      <div class="text-caption text--secondary">{{ formatTime(activity.timestamp) }}</div>
+                    </div>
+                  </v-timeline-item>
+                </v-timeline>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
 
@@ -218,39 +247,46 @@
     </v-row>
 
     <!-- Harvest Predictions -->
-    <v-row class="tw-mt-4">
+    <v-row class="mt-4">
       <v-col cols="12">
-        <v-card class="tw-rounded-xl tw-shadow-md">
-          <v-card-title class="tw-flex tw-items-center tw-justify-between">
-            <div class="tw-flex tw-items-center">
-              <v-icon class="tw-mr-2" color="teal">mdi-sprout</v-icon>
-              <span class="tw-font-semibold">Upcoming Harvests</span>
-            </div>
-            <v-btn size="small" variant="text" @click="loadHarvestPredictions" :loading="loadingHarvests">
-              <v-icon left>mdi-refresh</v-icon>Refresh
+        <v-card class="elevation-2">
+          <v-card-title class="teal white--text">
+            <v-icon left color="white">mdi-sprout</v-icon>
+            Upcoming Harvests
+            <v-spacer></v-spacer>
+            <v-btn small text dark @click="loadHarvestPredictions" :loading="loadingHarvests">
+              <v-icon left>mdi-refresh</v-icon>
+              Refresh
             </v-btn>
           </v-card-title>
           <v-data-table
             :items="harvestPredictions"
             :headers="harvestHeaders"
-            density="comfortable"
             class="elevation-0"
             :loading="loadingHarvests"
+            :items-per-page="10"
           >
-            <template #item.predictedHarvestDate="{ item }">
+            <template v-slot:item.predictedHarvestDate="{ item }">
               <span v-if="item.predictedHarvestDate">{{ formatDate(item.predictedHarvestDate) }}</span>
-              <span v-else class="tw-text-gray-400">Pending</span>
+              <span v-else class="text--secondary">Pending</span>
             </template>
-            <template #item.plantingDate="{ item }">
+            <template v-slot:item.plantingDate="{ item }">
               <span v-if="item.plantingDate">{{ formatDate(item.plantingDate) }}</span>
-              <span v-else class="tw-text-gray-400">—</span>
+              <span v-else class="text--secondary">—</span>
             </template>
-            <template #item.status="{ item }">
-              <v-chip size="small" :color="statusColor(item.status)" variant="flat">{{ item.status }}</v-chip>
+            <template v-slot:item.status="{ item }">
+              <v-chip small :color="statusColor(item.status)" text-color="white">{{ item.status }}</v-chip>
             </template>
-            <template #item.confidence="{ item }">
+            <template v-slot:item.confidence="{ item }">
               <span v-if="item.confidence">{{ (item.confidence * 100).toFixed(0) }}%</span>
-              <span v-else class="tw-text-gray-400">—</span>
+              <span v-else class="text--secondary">—</span>
+            </template>
+            <template v-slot:no-data>
+              <div class="text-center pa-6">
+                <v-icon size="64" color="grey lighten-2">mdi-sprout-outline</v-icon>
+                <p class="text-h6 text--secondary mt-3">No harvest predictions available</p>
+                <p class="text--secondary">Predictions will appear as farmers plant crops</p>
+              </div>
             </template>
           </v-data-table>
         </v-card>
@@ -455,19 +491,49 @@ export default {
   },
   methods: {
     async loadDashboardData() {
+      if (!this.exporterId) {
+        this.showMessage({ type: 'error', text: 'Exporter ID not found' });
+        return;
+      }
+
       this.loading = true;
 
       try {
-        await Promise.all([
-          this.loadAnalytics(),
-          this.loadZones(),
-          this.loadFarmers(),
-          this.loadRecentActivities(),
-          this.loadHarvestPredictions(),
-        ]);
+        // Try to load synchronized data first
+        const syncResponse = await axios.get(`/api/exporters-service/exporter/${this.exporterId}/dashboard/synchronized`);
+        if (syncResponse.data.success) {
+          const syncData = syncResponse.data.data;
+          this.analytics = syncData.analytics;
+          this.zones = syncData.zones;
+          this.farmers = syncData.farmers;
+          this.harvestPredictions = syncData.harvestPredictions;
+          this.recentActivities = syncData.recentActivities;
+
+          // Check data integrity status
+          if (syncData.dataIntegrityStatus !== 'SYNCHRONIZED') {
+            this.showMessage({
+              type: 'warning',
+              text: `Data integrity status: ${syncData.dataIntegrityStatus}`,
+            });
+          }
+        } else {
+          throw new Error('Synchronized data not available');
+        }
       } catch (error) {
-        console.error('Error loading dashboard data:', error);
-        this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
+        console.warn('Synchronized data loading failed, falling back to individual endpoints:', error);
+        // Fallback to individual data loading
+        try {
+          await Promise.all([
+            this.loadAnalytics(),
+            this.loadZones(),
+            this.loadFarmers(),
+            this.loadRecentActivities(),
+            this.loadHarvestPredictions(),
+          ]);
+        } catch (fallbackError) {
+          console.error('Error loading dashboard data:', fallbackError);
+          this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
+        }
       } finally {
         this.loading = false;
       }
@@ -487,12 +553,15 @@ export default {
 
     async loadAnalytics() {
       try {
-        const response = await axios.get('/api/exporters-service/exporter/analytics');
+        const response = await axios.get('/api/exporters-service/exporter/analytics', {
+          params: { exporterId: this.exporterId },
+        });
         if (response.data.success) {
           this.analytics = response.data.data;
         }
       } catch (error) {
         console.error('Error loading analytics:', error);
+        this.showMessage({ type: 'error', text: 'Failed to load analytics data' });
       }
     },
 
@@ -559,13 +628,81 @@ export default {
     },
 
     async refreshData() {
-      await this.loadDashboardData();
-      this.showMessage({ type: 'success', text: 'Dashboard data refreshed' });
+      if (!this.exporterId) {
+        this.showMessage({ type: 'error', text: 'Exporter ID not found' });
+        return;
+      }
+
+      this.loading = true;
+      try {
+        // Use synchronized refresh endpoint
+        const response = await axios.post(`/api/exporters-service/exporter/${this.exporterId}/dashboard/refresh`);
+        if (response.data.success) {
+          const syncData = response.data.data;
+          this.analytics = syncData.analytics;
+          this.zones = syncData.zones;
+          this.farmers = syncData.farmers;
+          this.harvestPredictions = syncData.harvestPredictions;
+          this.recentActivities = syncData.recentActivities;
+          this.showMessage({ type: 'success', text: 'Dashboard data synchronized successfully' });
+        } else {
+          throw new Error(response.data.message || 'Failed to refresh data');
+        }
+      } catch (error) {
+        console.error('Error refreshing dashboard data:', error);
+        this.showMessage({ type: 'error', text: 'Failed to refresh dashboard data' });
+        // Fallback to individual data loading
+        await this.loadDashboardData();
+      } finally {
+        this.loading = false;
+      }
     },
 
     exportReport() {
       // Mock export functionality
       this.showMessage({ type: 'info', text: 'Export functionality coming soon' });
+    },
+
+    async checkDataIntegrity() {
+      if (!this.exporterId) return;
+
+      try {
+        const response = await axios.get(`/api/exporters-service/exporter/${this.exporterId}/data-integrity/check`);
+        if (response.data.success) {
+          const report = response.data.data;
+          if (report.overallStatus === 'HEALTHY') {
+            this.showMessage({ type: 'success', text: 'Data integrity check passed - no issues found' });
+          } else {
+            this.showMessage({
+              type: 'warning',
+              text: `Data integrity issues found: ${report.totalIssues} (${report.overallStatus})`,
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error checking data integrity:', error);
+        this.showMessage({ type: 'error', text: 'Failed to check data integrity' });
+      }
+    },
+
+    async fixDataIntegrityIssues() {
+      if (!this.exporterId) return;
+
+      try {
+        const response = await axios.post(`/api/exporters-service/exporter/${this.exporterId}/data-integrity/fix`);
+        if (response.data.success) {
+          const result = response.data.data;
+          this.showMessage({
+            type: 'success',
+            text: `Fixed ${result.issuesFixed} of ${result.totalIssuesFound} issues`,
+          });
+          // Refresh data after fixing issues
+          await this.refreshData();
+        }
+      } catch (error) {
+        console.error('Error fixing data integrity issues:', error);
+        this.showMessage({ type: 'error', text: 'Failed to fix data integrity issues' });
+      }
     },
 
     openCreateSystemAdminDialog() {
@@ -721,32 +858,132 @@ export default {
 </script>
 
 <style scoped>
-/* Custom gradient background */
-.tw-bg-gradient-to-r {
-  background: linear-gradient(to right, #3b82f6, #10b981);
+.exporter-dashboard {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  padding: 1rem 0;
 }
 
-/* Hover effects */
-.hover\:tw-shadow-lg:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.dashboard-header {
+  margin-bottom: 2rem;
 }
 
-.tw-transition-shadow {
-  transition: box-shadow 0.3s ease-in-out;
+.metric-card {
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  margin-bottom: 1rem;
 }
 
-/* Custom scrollbar for timeline */
-:deep(.v-timeline) {
+.metric-card:hover {
+  transform: translateY(-2px);
+}
+
+.v-card {
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.v-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.zone-item {
+  margin-bottom: 0.75rem;
+}
+
+/* Timeline styling */
+.v-timeline {
   max-height: 300px;
   overflow-y: auto;
 }
 
-/* Card hover animations */
-.v-card {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .exporter-dashboard {
+    padding: 0.5rem 0;
+  }
+
+  .dashboard-header {
+    margin-bottom: 1rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .metric-card .text-h4 {
+    font-size: 1.8rem !important;
+  }
+
+  .v-card-text {
+    padding: 1rem !important;
+  }
+
+  .v-data-table {
+    font-size: 0.875rem;
+  }
 }
 
-.v-card:hover {
-  transform: translateY(-2px);
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 1.3rem !important;
+  }
+
+  .metric-card .text-h4 {
+    font-size: 1.5rem !important;
+  }
+
+  .v-card-title {
+    font-size: 1rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  .v-card-text {
+    padding: 0.75rem !important;
+  }
+}
+
+/* Touch-friendly interfaces */
+@media (hover: none) and (pointer: coarse) {
+  .v-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .metric-card:hover {
+    transform: none;
+  }
+}
+
+/* Clean professional styling */
+.exporter-dashboard {
+  background: #f8fafc;
+}
+
+/* Ensure proper spacing on all screen sizes */
+.v-container {
+  padding: 0 1rem;
+}
+
+@media (min-width: 1264px) {
+  .v-container {
+    max-width: 1200px;
+  }
+}
+
+/* Data table responsive */
+.v-data-table {
+  border-radius: 8px;
+}
+
+/* Form styling */
+.v-text-field, .v-select {
+  margin-bottom: 1rem;
+}
+
+/* Dialog styling */
+.v-dialog .v-card {
+  border-radius: 12px;
 }
 </style>

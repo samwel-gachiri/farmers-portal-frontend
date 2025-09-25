@@ -150,6 +150,21 @@ const routes = [
     component: () => import('../views/buyers/BrowseListings.vue'),
   },
   {
+    path: '/my-farmers',
+    name: 'MyFarmers',
+    component: () => import('../views/buyers/MyFarmers.vue'),
+  },
+  {
+    path: '/pickup-planning',
+    name: 'PickupPlanning',
+    component: () => import('../views/buyers/PickupPlanning.vue'),
+  },
+  {
+    path: '/buyer-analytics',
+    name: 'BuyerAnalytics',
+    component: () => import('../views/buyers/BuyerAnalytics.vue'),
+  },
+  {
     path: '/browse-requests',
     name: 'BrowseRequests',
     component: () => import('../views/farmer/BrowseRequests.vue'),
@@ -241,7 +256,7 @@ const routes = [
   },
   {
     path: '/farmer-report',
-    name: 'FarmerReport',
+    name: 'FarmerReports',
     component: () => import('../views/report/farmer_reports.vue'),
   },
   {

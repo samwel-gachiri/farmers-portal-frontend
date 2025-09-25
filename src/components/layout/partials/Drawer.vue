@@ -9,22 +9,25 @@
       <div class="app-drawer-header">
         <div class="app-brand-row">
           <logo-title class="app-brand" />
-          <span class="app-portal-badge">Portal</span>
         </div>
-        <div class="app-user-mini" v-if="displayName || userRole">
-          <avatar class="mr-2" />
-          <div class="app-user-info tw-flex tw-flex-row">
+        <div class="app-user-mini tw-w-full" v-if="displayName || userRole">
+          <span class="app-portal-badge">Portal</span>
+<!--          <avatar class="mr-2" />-->
+          <div class="app-user-info tw-flex tw-flex-row tw-border tw-py-2 tw-px-4 tw-rounded-lg">
             <div class="app-user-name">{{ displayName || 'User' }}</div>
             <div class="app-role-chip">
               <span>{{ userRole || 'Guest' }}</span>
             </div>
           </div>
         </div>
+
+        <!-- Role Indicator -->
+        <role-indicator />
       </div>
 
-      <!-- Navigation (minimal, clean, modern icons) -->
+      <!-- Navigation (comprehensive, role-based) -->
       <nav class="app-nav-list">
-        <template v-for="(item, i) in minimalNav">
+        <template v-for="(item, i) in navigationItems">
           <router-link
             v-if="canView(item)"
             :key="i"
@@ -56,15 +59,18 @@
 
 import jwtDecode from 'jwt-decode';
 import LogoTitle from '@/components/shared/LogoText.vue';
+// eslint-disable-next-line vue/no-unused-components
 import Avatar from '@/components/layout/partials/nav/Avatar.vue';
+import RoleIndicator from '@/components/shared/RoleIndicator.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'AppDrawer',
-  components: { LogoTitle, Avatar },
+  // eslint-disable-next-line vue/no-unused-components
+  components: { LogoTitle, Avatar, RoleIndicator },
   data: () => ({
-    minimalNav: [
-      // Common: Dashboard
+    navigationItems: [
+      // Common: Dashboard for all roles
       {
         icon: 'mdi-apps-box',
         text: 'Dashboard',
@@ -72,11 +78,11 @@ export default {
         roles: ['FARMER', 'BUYER', 'EXPORTER', 'SYSTEM_ADMIN', 'ZONE_SUPERVISOR'],
         iconColor: '#222',
       },
-      // Farmer
+
+      // === FARMER PORTAL ===
       {
         icon: 'mdi-barn',
         text: 'My Farm',
-        // Use a function to generate the link with the current user id
         get link() {
           const id = getCurrentUserId();
           return id ? { name: 'MyFarm', params: { farmerId: id } } : { name: 'MyFarm' };
@@ -100,12 +106,28 @@ export default {
       },
       {
         icon: 'mdi-truck-delivery-outline',
-        text: 'Farmer Orders',
+        text: 'Orders',
         link: { name: 'FarmerOrders' },
         roles: ['FARMER'],
         iconColor: '#0ea5e9',
       },
-      // Buyer
+      {
+        icon: 'mdi-chart-line',
+        text: 'Reports',
+        link: { name: 'FarmerReports' },
+        roles: ['FARMER'],
+        iconColor: '#8b5cf6',
+      },
+
+      // === BUYER PORTAL ===
+      {
+        // eslint-disable-next-line sonarjs/no-duplicate-string
+        icon: 'mdi-account-group',
+        text: 'My Farmers',
+        link: { name: 'MyFarmers' },
+        roles: ['BUYER'],
+        iconColor: '#16a34a',
+      },
       {
         icon: 'mdi-magnify',
         text: 'Browse Listings',
@@ -120,12 +142,27 @@ export default {
         roles: ['BUYER'],
         iconColor: '#0ea5e9',
       },
-      // Exporter
       {
         icon: 'mdi-map-marker-path',
+        text: 'Pickup Planning',
+        link: { name: 'PickupPlanning' },
+        roles: ['BUYER'],
+        iconColor: '#f59e0b',
+      },
+      {
+        icon: 'mdi-chart-areaspline',
+        text: 'Analytics',
+        link: { name: 'BuyerAnalytics' },
+        roles: ['BUYER'],
+        iconColor: '#8b5cf6',
+      },
+
+      // === EXPORTER PORTAL (Super Admin role: 'exporter') ===
+      {
+        icon: 'mdi-map-marker-radius',
         text: 'Zone Management',
         link: { name: 'ZoneManagement' },
-        roles: ['EXPORTER'],
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
         iconColor: '#f59e42',
       },
       {
@@ -136,34 +173,49 @@ export default {
         iconColor: '#6366f1',
       },
       {
-        icon: 'mdi-account-tie',
+        icon: 'mdi-account-supervisor',
         text: 'Zone Supervisors',
         link: { name: 'ZoneSupervisorsManagement' },
-        roles: ['EXPORTER'],
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
         iconColor: '#16a34a',
       },
       {
         icon: 'mdi-account-multiple',
-        text: 'Farmers',
+        text: 'Farmers Management',
         link: { name: 'FarmersManagement' },
-        roles: ['EXPORTER'],
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
         iconColor: '#f97316',
       },
       {
-        icon: 'mdi-calendar-clock',
+        icon: 'mdi-truck-delivery',
         text: 'Pickup Schedules',
         link: { name: 'PickupSchedulesManagement' },
-        roles: ['EXPORTER'],
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
         iconColor: '#0ea5e9',
+      },
+      {
+        icon: 'mdi-routes',
+        text: 'Pickup Routes',
+        link: { name: 'PickupRoutes' },
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#ec4899',
       },
       {
         icon: 'mdi-comment-multiple-outline',
         text: 'Zone Comments',
         link: { name: 'ZoneCommentsManagement' },
-        roles: ['EXPORTER'],
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
         iconColor: '#f59e42',
       },
-      // Zone Supervisor
+      {
+        icon: 'mdi-chart-box-outline',
+        text: 'System Analytics',
+        link: { name: 'SystemAnalytics' },
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#8b5cf6',
+      },
+
+      // === ZONE SUPERVISOR PORTAL ===
       {
         icon: 'mdi-map-marker-path',
         text: 'Zone Management',
@@ -171,20 +223,56 @@ export default {
         roles: ['ZONE_SUPERVISOR'],
         iconColor: '#f59e42',
       },
-      // System Admin
+      {
+        icon: 'mdi-comment-multiple-outline',
+        text: 'Zone Comments',
+        link: { name: 'ZoneCommentsManagement' },
+        roles: ['ZONE_SUPERVISOR'],
+        iconColor: '#f59e42',
+      },
+      {
+        icon: 'mdi-account-multiple',
+        text: 'Zone Farmers',
+        link: { name: 'ZoneFarmers' },
+        roles: ['ZONE_SUPERVISOR'],
+        iconColor: '#16a34a',
+      },
+      {
+        icon: 'mdi-truck-delivery',
+        text: 'Zone Pickups',
+        link: { name: 'ZonePickups' },
+        roles: ['ZONE_SUPERVISOR'],
+        iconColor: '#0ea5e9',
+      },
+
+      // === SYSTEM ADMIN PORTAL ===
       {
         icon: 'mdi-account-group',
         text: 'Users Report',
         link: { name: 'UsersReport' },
-        roles: ['SYSTEM_ADMIN'],
+        roles: ['ADMIN'],
         iconColor: '#6366f1',
       },
       {
         icon: 'mdi-file-document-outline',
         text: 'Orders Report',
         link: { name: 'OrdersReport' },
-        roles: ['SYSTEM_ADMIN'],
+        roles: ['ADMIN'],
         iconColor: '#0ea5e9',
+      },
+      {
+        icon: 'mdi-chart-line',
+        text: 'System Reports',
+        link: { name: 'SystemReports' },
+        roles: ['ADMIN'],
+        iconColor: '#8b5cf6',
+      },
+      {
+        icon: 'mdi-cog',
+        text: 'System Settings',
+        link: { name: 'SystemSettings' },
+        roles: ['ADMIN'],
+        iconColor: '#64748b',
       },
     ],
   }),
@@ -306,7 +394,7 @@ export default {
   padding: 10px 12px;
   border-radius: 14px;
   background: rgba(255,255,255,0.7);
-  border: 1px solid rgba(34,197,94,0.08);
+  /* border: 1px solid rgba(34,197,94,0.08);*/
   box-shadow: 0 1px 4px rgba(34,197,94,0.04);
 }
 .app-user-info {
