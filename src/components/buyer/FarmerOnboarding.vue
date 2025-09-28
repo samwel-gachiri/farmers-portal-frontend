@@ -289,6 +289,7 @@
 
 <script>
 import axios from 'axios';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'FarmerOnboarding',
@@ -356,7 +357,20 @@ export default {
         }
 
         const response = await axios.get('/api/farmers/search', { params });
-        this.searchResults = response.data.data || [];
+        // Map API response to expected frontend format
+        this.searchResults = (response.data || []).map((farmer) => ({
+          id: farmer.farmerId,
+          fullName: `${farmer.firstName} ${farmer.lastName}`.trim(),
+          phoneNumber: farmer.phoneNumber,
+          email: farmer.email,
+          location: {
+            customName: farmer.location,
+          },
+          avatar: null, // API doesn't provide avatar
+          totalProduces: farmer.totalProduces,
+          upcomingHarvests: farmer.upcomingHarvests,
+          produceTypes: farmer.produceTypes,
+        }));
       } catch (error) {
         console.error('Error searching farmers:', error);
         this.$toast.error('Failed to search farmers. Please try again.');
@@ -375,7 +389,7 @@ export default {
 
       this.connecting = true;
       try {
-        const buyerId = this.$store.state.user?.id;
+        const buyerId = getCurrentUserId();
         const payload = {
           farmerId: this.selectedFarmer.id,
           notes: this.connectionNotes,
@@ -403,7 +417,7 @@ export default {
 
       this.sendingInvite = true;
       try {
-        const buyerId = this.$store.state.user?.id;
+        const buyerId = getCurrentUserId();
         const payload = {
           phoneNumber: this.invitePhone,
           name: this.inviteName,

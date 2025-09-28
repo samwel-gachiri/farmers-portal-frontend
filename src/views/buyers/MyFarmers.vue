@@ -147,6 +147,7 @@ import Default from '@/components/layout/Default.vue';
 import FarmerCard from '@/components/buyer/FarmerCard.vue';
 import FarmerOnboarding from '@/components/buyer/FarmerOnboarding.vue';
 import FarmerDetails from '@/components/buyer/FarmerDetails.vue';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'MyFarmers',
@@ -195,9 +196,9 @@ export default {
     async fetchMyFarmers() {
       this.loading = true;
       try {
-        const buyerId = this.$store.state.user?.id;
+        const buyerId = getCurrentUserId();
         const { data } = await axios.get(`/api/buyer/${buyerId}/farmers`);
-        this.farmers = data.data || [];
+        this.farmers = data || [];
       } catch (error) {
         console.error('Error fetching farmers:', error);
         this.$toast.error('Failed to load your farmers. Please try again.');

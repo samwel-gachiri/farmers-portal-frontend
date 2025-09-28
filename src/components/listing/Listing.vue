@@ -247,8 +247,9 @@ export default {
         this.$toast.show('SSE connection opened');
       };
 
+      // eslint-disable-next-line no-unused-vars
       this.eventSource.onerror = (error) => {
-        this.$toast.error('SSE error:', error.message);
+        // this.$toast.error('SSE error:', error.message);
         this.eventSource.close();
       };
     },

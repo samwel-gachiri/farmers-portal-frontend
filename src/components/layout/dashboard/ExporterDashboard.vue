@@ -82,7 +82,7 @@
     </v-row>
 
     <!-- Main Content Grid -->
-    <v-row>
+    <v-row v-if="false">
       <!-- Zone Management -->
       <v-col cols="12" lg="8">
         <v-card class="elevation-2">
@@ -401,6 +401,7 @@ import RolePermissionsDialog from '@/components/exporter/RolePermissionsDialog.v
 import FarmerDetailDrawer from '@/components/exporter/FarmerDetailDrawer.vue';
 import axios from 'axios';
 import harvestService from '@/services/harvestPrediction.service.js';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'ExporterDashboardLayout',
@@ -413,7 +414,7 @@ export default {
   },
   computed: {
     exporterId() {
-      return this.$store.getters.currentUser?.exporterId || null;
+      return getCurrentUserId() || null;
     },
   },
   data() {

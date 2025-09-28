@@ -480,7 +480,8 @@ export default {
         this.startGrowthDialog = false;
         this.fetchFarmerDetails();
       } catch (e) {
-        this.plantingDateError = e.response?.data?.message || 'Failed to start growth.';
+        console.error('Start growth error:', e);
+        this.plantingDateError = e.response?.data?.message || e.response?.data?.msg || 'Failed to start growth.';
       }
     },
     growthProgress(item) {

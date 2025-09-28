@@ -60,7 +60,10 @@
         <div class="tw-p-5 tw-text-white">
           <h2 class="tw-text-lg tw-font-semibold tw-mb-2">Boost Sales</h2>
           <p class="tw-mb-3 tw-text-xs">Promote your listings for more visibility.</p>
-          <button class="tw-bg-white tw-text-indigo-600 tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium tw-text-xs hover:tw-bg-gray-100 tw-transition">
+          <button
+            @click="goToListings"
+            class="tw-bg-white tw-text-indigo-600 tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium tw-text-xs hover:tw-bg-gray-100 tw-transition"
+          >
             Advertise
           </button>
         </div>
@@ -460,6 +463,9 @@ export default {
     formatToHumanWithTime,
     quickLinkClicked(link) {
       this.$router.push(link);
+    },
+    goToListings() {
+      this.$router.push({ name: 'Listings' });
     },
     async fetchSalesReport() {
       try {

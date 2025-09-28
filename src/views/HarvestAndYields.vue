@@ -30,7 +30,7 @@
         </v-row>
         <v-row v-else>
           <v-col cols="12" v-if="isEmptyState" class="empty-state d-flex flex-column align-center justify-center py-12">
-            <img src="/img/empty-harvest.svg" alt="No harvests" class="w-48 mb-6 drop-shadow-xl" />
+            <!-- <img src="/img/empty-harvest.svg" alt="No harvests" class="w-48 mb-6 drop-shadow-xl" /> -->
             <h2 class="display-1 font-weight-bold mb-2 text--primary">No Harvest Data Yet</h2>
             <p class="mb-6 text--secondary subtitle-1">Start by planting your first crop or recording a harvest to see your progress here.</p>
             <v-btn color="primary" class="elevation-6 px-8 py-4 text-lg font-weight-bold" large @click="goToMyFarm">Go to My Farm</v-btn>
@@ -159,7 +159,7 @@ export default {
     async fetchHarvestStatus() {
       this.loading = true;
       try {
-        const farmerId = this.$store.state.user?.id || this.$route.params.farmerId;
+        const farmerId = getCurrentUserId() || this.$route.params.farmerId;
         const { data } = await axios.get(`/api/harvest/farmer/${farmerId}/status`);
         this.harvestStatus = data.data || [];
       } catch (e) {

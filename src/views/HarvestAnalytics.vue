@@ -1,58 +1,63 @@
 <template>
-  <div class="harvest-analytics-page">
-    <h1 class="text-2xl font-bold mb-6">Harvest Analytics Dashboard</h1>
-    <div v-if="loading" class="flex justify-center items-center h-40">
-      <span>Loading analytics...</span>
-    </div>
-    <div v-else>
-      <div v-if="!analytics">
-        <div class="text-gray-500">No analytics data available.</div>
+  <Default>
+    <div class="harvest-analytics-page">
+      <h1 class="text-2xl font-bold mb-6">Harvest Analytics Dashboard</h1>
+      <div v-if="loading" class="flex justify-center items-center h-40">
+        <span>Loading analytics...</span>
       </div>
       <div v-else>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div class="card p-4">
-            <h2 class="font-semibold mb-2">Summary</h2>
-            <ul>
-              <li>Total Produces: <b>{{ analytics.totalProduces }}</b></li>
-              <li>Total Yields: <b>{{ analytics.totalYields }}</b></li>
-              <li>Total Yield Amount: <b>{{ analytics.totalYieldAmount }}</b></li>
-              <li>Average Growth Days: <b>{{ analytics.averageGrowthDays }}</b></li>
-              <li>Prediction Accuracy: <b>{{ analytics.predictionAccuracy }}%</b></li>
-            </ul>
+        <div v-if="!analytics">
+          <div class="text-gray-500">No analytics data available.</div>
+        </div>
+        <div v-else>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="card p-4">
+              <h2 class="font-semibold mb-2">Summary</h2>
+              <ul>
+                <li>Total Produces: <b>{{ analytics.totalProduces }}</b></li>
+                <li>Total Yields: <b>{{ analytics.totalYields }}</b></li>
+                <li>Total Yield Amount: <b>{{ analytics.totalYieldAmount }}</b></li>
+                <li>Average Growth Days: <b>{{ analytics.averageGrowthDays }}</b></li>
+                <li>Prediction Accuracy: <b>{{ analytics.predictionAccuracy }}%</b></li>
+              </ul>
+            </div>
+            <div class="card p-4">
+              <h2 class="font-semibold mb-2">Top Performing Produces</h2>
+              <ul>
+                <li v-for="produce in analytics.topPerformingProduces" :key="produce.produceName">
+                  {{ produce.produceName }}: {{ produce.totalYield }}
+                </li>
+              </ul>
+            </div>
           </div>
-          <div class="card p-4">
-            <h2 class="font-semibold mb-2">Top Performing Produces</h2>
-            <ul>
-              <li v-for="produce in analytics.topPerformingProduces" :key="produce.produceName">
-                {{ produce.produceName }}: {{ produce.totalYield }}
-              </li>
-            </ul>
+          <div class="mb-8">
+            <h2 class="font-semibold mb-2">Yield Trends (Monthly)</h2>
+            <apexchart v-if="yieldsByMonthOptions && yieldsByMonthSeries" type="bar" height="300" :options="yieldsByMonthOptions" :series="yieldsByMonthSeries" />
           </div>
-        </div>
-        <div class="mb-8">
-          <h2 class="font-semibold mb-2">Yield Trends (Monthly)</h2>
-          <apexchart v-if="yieldsByMonthOptions && yieldsByMonthSeries" type="bar" height="300" :options="yieldsByMonthOptions" :series="yieldsByMonthSeries" />
-        </div>
-        <div class="mb-8">
-          <h2 class="font-semibold mb-2">Seasonal Trends</h2>
-          <apexchart v-if="seasonalTrendsOptions && seasonalTrendsSeries" type="line" height="300" :options="seasonalTrendsOptions" :series="seasonalTrendsSeries" />
-        </div>
-        <div class="mb-8">
-          <button class="btn btn-info" @click="exportReport">Export as CSV</button>
+          <div class="mb-8">
+            <h2 class="font-semibold mb-2">Seasonal Trends</h2>
+            <apexchart v-if="seasonalTrendsOptions && seasonalTrendsSeries" type="line" height="300" :options="seasonalTrendsOptions" :series="seasonalTrendsSeries" />
+          </div>
+          <div class="mb-8">
+            <button class="btn btn-info" @click="exportReport">Export as CSV</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </Default>
 </template>
 
 <script>
 import axios from 'axios';
 import VueApexCharts from 'vue-apexcharts';
+import { getCurrentUserId } from '@/utils/roles.js';
+import Default from '@/components/layout/Default.vue';
 
 export default {
   name: 'HarvestAnalytics',
   components: {
     apexchart: VueApexCharts,
+    Default,
   },
   data() {
     return {
@@ -68,7 +73,7 @@ export default {
     async fetchAnalytics() {
       this.loading = true;
       try {
-        const farmerId = this.$store.state.user?.id || this.$route.params.farmerId;
+        const farmerId = getCurrentUserId() || this.$route.params.farmerId;
         const { data } = await axios.get(`/api/harvest/analytics/farmer/${farmerId}`);
         this.analytics = data.data || null;
         this.prepareApexCharts();

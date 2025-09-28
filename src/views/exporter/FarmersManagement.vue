@@ -1,14 +1,13 @@
 <template>
   <Default>
-    <div class="tw-p-6 tw-space-y-8 tw-bg-gradient-to-br tw-from-slate-50 tw-via-white tw-to-slate-100 tw-min-h-screen">
+    <div class="tw-space-y-8 tw-bg-gradient-to-br tw-from-slate-50 tw-via-white tw-to-slate-100 tw-min-h-screen">
       <!-- Header -->
       <div class="tw-flex tw-items-start tw-justify-between tw-flex-wrap tw-gap-6">
         <div class="tw-space-y-2">
-          <div class="tw-flex tw-items-center tw-gap-3">
-            <h1 class="tw-text-3xl tw-font-black tw-tracking-tight tw-bg-clip-text tw-text-transparent tw-bg-gradient-to-r tw-from-blue-700 tw-to-emerald-500">Farmers Management</h1>
-            <v-chip small color="blue darken-2" text-color="white" class="tw-font-semibold tw-uppercase">Beta</v-chip>
-          </div>
-          <p class="tw-text-sm tw-text-slate-600 tw-max-w-xl">Operational intelligence for your farmer network: locations, produce readiness, and harvest projections in one unified workspace.</p>
+          <!-- <div class="tw-flex tw-items-center tw-gap-3">
+            <h1 class="tw-text-3xl tw-font-black tw-tracking-tight tw-bg-clip-text tw-text-transparent primary">Farmers Management</h1>
+          </div> -->
+          <!-- <p class="tw-text-sm tw-text-slate-600 tw-max-w-xl">Operational intelligence for your farmer network: locations, produce readiness, and harvest projections in one unified workspace.</p> -->
           <div class="tw-flex tw-gap-2 tw-flex-wrap">
             <v-btn color="primary" :loading="loadingFarmers" @click="refreshCurrent" class="tw-rounded-xl tw-shadow-sm tw-font-medium" small>
               <v-icon left small>mdi-refresh</v-icon>Refresh

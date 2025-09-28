@@ -1,5 +1,4 @@
 <template>
-  <Default>
     <div class="tw-p-6 tw-space-y-6">
       <!-- Header -->
       <div class="tw-flex tw-items-end tw-justify-between tw-flex-wrap tw-gap-4">
@@ -44,17 +43,15 @@
       <PickupRouteDetail v-if="activeRoute" :route-id="activeRoute" @close="activeRoute=null" />
       <CreatePickupRouteModal v-if="showCreate" @close="showCreate=false" @created="onCreated" />
     </div>
-  </Default>
  </template>
 
 <script>
 import pickupRouteService from '@/services/pickupRoute.service.js';
-import Default from '@/components/layout/Default.vue';
 import PickupRouteDetail from './PickupRoutes/PickupRouteDetail.vue';
 import CreatePickupRouteModal from './PickupRoutes/CreatePickupRouteModal.vue';
 
 export default {
-  components: { Default, PickupRouteDetail, CreatePickupRouteModal },
+  components: { PickupRouteDetail, CreatePickupRouteModal },
   data() {
     return {
       selectedDate: new Date().toISOString().substring(0, 10),

@@ -4,11 +4,11 @@
       <!-- Header & Actions -->
       <div class="tw-flex tw-items-start tw-justify-between tw-flex-wrap tw-gap-6">
         <div class="tw-space-y-2">
-          <div class="tw-flex tw-items-center tw-gap-3">
-            <h1 class="tw-text-3xl tw-font-black tw-tracking-tight tw-bg-clip-text tw-text-transparent tw-bg-gradient-to-r tw-from-indigo-700 tw-to-teal-500">System Admins</h1>
-            <v-chip small color="indigo darken-2" text-color="white" class="tw-font-semibold tw-uppercase">Managed</v-chip>
-          </div>
-          <p class="tw-text-sm tw-text-slate-600 tw-max-w-xl">Create and manage system administrators. Update profiles and toggle active status.</p>
+<!--          <div class="tw-flex tw-items-center tw-gap-3">-->
+<!--            <h1 class="tw-text-3xl tw-font-black tw-tracking-tight tw-bg-clip-text tw-text-transparent tw-bg-gradient-to-r tw-from-indigo-700 tw-to-teal-500">System Admins</h1>-->
+<!--            <v-chip small color="indigo darken-2" text-color="white" class="tw-font-semibold tw-uppercase">Managed</v-chip>-->
+<!--          </div>-->
+<!--          <p class="tw-text-sm tw-text-slate-600 tw-max-w-xl">Create and manage system administrators. Update profiles and toggle active status.</p>-->
           <div class="tw-flex tw-gap-2 tw-flex-wrap">
             <v-btn color="primary" small :loading="loading" class="tw-rounded-xl tw-shadow-sm tw-font-medium" @click="refreshAdmins">
               <v-icon left small>mdi-refresh</v-icon>Refresh

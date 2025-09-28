@@ -205,6 +205,11 @@ const routes = [
     component: () => import('../views/exporter/PickupSchedulesManagement.vue'),
   },
   {
+    path: '/exporter/system-analytics',
+    name: 'SystemAnalytics',
+    component: () => import('../views/exporter/SystemAnalytics.vue'),
+  },
+  {
     path: '/exporter/zone-comments',
     name: 'ZoneCommentsManagement',
     component: () => import('../views/exporter/ZoneCommentsManagement.vue'),

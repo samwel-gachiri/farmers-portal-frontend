@@ -82,6 +82,7 @@
                         type="number"
                         prepend-inner-icon="mdi-package-variant"
                         min="1"
+                        :rules="[v => v > 0 || 'Quantity must be greater than 0']"
                         dense
                         solo
                         class="data-input"
@@ -97,7 +98,6 @@
                         length: 11,
                         precision: 2,
                       }"
-                        :rules="[required('price')]"
                         class="data-input"
                     ></vuetify-money>
 
@@ -330,6 +330,15 @@ export default {
       };
     },
   },
+  watch: {
+    selectedProduce(newProduce) {
+      if (newProduce && newProduce.id) {
+        this.listing.farmerProduceId = newProduce.id;
+      } else {
+        this.listing.farmerProduceId = '';
+      }
+    },
+  },
   methods: {
     async farmProduceListingChanged(farmProduce) {
       if (!farmProduce) return;
@@ -391,8 +400,22 @@ export default {
         this.$toast.error('Listing quantity exceeds available yield amount.');
         return;
       }
-      if (!this.isValid || this.listing.farmerProduceId === '' || this.listing.price.price <= 0) {
-        this.$toast.error('Please fill in all required information');
+
+      // Specific field validation with better error messages
+      if (!this.selectedProduce || !this.selectedProduce.id) {
+        this.$toast.error('Please select a farm produce');
+        return;
+      }
+      if (!this.listing.price.price || this.listing.price.price <= 0) {
+        this.$toast.error('Please enter a valid price greater than 0');
+        return;
+      }
+      if (!this.listing.quantity || this.listing.quantity <= 0) {
+        this.$toast.error('Please enter a valid quantity greater than 0');
+        return;
+      }
+      if (!this.isValid) {
+        this.$toast.error('Please correct the form errors before submitting');
         return;
       }
 

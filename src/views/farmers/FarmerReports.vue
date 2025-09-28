@@ -249,6 +249,7 @@
 
 <script>
 import axios from 'axios';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'FarmerReports',
@@ -276,7 +277,10 @@ export default {
       hasYieldData: false,
       hasAccuracyData: false,
       // ApexCharts data
-      yieldTrendsSeries: [],
+      yieldTrendsSeries: [{
+        name: 'Yield Amount',
+        data: [],
+      }],
       yieldTrendsOptions: {
         chart: {
           type: 'line',
@@ -332,27 +336,17 @@ export default {
       },
     };
   },
-  computed: {
-    currentUser() {
-      return this.$store.getters['auth/user'];
-    },
-    today() {
-      return new Date().toISOString().substr(0, 10);
-    },
-  },
   async mounted() {
     this.setQuickPeriod('30d');
     await this.loadReportsData();
     this.initializeCharts();
-  },
-  beforeDestroy() {
-    this.destroyCharts();
   },
   methods: {
     setQuickPeriod(period) {
       const end = new Date();
       const start = new Date();
 
+      // eslint-disable-next-line default-case
       switch (period) {
         case '7d':
           start.setDate(end.getDate() - 7);
@@ -381,7 +375,7 @@ export default {
           endDate: this.dateRange.end,
         };
 
-        const response = await axios.get(`/api/farmers/${this.currentUser.id}/reports`, { params });
+        const response = await axios.get(`/api/farmers/${getCurrentUserId()}/reports`, { params });
         const data = response.data;
 
         this.metrics = data.metrics || this.metrics;
@@ -399,7 +393,7 @@ export default {
     },
 
     async initializeCharts() {
-      if (!this.hasYieldData) return;
+      if (!this.hasYieldData && !this.hasAccuracyData) return;
 
       this.loadingCharts = true;
       try {
@@ -408,97 +402,26 @@ export default {
           endDate: this.dateRange.end,
         };
 
-        const response = await axios.get(`/api/farmers/${this.currentUser.id}/reports/charts`, { params });
+        const response = await axios.get(`/api/farmers/${getCurrentUserId()}/reports/charts`, { params });
         const chartData = response.data;
 
         await this.$nextTick();
 
-        // Import Chart.js dynamically
-        const { Chart, registerables } = await import('chart.js');
-        Chart.register(...registerables);
-
-        // Initialize charts
-        if (this.hasYieldData && this.$refs.yieldTrendsChart) {
-          this.initializeYieldTrendsChart(Chart, chartData.yieldTrends);
+        // Update yield trends chart
+        if (this.hasYieldData && chartData.yieldTrends) {
+          this.yieldTrendsOptions.xaxis.categories = chartData.yieldTrends.labels || [];
+          this.yieldTrendsSeries[0].data = chartData.yieldTrends.values || [];
         }
 
-        if (this.hasAccuracyData && this.$refs.accuracyChart) {
-          this.initializeAccuracyChart(Chart, chartData.accuracy);
+        // Update accuracy chart
+        if (this.hasAccuracyData && chartData.accuracy) {
+          this.accuracySeries = [chartData.accuracy.accurate || 0, chartData.accuracy.inaccurate || 0];
         }
       } catch (error) {
         console.error('Error loading chart data:', error);
       } finally {
         this.loadingCharts = false;
       }
-    },
-
-    initializeYieldTrendsChart(Chart, data) {
-      this.yieldTrendsChart = new Chart(this.$refs.yieldTrendsChart, {
-        type: 'line',
-        data: {
-          labels: data.labels,
-          datasets: [{
-            label: 'Yield Amount',
-            data: data.values,
-            borderColor: '#1976d2',
-            backgroundColor: 'rgba(25, 118, 210, 0.1)',
-            tension: 0.4,
-            fill: true,
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Yield Amount (kg)',
-              },
-            },
-            x: {
-              title: {
-                display: true,
-                text: 'Date',
-              },
-            },
-          },
-        },
-      });
-    },
-
-    initializeAccuracyChart(Chart, data) {
-      this.accuracyChart = new Chart(this.$refs.accuracyChart, {
-        type: 'doughnut',
-        data: {
-          labels: ['Accurate Predictions', 'Inaccurate Predictions'],
-          datasets: [{
-            data: [data.accurate, data.inaccurate],
-            backgroundColor: ['#4caf50', '#f44336'],
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-            },
-          },
-        },
-      });
-    },
-
-    destroyCharts() {
-      [this.yieldTrendsChart, this.accuracyChart].forEach((chart) => {
-        if (chart) chart.destroy();
-      });
     },
 
     async exportToPDF() {
@@ -509,7 +432,7 @@ export default {
           endDate: this.dateRange.end,
         };
 
-        const response = await axios.get(`/api/farmers/${this.currentUser.id}/reports/export/pdf`, {
+        const response = await axios.get(`/api/farmers/${getCurrentUserId()}/reports/export/pdf`, {
           params,
           responseType: 'blob',
         });
@@ -539,7 +462,7 @@ export default {
           endDate: this.dateRange.end,
         };
 
-        const response = await axios.get(`/api/farmers/${this.currentUser.id}/reports/export/csv`, {
+        const response = await axios.get(`/api/farmers/${getCurrentUserId()}/reports/export/csv`, {
           params,
           responseType: 'blob',
         });
@@ -605,10 +528,6 @@ export default {
   position: relative;
   height: 300px;
   width: 100%;
-}
-
-.chart-container canvas {
-  max-height: 300px;
 }
 
 /* Mobile Responsiveness */

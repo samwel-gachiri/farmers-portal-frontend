@@ -1,16 +1,19 @@
 <template>
   <Default>
-    <v-container fluid class="pa-6 zone-management-root">
+    <div fluid class="pa-6 zone-management-root">
       <v-row>
         <v-col cols="12" class="pb-0">
-      <div class="d-flex align-center justify-space-between tw-mb-4">
-            <div>
-        <h1 class="text-h4 font-weight-bold tw-mb-1">Zone Management</h1>
-              <p class="text-subtitle-2 grey--text">Create, visualize and manage exporter zones & supervisors</p>
-            </div>
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+<!--            <div>-->
+<!--              <h1 class="tw-text-2xl tw-font-bold tw-mb-1">Zone Management</h1>-->
+<!--              <p class="tw-text-sm tw-text-gray-600">Create, visualize and manage exporter zones & supervisors</p>-->
+<!--            </div>-->
             <div class="d-flex align-center">
               <v-btn text icon :loading="globalLoading" @click="refreshCurrentTab" :disabled="globalLoading">
                 <v-icon>mdi-refresh</v-icon>
+              </v-btn>
+              <v-btn text icon @click="$router.push({ name: 'ZoneCommentsManagement' })" :disabled="globalLoading">
+                <v-icon>mdi-comment-multiple-outline</v-icon>
               </v-btn>
             </div>
           </div>
@@ -19,7 +22,7 @@
 
       <v-row>
         <v-col cols="12">
-          <v-tabs v-model="activeTab" color="primary" grow class="elevation-1 rounded">
+          <v-tabs v-model="activeTab" color="primary" grow class="tw-shadow-md tw-rounded-lg">
             <v-tab v-if="hasPermission('CREATE_ZONE')">Create Zone</v-tab>
             <v-tab v-if="hasPermission('UPDATE_ZONE') || hasPermission('VIEW_ZONE_SUPERVISOR')">All Zones</v-tab>
             <v-tab v-if="hasPermission('VIEW_ZONE_SUPERVISOR')">Zone Details</v-tab>
@@ -32,10 +35,10 @@
         <v-tab-item v-if="hasPermission('CREATE_ZONE')">
           <v-row class="tw-mt-2">
             <v-col cols="12" md="4">
-              <v-card class="h-100" elevation="2">
-                <v-card-title class="tw-bg-primary tw-text-white py-3">
+              <v-card class="tw-h-full tw-shadow-lg">
+                <v-card-title class="tw-bg-primary tw-text-white tw-py-3">
                   <v-icon left>mdi-map-plus</v-icon>
-                  <span class="font-weight-medium">Create New Zone</span>
+                  <span class="tw-font-medium">Create New Zone</span>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -57,10 +60,10 @@
               </v-card>
             </v-col>
             <v-col cols="12" md="8">
-              <v-card class="h-100" elevation="2">
-                <v-card-title class="tw-bg-secondary tw-text-white py-3">
+              <v-card class="tw-h-full tw-shadow-lg">
+                <v-card-title class="tw-bg-secondary tw-text-white tw-py-3">
                   <v-icon left>mdi-radar</v-icon>
-                  <span class="font-weight-medium">Zone Preview</span>
+                  <span class="tw-font-medium">Zone Preview</span>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text class="pa-0" style="height:500px;">
@@ -68,7 +71,7 @@
                     <div v-if="!createMapView" class="tw-absolute tw-inset-0 tw-flex tw-items-center tw-justify-center tw-text-gray-500 tw-text-sm">Loading map...</div>
                   </div>
                 </v-card-text>
-                <v-alert v-if="!newZone.centerLatitude || !newZone.centerLongitude" type="info" variant="tonal" class="ma-4" density="comfortable">
+                <v-alert v-if="!newZone.centerLatitude || !newZone.centerLongitude" type="info" variant="tonal" class="tw-m-4" density="comfortable">
                   Click on the map to set the centre point of the zone.
                 </v-alert>
               </v-card>
@@ -81,9 +84,9 @@
           <v-row class="tw-mt-2">
             <v-col cols="12" md="4">
               <v-card elevation="2" class="tw-mb-4">
-                <v-card-title class="tw-bg-deep-purple tw-text-white py-3">
+                <v-card-title class="tw-bg-deep-purple tw-text-white tw-py-3">
                   <v-icon left>mdi-format-list-bulleted</v-icon>
-                  <span class="font-weight-medium">Zones</span>
+                  <span class="tw-font-medium">Zones</span>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -100,9 +103,9 @@
                 </v-card-text>
               </v-card>
               <v-card v-if="selectedZone && hasPermission('UPDATE_ZONE')" elevation="2">
-                <v-card-title class="tw-bg-indigo tw-text-white py-3">
+                <v-card-title class="tw-bg-indigo tw-text-white tw-py-3">
                   <v-icon left>mdi-pencil-map</v-icon>
-                  <span class="font-weight-medium">Edit Zone</span>
+                  <span class="tw-font-medium">Edit Zone</span>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -116,16 +119,16 @@
                     ref="editZoneForm"
                   />
                 </v-card-text>
-                <v-card-actions class="justify-end">
+                <v-card-actions class="tw-justify-end">
                   <v-btn color="primary" :loading="loading" @click="$refs.editZoneForm.submit()">Update</v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>
             <v-col cols="12" md="8">
-              <v-card class="h-100" elevation="2">
-                <v-card-title class="tw-bg-deep-purple-accent-2 tw-text-white py-3">
+              <v-card class="tw-h-full tw-shadow-lg">
+                <v-card-title class="tw-bg-deep-purple-accent-2 tw-text-white tw-py-3">
                   <v-icon left>mdi-map</v-icon>
-                  <span class="font-weight-medium">Zone Map</span>
+                  <span class="tw-font-medium">Zone Map</span>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text class="pa-0" style="height:600px;">
@@ -143,9 +146,9 @@
           <v-row class="tw-mt-2">
             <v-col cols="12" md="4">
               <v-card elevation="2" class="tw-mb-4">
-                <v-card-title class="tw-bg-teal tw-text-white py-3">
+                <v-card-title class="tw-bg-teal tw-text-white tw-py-3">
                   <v-icon left>mdi-magnify</v-icon>
-                  <span class="font-weight-medium">Select Zone</span>
+                  <span class="tw-font-medium">Select Zone</span>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -165,9 +168,9 @@
             </v-col>
             <v-col cols="12" md="8">
               <v-card elevation="2">
-                <v-card-title class="tw-bg-teal-darken-1 tw-text-white py-3">
+                <v-card-title class="tw-bg-teal-darken-1 tw-text-white tw-py-3">
                   <v-icon left>mdi-information-outline</v-icon>
-                  <span class="font-weight-medium">Zone Details</span>
+                  <span class="tw-font-medium">Zone Details</span>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -185,14 +188,14 @@
       </v-tabs-items>
 
       <!-- Snackbar -->
-      <v-snackbar v-model="snackbar.show" :timeout="5000" top right multi-line elevation="6" :color="snackbarColor(snackbar.color)" class="snackbar-wrapper">
+            <v-snackbar v-model="snackbar.show" :timeout="5000" top right multi-line elevation="6" class="tw-max-w-sm">
         <v-alert :type="mapAlertType(snackbar.color)" :color="snackbarColor(snackbar.color)" dense outlined class="ma-0 pa-2" border="left">
-          <div class="d-flex align-center">
-            <v-icon size="20" class="mr-2" v-if="snackbar.color==='success'">mdi-check-circle</v-icon>
-            <v-icon size="20" class="mr-2" v-else-if="snackbar.color==='error'">mdi-alert-circle</v-icon>
-            <v-icon size="20" class="mr-2" v-else-if="snackbar.color==='warning'">mdi-alert</v-icon>
-            <v-icon size="20" class="mr-2" v-else>mdi-information</v-icon>
-            <span class="font-weight-medium">{{ snackbar.message }}</span>
+            <div class="tw-flex tw-items-center">
+            <v-icon size="20" class="tw-mr-2" v-if="snackbar.color==='success'">mdi-check-circle</v-icon>
+            <v-icon size="20" class="tw-mr-2" v-else-if="snackbar.color==='error'">mdi-alert-circle</v-icon>
+            <v-icon size="20" class="tw-mr-2" v-else-if="snackbar.color==='warning'">mdi-alert</v-icon>
+            <v-icon size="20" class="tw-mr-2" v-else>mdi-information</v-icon>
+            <span class="tw-font-medium">{{ snackbar.message }}</span>
             <v-spacer></v-spacer>
             <v-btn text icon small @click="snackbar.show=false">
               <v-icon>mdi-close</v-icon>
@@ -205,7 +208,7 @@
       <!-- <v-overlay :model-value="globalLoading" persistent absolute class="align-center justify-center">
         <v-progress-circular indeterminate size="64" color="primary" />
       </v-overlay> -->
-    </v-container>
+    </div>
   </Default>
 </template>
 
@@ -669,10 +672,10 @@ export default {
   font-weight: 500;
   text-transform: none;
  }
- .v-snackbar {
+ .tw-max-w-sm {
   max-width: 480px;
  }
- .map-container {
+ .tw-h-full {
   height: 100%;
  }
 </style>

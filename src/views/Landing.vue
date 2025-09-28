@@ -1,212 +1,288 @@
 <!-- eslint-disable sonarjs/no-duplicate-string -->
 <template>
-  <div class="landing-wrap tw-min-h-screen tw-flex tw-flex-col tw-relative">
-    <!-- Animated gradient background + decorative blobs -->
-    <div class="bg-gradient-layer"></div>
-    <svg class="bg-blobs" viewBox="0 0 1200 800" aria-hidden="true">
-      <defs>
-        <radialGradient id="g1" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#d1fae5" stop-opacity="0.9" />
-          <stop offset="100%" stop-color="#a7f3d0" stop-opacity="0" />
-        </radialGradient>
-        <radialGradient id="g2" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.9" />
-          <stop offset="100%" stop-color="#bfdbfe" stop-opacity="0" />
-        </radialGradient>
-        <radialGradient id="g3" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#fde68a" stop-opacity="0.85" />
-          <stop offset="100%" stop-color="#fde68a" stop-opacity="0" />
-        </radialGradient>
-      </defs>
-      <circle class="blob blob-a" cx="220" cy="140" r="220" fill="url(#g1)" />
-      <circle class="blob blob-b" cx="980" cy="120" r="200" fill="url(#g2)" />
-      <circle class="blob blob-c" cx="1000" cy="620" r="240" fill="url(#g3)" />
-    </svg>
-    <div class="noise-overlay" aria-hidden="true"></div>
-
-    <!-- Glass Navbar -->
-    <nav class="nav-glass tw-fixed tw-top-0 tw-left-0 tw-w-full tw-z-[60]">
+  <div class="tw-bg-gradient-to-br tw-from-[#f7f5ee] tw-to-[#e6f4ea] tw-min-h-screen tw-flex tw-flex-col tw-relative">
+    <!-- Responsive Glassmorphism Navbar -->
+    <nav class="tw-fixed tw-top-0 tw-left-0 tw-w-full tw-z-50 tw-bg-[#f7f5ee] tw-bg-opacity-80 tw-backdrop-blur-lg tw-shadow-lg tw-border-b tw-border-[#e6e1c3]">
       <div class="tw-max-w-7xl tw-mx-auto tw-flex tw-items-center tw-justify-between tw-px-6 tw-py-3">
-        <div class="tw-flex tw-items-center tw-gap-2">
-          <span class="brand-title tw-font-extrabold tw-text-2xl md:tw-text-3xl tw-tracking-tight tw-select-none tw-flex tw-items-baseline">
-            AGRI<span class="brand-gradient">Back</span><span class="tw-text-yellow-500 tw-ml-0.5 tw-font-black">Up</span>
+        <div class="tw-flex tw-items-center">
+          <!-- Creative logo: AGRIBackUp with SVG leaf accent -->
+          <span class="tw-font-extrabold tw-text-green-700 tw-text-3xl md:tw-text-4xl tw-tracking-tight tw-select-none tw-drop-shadow-sm tw-flex tw-items-center">
+            AGRI
+            <span class="tw-text-blue-700 tw-bg-gradient-to-r tw-from-blue-700 tw-to-green-900 tw-bg-clip-text tw-text-transparent tw-ml-1">
+              Back
+            </span>
+            <span class="tw-text-yellow-500 tw-ml-1 tw-font-black tw-drop-shadow">Up</span>
           </span>
         </div>
-        <div class="tw-flex tw-items-center tw-gap-2">
+        <div class="tw-flex tw-items-center tw-space-x-2">
           <button
-            class="btn-ghost tw-hidden sm:tw-inline-flex"
+            class="tw-hidden sm:tw-inline-block tw-text-green-700 tw-font-semibold tw-px-4 tw-py-2 tw-rounded-lg hover:tw-bg-green-100 tw-transition"
             aria-label="Login"
             @click="handleLogin"
-          >Login</button>
+          >
+            Login
+          </button>
           <button
-            class="btn-gradient tw-p-2"
+            class="tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-font-semibold tw-px-6 tw-py-2 tw-rounded-lg tw-shadow tw-transition"
             aria-label="Get Started"
             @click="handleSignup"
-          >Get Started</button>
+          >
+            Get Started
+          </button>
         </div>
       </div>
     </nav>
-    <div class="tw-h-20"></div>
+    <!-- Spacer for navbar height -->
+    <div class="tw-h-24"></div>
+    <!-- Cozy Curved SVG Line Background with agricultural colors -->
+    <svg
+      class="tw-absolute tw-left-0 tw-w-full tw-h-56 tw-z-0 tw-pointer-events-none"
+      style="top: 90px; min-width:100vw;"
+      viewBox="0 0 1440 224"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M0,112 Q720,224 1440,112"
+        stroke="#b6a16b"
+        stroke-width="12"
+        fill="none"
+        opacity="0.18"
+      />
+      <ellipse cx="200" cy="60" rx="120" ry="32" fill="#e6e1c3" opacity="0.18"/>
+      <ellipse cx="1240" cy="180" rx="80" ry="24" fill="#b6e4a3" opacity="0.18"/>
+    </svg>
 
-    <!-- Hero -->
-    <section class="tw-relative tw-z-10 tw-max-w-7xl tw-mx-auto tw-w-full tw-px-6 tw-pt-10 md:tw-pt-14 tw-pb-6 md:tw-pb-10">
-      <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-10 tw-items-center">
-        <div>
-          <h1 class="hero-title">
-            Connect with Buyers. Grow Profits. Farm Smarter.
-          </h1>
-          <p class="hero-sub">
-            AgriBackup links farmers to markets with transparent pricing, real-time demand, and AI insights—without middlemen.
-          </p>
-          <div class="tw-flex tw-flex-wrap tw-gap-3 tw-mt-6">
-            <button @click="goHome" class="btn-gradient tw-px-6 tw-py-3">Join Now</button>
-            <button @click="showDialog = true" class="btn-glass-outline tw-px-6 tw-py-3">How it works</button>
-          </div>
-          <div class="tw-flex tw-gap-4 tw-mt-6">
-            <div class="stat-chip"><span class="tw-font-bold">{{ farmerCountDisplay }}</span> farmers</div>
-            <div class="stat-chip"><span class="tw-font-bold">{{ buyerCountDisplay }}</span> buyers</div>
-            <div class="stat-chip"><span class="tw-font-bold">AI</span> assisted</div>
-          </div>
+    <!-- Above the Fold -->
+    <section class="tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-px-10 tw-pt-20 tw-pb-12 tw-max-w-6xl tw-mx-auto">
+      <div class="tw-flex-1 tw-mb-12 md:tw-mb-0">
+        <h1 class="tw-text-4xl md:tw-text-6xl tw-font-bold tw-text-green-900 tw-mb-6 tw-drop-shadow">
+          Connect Directly to Buyers and Boost Your Farm’s Profits
+        </h1>
+        <p class="tw-text-xl tw-text-[#6b4f2c] tw-mb-8 tw-drop-shadow-sm">
+          AgriBackup links Kenyan farmers to global markets with fair prices and AI insights.
+        </p>
+        <div class="tw-flex tw-gap-6 tw-mb-6">
+          <button
+            @click="goHome"
+            class="tw-bg-green-900 hover:tw-bg-[#5e9442] tw-text-white tw-font-semibold tw-py-4 tw-px-10 tw-rounded-xl tw-shadow-lg tw-border tw-border-[#e6e1c3] tw-transition tw-text-xl"
+            aria-label="Join Now"
+          >
+            Join Now
+          </button>
+          <button
+            @click="showDialog = true"
+            class="tw-bg-[#f7e9b0] hover:tw-bg-[#f3d97c] tw-text-[#6b4f2c] tw-font-semibold tw-py-4 tw-px-10 tw-rounded-xl tw-shadow-lg tw-border tw-border-[#e6e1c3] tw-transition tw-text-xl"
+            aria-label="Learn How It Works"
+          >
+            Learn How It Works
+          </button>
         </div>
-        <div>
-          <div class="hero-media">
-            <img src="@/assets/images/happy-farmer.jpg" alt="Smiling farmer using AgriBackup app" />
-            <div class="floating-tag tag-green"><span>Fair Prices</span></div>
-            <div class="floating-tag tag-blue"><span>Direct Deals</span></div>
-            <div class="floating-tag tag-gold"><span>Export Ready</span></div>
-          </div>
-        </div>
+      </div>
+      <div class="tw-flex-1 tw-flex tw-justify-center">
+        <img
+          src="@/assets/images/happy-farmer.jpg"
+          alt="Smiling farmer using AgriBackup app"
+          class="tw-rounded-2xl tw-shadow-2xl tw-w-96 tw-h-96 tw-object-cover tw-bg-[#f7f5ee] tw-border-4 tw-border-[#e6e1c3]"
+        />
       </div>
     </section>
 
-    <!-- Audience features: Farmers / Buyers / Exporters -->
-    <section class="tw-relative tw-z-10 tw-max-w-7xl tw-mx-auto tw-w-full tw-px-6 tw-pb-6 md:tw-pb-10">
-      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-6">
-        <div class="card-glass">
-          <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-            <h2 class="tw-text-xl tw-font-bold tw-text-gray-800">For Farmers</h2>
-            <v-icon color="green">mdi-sprout</v-icon>
-          </div>
-          <ul class="tw-text-[14px] tw-text-gray-700 tw-space-y-2 tw-mt-2">
+    <!-- For Farmers -->
+      <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row tw-items-start tw-border-2 tw-border-[#b6a16b] tw-w-2/3">
+        <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
+          <h2 class="tw-text-3xl tw-font-semibold tw-text-[#3d5a2a] tw-mb-4">For Farmers</h2>
+          <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
             <li>Sell directly, earn more</li>
-            <li>AI-powered crop insights</li>
-            <li>Live market prices</li>
+            <li>Get AI-powered farming tips</li>
+            <li>Access real-time market prices</li>
           </ul>
-          <button @click="joinAsFarmer" class="btn-ghost tw-mt-4">Join as Farmer</button>
+          <button
+            @click="joinAsFarmer"
+            class="tw-bg-green-800 hover:tw-bg-[#5e9442] tw-text-white tw-font-semibold tw-py-3 tw-px-8 tw-rounded-xl tw-shadow tw-border tw-border-[#e6e1c3] tw-transition tw-text-lg"
+            aria-label="Join as a Farmer"
+          >
+            Join as a Farmer
+          </button>
         </div>
-        <div class="card-glass">
-          <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-            <h2 class="tw-text-xl tw-font-bold tw-text-gray-800">For Buyers</h2>
-            <v-icon color="blue">mdi-cart-outline</v-icon>
-          </div>
-          <ul class="tw-text-[14px] tw-text-gray-700 tw-space-y-2 tw-mt-2">
-            <li>Verified farmers and traceability</li>
-            <li>Transparent pricing, direct deals</li>
-            <li>Bulk orders made simple</li>
-            <li>Add and manage your farmers</li>
-          </ul>
-          <div class="tw-flex tw-gap-2 tw-mt-4">
-            <button @click="joinAsBuyer" class="btn-ghost">Join as Buyer</button>
-            <button @click="goManageFarmers" class="btn-glass-outline tw-px-3 tw-py-2">Manage Farmers</button>
-          </div>
-        </div>
-        <div class="card-glass">
-          <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-            <h2 class="tw-text-xl tw-font-bold tw-text-gray-800">For Exporters</h2>
-            <v-icon color="amber">mdi-earth-arrow-right</v-icon>
-          </div>
-          <ul class="tw-text-[14px] tw-text-gray-700 tw-space-y-2 tw-mt-2">
-            <li>Register and manage farmer networks</li>
-            <li>Quality control with QR codes</li>
-            <li>Compliance-ready documentation</li>
-          </ul>
-          <button @click="becomeExporter" class="btn-ghost tw-mt-4">Become Exporter</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Innovation section: Map + AI panels -->
-    <section class="tw-relative tw-z-10 tw-max-w-7xl tw-mx-auto tw-w-full tw-px-6 tw-pb-6 md:tw-pb-12">
-      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
-        <div class="panel-glass">
-          <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-            <h3 class="tw-text-lg tw-font-bold tw-text-green-800">See Connections Near You</h3>
-            <v-icon color="green">mdi-map-search</v-icon>
-          </div>
-          <p class="tw-text-[14px] tw-text-gray-700 tw-mb-3">Find buyers and farmers nearby for faster local deals.</p>
+        <div class="tw-flex-1 tw-flex tw-justify-center">
           <img
-            src="@/assets/images/map-preview.jpg"
-            alt="AgriBackup geolocation map preview"
-            class="panel-image"
+            src="@/assets/images/farmer-phone.jpg"
+            alt="Farmer checking prices on phone"
+            class="tw-rounded-2xl tw-shadow-lg tw-w-72 tw-h-72 tw-object-cover tw-bg-[#f7f5ee] tw-border-4 tw-border-[#e6e1c3]"
           />
         </div>
-        <div class="panel-glass">
-          <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-            <h3 class="tw-text-lg tw-font-bold tw-text-blue-800">AI-Powered Farming</h3>
-            <v-icon color="blue">mdi-robot-happy-outline</v-icon>
-          </div>
-          <p class="tw-text-[14px] tw-text-gray-700 tw-mb-3">Personalized crop advice and market insights.
-            <router-link to="/ai" class="tw-text-blue-600 hover:tw-underline">Read more</router-link></p>
+      </section>
+
+    <!-- For Buyers -->
+    <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row-reverse tw-items-center">
+      <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
+        <h2 class="tw-text-3xl tw-font-semibold tw-text-[#2a4f6b] tw-mb-4">For Buyers</h2>
+        <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
+          <li>Source fresh produce from verified farmers</li>
+          <li>Transparent pricing, direct transactions</li>
+        </ul>
+        <button
+          @click="joinAsBuyer"
+          class="tw-bg-blue-800 hover:tw-bg-[#7bb661] tw-text-white tw-font-semibold tw-py-3 tw-px-8 tw-rounded-xl tw-shadow tw-border tw-border-[#e6e1c3] tw-transition tw-text-lg tw-mb-2"
+          aria-label="Join as a Buyer"
+        >
+          Join as a Buyer
+        </button>
+      </div>
+      <div class="tw-flex-1 tw-flex tw-justify-center tw-px-3">
+        <img
+          src="@/assets/images/buyer-inspect.jpg"
+          alt="Buyer inspecting produce"
+          class="tw-rounded-2xl tw-shadow-lg tw-w-72 tw-h-72 tw-object-cover tw-bg-[#f7f5ee] tw-border-4 tw-border-[#e6e1c3]"
+        />
+      </div>
+    </section>
+
+    <!-- For Exporters -->
+    <div class="tw-w-full tw-flex tw-justify-start tw-items-start">
+      <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row-reverse tw-items-center">
+        <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
+          <h2 class="tw-text-3xl tw-font-semibold tw-text-[#b6a16b] tw-mb-4">For Exporters</h2>
+          <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
+            <li>Source fresh produce from verified farmers</li>
+            <li>Transparent pricing, direct transactions</li>
+          </ul>
+          <button
+            @click="becomeExporter"
+            class="tw-bg-black hover:tw-bg-black tw-text-white tw-font-semibold tw-py-3 tw-px-8 tw-rounded-xl tw-shadow tw-border tw-border-[#e6e1c3] tw-transition tw-text-lg"
+            aria-label="Become a Certified Exporter"
+          >
+            Become a Certified Exporter
+          </button>
+        </div>
+        <div class="tw-flex-1 tw-flex tw-justify-center tw-px-3">
           <img
-            src="@/assets/images/ai-advice.jpg"
-            alt="AI-powered farming tips"
-            class="panel-image"
+            src="@/assets/images/exporter.jpg"
+            alt="Buyer inspecting produce"
+            class="tw-rounded-2xl tw-shadow-lg tw-w-72 tw-h-72 tw-object-cover tw-bg-[#f7f5ee] tw-border-4 tw-border-[#e6e1c3]"
           />
         </div>
+      </section>
+    </div>
+
+    <!-- Digital Inclusion / USSD -->
+    <section v-if="false" class="tw-bg-white tw-py-10 tw-px-6 tw-max-w-6xl tw-mx-auto tw-rounded-xl tw-shadow-md tw-mb-8 tw-flex tw-flex-col md:tw-flex-row tw-items-center">
+      <div class="tw-flex-1 tw-mb-6 md:tw-mb-0">
+        <h2 class="tw-text-2xl tw-font-semibold tw-text-yellow-700 tw-mb-2">Digital Inclusion</h2>
+        <ul class="tw-list-disc tw-list-inside tw-text-gray-700 tw-mb-4">
+          <li>No smartphone? Use USSD to connect</li>
+          <li>Text <span class="tw-font-bold tw-text-green-700">*123#</span> to start selling</li>
+          <li>Inclusive for all Kenyan farmers</li>
+        </ul>
+        <router-link
+          to="/ussd"
+          class="tw-bg-yellow-500 hover:tw-bg-yellow-600 tw-text-white tw-font-semibold tw-py-2 tw-px-5 tw-rounded-lg tw-shadow tw-transition"
+          aria-label="Explore USSD Access"
+        >
+          Explore USSD Access
+        </router-link>
+      </div>
+      <!-- <div class="tw-flex-1 tw-flex tw-justify-center">
+        <img
+          src="@/assets/images/farmer-ussd.jpg"
+          alt="Farmer texting on basic phone"
+          class="tw-rounded-xl tw-shadow-md tw-w-64 tw-h-64 tw-object-cover tw-bg-gray-100"
+        />
+      </div> -->
+    </section>
+
+    <!-- Map Preview & AI Mention -->
+    <section class="tw-max-w-6xl tw-mx-auto tw-px-6 tw-py-8 tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-gap-8">
+      <div class="tw-flex-1 tw-flex tw-flex-col tw-items-start">
+        <h3 class="tw-text-xl tw-font-semibold tw-text-green-700 tw-mb-2">See Connections Near You</h3>
+        <p class="tw-text-gray-700 tw-mb-4">AgriBackup’s map shows buyers and farmers nearby for fast, local deals.</p>
+        <img
+          src="@/assets/images/map-preview.jpg"
+          alt="AgriBackup geolocation map preview"
+          class="tw-rounded-xl tw-shadow-md tw-w-full tw-max-w-md tw-bg-gray-100"
+        />
+      </div>
+      <div class="tw-flex-1 tw-flex tw-flex-col tw-items-start">
+        <h3 class="tw-text-xl tw-font-semibold tw-text-blue-700 tw-mb-2">AI-Powered Farming</h3>
+        <p class="tw-text-gray-700 tw-mb-4">Get personalized crop advice and market insights. <router-link to="/ai" class="tw-text-blue-600 hover:tw-underline">Read More</router-link></p>
+        <img
+          src="@/assets/images/ai-advice.jpg"
+          alt="AI-powered farming tips"
+          class="tw-rounded-xl tw-shadow-md tw-w-full tw-max-w-md tw-bg-gray-100"
+        />
       </div>
     </section>
 
-    <!-- Steps: How it works -->
-    <section class="tw-relative tw-z-10 tw-max-w-7xl tw-mx-auto tw-w-full tw-px-6 tw-pb-10">
-      <h3 class="tw-text-center tw-text-2xl tw-font-extrabold tw-text-gray-800 tw-mb-6">How AgriBackup Works</h3>
-      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-6">
-        <div class="step-card">
-          <div class="step-badge">1</div>
-          <h4 class="tw-font-bold tw-text-gray-800 tw-mb-1">Sign up & set your role</h4>
-          <p class="tw-text-[14px] tw-text-gray-600">Farmer, Buyer or Exporter—custom experience for each.</p>
+    <!-- Testimonials & Partners -->
+    <section v-if="false" class="tw-bg-gray-50 tw-py-10 tw-px-6 tw-max-w-6xl tw-mx-auto tw-rounded-xl tw-shadow-md tw-mb-8">
+      <h2 class="tw-text-2xl tw-font-semibold tw-text-green-700 tw-mb-6">What Our Users Say</h2>
+      <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8">
+        <div class="tw-bg-white tw-rounded-lg tw-shadow tw-p-6 tw-flex-1">
+          <p class="tw-text-gray-800 tw-italic">“AgriBackup helped me double my profits in 3 months!”</p>
+          <span class="tw-block tw-mt-2 tw-font-semibold tw-text-green-700">– Mary, Smallholder Farmer</span>
         </div>
-        <div class="step-card">
-          <div class="step-badge">2</div>
-          <h4 class="tw-font-bold tw-text-gray-800 tw-mb-1">Create or browse listings</h4>
-          <p class="tw-text-[14px] tw-text-gray-600">High-quality listings with images, quantity and pricing.</p>
+        <div class="tw-bg-white tw-rounded-lg tw-shadow tw-p-6 tw-flex-1">
+          <p class="tw-text-gray-800 tw-italic">“I source fresh produce directly, saving time and money.”</p>
+          <span class="tw-block tw-mt-2 tw-font-semibold tw-text-blue-700">– John, Buyer</span>
         </div>
-        <div class="step-card">
-          <div class="step-badge">3</div>
-          <h4 class="tw-font-bold tw-text-gray-800 tw-mb-1">Deal directly, grow profits</h4>
-          <p class="tw-text-[14px] tw-text-gray-600">Connect, negotiate and transact securely—no middlemen.</p>
-        </div>
+      </div>
+      <div class="tw-flex tw-items-center tw-justify-center tw-mt-8 tw-gap-6">
+        <!-- <img src="@/assets/images/partner-logo1.png" alt="Partner Logo 1" class="tw-h-10 tw-object-contain" />
+        <img src="@/assets/images/partner-logo2.png" alt="Partner Logo 2" class="tw-h-10 tw-object-contain" />
+        <img src="@/assets/images/partner-logo3.png" alt="Partner Logo 3" class="tw-h-10 tw-object-contain" /> -->
       </div>
     </section>
 
-    <!-- Footer CTA -->
-    <footer class="footer-cta tw-mt-auto">
-      <div class="tw-max-w-7xl tw-mx-auto tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-gap-4 tw-px-6">
-        <h2 class="tw-text-white tw-text-lg md:tw-text-xl tw-font-semibold">Ready to transform your farm?</h2>
-        <router-link to="/signup" class="btn-white">Join Now</router-link>
+    <!-- Final CTA & Footer -->
+    <footer class="tw-bg-green-700 tw-text-white tw-py-8 tw-px-6 tw-mt-auto">
+      <div class="tw-max-w-6xl tw-mx-auto tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between">
+        <div class="tw-mb-4 md:tw-mb-0">
+          <h2 class="tw-text-xl tw-font-semibold">Ready to transform your farm?</h2>
+        </div>
+        <router-link
+          to="/signup"
+          class="tw-bg-white tw-text-green-700 tw-font-semibold tw-py-3 tw-px-6 tw-rounded-lg tw-shadow tw-transition hover:tw-bg-green-100"
+          aria-label="Join AgriBackup Now"
+        >
+          Join Now
+        </router-link>
       </div>
-      <div class="tw-text-center tw-text-white tw-text-sm tw-opacity-90 tw-mt-4">
+      <div class="tw-mt-6 tw-text-center tw-text-sm tw-opacity-80">
         &copy; 2024 AgriBackup. All rights reserved. | <router-link to="/contact" class="tw-underline tw-text-white">Contact Us</router-link>
       </div>
     </footer>
 
-    <!-- How It Works Dialog -->
+    <!-- Learn How It Works Dialog -->
     <div
       v-if="showDialog"
-      class="tw-fixed tw-inset-0 tw-z-[70] tw-flex tw-items-center tw-justify-center overlay-blur"
-      role="dialog" aria-modal="true"
+      class="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-start tw-justify-center tw-pt-16 tw-bg-transparent"
+      style="backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);"
     >
-      <div class="dialog-glass">
-        <button @click="showDialog = false" class="dialog-close" aria-label="Close">
-          <v-icon small>mdi-close</v-icon>
-        </button>
-        <h2 class="tw-text-xl tw-font-extrabold tw-text-gray-800 tw-mb-2">How AgriBackup Works</h2>
-        <ul class="tw-text-[14px] tw-text-gray-700 tw-list-disc tw-list-inside tw-space-y-2 tw-mb-4">
-          <li><span class="tw-font-semibold">Farmers:</span> connect directly to buyers to maximize profit.</li>
-          <li><span class="tw-font-semibold">Buyers:</span> source quality produce with transparent prices.</li>
-          <li><span class="tw-font-semibold">Exporters:</span> manage farmer networks and verify via QR codes.</li>
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-p-8 tw-max-w-lg tw-w-full tw-relative tw-mx-4">
+        <button
+          @click="showDialog = false"
+          class="tw-absolute tw-top-3 tw-right-3 tw-text-gray-400 hover:tw-text-gray-700 tw-text-xl"
+          aria-label="Close"
+        >&times;</button>
+        <h2 class="tw-text-2xl tw-font-bold tw-text-green-700 tw-mb-4">How AgriBackup Works</h2>
+        <ul class="tw-list-disc tw-list-inside tw-text-gray-700 tw-mb-4">
+          <li><span class="tw-font-semibold">For Farmers:</span>
+            We connect you to buyers without the need of middlemen for you to make more profit from your farm
+          </li>
+          <li><span class="tw-font-semibold">For Buyers:</span>
+            Source fresh quality produce from nearby farmers at transparent prices with secure payment system
+          </li>
+          <li><span class="tw-font-semibold">For Exporters:</span>
+            Register your own farmers and be able to source quality produce in bulk from farmers, and get QR code of produce vendors
+          </li>
         </ul>
         <div class="tw-flex tw-justify-end">
-          <button @click="showDialog = false" class="btn-gradient tw-px-5 tw-py-2">Close</button>
+          <button
+            @click="showDialog = false"
+            class="tw-bg-green-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-semibold hover:tw-bg-green-700 tw-transition"
+          >Close</button>
         </div>
       </div>
     </div>
@@ -214,8 +290,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   name: 'LandingPage',
   metaInfo: {
@@ -259,8 +333,6 @@ export default {
   data() {
     return {
       showDialog: false,
-      farmerCountDisplay: '20k+',
-      buyerCountDisplay: '3.5k',
     };
   },
   methods: {
@@ -292,99 +364,16 @@ export default {
       this.$store.dispatch('auth/setViewRole', 'farmer');
       this.$router.push({ name: 'Listings' });
     },
-    goManageFarmers() {
-      // Prefer exporter management if available, else buyers can manage connections via community
-      const target = this.$router.resolve({ name: 'FarmersManagement' });
-      if (target && target.resolved && target.resolved.matched && target.resolved.matched.length) {
-        this.$router.push({ name: 'FarmersManagement' });
-        return;
-      }
-      // Fallback to community map for buyers to connect/manage
-      this.$router.push({ name: 'Community' });
-    },
-    async fetchCountsSafely() {
-      // Non-blocking stats fetch with short timeout and graceful fallback
-      try {
-        const resp = await axios.get('/api/admin/total-users', { timeout: 2000 });
-        const totalFarmers = resp?.data?.totalFarmers;
-        const totalBuyers = resp?.data?.totalBuyers;
-        if (Number.isFinite(totalFarmers)) this.farmerCountDisplay = this.formatCompact(totalFarmers);
-        if (Number.isFinite(totalBuyers)) this.buyerCountDisplay = this.formatCompact(totalBuyers);
-      } catch (e) {
-        // Silently keep defaults on any error/401/timeout
-      }
-    },
-    formatCompact(n) {
-      try {
-        const abs = Math.abs(n);
-        const sign = n < 0 ? '-' : '';
-        if (abs >= 1000000000) return `${sign}${(abs / 1000000000).toFixed(abs >= 10000000000 ? 0 : 1)}b+`;
-        if (abs >= 1000000) return `${sign}${(abs / 1000000).toFixed(abs >= 10000000 ? 0 : 1)}m+`;
-        if (abs >= 10000) return `${sign}${(abs / 1000).toFixed(abs >= 100000 ? 0 : 1)}k+`;
-        if (abs >= 1000) return `${sign}${(abs / 1000).toFixed(abs >= 10000 ? 0 : 1)}k`;
-        return `${n}`;
-      } catch (_) { return `${n}`; }
-    },
-  },
-  mounted() {
-    // Start fetching after first paint
-    requestAnimationFrame(() => this.fetchCountsSafely());
   },
 };
 </script>
 
 <style scoped>
-/* Page background */
-.landing-wrap { background: radial-gradient(1200px 600px at 20% -10%, #f3fce9 0%, rgba(243,252,233,0) 60%), radial-gradient(900px 500px at 110% 10%, #e8f4ff 0%, rgba(232,244,255,0) 60%), #fbfdf7; }
-.bg-gradient-layer { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(34,197,94,0.06), rgba(14,165,233,0.06)); }
-.bg-blobs { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.6; }
-.blob { filter: blur(18px); animation: float 12s ease-in-out infinite; }
-.blob-b { animation-delay: 2.2s; }
-.blob-c { animation-delay: 4.6s; }
-.noise-overlay { position: absolute; inset: 0; pointer-events: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 0 0 0 0.05 0.08 0.1 0.12"/></feComponentTransfer></filter><rect width="100%" height="100%" filter="url(%23n)"/></svg>'); opacity: 0.12; mix-blend-mode: multiply; }
-
-/* Navbar */
-.nav-glass { background: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.7); backdrop-filter: saturate(180%) blur(14px); }
-.brand-title { color: #166534; }
-.brand-gradient { background: linear-gradient(135deg, #2563eb 0%, #16a34a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-/* Hero */
-.hero-title { font-size: 34px; line-height: 1.1; font-weight: 900; color: #0f172a; letter-spacing: -0.01em; }
-@media (min-width: 768px) { .hero-title { font-size: 48px; } }
-.hero-sub { color: #334155; font-size: 16px; margin-top: 12px; max-width: 48ch; }
-.hero-media { position: relative; border-radius: 18px; padding: 10px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.75); box-shadow: 0 18px 40px rgba(2,6,23,0.08); }
-.hero-media img { display: block; width: 100%; max-width: 480px; border-radius: 12px; object-fit: cover; }
-.floating-tag { position: absolute; top: 8%; right: -6%; transform: rotate(6deg); background: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.85); border-radius: 9999px; padding: 6px 12px; box-shadow: 0 10px 26px rgba(2,6,23,0.12); font-size: 12px; color: #0f172a; backdrop-filter: blur(8px); }
-.tag-blue { top: auto; bottom: 10%; right: -4%; transform: rotate(-4deg); }
-.tag-gold { top: 40%; right: -10%; transform: rotate(2deg); }
-
-/* Cards */
-.card-glass { background: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.8); border-radius: 16px; padding: 18px; box-shadow: 0 12px 32px rgba(2,6,23,0.06); backdrop-filter: saturate(180%) blur(12px); }
-.card-glass:hover { box-shadow: 0 16px 38px rgba(2,6,23,0.1); transform: translateY(-2px); transition: 150ms ease; }
-.panel-glass { background: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.85); border-radius: 16px; padding: 16px; box-shadow: 0 12px 32px rgba(2,6,23,0.06); }
-.panel-image { width: 100%; max-width: 520px; height: auto; border-radius: 12px; background: #f1f5f9; }
-.step-card { position: relative; background: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.85); border-radius: 14px; padding: 16px 14px 14px; box-shadow: 0 10px 28px rgba(2,6,23,0.06); }
-.step-badge { position: absolute; top: -12px; left: -12px; width: 34px; height: 34px; border-radius: 9999px; display: grid; place-items: center; color: #075985; font-weight: 800; background: linear-gradient(135deg, #a7f3d0, #bfdbfe, #fde68a); box-shadow: 0 6px 16px rgba(2,6,23,0.12); }
-.stat-chip { background: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.9); backdrop-filter: blur(8px); border-radius: 9999px; padding: 8px 12px; font-size: 12px; color: #0f172a; }
-
-/* Buttons */
-.btn-gradient { background: linear-gradient(135deg, #22c55e 0%, #16a34a 35%, #0ea5e9 100%); color: #fff; border: none; border-radius: 10px; box-shadow: 0 10px 22px rgba(2,6,23,0.12); font-weight: 700; }
-.btn-gradient:hover { filter: brightness(1.03); box-shadow: 0 14px 30px rgba(2,6,23,0.16); }
-.btn-glass-outline { background: rgba(255,255,255,0.55); color: #0f766e; border: 1px solid rgba(15,118,110,0.25); border-radius: 10px; font-weight: 700; backdrop-filter: blur(8px); }
-.btn-glass-outline:hover { background: rgba(255,255,255,0.7); }
-.btn-ghost { color: #0f766e; padding: 10px 14px; border-radius: 10px; font-weight: 700; }
-.btn-ghost:hover { background: rgba(15,118,110,0.08); }
-.btn-white { background: #fff; color: #065f46; font-weight: 800; border-radius: 12px; padding: 10px 18px; box-shadow: 0 12px 24px rgba(2,6,23,0.16); }
-.btn-white:hover { background: #f8fafc; }
-
-/* Footer */
-.footer-cta { background: linear-gradient(135deg, #16a34a, #0ea5e9); padding: 22px 0; position: relative; z-index: 10; }
-
-/* Dialog */
-.overlay-blur { background: radial-gradient(1200px 600px at 50% -10%, rgba(241,255,241,0.6) 0%, rgba(241,255,241,0) 55%); backdrop-filter: blur(8px); }
-.dialog-glass { position: relative; width: 100%; max-width: 640px; background: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 18px 40px rgba(2,6,23,0.2); padding: 18px; margin: 0 16px; }
-.dialog-close { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.9); border-radius: 9999px; width: 34px; height: 34px; display: grid; place-items: center; color: #0f172a; }
-
-/* Animations */
-@keyframes float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(16px) } }
+/* Glassmorphism effect for navbar */
+nav {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+}
+/* No extra styles needed; Tailwind handles layout and responsiveness */
 </style>

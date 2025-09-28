@@ -13,8 +13,8 @@
         <div class="app-user-mini tw-w-full" v-if="displayName || userRole">
           <span class="app-portal-badge">Portal</span>
 <!--          <avatar class="mr-2" />-->
-          <div class="app-user-info tw-flex tw-flex-row tw-border tw-py-2 tw-px-4 tw-rounded-lg">
-            <div class="app-user-name">{{ displayName || 'User' }}</div>
+          <div class="app-user-info tw-flex tw-flex-row tw-border-r tw-py-2 tw-px-4 tw-rounded-lg">
+            <!-- <div class="app-user-name">{{ displayName || 'User' }}</div> -->
             <div class="app-role-chip">
               <span>{{ userRole || 'Guest' }}</span>
             </div>
@@ -104,13 +104,13 @@ export default {
         roles: ['FARMER'],
         iconColor: '#6366f1',
       },
-      {
-        icon: 'mdi-truck-delivery-outline',
-        text: 'Orders',
-        link: { name: 'FarmerOrders' },
-        roles: ['FARMER'],
-        iconColor: '#0ea5e9',
-      },
+      // {
+      //   icon: 'mdi-truck-delivery-outline',
+      //   text: 'Orders',
+      //   link: { name: 'FarmerOrders' },
+      //   roles: ['FARMER'],
+      //   iconColor: '#0ea5e9',
+      // },
       {
         icon: 'mdi-chart-line',
         text: 'Reports',
@@ -193,40 +193,26 @@ export default {
         roles: ['EXPORTER', 'SYSTEM_ADMIN'],
         iconColor: '#0ea5e9',
       },
-      {
-        icon: 'mdi-routes',
-        text: 'Pickup Routes',
-        link: { name: 'PickupRoutes' },
-        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
-        iconColor: '#ec4899',
-      },
-      {
-        icon: 'mdi-comment-multiple-outline',
-        text: 'Zone Comments',
-        link: { name: 'ZoneCommentsManagement' },
-        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
-        iconColor: '#f59e42',
-      },
-      {
-        icon: 'mdi-chart-box-outline',
-        text: 'System Analytics',
-        link: { name: 'SystemAnalytics' },
-        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
-        iconColor: '#8b5cf6',
-      },
+      // {
+      //   icon: 'mdi-routes',
+      //   text: 'Pickup Routes',
+      //   link: { name: 'PickupRoutes' },
+      //   roles: ['EXPORTER', 'SYSTEM_ADMIN'],
+      //   iconColor: '#ec4899',
+      // },
+      // {
+      //   icon: 'mdi-chart-box-outline',
+      //   text: 'System Analytics',
+      //   link: { name: 'SystemAnalytics' },
+      //   roles: ['EXPORTER', 'SYSTEM_ADMIN'],
+      //   iconColor: '#8b5cf6',
+      // },
 
       // === ZONE SUPERVISOR PORTAL ===
       {
         icon: 'mdi-map-marker-path',
         text: 'Zone Management',
         link: { name: 'ZoneManagement' },
-        roles: ['ZONE_SUPERVISOR'],
-        iconColor: '#f59e42',
-      },
-      {
-        icon: 'mdi-comment-multiple-outline',
-        text: 'Zone Comments',
-        link: { name: 'ZoneCommentsManagement' },
         roles: ['ZONE_SUPERVISOR'],
         iconColor: '#f59e42',
       },

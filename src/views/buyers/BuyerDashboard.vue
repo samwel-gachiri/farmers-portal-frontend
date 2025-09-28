@@ -283,6 +283,7 @@
 <script>
 import axios from 'axios';
 import VueApexCharts from 'vue-apexcharts';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'BuyerDashboard',
@@ -371,11 +372,6 @@ export default {
       spendChartSeries: [],
     };
   },
-  computed: {
-    currentUser() {
-      return this.$store.getters['auth/user'];
-    },
-  },
   async mounted() {
     await this.loadDashboardData();
     this.initializeCharts();
@@ -386,7 +382,7 @@ export default {
   methods: {
     async loadDashboardData() {
       try {
-        const response = await axios.get(`/api/buyer/${this.currentUser.id}/analytics/dashboard`);
+        const response = await axios.get(`/api/buyer/${getCurrentUserId()}/analytics/dashboard`);
         const data = response.data;
 
         this.metrics = data.metrics;
@@ -402,7 +398,7 @@ export default {
       this.loadingCharts = true;
       try {
         // Load chart data
-        const response = await axios.get(`/api/buyer/${this.currentUser.id}/analytics/charts`);
+        const response = await axios.get(`/api/buyer/${getCurrentUserId()}/analytics/charts`);
         const chartData = response.data;
 
         // Check if we have data

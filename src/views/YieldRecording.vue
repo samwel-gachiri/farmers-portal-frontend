@@ -141,6 +141,7 @@ import YieldEntryForm from '@/components/yield/YieldEntryForm.vue';
 import YieldRecordCard from '@/components/yield/YieldRecordCard.vue';
 import YieldSummaryCard from '@/components/yield/YieldSummaryCard.vue';
 import YieldChart from '@/components/yield/YieldChart.vue';
+import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'YieldRecording',
@@ -154,6 +155,7 @@ export default {
   data() {
     return {
       loading: true,
+      farmerId: getCurrentUserId(),
       produces: [],
       units: ['kg', 'bags', 'tons', 'pieces', 'liters'],
       form: {
@@ -196,14 +198,13 @@ export default {
   methods: {
     async fetchProduces() {
       try {
-        const farmerId = this.$store.state.user?.id || this.$route.params.farmerId;
-        const { data } = await axios.get(`/api/farmers/${farmerId}/produces/for-yield-recording`);
+        const { data } = await axios.get(`/api/farmers/${this.farmerId}/produces/for-yield-recording`);
         this.produces = data.data || [];
       } catch (error) {
         console.error('Error fetching produces:', error);
         // Fallback to existing endpoint if new one doesn't exist yet
         try {
-          const { data } = await axios.get(`/farmers-service/farmer/${farmerId}/produces`);
+          const { data } = await axios.get(`/farmers-service/farmer/${this.farmerId}/produces`);
           this.produces = data.data || [];
         } catch {
           this.produces = [];
