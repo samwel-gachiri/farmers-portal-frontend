@@ -140,7 +140,7 @@ export default {
 
         this.loading = false;
       } catch (error) {
-        console.error('Failed to initialize map:', error);
+        // console.error('Failed to initialize map:', error);
         this.$toast.error('Failed to load map. Please try again.');
         this.close();
       }
@@ -173,7 +173,7 @@ export default {
         this.selectLocation(position.coords.longitude, position.coords.latitude);
         this.map.setView([position.coords.latitude, position.coords.longitude], 15);
       } catch (error) {
-        console.error('Error getting current location:', error);
+        // console.error('Error getting current location:', error);
         this.$toast.error('Unable to get your current location. Please select location manually on the map.');
       } finally {
         this.gettingLocation = false;
