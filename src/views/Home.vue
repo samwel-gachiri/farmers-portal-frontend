@@ -22,8 +22,8 @@
       </svg>
       <div class="tw-bg-white tw-rounded-xl tw-shadow-lg tw-px-8 tw-py-10 tw-w-full tw-max-w-md tw-flex tw-flex-col tw-items-center">
         <div class="tw-text-center tw-mb-8">
-          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-2">AgriBackup Portal</h1>
-          <p class="tw-text-gray-600">Choose your portal to continue</p>
+          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-2">AgriBackup Portals</h1>
+          <!-- <p class="tw-text-gray-600">Choose your portal to continue</p> -->
         </div>
         <div class="tw-flex tw-flex-col tw-gap-4 tw-w-full">
           <!-- Farmer Portal -->
@@ -37,7 +37,7 @@
             </div>
             <div class="portal-content">
               <h3 class="portal-title">Farmer Portal</h3>
-              <p class="portal-description">Manage your farm, crops, and harvests</p>
+              <p class="portal-description">Get guided Crop growth and Market access</p>
             </div>
             <v-icon color="white" class="portal-arrow">mdi-arrow-right</v-icon>
           </button>
@@ -53,7 +53,7 @@
             </div>
             <div class="portal-content">
               <h3 class="portal-title">Buyer Portal</h3>
-              <p class="portal-description">Browse listings and manage orders</p>
+              <p class="portal-description">Register your own Farmers and Buy from farmers</p>
             </div>
             <v-icon color="white" class="portal-arrow">mdi-arrow-right</v-icon>
           </button>
@@ -69,9 +69,11 @@
             </div>
             <div class="portal-content">
               <h3 class="portal-title">Exporter Portal</h3>
-              <p class="portal-description">Manage zones, farmers, and logistics</p>
+              <p class="portal-description">Manage all your farmers, zones and logistics</p>
             </div>
             <v-icon color="white" class="portal-arrow">mdi-arrow-right</v-icon>
+            <!-- Yellow King Icon at 45 degrees -->
+            <v-icon size="20" color="yellow" class="king-icon">mdi-crown</v-icon>
           </button>
 
         </div>
@@ -240,6 +242,7 @@ export default {
 .exporter-portal {
   background: #7c3aed;
   color: white;
+  position: relative;
 }
 
 .exporter-portal:hover {
@@ -274,6 +277,16 @@ export default {
 .portal-arrow {
   margin-left: 1rem;
   flex-shrink: 0;
+}
+
+/* Yellow King Icon at 45 degrees */
+.king-icon {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  transform: rotate(45deg);
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 /* Role Selection Dialog */

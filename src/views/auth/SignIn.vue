@@ -117,12 +117,12 @@
                   large
                   rounded
                   :loading="isLoading"
-                  :disabled="!isFormValid"
                   @click="signIn"
                 >
                   <v-icon left>mdi-login</v-icon>
-                  Sign In{{ portalContext ? ` to ${getPortalDisplayName()}` : '' }}
+                  Sign In
                 </v-btn>
+                <!-- Sign In{{ portalContext ? ` to ${getPortalDisplayName()}` : '' }} -->
                 <!-- Error message display -->
                 <v-alert
                   v-if="errorMessage"
@@ -132,7 +132,7 @@
                   outlined
                 >
                   <div class="d-flex align-center">
-                    <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
+                    <!-- <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon> -->
                     <span>{{ errorMessage }}</span>
                   </div>
                   <div v-if="showCreateAccountBtn" class="mt-3">
@@ -180,7 +180,7 @@
                   outlined
                 >
                   <div class="d-flex align-center">
-                    <v-icon color="success" class="mr-2">mdi-check-circle</v-icon>
+                    <!-- <v-icon color="success" class="mr-2">mdi-check-circle</v-icon> -->
                     <span>{{ successMessage }}</span>
                   </div>
                 </v-alert>
@@ -371,7 +371,7 @@ export default {
           this.handleSignInError(response.data.msg || 'Login failed');
         }
       } catch (error) {
-        console.error('Sign in error:', error);
+        // console.error('Sign in error:', error);
         const msg = error.response?.data?.message || error.message || 'Network error occurred';
         this.handleSignInError(msg);
       } finally {

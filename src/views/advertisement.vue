@@ -300,7 +300,7 @@ Make it look like a premium, cutting-edge agricultural showcase. Return ONLY the
         htmlContent = htmlContent.replace(/```html\n?/g, '').replace(/```\n?/g, '');
         this.generatedWebsite = htmlContent;
       } catch (error) {
-        console.error('Error generating website:', error);
+        // console.error('Error generating website:', error);
       } finally {
         this.generating = false;
       }

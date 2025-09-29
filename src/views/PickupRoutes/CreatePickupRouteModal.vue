@@ -100,7 +100,7 @@ export default {
           this.exporterId = this.zones[0].exporterId;
         }
       } catch (e) {
-        console.error('Failed to load zones', e);
+        // console.error('Failed to load zones', e);
         this.$emit('error', 'Failed to load zones');
       }
     },
@@ -111,7 +111,7 @@ export default {
         const filtered = all.filter((f) => f.zoneId === this.zoneId);
         this.farmers = filtered.map((f) => ({ id: f.farmerId, name: f.farmerName }));
       } catch (e) {
-        console.error('Failed to load farmers', e);
+        // console.error('Failed to load farmers', e);
         this.$emit('error', 'Failed to load farmers');
       }
     },
@@ -139,7 +139,7 @@ export default {
             : null,
         }));
       } catch (e) {
-        console.error('Failed to load suggestions', e);
+        // console.error('Failed to load suggestions', e);
       }
     },
     toggleFarmer(farmerId) {
@@ -148,7 +148,7 @@ export default {
     },
     async submit() {
       if (this.farmerIds.length === 0) {
-        console.warn('No farmers selected');
+        // console.warn('No farmers selected');
         this.$emit('error', 'Select at least one farmer');
         return;
       }
@@ -158,7 +158,10 @@ export default {
           scheduledDate: this.scheduledDate, zoneId: this.zoneId, exporterId: this.exporterId, farmerIds: this.farmerIds,
         });
         this.$emit('created', route);
-      } catch (e) { console.error(e); this.$emit('error', 'Failed to create'); }
+      } catch (e) {
+        // console.error(e);
+        this.$emit('error', 'Failed to create');
+      }
       this.submitting = false;
     },
   },

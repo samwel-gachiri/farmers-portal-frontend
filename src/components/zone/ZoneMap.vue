@@ -39,9 +39,9 @@ export default {
       .then(() => {
         this.initializeMap();
       })
-      .catch((e) => {
+      .catch(() => {
         // eslint-disable-next-line no-console
-        console.error('ArcGIS load failed', e);
+        // console.error('ArcGIS load failed', e);
       });
   },
   watch: {

@@ -405,7 +405,7 @@ export default {
         const cropsResponse = await axios.get(`/api/farmers/${this.farmer.farmer.id}/current-crops`);
         this.currentCrops = cropsResponse.data.data || [];
       } catch (error) {
-        console.error('Error loading farmer details:', error);
+        // console.error('Error loading farmer details:', error);
       } finally {
         this.loadingOrders = false;
       }

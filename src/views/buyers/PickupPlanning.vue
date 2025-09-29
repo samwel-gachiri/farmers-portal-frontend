@@ -508,7 +508,7 @@ export default {
           estimatedLoad: farmer.performanceMetrics?.averageYield || 50,
         }));
       } catch (error) {
-        console.error('Error loading farmers:', error);
+        // console.error('Error loading farmers:', error);
         // Mock data for demo with coordinates
         this.availableFarmers = [
           {
@@ -564,23 +564,23 @@ export default {
         });
 
         this.mapView.when(() => {
-          console.log('Map is ready');
+          // console.log('Map is ready');
         });
       } catch (error) {
-        console.error('Error initializing map:', error);
+        // console.error('Error initializing map:', error);
         this.$toast.error('Failed to initialize map');
       }
     },
 
     async generateRoute() {
-      console.log('Generate route called');
+      // console.log('Generate route called');
       if (!this.canGenerateRoute) {
-        console.log('Cannot generate route - missing requirements');
+        // console.log('Cannot generate route - missing requirements');
         return;
       }
 
       this.generatingRoute = true;
-      console.log('Starting route generation...');
+      // console.log('Starting route generation...');
       try {
         // Clear previous route
         this.clearRoute();
@@ -627,23 +627,23 @@ export default {
           });
         });
 
-        console.log('Route stops prepared:', stops);
+        // console.log('Route stops prepared:', stops);
 
         // Use Esri routing service or fallback to mock data
-        console.log('About to calculate route...');
+        // console.log('About to calculate route...');
         const routeResult = await this.calculateRoute(stops);
-        console.log('Route calculation result:', routeResult);
+        // console.log('Route calculation result:', routeResult);
 
         if (routeResult) {
-          console.log('Route calculated successfully, displaying on map...');
+          // console.log('Route calculated successfully, displaying on map...');
           await this.displayRoute(routeResult, selectedFarmers);
           this.$toast.success('Route generated successfully!');
         } else {
-          console.error('Route calculation returned null/undefined');
+          // console.error('Route calculation returned null/undefined');
           throw new Error('Failed to calculate route');
         }
       } catch (error) {
-        console.error('Error generating route:', error);
+        // console.error('Error generating route:', error);
         this.$toast.warning('Using simplified route calculation. For optimal routes, please check your connection.');
 
         // As a last resort, show a basic straight-line route
@@ -669,7 +669,7 @@ export default {
           await this.displayRoute(mockResult, selectedFarmers);
           this.$toast.success('Route generated successfully!');
         } catch (fallbackError) {
-          console.error('Fallback route also failed:', fallbackError);
+          // console.error('Fallback route also failed:', fallbackError);
           this.$toast.error('Unable to generate route preview. Please try again.');
         }
       } finally {
@@ -679,13 +679,13 @@ export default {
 
     async calculateRoute(stops) {
       try {
-        console.log('Calculating route with stops:', stops);
+        // console.log('Calculating route with stops:', stops);
 
         // Check if Esri API key is available
         const esriApiKey = process.env.VUE_APP_ESRI_API_KEY;
 
         if (!esriApiKey) {
-          console.log('No Esri API key found, using mock route data');
+          // console.log('No Esri API key found, using mock route data');
           return this.generateMockRouteData(stops);
         }
 
@@ -710,7 +710,7 @@ export default {
           apiKey: esriApiKey,
         });
 
-        console.log('Sending route request to Esri...');
+        // console.log('Sending route request to Esri...');
 
         // Add timeout to prevent hanging (reduced from 15000ms to 8000ms)
         const routePromise = route.solve('https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', routeParams);
@@ -718,37 +718,37 @@ export default {
           setTimeout(() => reject(new Error('Route request timeout')), 8000);
         });
 
-        console.log('Waiting for route response...');
+        // console.log('Waiting for route response...');
         const results = await Promise.race([routePromise, timeoutPromise]);
-        console.log('Route response received:', results);
+        // console.log('Route response received:', results);
 
         if (results && results.routeResults && results.routeResults.length > 0) {
-          console.log('Esri routing successful:', results.routeResults[0]);
+          // console.log('Esri routing successful:', results.routeResults[0]);
           return results.routeResults[0];
         }
 
-        console.warn('Esri routing returned no results, using fallback');
+        // console.warn('Esri routing returned no results, using fallback');
         return this.generateMockRouteData(stops);
       } catch (error) {
-        console.error('Error calculating route with Esri:', error);
-        console.log('Falling back to mock route data');
+        // console.error('Error calculating route with Esri:', error);
+        // console.log('Falling back to mock route data');
         // Immediately return mock data instead of throwing
         return this.generateMockRouteData(stops);
       }
     },
 
     generateMockRouteData(stops) {
-      console.log('Generating mock route data for stops:', stops);
+      // console.log('Generating mock route data for stops:', stops);
 
       if (!stops || stops.length === 0) {
-        console.warn('No stops provided for mock route');
+        // console.warn('No stops provided for mock route');
         return null;
       }
 
       // Create a simple route connecting all stops in order
       const routeCoordinates = stops.map((stop) => [stop.geometry.x, stop.geometry.y]);
 
-      console.log('Generated route coordinates:', routeCoordinates);
+      // console.log('Generated route coordinates:', routeCoordinates);
 
       // Create proper Esri geometry format
       const routeGeometry = {
@@ -778,13 +778,13 @@ export default {
         directions,
       };
 
-      console.log('Generated mock route:', mockResult);
+      // console.log('Generated mock route:', mockResult);
       return mockResult;
     },
 
     async displayRoute(routeResult, selectedFarmers) {
       try {
-        console.log('Displaying route on map:', routeResult);
+        // console.log('Displaying route on map:', routeResult);
 
         if (!routeResult || !routeResult.route) {
           throw new Error('Invalid route result');
@@ -796,7 +796,7 @@ export default {
             graphicsToKeep.push(graphic);
           }
         });
-        console.log('Graphics to keep:', graphicsToKeep.length);
+        // console.log('Graphics to keep:', graphicsToKeep.length);
         this.routeLayer.removeAll();
         graphicsToKeep.forEach((graphic) => this.routeLayer.add(graphic));
 
@@ -806,7 +806,7 @@ export default {
           width: 4,
         });
 
-        console.log('Route geometry:', routeResult.route.geometry);
+        // console.log('Route geometry:', routeResult.route.geometry);
 
         if (!routeResult.route.geometry) {
           throw new Error('Invalid route geometry');
@@ -835,7 +835,7 @@ export default {
         });
 
         this.routeLayer.add(routeGraphic);
-        console.log('Route graphic added to layer');
+        // console.log('Route graphic added to layer');
 
         // Add stop markers for farmer locations only (starting location already marked)
         const stopSymbol = new SimpleMarkerSymbol({
@@ -874,9 +874,9 @@ export default {
         this.fitMapToRoute(routeGeometry);
 
         this.hasGeneratedRoute = true;
-        console.log('Route displayed successfully');
+        // console.log('Route displayed successfully');
       } catch (error) {
-        console.error('Error displaying route:', error);
+        // console.error('Error displaying route:', error);
         this.$toast.error('Failed to display route on map');
       }
     },
@@ -947,7 +947,7 @@ export default {
         // Navigate to pickup schedules or orders
         this.$router.push({ name: 'BuyerOrders' });
       } catch (error) {
-        console.error('Error confirming route:', error);
+        // console.error('Error confirming route:', error);
         this.$toast.error('Failed to confirm route. Please try again.');
       } finally {
         this.confirmingRoute = false;
@@ -1049,10 +1049,10 @@ export default {
             this.routeLayer.add(markerGraphic);
           }
         } catch (error) {
-          console.error('Error creating starting location marker:', error);
+          // console.error('Error creating starting location marker:', error);
         }
       }).catch((error) => {
-        console.error('Error loading Esri modules for marker:', error);
+        // console.error('Error loading Esri modules for marker:', error);
       });
     },
 
@@ -1074,17 +1074,17 @@ export default {
             this.routeLayer.remove(graphic);
           });
         } catch (error) {
-          console.error('Error removing starting location marker:', error);
+          // console.error('Error removing starting location marker:', error);
         }
       }
     },
 
     handleMapClick(event) {
-      console.log('Map clicked:', event);
+      // console.log('Map clicked:', event);
       if (this.mapView && event && event.mapPoint) {
         try {
           const point = event.mapPoint;
-          console.log('Setting starting location to:', point.latitude, point.longitude);
+          // console.log('Setting starting location to:', point.latitude, point.longitude);
 
           this.selectedLocationCoords = { lat: point.latitude, lng: point.longitude };
           this.planningSettings.startLocation = `${point.latitude.toFixed(6)}, ${point.longitude.toFixed(6)}`;
@@ -1094,11 +1094,11 @@ export default {
 
           this.$toast.success('Starting location selected!');
         } catch (error) {
-          console.error('Error handling map click:', error);
+          // console.error('Error handling map click:', error);
           this.$toast.error('Failed to set starting location');
         }
       } else {
-        console.warn('Invalid map click event:', event);
+        // console.warn('Invalid map click event:', event);
       }
     },
   },

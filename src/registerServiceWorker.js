@@ -4,22 +4,22 @@ import { register } from 'register-service-worker';
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready() {
-      console.log(
-        'App is being served from cache by a service worker.\n'
-        + 'For more details, visit https://goo.gl/AFskqB',
-      );
+      // console.log(
+      //   'App is being served from cache by a service worker.\n'
+      //   + 'For more details, visit https://goo.gl/AFskqB',
+      // );
     },
     registered() {
-      console.log('Service worker has been registered.');
+      // console.log('Service worker has been registered.');
     },
     cached() {
-      console.log('Content has been cached for offline use.');
+      // console.log('Content has been cached for offline use.');
     },
     updatefound() {
-      console.log('New content is downloading.');
+      // console.log('New content is downloading.');
     },
     updated() {
-      console.log('New content is available; please refresh.');
+      // console.log('New content is available; please refresh.');
 
       // Show a non-blocking banner to prompt user to refresh
       if (!document.getElementById('sw-update-banner')) {
@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === 'production') {
       }
     },
     offline() {
-      console.log('No internet connection found. App is running in offline mode.');
+      // console.log('No internet connection found. App is running in offline mode.');
 
       // You can also notify the user that they are offline:
       const offlineBanner = document.createElement('div');
@@ -56,8 +56,9 @@ if (process.env.NODE_ENV === 'production') {
       offlineBanner.style.textAlign = 'center';
       document.body.appendChild(offlineBanner);
     },
+    // eslint-disable-next-line no-unused-vars
     error(error) {
-      console.error('Error during service worker registration:', error);
+      // console.error('Error during service worker registration:', error);
     },
   });
 }

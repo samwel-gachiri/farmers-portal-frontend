@@ -201,7 +201,7 @@ export default {
         const { data } = await axios.get(`/api/farmers/${this.farmerId}/produces/for-yield-recording`);
         this.produces = data.data || [];
       } catch (error) {
-        console.error('Error fetching produces:', error);
+        // console.error('Error fetching produces:', error);
         // Fallback to existing endpoint if new one doesn't exist yet
         try {
           const { data } = await axios.get(`/farmers-service/farmer/${this.farmerId}/produces`);
@@ -260,7 +260,7 @@ export default {
         this.form.notes = '';
         this.fetchYieldHistory();
       } catch (e) {
-        console.error('Error recording yield:', e);
+        // console.error('Error recording yield:', e);
         this.$toast.error(e.response?.data?.message || 'Failed to record yield. Please try again.');
       }
     },

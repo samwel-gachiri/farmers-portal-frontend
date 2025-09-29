@@ -390,7 +390,7 @@ export default {
         this.topFarmers = data.topFarmers || [];
         this.recentActivities = data.recentActivities || [];
       } catch (error) {
-        console.error('Error loading dashboard data:', error);
+        // console.error('Error loading dashboard data:', error);
         this.$toast.error('Failed to load dashboard data');
       }
     },
@@ -417,7 +417,7 @@ export default {
           this.spendChartSeries = chartData.spendAnalysis.data;
         }
       } catch (error) {
-        console.error('Error loading chart data:', error);
+        // console.error('Error loading chart data:', error);
         // Set fallback data for demo purposes
         this.hasOrderData = false;
         this.hasSpendData = false;

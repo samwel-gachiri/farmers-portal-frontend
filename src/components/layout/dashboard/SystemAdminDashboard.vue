@@ -338,7 +338,7 @@ export default {
         ]);
         this.calculateMetrics();
       } catch (error) {
-        console.error('Error loading dashboard data:', error);
+        // console.error('Error loading dashboard data:', error);
         this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
       } finally {
         this.loading = false;
@@ -352,7 +352,7 @@ export default {
           this.myZones = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading zones:', error);
+        // console.error('Error loading zones:', error);
       }
     },
 
@@ -363,7 +363,7 @@ export default {
           this.farmers = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading farmers:', error);
+        // console.error('Error loading farmers:', error);
       }
     },
 
@@ -374,7 +374,7 @@ export default {
           this.zoneSupervisors = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading zone supervisors:', error);
+        // console.error('Error loading zone supervisors:', error);
       }
     },
 
@@ -464,7 +464,7 @@ export default {
           await this.loadMyZones();
         }
       } catch (error) {
-        console.error('Error creating zone:', error);
+        // console.error('Error creating zone:', error);
         this.showMessage({ type: 'error', text: 'Failed to create zone' });
       } finally {
         this.creatingZone = false;

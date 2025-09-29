@@ -4,7 +4,7 @@
     <div class="tw-flex tw-flex-col sm:tw-flex-row tw-justify-between tw-items-start sm:tw-items-center tw-mb-8">
       <div>
         <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800 tw-mb-2">Zone Supervisor Dashboard</h1>
-        <p class="tw-text-gray-600">Farmer operations and pickup coordination</p>
+        <p>Farmer operations and pickup coordination</p>
       </div>
       <div class="tw-flex tw-gap-3 tw-mt-4 sm:tw-mt-0">
         <v-btn color="primary" @click="refreshData" :loading="loading">
@@ -309,7 +309,7 @@ export default {
         ]);
         this.calculateMetrics();
       } catch (error) {
-        console.error('Error loading dashboard data:', error);
+        // console.error('Error loading dashboard data:', error);
         this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
       } finally {
         this.loading = false;
@@ -323,7 +323,7 @@ export default {
           this.assignedZones = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading assigned zones:', error);
+        // console.error('Error loading assigned zones:', error);
       }
     },
 
@@ -334,7 +334,7 @@ export default {
           this.farmersInZones = response.data.data;
         }
       } catch (error) {
-        console.error('Error loading farmers:', error);
+        // console.error('Error loading farmers:', error);
       }
     },
 
@@ -351,7 +351,7 @@ export default {
           }));
         }
       } catch (error) {
-        console.error('Error loading today\'s schedule:', error);
+        // console.error('Error loading today\'s schedule:', error);
         // Mock data for demonstration
         this.todaysSchedule = [
           {
@@ -426,7 +426,7 @@ export default {
           await this.loadTodaysSchedule();
         }
       } catch (error) {
-        console.error('Error scheduling pickup:', error);
+        // console.error('Error scheduling pickup:', error);
         this.showMessage({ type: 'error', text: 'Failed to schedule pickup' });
       } finally {
         this.schedulingPickup = false;

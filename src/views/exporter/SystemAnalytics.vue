@@ -429,7 +429,7 @@ export default {
         }
       } catch (error) {
         this.error = error.message || 'Failed to load analytics data';
-        console.error('Analytics loading error:', error);
+        // console.error('Analytics loading error:', error);
       } finally {
         this.loading = false;
       }
@@ -449,7 +449,7 @@ export default {
         }
       } catch (error) {
         this.$toast.error(error.message || 'Failed to refresh dashboard');
-        console.error('Dashboard refresh error:', error);
+        // console.error('Dashboard refresh error:', error);
       } finally {
         this.refreshing = false;
       }
@@ -469,7 +469,7 @@ export default {
         }
       } catch (error) {
         this.$toast.error(error.message || 'Failed to check data integrity');
-        console.error('Data integrity check error:', error);
+        // console.error('Data integrity check error:', error);
       } finally {
         this.checkingIntegrity = false;
       }
@@ -490,7 +490,7 @@ export default {
         }
       } catch (error) {
         this.$toast.error(error.message || 'Failed to fix data integrity issues');
-        console.error('Data integrity fix error:', error);
+        // console.error('Data integrity fix error:', error);
       } finally {
         this.fixingIntegrity = false;
       }

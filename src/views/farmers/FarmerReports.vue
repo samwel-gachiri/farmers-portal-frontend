@@ -385,7 +385,7 @@ export default {
         this.hasYieldData = this.yieldRecords.length > 0;
         this.hasAccuracyData = this.yieldRecords.some((record) => record.accuracy !== null);
       } catch (error) {
-        console.error('Error loading reports data:', error);
+        // console.error('Error loading reports data:', error);
         this.$toast.error('Failed to load reports data');
       } finally {
         this.loadingTable = false;
@@ -418,7 +418,7 @@ export default {
           this.accuracySeries = [chartData.accuracy.accurate || 0, chartData.accuracy.inaccurate || 0];
         }
       } catch (error) {
-        console.error('Error loading chart data:', error);
+        // console.error('Error loading chart data:', error);
       } finally {
         this.loadingCharts = false;
       }
@@ -447,7 +447,7 @@ export default {
 
         this.$toast.success('PDF report exported successfully');
       } catch (error) {
-        console.error('Error exporting PDF:', error);
+        // console.error('Error exporting PDF:', error);
         this.$toast.error('Failed to export PDF report');
       } finally {
         this.exportingPDF = false;
@@ -477,7 +477,7 @@ export default {
 
         this.$toast.success('CSV report exported successfully');
       } catch (error) {
-        console.error('Error exporting CSV:', error);
+        // console.error('Error exporting CSV:', error);
         this.$toast.error('Failed to export CSV report');
       } finally {
         this.exportingCSV = false;
