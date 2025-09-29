@@ -235,6 +235,7 @@ export default {
         if (results.length > 0) {
           const result = results[0];
           this.setLocation(result.location.longitude, result.location.latitude);
+          // eslint-disable-next-line sonarjs/no-duplicate-string
           this.$emit('show-message', {
             type: 'success',
             text: `Found: ${result.attributes.LongLabel || this.searchQuery}`,
@@ -280,6 +281,7 @@ export default {
           // console.error('Geolocation error:', error);
           let message = 'Failed to get current location.';
 
+          // eslint-disable-next-line default-case
           switch (error.code) {
             case error.PERMISSION_DENIED:
               message = 'Location access denied. Please enable location services.';
