@@ -49,7 +49,7 @@
   </div>
 </template>
 <script>
-import pickupRouteService from '@/services/pickupRoute.service.js';
+// import pickupRouteService from '@/services/pickupRoute.service.js';
 import L from 'leaflet';
 
 export default {
@@ -67,7 +67,47 @@ export default {
   created() { this.load(); },
   methods: {
     async load() {
-      this.route = await pickupRouteService.getRoute(this.routeId);
+      // Mock route data
+      this.route = {
+        routeId: this.routeId,
+        status: 'PLANNED',
+        scheduledDate: new Date().toISOString().split('T')[0],
+        stops: [
+          {
+            stopId: 'stop_1',
+            farmerName: 'John Farmer',
+            location: 'Nairobi Central',
+            latitude: -1.2864,
+            longitude: 36.8172,
+            status: 'PENDING',
+            produce: 'Tomatoes',
+            quantity: 150,
+            unit: 'kg',
+          },
+          {
+            stopId: 'stop_2',
+            farmerName: 'Mary Johnson',
+            location: 'Kiambu Region',
+            latitude: -1.1715,
+            longitude: 36.8304,
+            status: 'PENDING',
+            produce: 'Maize',
+            quantity: 200,
+            unit: 'kg',
+          },
+          {
+            stopId: 'stop_3',
+            farmerName: 'David Smith',
+            location: 'Nakuru Area',
+            latitude: -0.3031,
+            longitude: 36.0800,
+            status: 'PENDING',
+            produce: 'Potatoes',
+            quantity: 100,
+            unit: 'kg',
+          },
+        ],
+      };
       this.routeStatus = this.route.status;
       this.stopStatus = this.route.stops.reduce((acc, s) => { acc[s.stopId] = s.status; return acc; }, {});
       this.$nextTick(() => this.renderMap());
@@ -111,11 +151,25 @@ export default {
     },
     formatDateTime(dt) { if (!dt) return ''; return new Date(dt).toLocaleString(); },
     async updateRouteStatus() {
-      await pickupRouteService.updateRouteStatus(this.route.routeId, this.routeStatus);
+      // Mock route status update
+      console.log(`Updating route ${this.route.routeId} status to ${this.routeStatus}`);
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      this.route.status = this.routeStatus;
+      this.$toast.success('Route status updated successfully');
       await this.load();
     },
     async updateStopStatus(stop) {
-      await pickupRouteService.updateStopStatus(this.route.routeId, stop.stopId, this.stopStatus[stop.stopId]);
+      // Mock stop status update
+      console.log(`Updating stop ${stop.stopId} status to ${this.stopStatus[stop.stopId]}`);
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Update the stop status in the route data
+      const stopIndex = this.route.stops.findIndex((s) => s.stopId === stop.stopId);
+      if (stopIndex !== -1) {
+        this.route.stops[stopIndex].status = this.stopStatus[stop.stopId];
+      }
+      this.$toast.success('Stop status updated successfully');
       await this.load();
     },
   },
