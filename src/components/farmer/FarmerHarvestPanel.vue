@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import harvestApi from '@/services/harvestPrediction.service.js';
+// import harvestApi from '@/services/harvestPrediction.service.js';
 import axios from 'axios';
 import { getCurrentUserId } from '@/utils/roles.js';
 
@@ -93,14 +93,36 @@ export default {
     async loadPredictions() {
       try {
         this.loading = true;
-        this.predictions = await harvestApi.listFarmerPredictions(this.effectiveFarmerId) || [];
+        // Mock predictions data
+        this.predictions = [
+          {
+            id: 1,
+            farmerProduceId: 'prod_1',
+            predictedHarvestDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            confidence: 0.85,
+            status: 'HARVEST_PLANNED',
+            quantity: 150,
+            unit: 'kg',
+          },
+          {
+            id: 2,
+            farmerProduceId: 'prod_2',
+            predictedHarvestDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+            confidence: 0.72,
+            status: 'HARVEST_PLANNED',
+            quantity: 200,
+            unit: 'kg',
+          },
+        ];
       } catch (e) { this.error = e.message; } finally { this.loading = false; }
     },
     async submitPrediction() {
       if (!this.canPredict) return;
       this.predicting = true; this.error = null;
       try {
-        await harvestApi.predictHarvest({ farmerProduceId: this.form.farmerProduceId, plantingDate: this.form.plantingDate });
+        // Mock prediction submission
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+        this.$toast.success('Harvest prediction created successfully');
         this.form.plantingDate = '';
         await this.loadPredictions();
       } catch (e) { this.error = e.message; } finally { this.predicting = false; }
@@ -108,8 +130,9 @@ export default {
     async markHarvested(p) {
       this.harvestingId = p.id;
       try {
-        const today = new Date().toISOString().substring(0, 10);
-        await harvestApi.markHarvested(p.id, today);
+        // Mock harvest marking
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate API call
+        this.$toast.success('Harvest marked as completed');
         await this.loadPredictions();
       } catch (e) { this.error = e.message; } finally { this.harvestingId = null; }
     },

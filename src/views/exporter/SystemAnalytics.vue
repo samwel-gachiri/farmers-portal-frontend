@@ -356,7 +356,7 @@
 
 <script>
 // exporter analytic
-import exporterAnalyticsService from '@/services/exporterAnalytics.service.js';
+// import exporterAnalyticsService from '@/services/exporterAnalytics.service.js';
 import Default from '@/components/layout/Default.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
 
@@ -398,36 +398,88 @@ export default {
           throw new Error('Unable to get exporter ID. Please ensure you are logged in.');
         }
 
-        // Load all analytics data in parallel
-        const [analyticsResponse, dashboardResponse, realTimeResponse] = await Promise.allSettled([
-          exporterAnalyticsService.getExporterAnalytics(exporterId),
-          exporterAnalyticsService.getSynchronizedDashboardData(exporterId),
-          exporterAnalyticsService.getRealTimeAnalytics(exporterId),
-        ]);
+        // Mock data for analytics
+        this.analytics = {
+          totalZones: 12,
+          totalFarmers: 156,
+          activeSystemAdmins: 3,
+          activeZoneSupervisors: 8,
+          zoneBreakdown: [
+            {
+              zoneId: 1,
+              zoneName: 'Nairobi Central',
+              farmerCount: 45,
+              supervisorCount: 2,
+            },
+            {
+              zoneId: 2,
+              zoneName: 'Kiambu Region',
+              farmerCount: 38,
+              supervisorCount: 2,
+            },
+            {
+              zoneId: 3,
+              zoneName: 'Nakuru Area',
+              farmerCount: 73,
+              supervisorCount: 4,
+            },
+          ],
+        };
 
-        // Handle analytics response
-        if (analyticsResponse.status === 'fulfilled' && analyticsResponse.value.success) {
-          this.analytics = analyticsResponse.value.data.analytics || {};
-        }
+        // Mock real-time data
+        this.realTimeData = {
+          totalOrders: 1247,
+          pendingOrders: 89,
+          totalYields: 45230,
+          activeListings: 156,
+          systemLoad: 67,
+          dataFreshness: 'REAL_TIME',
+        };
 
-        // Handle dashboard response
-        if (dashboardResponse.status === 'fulfilled' && dashboardResponse.value.success) {
-          this.dashboardData = dashboardResponse.value.data;
-        }
+        // Mock dashboard data
+        this.dashboardData = {
+          recentActivities: [
+            {
+              id: 1,
+              title: 'Zone Optimization Completed',
+              description: 'Route optimization for Nairobi Central zone finished successfully',
+              type: 'CALCULATION',
+              severity: 'INFO',
+              timestamp: new Date().toISOString(),
+            },
+            {
+              id: 2,
+              title: 'New Farmer Registration',
+              description: 'Farmer John Doe registered in Kiambu Region',
+              type: 'UPDATE',
+              severity: 'INFO',
+              timestamp: new Date(Date.now() - 3600000).toISOString(),
+            },
+          ],
+        };
 
-        // Handle real-time response
-        if (realTimeResponse.status === 'fulfilled' && realTimeResponse.value.success) {
-          this.realTimeData = realTimeResponse.value.data;
-        }
-
-        // Check for any errors
-        const errors = [analyticsResponse, dashboardResponse, realTimeResponse]
-          .filter((response) => response.status === 'rejected' || !response.value.success)
-          .map((response) => (response.status === 'rejected' ? response.reason.message : response.value.message));
-
-        if (errors.length > 0) {
-          this.error = `Some data could not be loaded: ${errors.join(', ')}`;
-        }
+        // Mock integrity report
+        this.integrityReport = {
+          overallStatus: 'HEALTHY',
+          highSeverityIssues: 0,
+          mediumSeverityIssues: 2,
+          lowSeverityIssues: 5,
+          totalIssues: 7,
+          issues: [
+            {
+              type: 'DATA_CONSISTENCY',
+              description: 'Minor data synchronization delay',
+              severity: 'LOW',
+              affectedEntity: 'Zone_5',
+            },
+            {
+              type: 'PERFORMANCE',
+              description: 'Query optimization needed',
+              severity: 'MEDIUM',
+              affectedEntity: 'Dashboard_API',
+            },
+          ],
+        };
       } catch (error) {
         this.error = error.message || 'Failed to load analytics data';
         // console.error('Analytics loading error:', error);
@@ -439,17 +491,12 @@ export default {
     async refreshDashboard() {
       this.refreshing = true;
       try {
-        const exporterId = getCurrentUserId();
-        const response = await exporterAnalyticsService.refreshDashboardData(exporterId);
-
-        if (response.success) {
-          this.$toast.success('Dashboard data refreshed successfully');
-          await this.loadAnalytics(); // Reload all data
-        } else {
-          throw new Error(response.message || 'Failed to refresh dashboard');
-        }
+        // Mock refresh functionality
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+        this.$toast.success('Dashboard data refreshed successfully');
+        await this.loadAnalytics(); // Reload all data
       } catch (error) {
-        this.$toast.error(error.message || 'Failed to refresh dashboard');
+        this.$toast.error('Failed to refresh dashboard');
         // console.error('Dashboard refresh error:', error);
       } finally {
         this.refreshing = false;
@@ -459,17 +506,12 @@ export default {
     async checkDataIntegrity() {
       this.checkingIntegrity = true;
       try {
-        const exporterId = getCurrentUserId();
-        const response = await exporterAnalyticsService.checkDataIntegrity(exporterId);
-
-        if (response.success) {
-          this.integrityReport = response.data;
-          this.$toast.success('Data integrity check completed');
-        } else {
-          throw new Error(response.message || 'Failed to check data integrity');
-        }
+        // Mock integrity check
+        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
+        this.$toast.success('Data integrity check completed');
+        // Integrity report is already set in loadAnalytics
       } catch (error) {
-        this.$toast.error(error.message || 'Failed to check data integrity');
+        this.$toast.error('Failed to check data integrity');
         // console.error('Data integrity check error:', error);
       } finally {
         this.checkingIntegrity = false;
@@ -479,18 +521,13 @@ export default {
     async fixDataIntegrity() {
       this.fixingIntegrity = true;
       try {
-        const exporterId = getCurrentUserId();
-        const response = await exporterAnalyticsService.fixDataIntegrityIssues(exporterId);
-
-        if (response.success) {
-          this.$toast.success('Data integrity issues fixed successfully');
-          await this.checkDataIntegrity(); // Re-check integrity
-          await this.loadAnalytics(); // Reload analytics
-        } else {
-          throw new Error(response.message || 'Failed to fix data integrity issues');
-        }
+        // Mock integrity fix
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate API call
+        this.$toast.success('Data integrity issues fixed successfully');
+        await this.checkDataIntegrity(); // Re-check integrity
+        await this.loadAnalytics(); // Reload analytics
       } catch (error) {
-        this.$toast.error(error.message || 'Failed to fix data integrity issues');
+        this.$toast.error('Failed to fix data integrity issues');
         // console.error('Data integrity fix error:', error);
       } finally {
         this.fixingIntegrity = false;

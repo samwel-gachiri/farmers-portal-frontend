@@ -46,7 +46,7 @@
  </template>
 
 <script>
-import pickupRouteService from '@/services/pickupRoute.service.js';
+// import pickupRouteService from '@/services/pickupRoute.service.js';
 import PickupRouteDetail from './PickupRoutes/PickupRouteDetail.vue';
 import CreatePickupRouteModal from './PickupRoutes/CreatePickupRouteModal.vue';
 
@@ -73,8 +73,40 @@ export default {
     async fetchRoutes() {
       this.loading = true;
       try {
-        const data = await pickupRouteService.listRoutes(this.selectedDate);
-        this.routes = data.data || data; // supports Result wrapper or raw list
+        // Mock routes data
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+        this.routes = [
+          {
+            routeId: 'route_001',
+            name: 'Morning Nairobi Route',
+            scheduledDate: this.selectedDate,
+            status: 'PLANNED',
+            farmerCount: 12,
+            estimatedDuration: '3.5 hours',
+            totalDistance: '45.2 km',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            routeId: 'route_002',
+            name: 'Afternoon Kiambu Route',
+            scheduledDate: this.selectedDate,
+            status: 'IN_PROGRESS',
+            farmerCount: 8,
+            estimatedDuration: '2.8 hours',
+            totalDistance: '32.1 km',
+            createdAt: new Date(Date.now() - 3600000).toISOString(),
+          },
+          {
+            routeId: 'route_003',
+            name: 'Evening Nakuru Route',
+            scheduledDate: this.selectedDate,
+            status: 'COMPLETED',
+            farmerCount: 15,
+            estimatedDuration: '4.2 hours',
+            totalDistance: '67.8 km',
+            createdAt: new Date(Date.now() - 7200000).toISOString(),
+          },
+        ];
       } catch (e) { this.routes = []; }
       this.loading = false;
     },

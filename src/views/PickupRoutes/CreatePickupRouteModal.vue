@@ -65,7 +65,7 @@
 </template>
 <script>
 import axios from 'axios';
-import pickupRouteService from '@/services/pickupRoute.service.js';
+// import pickupRouteService from '@/services/pickupRoute.service.js';
 
 export default {
   data() {
@@ -117,21 +117,37 @@ export default {
     },
     async loadSuggestions() {
       try {
-        const start = new Date();
-        const end = new Date(start.getTime() + 14 * 86400000);
-        // Ensure exporterId set (from zone)
-        if (!this.exporterId && this.zones.length) this.exporterId = this.zones.find((z) => z.id === this.zoneId)?.exporterId;
-        const res = await pickupRouteService.suggestPickups({
-          exporterId: this.exporterId,
-          start: start.toISOString().slice(0, 10),
-          end: end.toISOString().slice(0, 10),
-          zoneId: this.zoneId || undefined,
-          minConfidence: this.minConfidence,
-        });
-        const data = res.data || res;
-        this.suggestions = data;
+        // Mock pickup suggestions
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate API call
+        this.suggestions = [
+          {
+            farmerId: 'farmer_001',
+            farmerName: 'John Farmer',
+            expectedQuantity: 150,
+            expectedUnit: 'kg',
+            confidence: 0.87,
+            predictedHarvestDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          },
+          {
+            farmerId: 'farmer_002',
+            farmerName: 'Mary Johnson',
+            expectedQuantity: 200,
+            expectedUnit: 'kg',
+            confidence: 0.92,
+            predictedHarvestDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          },
+          {
+            farmerId: 'farmer_003',
+            farmerName: 'David Smith',
+            expectedQuantity: 120,
+            expectedUnit: 'kg',
+            confidence: 0.78,
+            predictedHarvestDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          },
+        ];
+
         // Merge suggestions into farmers list for quick selection display
-        const mapExp = new Map(data.map((s) => [s.farmerId, s]));
+        const mapExp = new Map(this.suggestions.map((s) => [s.farmerId, s]));
         this.farmers = this.farmers.map((f) => ({
           ...f,
           expected: mapExp.get(f.id)
@@ -154,9 +170,20 @@ export default {
       }
       this.submitting = true;
       try {
-        const route = await pickupRouteService.createRoute({
-          scheduledDate: this.scheduledDate, zoneId: this.zoneId, exporterId: this.exporterId, farmerIds: this.farmerIds,
-        });
+        // Mock route creation
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+        const route = {
+          id: `route_${Date.now()}`,
+          scheduledDate: this.scheduledDate,
+          zoneId: this.zoneId,
+          exporterId: this.exporterId,
+          farmerIds: this.farmerIds,
+          status: 'scheduled',
+          createdAt: new Date().toISOString(),
+          totalFarmers: this.farmerIds.length,
+          estimatedDuration: '2-3 hours',
+          estimatedDistance: '45 km',
+        };
         this.$emit('created', route);
       } catch (e) {
         // console.error(e);

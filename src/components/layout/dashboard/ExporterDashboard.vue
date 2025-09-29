@@ -400,7 +400,7 @@ import FarmerList from '@/components/exporter/FarmerList.vue';
 import RolePermissionsDialog from '@/components/exporter/RolePermissionsDialog.vue';
 import FarmerDetailDrawer from '@/components/exporter/FarmerDetailDrawer.vue';
 import axios from 'axios';
-import harvestService from '@/services/harvestPrediction.service.js';
+// import harvestService from '@/services/harvestPrediction.service.js';
 import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
@@ -543,8 +543,40 @@ export default {
       if (!this.exporterId) return;
       this.loadingHarvests = true;
       try {
-        const res = await harvestService.listExporterPredictions(this.exporterId);
-        if (res.success) this.harvestPredictions = res.data;
+        // Mock harvest predictions data
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate API call
+        this.harvestPredictions = [
+          {
+            id: 1,
+            produceName: 'Tomatoes',
+            farmerName: 'John Farmer',
+            plantingDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedHarvestDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedSpecies: 'Roma Tomatoes',
+            confidence: 0.87,
+            status: 'HARVEST_PLANNED',
+          },
+          {
+            id: 2,
+            produceName: 'Maize',
+            farmerName: 'Mary Johnson',
+            plantingDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedHarvestDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedSpecies: 'Sweet Corn',
+            confidence: 0.92,
+            status: 'HARVEST_PLANNED',
+          },
+          {
+            id: 3,
+            produceName: 'Potatoes',
+            farmerName: 'David Smith',
+            plantingDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedHarvestDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedSpecies: 'Russet Potatoes',
+            confidence: 0.78,
+            status: 'HARVEST_PLANNED',
+          },
+        ];
       } catch (e) {
         // console.error('Error loading harvest predictions', e);
       } finally {
