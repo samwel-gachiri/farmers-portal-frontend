@@ -69,7 +69,7 @@
 
 <script>
 import Default from '@/components/layout/Default.vue';
-import zoneService from '@/services/zone.service.js';
+// import zoneService from '@/services/zone.service.js';
 
 export default {
   name: 'ZoneCommentsManagement',
@@ -105,9 +105,34 @@ export default {
     async loadZones() {
       this.loading = true;
       try {
-        const data = await zoneService.listZones();
-        const list = data.data || data; // support Result wrapper
-        this.zones = Array.isArray(list) ? list : [];
+        // Mock zones data
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate API call
+        this.zones = [
+          {
+            id: 'zone_001',
+            name: 'Nairobi Central Zone',
+            produceType: 'Vegetables',
+            farmerCount: 25,
+            radiusKm: 15,
+            comments: 'High demand for tomatoes and leafy greens. Good transport infrastructure.',
+          },
+          {
+            id: 'zone_002',
+            name: 'Kiambu Agricultural Zone',
+            produceType: 'Mixed',
+            farmerCount: 18,
+            radiusKm: 12,
+            comments: 'Focus on maize and beans. Some areas have irrigation challenges.',
+          },
+          {
+            id: 'zone_003',
+            name: 'Nakuru Produce Zone',
+            produceType: 'Fruits',
+            farmerCount: 32,
+            radiusKm: 20,
+            comments: 'Excellent for potatoes and carrots. Well-established farming community.',
+          },
+        ];
         if (this.zones.length) {
           const fromQuery = this.$route && this.$route.query ? this.$route.query.zoneId : null;
           const found = fromQuery ? this.zones.find((z) => z.id === fromQuery) : null;
@@ -133,18 +158,14 @@ export default {
       if (!this.activeZone) return;
       this.saving = true;
       try {
-        const res = await zoneService.updateComments(this.activeZone.id, this.form.comments || null);
-        const updated = (res && (res.data || res)) || null;
-        if (updated && (updated.id || (updated.success && updated.data))) {
-          const zoneData = updated.id ? updated : updated.data;
-          // update local list
-          const idx = this.zones.findIndex((z) => z.id === zoneData.id);
-          if (idx !== -1) this.zones.splice(idx, 1, zoneData);
-          this.activeZone = zoneData;
-          this.$toast.success('Zone comments updated');
-        } else {
-          this.$toast.error('Saved, but response was unexpected');
-        }
+        // Mock update comments
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
+        // Update local zone data
+        const updatedZone = { ...this.activeZone, comments: this.form.comments || null };
+        const idx = this.zones.findIndex((z) => z.id === updatedZone.id);
+        if (idx !== -1) this.zones.splice(idx, 1, updatedZone);
+        this.activeZone = updatedZone;
+        this.$toast.success('Zone comments updated');
       } catch (e) {
         this.$toast.error('Failed to update comments');
       }

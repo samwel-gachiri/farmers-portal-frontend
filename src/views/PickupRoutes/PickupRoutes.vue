@@ -22,7 +22,7 @@
   </div>
 </template>
 <script>
-import pickupRouteService from '@/services/pickupRoute.service.js';
+// import pickupRouteService from '@/services/pickupRoute.service.js';
 import CreatePickupRouteModal from './CreatePickupRouteModal.vue';
 import PickupRouteDetail from './PickupRouteDetail.vue';
 
@@ -40,8 +40,28 @@ export default {
   created() { this.load(); },
   methods: {
     async load() {
-      const result = await pickupRouteService.listRoutes(this.date);
-      this.routes = result.data || result; // unwrap tolerant
+      // Mock routes data
+      await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate API call
+      this.routes = [
+        {
+          routeId: 'route_001',
+          name: 'Morning Nairobi Route',
+          scheduledDate: this.date,
+          status: 'PLANNED',
+          farmerCount: 12,
+          estimatedDuration: '3.5 hours',
+          totalDistance: '45.2 km',
+        },
+        {
+          routeId: 'route_002',
+          name: 'Afternoon Kiambu Route',
+          scheduledDate: this.date,
+          status: 'IN_PROGRESS',
+          farmerCount: 8,
+          estimatedDuration: '2.8 hours',
+          totalDistance: '32.1 km',
+        },
+      ];
     },
     openCreate() { this.showCreate = true; },
     async onCreated() { this.showCreate = false; await this.load(); },

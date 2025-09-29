@@ -37,7 +37,7 @@
   </v-card>
 </template>
 <script>
-import harvestApi from '@/services/harvestPrediction.service.js';
+// import harvestApi from '@/services/harvestPrediction.service.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -67,7 +67,37 @@ export default {
       if (!this.exporterId) return;
       this.loading = true;
       try {
-        this.rows = await harvestApi.listUpcomingForExporter(this.exporterId, this.windowDays);
+        // Mock harvest predictions data
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate API call
+        this.rows = [
+          {
+            predictedHarvestDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            produceName: 'Tomatoes',
+            farmerName: 'John Farmer',
+            plantingDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedSpecies: 'Roma Tomatoes',
+            confidence: 0.85,
+            status: 'HARVEST_PLANNED',
+          },
+          {
+            predictedHarvestDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            produceName: 'Maize',
+            farmerName: 'Mary Johnson',
+            plantingDate: new Date(Date.now() - 75 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedSpecies: 'Yellow Maize',
+            confidence: 0.92,
+            status: 'HARVEST_PLANNED',
+          },
+          {
+            predictedHarvestDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            produceName: 'Potatoes',
+            farmerName: 'David Smith',
+            plantingDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            predictedSpecies: 'Irish Potatoes',
+            confidence: 0.78,
+            status: 'HARVESTED',
+          },
+        ];
       } catch (e) {
         // silent fail; could add toast
       } finally { this.loading = false; }
