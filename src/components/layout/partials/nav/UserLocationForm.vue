@@ -86,11 +86,11 @@
 </template>
 
 <script>
-import validations from '@/utils/validations.js';
 import { mapGetters, mapState } from 'vuex';
-import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
 import L from 'leaflet';
+import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
+import validations from '@/utils/validations.js';
 
 export default {
   name: 'UserForm',
@@ -132,9 +132,10 @@ export default {
   },
   mounted() {
     this.role = getCurrentUserRole();
-    this.fullname = this.user.userProfile.fullName;
-    this.email = this.user.email;
-    this.phone_number = this.user.phone_number;
+    // Guard against user not yet loaded
+    this.fullname = this.user?.userProfile?.fullName || '';
+    this.email = this.user?.email || '';
+    this.phone_number = this.user?.phone_number || '';
     axios.get(`${getCurrentUserRole()}s-service/location/${this.role}?${this.role}Id=${getCurrentUserId()}`).then((response) => {
       if (response.data.success === true) {
         const data = response.data.data;

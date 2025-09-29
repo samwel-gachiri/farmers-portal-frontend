@@ -98,12 +98,12 @@
 </template>
 
 <script>
-import validations from '@/utils/validations.js';
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import { mapGetters, mapState } from 'vuex';
-import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
 import axios from 'axios';
 import L from 'leaflet';
+import { getCurrentUserRole, getCurrentUserId } from '@/utils/roles.js';
+import validations from '@/utils/validations.js';
 
 export default {
   name: 'UserForm',
@@ -142,9 +142,9 @@ export default {
     //   }
     // });
     // if (this.resizeObserver != null) this.resizeObserver.observe(document.getElementById('map'));
-    this.fullname = this.userProfile.fullName;
-    this.email = this.user.userProfile.email;
-    this.phoneNumber = this.user.userProfile.phoneNumber;
+    this.fullname = this.fullName;
+    this.email = this.user.email;
+    this.phoneNumber = this.user.phoneNumber;
     if (this.user.location && this.role !== 'exporter') {
       this.map.panTo([this.user?.location?.latitude, this.user?.location?.longitude]);
       this.marker = L.marker([this.user?.location?.latitude, this.user?.location?.longitude], {

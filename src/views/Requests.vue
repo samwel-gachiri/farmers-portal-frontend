@@ -80,10 +80,10 @@
 
 <script>
 
-import Default from '@/components/layout/Default.vue';
 import axios from 'axios';
-import { getCurrentUserId } from '@/utils/roles.js';
 import pluralize from 'pluralize';
+import Default from '@/components/layout/Default.vue';
+import { getCurrentUserId } from '@/utils/roles.js';
 import Request from '../components/request/Request.vue';
 import CreateRequest from '../components/request/CreateRequest.vue';
 

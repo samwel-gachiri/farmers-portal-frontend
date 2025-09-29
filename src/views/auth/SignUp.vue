@@ -1,29 +1,130 @@
 <template>
-  <v-app class="tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-white tw-to-gray-100">
-    <v-card
-      class="tw-px-10 tw-pb-8 tw-bg-white tw-shadow-2xl tw-rounded-3xl tw-max-w-4xl tw-mx-auto tw-mt-10 tw-border tw-border-gray-200 tw-flex tw-flex-col tw-items-center"
-      elevation="1"
-    >
-      <CardTitle icon="mdi-account" class="tw-text-blue-600 tw-mb-2">
-        <h2 class="tw-text-2xl tw-font-semibold">Sign up</h2>
-      </CardTitle>
-      <!-- Render FarmerSignUp if role is farmer -->
-      <FarmerSignUp v-if="getCurrentUserRole === 'farmer'" @farmer-registered="handleFarmerRegistered" />
-      <!-- Render BuyerSignUp if role is buyer -->
-      <BuyerSignUp v-if="getCurrentUserRole === 'buyer'" />
-      <!-- Render ExporterSignUp if role is exporter -->
-      <ExporterSignUp v-if="getCurrentUserRole === 'exporter'" />
-    </v-card>
+  <v-app>
+    <v-main>
+      <div class="signup-background">
+        <v-container class="fill-height" fluid>
+          <v-row align="center" justify="center">
+            <v-col cols="12" sm="10" md="8" lg="6">
+              <v-card
+                class="pa-6 signup-card"
+                elevation="12"
+                rounded="xl"
+              >
+                <!-- Header with Portal Context -->
+                <v-card-title class="justify-center">
+                  <v-avatar size="64" :color="getPortalColor()">
+                    <v-icon size="32" color="white">{{ getPortalIcon() }}</v-icon>
+                  </v-avatar>
+                </v-card-title>
+
+                <v-card-subtitle class="text-center text-h5 font-weight-bold mb-2">
+                  {{ getSignUpTitle() }}
+                </v-card-subtitle>
+
+                <!-- Portal Context Display -->
+                <div v-if="portalContext" class="text-center mb-4">
+                  <v-chip
+                    :color="getPortalColor()"
+                    text-color="white"
+                    class="ma-1"
+                  >
+                    <v-icon left small>{{ getPortalIcon() }}</v-icon>
+                    {{ getPortalDisplayName() }}
+                  </v-chip>
+                </div>
+
+                <v-card-text>
+                  <!-- Render appropriate signup component based on portal context -->
+                  <FarmerSignUp
+                    v-if="portalContext === 'farmer'"
+                    @farmer-registered="handleRegistrationSuccess"
+                  />
+                  <BuyerSignUp
+                    v-else-if="portalContext === 'buyer'"
+                    @buyer-registered="handleRegistrationSuccess"
+                  />
+                  <ExporterSignUp
+                    v-else-if="portalContext === 'exporter'"
+                    :role-context="roleContext"
+                    @exporter-registered="handleRegistrationSuccess"
+                  />
+
+                  <!-- Fallback: Portal Selection -->
+                  <div v-else class="text-center">
+                    <v-icon size="64" color="grey lighten-2" class="mb-4">mdi-account-plus</v-icon>
+                    <h3 class="text-h6 mb-4">Select Portal to Register</h3>
+                    <p class="text--secondary mb-6">Choose which portal you'd like to create an account for:</p>
+
+                    <v-row>
+                      <v-col cols="12" sm="4">
+                        <v-btn
+                          block
+                          large
+                          color="green"
+                          @click="selectPortal('farmer')"
+                          class="mb-3"
+                        >
+                          <v-icon left>mdi-barn</v-icon>
+                          Farmer Portal
+                        </v-btn>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <v-btn
+                          block
+                          large
+                          color="blue"
+                          @click="selectPortal('buyer')"
+                          class="mb-3"
+                        >
+                          <v-icon left>mdi-cart</v-icon>
+                          Buyer Portal
+                        </v-btn>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <v-btn
+                          block
+                          large
+                          color="purple"
+                          @click="selectPortal('exporter')"
+                          class="mb-3"
+                        >
+                          <v-icon left>mdi-crown</v-icon>
+                          Exporter Portal
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </div>
+
+                  <!-- Navigation Links -->
+                  <div class="mt-6 text-center">
+                    <span class="text-caption">Already have an account?</span>
+                    <v-btn
+                      text
+                      color="primary"
+                      class="ml-1"
+                      small
+                      @click="goToSignIn"
+                    >
+                      Sign In
+                    </v-btn>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
+    </v-main>
   </v-app>
 </template>
 
 <script>
 // eslint-disable-next-line import/newline-after-import
-import { getCurrentUserRole } from '@/utils/roles.js';
+// import { getCurrentUserRole } from '@/utils/roles.js';
 import FarmerSignUp from '@/components/auth/FarmerSignUp.vue';
 import BuyerSignUp from '@/components/auth/BuyerSignUp.vue';
 import ExporterSignUp from '@/components/auth/ExporterSignUp.vue';
-import CardTitle from '@/components/shared/CardTitle.vue';
+// import CardTitle from '@/components/shared/CardTitle.vue';
 
 export default {
   name: 'SignUpView',
@@ -62,38 +163,178 @@ export default {
     ],
   },
   components: {
-    CardTitle,
+    // CardTitle,
     FarmerSignUp,
     BuyerSignUp,
     ExporterSignUp,
   },
+  computed: {
+    portalContext() {
+      return this.$route.query.portal || this.$store.getters['auth/portalContext']?.portal;
+    },
+    roleContext() {
+      return this.$route.query.role || this.$store.getters['auth/portalContext']?.role;
+    },
+  },
   mounted() {
-    const role = getCurrentUserRole();
-    if (!role) {
-      this.$toast.info('Please select a role to sign in');
-      const currentPath = window.location.pathname + window.location.search + window.location.hash;
-      this.$router.push({
-        name: 'Home',
-        query: {
-          redirect: btoa(currentPath),
-        },
-      });
+    // If no portal context, show portal selection
+    if (!this.portalContext) {
+      this.$toast.info('Select a portal to create your account');
     } else {
-      this.$toast.info(`Signing in as ${role}`);
+      this.$toast.info(`Creating account for ${this.getPortalDisplayName()}`);
     }
   },
-  computed: {
-    getCurrentUserRole,
-  },
   methods: {
-    // eslint-disable-next-line no-unused-vars
-    handleFarmerRegistered(farmer) {
-      this.$router.push({ name: 'SignIn' });
+    selectPortal(portal) {
+      if (portal === 'exporter') {
+        // For exporter, redirect to Home to select role first
+        this.$router.push({ name: 'Home' });
+      } else {
+        // Update route with portal context
+        this.$router.push({
+          name: 'SignUp',
+          query: { portal },
+        });
+      }
+    },
+
+    handleRegistrationSuccess() {
+      this.$toast.success('Account created successfully! Please sign in');
+
+      // Redirect to sign in with portal context
+      const query = {};
+      if (this.portalContext) query.portal = this.portalContext;
+      if (this.roleContext) query.role = this.roleContext;
+
+      this.$router.push({
+        name: 'SignIn',
+        query,
+      });
+    },
+
+    goToSignIn() {
+      const query = {};
+      if (this.portalContext) query.portal = this.portalContext;
+      if (this.roleContext) query.role = this.roleContext;
+
+      this.$router.push({
+        name: 'SignIn',
+        query,
+      });
+    },
+
+    getSignUpTitle() {
+      if (!this.portalContext) return 'Create Account';
+
+      const titles = {
+        farmer: 'Create Farmer Account',
+        buyer: 'Create Buyer Account',
+        exporter: 'Create Exporter Account',
+      };
+
+      return titles[this.portalContext] || 'Create Account';
+    },
+
+    getPortalDisplayName() {
+      if (!this.portalContext) return '';
+
+      const names = {
+        farmer: 'Farmer Portal',
+        buyer: 'Buyer Portal',
+        exporter: this.getRoleDisplayName(),
+      };
+
+      return names[this.portalContext] || '';
+    },
+
+    getRoleDisplayName() {
+      if (this.portalContext !== 'exporter' || !this.roleContext) return 'Exporter Portal';
+
+      const roleNames = {
+        exporter: 'Super Admin Portal',
+        system_admin: 'System Admin Portal',
+        zone_supervisor: 'Zone Supervisor Portal',
+      };
+
+      return roleNames[this.roleContext] || 'Exporter Portal';
+    },
+
+    getPortalColor() {
+      const colors = {
+        farmer: 'green',
+        buyer: 'blue',
+        exporter: 'purple',
+      };
+
+      return colors[this.portalContext] || 'primary';
+    },
+
+    getPortalIcon() {
+      const icons = {
+        farmer: 'mdi-barn',
+        buyer: 'mdi-cart',
+        exporter: 'mdi-crown',
+      };
+
+      return icons[this.portalContext] || 'mdi-account-plus';
     },
   },
 };
 </script>
 
 <style scoped>
-/* Tailwind handles all styling */
+.signup-background {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+}
+
+.signup-card {
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .signup-card {
+    margin: 1rem;
+    padding: 1rem !important;
+  }
+
+  .v-card-title {
+    padding: 1rem 0 !important;
+  }
+
+  .v-card-subtitle {
+    font-size: 1.3rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .v-card-subtitle {
+    font-size: 1.1rem !important;
+  }
+
+  .v-btn {
+    font-size: 0.875rem;
+  }
+}
+
+/* Clean professional styling */
+.v-card {
+  border-radius: 16px;
+}
+
+.v-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Touch-friendly interfaces */
+@media (hover: none) and (pointer: coarse) {
+  .v-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
 </style>

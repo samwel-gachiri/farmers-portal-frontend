@@ -31,6 +31,42 @@ const ifNotAuthenticated = (_to, _from, next) => {
 
 const routes = [
   {
+    path: '/harvest-yields',
+    name: 'HarvestAndYields',
+    component: () => import('../views/HarvestAndYields.vue'),
+    meta: {
+      title: 'Harvest & Yields',
+      requiresAuth: true,
+      roles: ['FARMER'],
+      description: 'Manage harvests, yields, and analytics',
+      icon: 'mdi-food-apple',
+    },
+  },
+  {
+    path: '/yield-recording',
+    name: 'YieldRecording',
+    component: () => import('../views/YieldRecording.vue'),
+    meta: {
+      title: 'Yield Recording',
+      requiresAuth: true,
+      roles: ['FARMER'],
+      description: 'Record and manage produce yields',
+      icon: 'mdi-chart-bar',
+    },
+  },
+  {
+    path: '/harvest-analytics',
+    name: 'HarvestAnalytics',
+    component: () => import('../views/HarvestAnalytics.vue'),
+    meta: {
+      title: 'Harvest Analytics',
+      requiresAuth: true,
+      roles: ['FARMER'],
+      description: 'View analytics and insights for harvests and yields',
+      icon: 'mdi-chart-areaspline',
+    },
+  },
+  {
     path: '/',
     name: 'Landing',
     // beforeEnter: ifAuthenticated,
@@ -39,6 +75,11 @@ const routes = [
       title: 'AgriBackup - company',
       metaDescription: 'Farmers & Buyers Connection platform',
     },
+  },
+  {
+    path: '/pickup-routes',
+    name: 'PickupRoutes',
+    component: () => import('../views/PickupRoutes.vue'),
   },
   {
     path: '/home',
@@ -79,6 +120,11 @@ const routes = [
     component: () => import('../views/Produces.vue'),
   },
   {
+    path: '/my-farm/:farmerId',
+    name: 'MyFarm',
+    component: () => import('../views/Produces.vue'),
+  },
+  {
     path: '/listings',
     name: 'Listings',
     component: () => import('../views/Listings.vue'),
@@ -104,6 +150,21 @@ const routes = [
     component: () => import('../views/buyers/BrowseListings.vue'),
   },
   {
+    path: '/my-farmers',
+    name: 'MyFarmers',
+    component: () => import('../views/buyers/MyFarmers.vue'),
+  },
+  {
+    path: '/pickup-planning',
+    name: 'PickupPlanning',
+    component: () => import('../views/buyers/PickupPlanning.vue'),
+  },
+  {
+    path: '/buyer-analytics',
+    name: 'BuyerAnalytics',
+    component: () => import('../views/buyers/BuyerAnalytics.vue'),
+  },
+  {
     path: '/browse-requests',
     name: 'BrowseRequests',
     component: () => import('../views/farmer/BrowseRequests.vue'),
@@ -119,9 +180,44 @@ const routes = [
     component: () => import('../views/admin/OrdersReport.vue'),
   },
   {
-    path: '/op-zones',
-    name: 'OperatingZonesManagement',
-    component: () => import('../views/exporter/OperatingZonesManagement.vue'),
+    path: '/zone-management',
+    name: 'ZoneManagement',
+    component: () => import('../views/exporter/ZoneManagement.vue'),
+  },
+  {
+    path: '/exporter/system-admins',
+    name: 'SystemAdminsManagement',
+    component: () => import('../views/exporter/SystemAdminsManagement.vue'),
+  },
+  {
+    path: '/exporter/zone-supervisors',
+    name: 'ZoneSupervisorsManagement',
+    component: () => import('../views/exporter/ZoneSupervisorsManagement.vue'),
+  },
+  {
+    path: '/exporter/farmers',
+    name: 'FarmersManagement',
+    component: () => import('../views/exporter/FarmersManagement.vue'),
+  },
+  {
+    path: '/exporter/pickup-schedules',
+    name: 'PickupSchedulesManagement',
+    component: () => import('../views/exporter/PickupSchedulesManagement.vue'),
+  },
+  {
+    path: '/exporter/system-analytics',
+    name: 'SystemAnalytics',
+    component: () => import('../views/exporter/SystemAnalytics.vue'),
+  },
+  {
+    path: '/exporter/zone-comments',
+    name: 'ZoneCommentsManagement',
+    component: () => import('../views/exporter/ZoneCommentsManagement.vue'),
+  },
+  {
+    path: '/exporter/profile',
+    name: 'ExporterProfile',
+    component: () => import('../views/exporter/ExporterProfile.vue'),
   },
   // {
   //   path: '/confirm-otp',
@@ -165,13 +261,18 @@ const routes = [
   },
   {
     path: '/farmer-report',
-    name: 'FarmerReport',
+    name: 'FarmerReports',
     component: () => import('../views/report/farmer_reports.vue'),
   },
   {
     path: '/buyer-report',
     name: 'BuyerReport',
     component: () => import('../views/report/buyer_report.vue'),
+  },
+  {
+    path: '/ad',
+    name: 'Advertisement',
+    component: () => import('../views/advertisement.vue'),
   },
   // {
   //   path: '/buy-cover',

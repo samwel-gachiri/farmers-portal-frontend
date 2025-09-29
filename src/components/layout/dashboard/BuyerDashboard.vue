@@ -15,7 +15,7 @@
     <v-row class="tw-mb-3">
       <v-col cols="12">
         <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Buyer Dashboard</h1>
-        <p class="tw-text-gray-600">Welcome back, {{ user.userProfile.fullName }}! Here's your overview.</p>
+        <p class="tw-text-gray-600">Welcome back, {{ user.fullName }}! Here's your overview.</p>
       </v-col>
     </v-row>
 
@@ -91,6 +91,9 @@
           </div>
         </v-card>
       </v-col>
+      <v-col cols="12">
+        <BuyerHarvestPredictions />
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -102,10 +105,12 @@ import { getCurrentUserId } from '@/utils/roles.js';
 import CreateRequest from '@/components/request/CreateRequest.vue';
 import { formatToHumanWithTime } from '@/utils/time.js';
 // import VueApexCharts from 'vue-apexcharts';
+import BuyerHarvestPredictions from '@/components/buyer/BuyerHarvestPredictions.vue';
 
 export default {
   components: {
     CreateRequest,
+    BuyerHarvestPredictions,
     // apexchart: VueApexCharts,
   },
   data() {

@@ -53,8 +53,8 @@
 </template>
 
 <script>
-import validations from '@/utils/validations.js';
 import { mapGetters } from 'vuex';
+import validations from '@/utils/validations.js';
 import helpers from '@/utils/helpers.js';
 
 export default {

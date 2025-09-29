@@ -72,16 +72,29 @@
                   placeholder="e.g. 2.5"
               />
               <v-text-field
-                  label="Farm Location"
+                  label="Farm Location Name"
                   dense
                   v-model="form.location.customName"
-                  append-icon="mdi-map-marker"
-                  @click:append="getUserLocation"
-                  :rules="[required('Location')]"
+                  :outlined="false"
+                  :filled="true"
+                  :rules="[required('Location name')]"
                   :hide-details="false"
                   class="modern-input tw-w-full"
-                  aria-label="Farm Location"
-                  placeholder="e.g. (1.2345, 36.7890)"
+                  aria-label="Farm Location Name"
+                  placeholder="e.g. Nairobi Central, Kiambu Region"
+              />
+              <v-text-field
+                  label="Farm Coordinates"
+                  dense
+                  :value="form.location.lat && form.location.lng ? `(${parseFloat(form.location.lat).toFixed(6)}, ${parseFloat(form.location.lng).toFixed(6)})` : ''"
+                  append-icon="mdi-map-marker"
+                  @click:append="openLocationPicker"
+                  :rules="[required('Coordinates')]"
+                  :hide-details="false"
+                  class="modern-input tw-w-full"
+                  aria-label="Farm Coordinates"
+                  placeholder="Click the map icon to select coordinates"
+                  readonly
               />
           </div>
           <!-- Password Section -->
@@ -145,20 +158,26 @@
               @farm-boundary-created="handleFarmBoundaryUpdate"
           />
       </v-dialog>
+      <LocationPicker
+        v-model="locationPickerDialog"
+        :initial-location="form.location.lat && form.location.lng ? { lat: parseFloat(form.location.lat), lng: parseFloat(form.location.lng) } : null"
+        @location-selected="handleLocationSelected"
+      />
       <terms-and-conditions ref="termsDialog"/>
     </v-container>
   </v-app>
 </template>
 <script>
 import axios from 'axios';
+import VuePhoneNumberInput from 'vue-phone-number-input';
 import TermsAndConditions from '@/components/auth/TermsAndConditions.vue';
 import FarmMap from '@/components/FarmMap.vue';
+import LocationPicker from '@/components/LocationPicker.vue';
 import validations from '@/utils/validations.js';
-import VuePhoneNumberInput from 'vue-phone-number-input';
 
 export default {
   components: {
-    FarmMap, TermsAndConditions, VuePhoneNumberInput,
+    FarmMap, LocationPicker, TermsAndConditions, VuePhoneNumberInput,
   },
   props: {
     phoneNumber: {
@@ -185,21 +204,13 @@ export default {
       },
       userRole: 'farmer',
       farmMapDialog: false,
+      locationPickerDialog: false,
       showPassword: false,
       ...validations,
     };
   },
   watch: {
-    // Watch for changes in the custom location name and update lat/lng if possible
-    // eslint-disable-next-line func-names
-    'form.location.customName': function (val) {
-      // Match format: (lat, lng)
-      const match = /^\s*\(?\s*(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)\s*\)?\s*$/.exec(val);
-      if (match) {
-        this.form.location.lat = parseFloat(match[1]);
-        this.form.location.lng = parseFloat(match[3]);
-      }
-    },
+    // Watch for changes in the custom location name - no longer parsing coordinates
   },
   methods: {
     // Handles user sign up API call
@@ -266,9 +277,20 @@ export default {
       this.form.farmSize = `${area.toFixed(5)} acres`;
       this.form.location.lat = location.lat.toFixed(4);
       this.form.location.lng = location.lng.toFixed(4);
-      this.form.location.customName = `(${this.form.location.lat}, ${this.form.location.lng})`;
+      // Don't overwrite customName as it's now for the location name
       this.farmMapDialog = false;
       this.$toast.success('Farm size received as', area.toString());
+    },
+    // Opens the location picker dialog
+    openLocationPicker() {
+      this.locationPickerDialog = true;
+    },
+    // Handles location selected from the location picker
+    handleLocationSelected(location) {
+      this.form.location.lat = location.lat.toFixed(6);
+      this.form.location.lng = location.lng.toFixed(6);
+      // Don't overwrite customName as it's now for the location name
+      this.$toast.success('Coordinates selected successfully');
     },
   },
 };

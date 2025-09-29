@@ -34,7 +34,9 @@ const store = new Vuex.Store({
   },
   actions: {
     getNotificationCount: async (context) => {
-      await axios.get(`/customer/notification/app/unread/count/${context.state.auth.user.email}?pin=${context.state.auth.user['custom:kra-pin']}`).then((response) => {
+      const user = context.state.auth.user;
+      if (!user || !user.email) return; // guard against undefined user/email
+      await axios.get(`/customer/notification/app/unread/count/${user.email}?pin=${user['custom:kra-pin'] || ''}`).then((response) => {
         let data = null;
         if (response.data) {
           data = response.data.data;

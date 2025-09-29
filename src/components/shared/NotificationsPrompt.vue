@@ -34,10 +34,10 @@
 <script>
 /* eslint-disable no-unused-vars */
 
-import { FB_PUSH_NOTIFICATION, FB_PUSH_NOTIFICATION_PAY, NOTIFICATIONS } from '@/utils/const.js';
 // import firebase from '@/services/firebase/firebase.js';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
+import { FB_PUSH_NOTIFICATION, FB_PUSH_NOTIFICATION_PAY, NOTIFICATIONS } from '@/utils/const.js';
 // import NewPolicyPrompt from '@/components/shared/NewPolicyPrompt.js';
 
 export default {
@@ -142,12 +142,17 @@ export default {
       localStorage.setItem(NOTIFICATIONS, sent ? '1' : '0');
     },
     setTokenToTopic(token) {
+      // Defensive guards: authenticatedUser may be null during early app bootstrap
+      if (!this.authenticatedUser || !this.authenticatedUser.email) {
+        // Silently abort; caller (FCM setup) will retry later when user is available
+        return;
+      }
       const data = {
         token,
         kraPin: this.authenticatedUser['custom:kra-pin'],
         appVersionCode: 263,
         deviceId: 'web',
-        userName: this.authenticatedUser.email,
+        userName: this.authenticatedUser?.email || '',
       };
       axios.post('/customer/notification/fcm/updateUserDeviceFcmToken', data)
         .then((_response) => {
