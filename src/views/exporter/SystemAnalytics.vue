@@ -355,8 +355,9 @@
 </template>
 
 <script>
-import Default from '@/components/layout/Default.vue';
+// exporter analytic
 import exporterAnalyticsService from '@/services/exporterAnalytics.service.js';
+import Default from '@/components/layout/Default.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
