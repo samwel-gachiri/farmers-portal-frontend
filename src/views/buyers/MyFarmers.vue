@@ -22,7 +22,7 @@
                 class="font-weight-bold"
               >
                 <v-icon left>mdi-account-plus</v-icon>
-                Add Farmer
+                Register your own Farmers
               </v-btn>
             </div>
           </v-col>
@@ -137,6 +137,25 @@
           @update-notes="updateFarmerNotes"
         />
       </v-dialog>
+
+      <!-- Remove Farmer Confirmation Dialog -->
+      <v-dialog v-model="showRemoveConfirmation" max-width="400">
+        <v-card>
+          <v-card-title class="text-h6">
+            <v-icon color="warning" class="mr-2">mdi-alert</v-icon>
+            Remove Farmer
+          </v-card-title>
+          <v-card-text v-if="farmerToRemove">
+            Are you sure you want to remove <strong>{{ farmerToRemove.farmer.fullName }}</strong> from your network?
+            This action cannot be undone.
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn text @click="cancelRemoveFarmer">Cancel</v-btn>
+            <v-btn color="error" @click="confirmRemoveFarmer">Remove</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </Default>
 </template>
@@ -165,6 +184,8 @@ export default {
       showOnboardingDialog: false,
       showFarmerDetails: false,
       selectedFarmer: null,
+      showRemoveConfirmation: false,
+      farmerToRemove: null,
     };
   },
   computed: {
@@ -212,16 +233,26 @@ export default {
       this.showFarmerDetails = true;
     },
     async removeFarmer(farmer) {
-      // eslint-disable-next-line no-restricted-globals
-      if (!confirm(`Remove ${farmer.farmer.fullName} from your network?`)) return;
+      this.farmerToRemove = farmer;
+      this.showRemoveConfirmation = true;
+    },
+    cancelRemoveFarmer() {
+      this.farmerToRemove = null;
+      this.showRemoveConfirmation = false;
+    },
+    async confirmRemoveFarmer() {
+      if (!this.farmerToRemove) return;
 
       try {
-        await axios.delete(`/api/buyer/farmers/${farmer.connectionId}`);
-        this.$toast.success(`${farmer.farmer.fullName} removed from your network`);
+        await axios.delete(`/api/buyer/farmers/${this.farmerToRemove.connectionId}`);
+        this.$toast.success(`${this.farmerToRemove.farmer.fullName} removed from your network`);
         this.fetchMyFarmers();
       } catch (error) {
         // console.error('Error removing farmer:', error);
         this.$toast.error('Failed to remove farmer. Please try again.');
+      } finally {
+        this.farmerToRemove = null;
+        this.showRemoveConfirmation = false;
       }
     },
     async updateFarmerNotes(farmer, notes) {

@@ -307,8 +307,8 @@ Make it look like a premium, cutting-edge agricultural showcase. Return ONLY the
     },
 
     publishWebsite() {
-      alert(`Website published! URL: https://farm-website.example.com/${
-        Math.random().toString(36).substring(2, 8)}`);
+      const websiteUrl = `https://farm-website.example.com/${Math.random().toString(36).substring(2, 8)}`;
+      this.$toast.success(`Website published! URL: ${websiteUrl}`);
     },
   },
 
