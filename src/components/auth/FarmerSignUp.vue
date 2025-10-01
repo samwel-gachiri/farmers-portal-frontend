@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container>
+    <v-container class="tw-max-w-7xl">
       <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8 tw-border-3">
           <!-- Personal Details Section -->
           <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">

@@ -34,7 +34,7 @@
                 v-if="getCurrentUserId() === farmer.id"
                 class="btn-gradient"
                 small
-                @click="$refs.addFarmerProduce.openDialog()"
+                @click="$router.push({ name: 'AddFarmerProduce' })"
                 aria-label="Add Produce"
               >
                 <v-icon left small>mdi-plus</v-icon> Add Produce
@@ -49,7 +49,7 @@
             <v-btn
               v-if="getCurrentUserId() === farmer.id"
               class="btn-gradient tw-mt-3"
-              @click="$refs.addFarmerProduce.openDialog()"
+              @click="$router.push({ name: 'AddFarmerProduce' })"
             >
               <v-icon left small>mdi-seed</v-icon> Add Produce
             </v-btn>
@@ -155,12 +155,6 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <add-farmer-produce
-          :farmer-produces="farmer.farmerProduces"
-              ref="addFarmerProduce"
-              v-model="addProduceDialog"
-              @close="addProduceDialog = false"
-          />
 
           <v-dialog
             v-model="listingDialog"
@@ -320,7 +314,6 @@ import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
 import { getCurrentUserId } from '@/utils/roles.js';
 import CreateListing from '@/components/listing/CreateListing.vue';
-import AddFarmerProduce from '@/components/produce/AddFarmersProduce.vue';
 import Default from '@/components/layout/Default.vue';
 import EditProduceForm from '@/components/produce/EditProduceForm.vue';
 
@@ -328,7 +321,6 @@ export default {
   components: {
     EditProduceForm,
     Default,
-    AddFarmerProduce,
     CreateListing,
   },
   data() {
@@ -347,7 +339,6 @@ export default {
         farmerProduces: [],
       },
       selectedFarmerProduce: null,
-      addProduceDialog: false,
       listingDialog: false,
       editProduceDialog: false,
       showDialog: false,
@@ -442,10 +433,6 @@ export default {
       axios.get(`/farmers-service/farmer?farmerId=${this.$route.params.farmerId}`)
         .then(async (response) => {
           this.farmer = { ...this.farmer, ...response.data.data };
-          // Show add produce dialog if user is owner and has no produces
-          if (this.$route.params.farmerId === this.getCurrentUserId() && (!this.farmer.farmerProduces || this.farmer.farmerProduces.length === 0)) {
-            this.addProduceDialog = true;
-          }
         })
         .catch((e) => {
           this.$toast.error(e.message);

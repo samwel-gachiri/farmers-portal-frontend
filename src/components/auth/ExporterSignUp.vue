@@ -1,5 +1,5 @@
 <template>
-    <v-app class="tw-p-8 tw-bg-white tw-rounded-2xl tw-max-w-5xl tw-mx-auto tw-mt-3 ">
+    <v-app class="tw-p-8 tw-bg-white tw-rounded-2xl tw-mx-auto tw-mt-3 ">
         <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8">
             <!-- Personal Details Section -->
             <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">

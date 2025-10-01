@@ -8,7 +8,7 @@
       <v-select
         v-model="form.farmerProduceId"
         :items="produces"
-        item-title="name"
+        item-title="farmProduce.name"
         item-value="id"
         label="Select Produce"
         outlined

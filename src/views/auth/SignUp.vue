@@ -1,117 +1,131 @@
 <template>
   <v-app>
     <v-main>
-      <div class="signup-background">
+      <div class="signup-background tw-flex tw-border-2 tw-justify-center tw-items-center">
         <v-container class="fill-height" fluid>
-          <v-row align="center" justify="center">
-            <v-col cols="12" sm="10" md="8" lg="6">
-              <v-card
-                class="pa-6 signup-card"
-                elevation="12"
-                rounded="xl"
-              >
-                <!-- Header with Portal Context -->
-                <v-card-title class="justify-center">
-                  <v-avatar size="64" :color="getPortalColor()">
-                    <v-icon size="32" color="white">{{ getPortalIcon() }}</v-icon>
-                  </v-avatar>
-                </v-card-title>
+          <div>
+            <v-card
+              class="pa-6 signup-card"
+              elevation="12"
+              rounded="xl"
+            >
+              <!-- Header with Portal Context -->
+              <v-card-title class="justify-center">
+                <v-avatar size="64" :color="getPortalColor()">
+                  <v-icon size="32" color="white">{{ getPortalIcon() }}</v-icon>
+                </v-avatar>
+              </v-card-title>
 
-                <v-card-subtitle class="text-center text-h5 font-weight-bold mb-2">
-                  {{ getSignUpTitle() }}
-                </v-card-subtitle>
+              <v-card-subtitle class="text-center text-h5 font-weight-bold mb-2">
+                {{ getSignUpTitle() }}
+              </v-card-subtitle>
 
-                <!-- Portal Context Display -->
-                <div v-if="portalContext" class="text-center mb-4">
-                  <v-chip
-                    :color="getPortalColor()"
-                    text-color="white"
-                    class="ma-1"
-                  >
-                    <v-icon left small>{{ getPortalIcon() }}</v-icon>
-                    {{ getPortalDisplayName() }}
-                  </v-chip>
+              <!-- Portal Context Display -->
+              <div v-if="portalContext" class="text-center mb-4">
+                <v-chip
+                  :color="getPortalColor()"
+                  text-color="white"
+                  class="ma-1"
+                >
+                  <v-icon left small>{{ getPortalIcon() }}</v-icon>
+                  {{ getPortalDisplayName() }}
+                </v-chip>
+              </div>
+
+              <v-card-text>
+                <!-- Render appropriate signup component based on portal context -->
+                <FarmerSignUp
+                  v-if="portalContext === 'farmer'"
+                  @farmer-registered="handleRegistrationSuccess"
+                />
+                <BuyerSignUp
+                  v-else-if="portalContext === 'buyer'"
+                  @buyer-registered="handleRegistrationSuccess"
+                />
+                <ExporterSignUp
+                  v-else-if="portalContext === 'exporter'"
+                  :role-context="roleContext"
+                  @exporter-registered="handleRegistrationSuccess"
+                />
+
+                <!-- Fallback: Portal Selection -->
+                <div v-else class="text-center">
+                  <v-icon size="64" color="grey lighten-2" class="mb-4">mdi-account-plus</v-icon>
+                  <h3 class="text-h6 mb-4">Select Portal to Register</h3>
+                  <p class="text--secondary mb-6">Choose which portal you'd like to create an account for:</p>
+
+                  <v-row>
+                    <v-col cols="12" sm="4">
+                      <v-btn
+                        block
+                        large
+                        color="green"
+                        @click="selectPortal('farmer')"
+                        class="mb-3"
+                      >
+                        <v-icon left>mdi-barn</v-icon>
+                        Farmer Portal
+                      </v-btn>
+                    </v-col>
+                    <v-col cols="12" sm="4">
+                      <v-btn
+                        block
+                        large
+                        color="blue"
+                        @click="selectPortal('buyer')"
+                        class="mb-3"
+                      >
+                        <v-icon left>mdi-cart</v-icon>
+                        Buyer Portal
+                      </v-btn>
+                    </v-col>
+                    <v-col cols="12" sm="4">
+                      <v-btn
+                        block
+                        large
+                        color="purple"
+                        @click="selectPortal('exporter')"
+                        class="mb-3"
+                      >
+                        <v-icon left>mdi-crown</v-icon>
+                        Exporter Portal
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                 </div>
 
-                <v-card-text>
-                  <!-- Render appropriate signup component based on portal context -->
-                  <FarmerSignUp
-                    v-if="portalContext === 'farmer'"
-                    @farmer-registered="handleRegistrationSuccess"
-                  />
-                  <BuyerSignUp
-                    v-else-if="portalContext === 'buyer'"
-                    @buyer-registered="handleRegistrationSuccess"
-                  />
-                  <ExporterSignUp
-                    v-else-if="portalContext === 'exporter'"
-                    :role-context="roleContext"
-                    @exporter-registered="handleRegistrationSuccess"
-                  />
+                <!-- Navigation Links -->
+                <div class="mt-6 text-center">
+                  <span class="text-caption">Already have an account?</span>
+                  <v-btn
+                    text
+                    color="primary"
+                    class="ml-1"
+                    small
+                    @click="goToSignIn"
+                  >
+                    Sign In
+                  </v-btn>
+                </div>
 
-                  <!-- Fallback: Portal Selection -->
-                  <div v-else class="text-center">
-                    <v-icon size="64" color="grey lighten-2" class="mb-4">mdi-account-plus</v-icon>
-                    <h3 class="text-h6 mb-4">Select Portal to Register</h3>
-                    <p class="text--secondary mb-6">Choose which portal you'd like to create an account for:</p>
-
-                    <v-row>
-                      <v-col cols="12" sm="4">
-                        <v-btn
-                          block
-                          large
-                          color="green"
-                          @click="selectPortal('farmer')"
-                          class="mb-3"
-                        >
-                          <v-icon left>mdi-barn</v-icon>
-                          Farmer Portal
-                        </v-btn>
-                      </v-col>
-                      <v-col cols="12" sm="4">
-                        <v-btn
-                          block
-                          large
-                          color="blue"
-                          @click="selectPortal('buyer')"
-                          class="mb-3"
-                        >
-                          <v-icon left>mdi-cart</v-icon>
-                          Buyer Portal
-                        </v-btn>
-                      </v-col>
-                      <v-col cols="12" sm="4">
-                        <v-btn
-                          block
-                          large
-                          color="purple"
-                          @click="selectPortal('exporter')"
-                          class="mb-3"
-                        >
-                          <v-icon left>mdi-crown</v-icon>
-                          Exporter Portal
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </div>
-
-                  <!-- Navigation Links -->
-                  <div class="mt-6 text-center">
-                    <span class="text-caption">Already have an account?</span>
-                    <v-btn
-                      text
-                      color="primary"
-                      class="ml-1"
-                      small
-                      @click="goToSignIn"
-                    >
-                      Sign In
-                    </v-btn>
-                  </div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+                <!-- Contact Information -->
+                <div class="mt-4 text-center">
+                  <span class="text-caption text--secondary">Need help? Contact us:</span>
+                  <br>
+                  <v-btn
+                    text
+                    color="primary"
+                    small
+                    href="tel:+254705644805"
+                    class="mt-1"
+                  >
+                    <v-icon left small>mdi-phone</v-icon>
+                    +254 705 644 805
+                  </v-btn>
+                </div>
+              </v-card-text>
+            </v-card>
+          </div>
         </v-container>
       </div>
     </v-main>
