@@ -101,7 +101,6 @@ export default {
         }
       } catch (error) {
         this.$toast.error('Failed to load available produces');
-        console.error('Error loading produces:', error);
       } finally {
         this.loading = false;
       }

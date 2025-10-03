@@ -133,7 +133,6 @@ export default {
         this.closeDialog();
       } catch (error) {
         this.$toast.error('Failed to submit feedback. Please try again.');
-        console.error('Feedback submission error:', error);
       } finally {
         this.submitting = false;
       }

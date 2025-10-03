@@ -235,7 +235,6 @@ export default {
           this.$toast.error(saveResponse.data.msg, 'Error');
         }
       } catch (error) {
-        console.error('Error signing up user:', error);
         this.$toast.error('Error creating account. Please try again.');
       }
     },
