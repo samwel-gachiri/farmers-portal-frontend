@@ -120,6 +120,11 @@ const routes = [
     component: () => import('../views/Produces.vue'),
   },
   {
+    path: '/add-produce',
+    name: 'AddFarmerProduce',
+    component: () => import('../views/AddFarmerProduce.vue'),
+  },
+  {
     path: '/my-farm/:farmerId',
     name: 'MyFarm',
     component: () => import('../views/Produces.vue'),
@@ -270,9 +275,9 @@ const routes = [
     component: () => import('../views/report/buyer_report.vue'),
   },
   {
-    path: '/ad',
-    name: 'Advertisement',
-    component: () => import('../views/advertisement.vue'),
+    path: '/contact',
+    name: 'Contact',
+    component: () => import('../views/Contact.vue'),
   },
   // {
   //   path: '/buy-cover',

@@ -198,18 +198,14 @@ export default {
   methods: {
     async fetchProduces() {
       try {
-        const { data } = await axios.get(`/api/farmers/${this.farmerId}/produces/for-yield-recording`);
-        this.produces = data.data || [];
+        const { data } = await axios.get(`/farmers-service/farmer?farmerId=${this.farmerId}`);
+        const farmer = data.data;
+        // Filter produces for yield recording: only GROWING, READY_TO_HARVEST, or HARVESTED
+        this.produces = (farmer.farmerProduces || []).filter((produce) => ['GROWING', 'READY_TO_HARVEST', 'HARVESTED'].includes(produce.status));
       } catch (error) {
-        // console.error('Error fetching produces:', error);
-        // Fallback to existing endpoint if new one doesn't exist yet
-        try {
-          const { data } = await axios.get(`/farmers-service/farmer/${this.farmerId}/produces`);
-          this.produces = data.data || [];
-        } catch {
-          this.produces = [];
-          this.$toast.error('Failed to load your produces. Please try again.');
-        }
+        // console.error('Error fetching farmer produces:', error);
+        this.produces = [];
+        this.$toast.error('Failed to load your produces. Please try again.');
       }
     },
     async fetchYieldHistory() {

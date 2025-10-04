@@ -13,8 +13,12 @@
           <li>Your data will be handled in accordance with our Privacy Policy.</li>
         </ul>
         <p>
-          For any questions, please contact us at support@agricoke.com.
+          For any questions, please contact us at:
         </p>
+        <ul>
+          <li>Phone: <a href="tel:+254705644805">+254 705 644 805</a></li>
+          <li>Email: <a href="mailto:agribackupltd@gmail.com">agribackupltd@gmail.com</a></li>
+        </ul>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

@@ -6,12 +6,11 @@
       <div class="tw-max-w-7xl tw-mx-auto tw-flex tw-items-center tw-justify-between tw-px-6 tw-py-3">
         <div class="tw-flex tw-items-center">
           <!-- Creative logo: AGRIBackUp with SVG leaf accent -->
-          <span class="tw-font-extrabold tw-text-green-700 tw-text-3xl md:tw-text-4xl tw-tracking-tight tw-select-none tw-drop-shadow-sm tw-flex tw-items-center">
-            AGRI
-            <span class="tw-text-blue-700 tw-bg-gradient-to-r tw-from-blue-700 tw-to-green-900 tw-bg-clip-text tw-text-transparent tw-ml-1">
-              Back
+          <span class="tw-font-extrabold tw-text-green-800 tw-text-3xl md:tw-text-4xl tw-tracking-tight tw-select-none tw-drop-shadow-sm tw-flex tw-items-center">
+            Agri
+            <span class="tw-text-green-900 tw-ml-1">
+              Backup
             </span>
-            <span class="tw-text-yellow-500 tw-ml-1 tw-font-black tw-drop-shadow">Up</span>
           </span>
         </div>
         <div class="tw-flex tw-items-center tw-space-x-2">
@@ -24,10 +23,10 @@
           </button>
           <button
             class="tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-font-semibold tw-px-6 tw-py-2 tw-rounded-lg tw-shadow tw-transition"
-            aria-label="Get Started"
+            aria-label="Create Account"
             @click="handleSignup"
           >
-            Get Started
+            Create Account
           </button>
         </div>
       </div>
@@ -60,8 +59,8 @@
         <h1 class="tw-text-4xl md:tw-text-6xl tw-font-bold tw-text-green-900 tw-mb-6 tw-drop-shadow">
           Connect Directly to Buyers and Boost Your Farm’s Profits
         </h1>
-        <p class="tw-text-xl tw-text-[#6b4f2c] tw-mb-8 tw-drop-shadow-sm">
-          AgriBackup links Kenyan farmers to global markets with fair prices and AI insights.
+        <p class="tw-text-xl tw-text-[#6b4f2c] tw-mr-3 tw-mb-8 tw-drop-shadow-sm">
+          Eliminating the need of middlemen by providing direct access to the market, and technologizing the Agricultural marketplace
         </p>
         <div class="tw-flex tw-gap-6 tw-mb-6">
           <button
@@ -94,9 +93,9 @@
         <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
           <h2 class="tw-text-3xl tw-font-semibold tw-text-[#3d5a2a] tw-mb-4">For Farmers</h2>
           <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
-            <li>Sell directly, earn more</li>
-            <li>Get AI-powered farming tips</li>
-            <li>Access real-time market prices</li>
+            <li>Track your crop growth and get accurate AI-powered farming tips</li>
+            <li>Record your yields and sell here</li>
+            <li>Advertise your produce and get direct market access to buyers and exporters</li>
           </ul>
           <button
             @click="joinAsFarmer"
@@ -120,8 +119,10 @@
       <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
         <h2 class="tw-text-3xl tw-font-semibold tw-text-[#2a4f6b] tw-mb-4">For Buyers</h2>
         <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
-          <li>Source fresh produce from verified farmers</li>
-          <li>Transparent pricing, direct transactions</li>
+          <li>Source quality fresh produce directly from verified farmers</li>
+          <li>Registers your own farmers and manage them</li>
+          <li>Send Automated SMS to farmers</li>
+          <li>Optimize your supply chain with data-driven insights</li>
         </ul>
         <button
           @click="joinAsBuyer"
@@ -146,8 +147,12 @@
         <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
           <h2 class="tw-text-3xl tw-font-semibold tw-text-[#b6a16b] tw-mb-4">For Exporters</h2>
           <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
-            <li>Source fresh produce from verified farmers</li>
-            <li>Transparent pricing, direct transactions</li>
+            <li>Source quality fresh produce from verified farmers</li>
+            <li>Manage your supply chain efficiently</li>
+            <li>Register your Company to access exclusive export opportunities</li>
+            <li>Optimize your supply chain with data-driven insights</li>
+            <li>Onboard your farmers onto the platform and manage them</li>
+            <i>We easen the traceability of exports from farmers access upto export</i>
           </ul>
           <button
             @click="becomeExporter"
@@ -194,7 +199,7 @@
     </section>
 
     <!-- Map Preview & AI Mention -->
-    <section class="tw-max-w-6xl tw-mx-auto tw-px-6 tw-py-8 tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-gap-8">
+    <section v-if="false" class="tw-max-w-6xl tw-mx-auto tw-px-6 tw-py-8 tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-gap-8">
       <div class="tw-flex-1 tw-flex tw-flex-col tw-items-start">
         <h3 class="tw-text-xl tw-font-semibold tw-text-green-700 tw-mb-2">See Connections Near You</h3>
         <p class="tw-text-gray-700 tw-mb-4">AgriBackup’s map shows buyers and farmers nearby for fast, local deals.</p>
@@ -342,11 +347,11 @@ export default {
     },
     handleLogin() {
       this.clearViewRole();
-      this.$router.push({ name: 'SignIn' });
+      this.$router.push({ name: 'Home' });
     },
     handleSignup() {
       this.clearViewRole();
-      this.$router.push({ name: 'SignUp' });
+      this.$router.push({ name: 'Home' });
     },
     goHome() {
       this.$router.push({ name: 'Home' });

@@ -37,7 +37,7 @@
       </div>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
-          <v-col cols="12" sm="8" md="4">
+          <v-col cols="12" sm="10" md="6">
             <v-card
               class="pa-6"
               elevation="12"
@@ -194,16 +194,32 @@
                     @click="$router.push({ name: 'ForgotPassword' })"
                   >Reset</v-btn>
                 </div>
-                <div class="mt-2 text-center">
-                  <span class="text-caption">Don't have an account?</span>
+                <div class="mt-4 text-center">
+                  <v-btn
+                    outlined
+                    color="success"
+                    large
+                    block
+                    @click="$router.push({ name: 'SignUp' })"
+                  >
+                    <v-icon left>mdi-account-plus</v-icon>
+                    Create account
+                  </v-btn>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="mt-4 text-center">
+                  <span class="text-caption text--secondary">Need help? Contact us:</span>
+                  <br>
                   <v-btn
                     text
                     color="primary"
-                    class="ml-1"
                     small
-                    @click="$router.push({ name: 'SignUp' })"
+                    href="tel:+254705644805"
+                    class="mt-1"
                   >
-                    Sign Up
+                    <v-icon left small>mdi-phone</v-icon>
+                    +254 705 644 805
                   </v-btn>
                 </div>
               </v-card-text>
