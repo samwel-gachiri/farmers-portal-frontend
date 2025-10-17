@@ -508,7 +508,6 @@ export default {
           estimatedLoad: farmer.performanceMetrics?.averageYield || 50,
         }));
       } catch (error) {
-        // console.error('Error loading farmers:', error);
         // Mock data for demo with coordinates
         this.availableFarmers = [
           {
@@ -564,23 +563,18 @@ export default {
         });
 
         this.mapView.when(() => {
-          // console.log('Map is ready');
         });
       } catch (error) {
-        // console.error('Error initializing map:', error);
         this.$toast.error('Failed to initialize map');
       }
     },
 
     async generateRoute() {
-      // console.log('Generate route called');
       if (!this.canGenerateRoute) {
-        // console.log('Cannot generate route - missing requirements');
         return;
       }
 
       this.generatingRoute = true;
-      // console.log('Starting route generation...');
       try {
         // Clear previous route
         this.clearRoute();
@@ -627,23 +621,16 @@ export default {
           });
         });
 
-        // console.log('Route stops prepared:', stops);
-
         // Use Esri routing service or fallback to mock data
-        // console.log('About to calculate route...');
         const routeResult = await this.calculateRoute(stops);
-        // console.log('Route calculation result:', routeResult);
 
         if (routeResult) {
-          // console.log('Route calculated successfully, displaying on map...');
           await this.displayRoute(routeResult, selectedFarmers);
           this.$toast.success('Route generated successfully!');
         } else {
-          // console.error('Route calculation returned null/undefined');
           throw new Error('Failed to calculate route');
         }
       } catch (error) {
-        // console.error('Error generating route:', error);
         this.$toast.warning('Using simplified route calculation. For optimal routes, please check your connection.');
 
         // As a last resort, show a basic straight-line route
@@ -669,7 +656,6 @@ export default {
           await this.displayRoute(mockResult, selectedFarmers);
           this.$toast.success('Route generated successfully!');
         } catch (fallbackError) {
-          // console.error('Fallback route also failed:', fallbackError);
           this.$toast.error('Unable to generate route preview. Please try again.');
         }
       } finally {
@@ -679,13 +665,10 @@ export default {
 
     async calculateRoute(stops) {
       try {
-        // console.log('Calculating route with stops:', stops);
-
         // Check if Esri API key is available
         const esriApiKey = process.env.VUE_APP_ESRI_API_KEY;
 
         if (!esriApiKey) {
-          // console.log('No Esri API key found, using mock route data');
           return this.generateMockRouteData(stops);
         }
 
@@ -710,28 +693,20 @@ export default {
           apiKey: esriApiKey,
         });
 
-        // console.log('Sending route request to Esri...');
-
         // Add timeout to prevent hanging (reduced from 15000ms to 8000ms)
         const routePromise = route.solve('https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', routeParams);
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('Route request timeout')), 8000);
         });
 
-        // console.log('Waiting for route response...');
         const results = await Promise.race([routePromise, timeoutPromise]);
-        // console.log('Route response received:', results);
 
         if (results && results.routeResults && results.routeResults.length > 0) {
-          // console.log('Esri routing successful:', results.routeResults[0]);
           return results.routeResults[0];
         }
 
-        // console.warn('Esri routing returned no results, using fallback');
         return this.generateMockRouteData(stops);
       } catch (error) {
-        // console.error('Error calculating route with Esri:', error);
-        // console.log('Falling back to mock route data');
         // Immediately return mock data instead of throwing
         return this.generateMockRouteData(stops);
       }

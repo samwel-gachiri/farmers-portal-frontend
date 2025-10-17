@@ -221,7 +221,6 @@ export default {
         const { data } = await axios.get(`/api/buyer/${buyerId}/farmers`);
         this.farmers = data || [];
       } catch (error) {
-        // console.error('Error fetching farmers:', error);
         this.$toast.error('Failed to load your farmers. Please try again.');
         this.farmers = [];
       } finally {
@@ -248,7 +247,6 @@ export default {
         this.$toast.success(`${this.farmerToRemove.farmer.fullName} removed from your network`);
         this.fetchMyFarmers();
       } catch (error) {
-        // console.error('Error removing farmer:', error);
         this.$toast.error('Failed to remove farmer. Please try again.');
       } finally {
         this.farmerToRemove = null;
@@ -261,7 +259,6 @@ export default {
         this.$toast.success('Notes updated successfully');
         this.fetchMyFarmers();
       } catch (error) {
-        // console.error('Error updating notes:', error);
         this.$toast.error('Failed to update notes. Please try again.');
       }
     },

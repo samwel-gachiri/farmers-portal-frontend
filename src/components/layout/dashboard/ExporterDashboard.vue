@@ -1,5 +1,7 @@
 <template>
   <v-container fluid class="exporter-dashboard">
+    <CompleteSignUp v-if="verificationStatus === 'PENDING'" @completed="onVerificationCompleted" />
+    <UnderReviewMessage v-else-if="verificationStatus === 'UNDER_REVIEW'" />
     <!-- Header Section -->
     <div class="dashboard-header mb-8">
       <v-row align="center" justify="space-between">
@@ -399,9 +401,12 @@ import ZoneList from '@/components/exporter/ZoneList.vue';
 import FarmerList from '@/components/exporter/FarmerList.vue';
 import RolePermissionsDialog from '@/components/exporter/RolePermissionsDialog.vue';
 import FarmerDetailDrawer from '@/components/exporter/FarmerDetailDrawer.vue';
+import CompleteSignUp from '@/views/exporter/CompleteSignUp.vue';
+import UnderReviewMessage from '@/components/layout/dashboard/UnderReviewMessage.vue';
 import axios from 'axios';
 // import harvestService from '@/services/harvestPrediction.service.js';
 import { getCurrentUserId } from '@/utils/roles.js';
+import { mapState } from 'vuex';
 
 export default {
   name: 'ExporterDashboardLayout',
@@ -411,10 +416,21 @@ export default {
     FarmerList,
     RolePermissionsDialog,
     FarmerDetailDrawer,
+    CompleteSignUp,
+    UnderReviewMessage,
   },
   computed: {
+    ...mapState({
+      user: (state) => state.auth.user,
+    }),
     exporterId() {
       return getCurrentUserId() || null;
+    },
+    verificationStatus() {
+      return this.user?.verificationStatus || 'PENDING';
+    },
+    isVerified() {
+      return this.verificationStatus === 'VERIFIED';
     },
   },
   data() {
@@ -877,6 +893,11 @@ export default {
     },
     flagFarmer(farmer) {
       this.showMessage({ type: 'warning', text: `Flagged ${farmer.farmerName || farmer.name} (stub)` });
+    },
+    onVerificationCompleted() {
+      // Refresh the dashboard data after verification completion
+      this.loadDashboardData();
+      this.showMessage({ type: 'success', text: 'Verification submitted successfully! Your account is now under review.' });
     },
     formatDate(dt) {
       try { return new Date(dt).toLocaleDateString(); } catch { return dt; }
