@@ -296,3 +296,234 @@
     </v-overlay>
   </div>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+import axios from 'axios';
+
+export default {
+  name: 'AdminDashboard',
+  data() {
+    return {
+      loading: false,
+      stats: {
+        zonesManaged: 0,
+        farmersAdded: 0,
+        supervisorsAssigned: 0,
+      },
+      zoneCreationPanel: null,
+      farmerAssignmentPanel: null,
+      zoneFormValid: false,
+      farmerFormValid: false,
+      creatingZone: false,
+      addingFarmer: false,
+      newZone: {
+        name: '',
+        produceType: '',
+        centerLatitude: null,
+        centerLongitude: null,
+        radiusKm: 5,
+      },
+      farmerAssignment: {
+        zoneId: null,
+        farmerId: null,
+      },
+      recentZones: [],
+      availableZones: [],
+      availableFarmers: [],
+      farmerActivities: [],
+      zoneSupervisors: [],
+    };
+  },
+  computed: {
+    ...mapGetters(['currentUser']),
+  },
+  async mounted() {
+    await this.loadDashboardData();
+  },
+  methods: {
+    async loadDashboardData() {
+      this.loading = true;
+      try {
+        await Promise.all([
+          this.loadStats(),
+          this.loadRecentZones(),
+          this.loadAvailableZones(),
+          this.loadAvailableFarmers(),
+          this.loadFarmerActivities(),
+          this.loadZoneSupervisors(),
+        ]);
+      } catch (error) {
+        this.$toast.error('Failed to load dashboard data');
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadStats() {
+      try {
+        const response = await axios.get('/api/admin/dashboard/stats');
+        this.stats = response.data;
+      } catch (error) {
+        // Set default values if API fails
+        this.stats = {
+          zonesManaged: 0,
+          farmersAdded: 0,
+          supervisorsAssigned: 0,
+        };
+      }
+    },
+
+    async loadRecentZones() {
+      try {
+        const response = await axios.get('/api/admin/zones/recent');
+        this.recentZones = response.data;
+      } catch (error) {
+        this.recentZones = [];
+      }
+    },
+
+    async loadAvailableZones() {
+      try {
+        const response = await axios.get('/api/admin/zones');
+        this.availableZones = response.data;
+      } catch (error) {
+        this.availableZones = [];
+      }
+    },
+
+    async loadAvailableFarmers() {
+      try {
+        const response = await axios.get('/api/admin/farmers/available');
+        this.availableFarmers = response.data;
+      } catch (error) {
+        this.availableFarmers = [];
+      }
+    },
+
+    async loadFarmerActivities() {
+      try {
+        const response = await axios.get('/api/admin/activities/recent');
+        this.farmerActivities = response.data.map((activity) => ({
+          ...activity,
+          color: this.getActivityColor(activity.type),
+          icon: this.getActivityIcon(activity.type),
+        }));
+      } catch (error) {
+        this.farmerActivities = [];
+      }
+    },
+
+    async loadZoneSupervisors() {
+      try {
+        const response = await axios.get('/api/admin/supervisors');
+        this.zoneSupervisors = response.data;
+      } catch (error) {
+        this.zoneSupervisors = [];
+      }
+    },
+
+    async createZone() {
+      if (!this.$refs.zoneForm.validate()) return;
+
+      this.creatingZone = true;
+      try {
+        // eslint-disable-next-line no-unused-vars
+        const response = await axios.post('/api/admin/zones', this.newZone);
+        this.$toast.success('Zone created successfully');
+        this.resetZoneForm();
+        await this.loadRecentZones();
+        await this.loadStats();
+      } catch (error) {
+        this.$toast.error('Failed to create zone');
+      } finally {
+        this.creatingZone = false;
+      }
+    },
+
+    async addFarmerToZone() {
+      if (!this.$refs.farmerForm.validate()) return;
+
+      this.addingFarmer = true;
+      try {
+        await axios.post('/api/admin/zones/add-farmer', this.farmerAssignment);
+        this.$toast.success('Farmer added to zone successfully');
+        this.resetFarmerForm();
+        await this.loadFarmerActivities();
+        await this.loadStats();
+      } catch (error) {
+        this.$toast.error('Failed to add farmer to zone');
+      } finally {
+        this.addingFarmer = false;
+      }
+    },
+
+    resetZoneForm() {
+      this.newZone = {
+        name: '',
+        produceType: '',
+        centerLatitude: null,
+        centerLongitude: null,
+        radiusKm: 5,
+      };
+      this.zoneCreationPanel = null;
+      if (this.$refs.zoneForm) {
+        this.$refs.zoneForm.reset();
+      }
+    },
+
+    resetFarmerForm() {
+      this.farmerAssignment = {
+        zoneId: null,
+        farmerId: null,
+      };
+      this.farmerAssignmentPanel = null;
+      if (this.$refs.farmerForm) {
+        this.$refs.farmerForm.reset();
+      }
+    },
+
+    async refreshData() {
+      await this.loadDashboardData();
+    },
+
+    viewZone(zone) {
+      this.$router.push({ name: 'ZoneDetail', params: { id: zone.id } });
+    },
+
+    viewSupervisor(supervisor) {
+      this.$router.push({ name: 'SupervisorDetail', params: { id: supervisor.id } });
+    },
+
+    getActivityColor(type) {
+      const colors = {
+        ZONE_JOINED: 'success',
+        PRODUCE_ADDED: 'primary',
+        ORDER_PLACED: 'info',
+        ZONE_LEFT: 'warning',
+      };
+      return colors[type] || 'grey';
+    },
+
+    getActivityIcon(type) {
+      const icons = {
+        ZONE_JOINED: 'mdi-account-plus',
+        PRODUCE_ADDED: 'mdi-plus-circle',
+        ORDER_PLACED: 'mdi-cart-plus',
+        ZONE_LEFT: 'mdi-account-minus',
+      };
+      return icons[type] || 'mdi-information';
+    },
+
+    formatTime(timestamp) {
+      return new Date(timestamp).toLocaleString();
+    },
+  },
+};
+</script>
+
+<style scoped>
+.admin-dashboard {
+  min-height: 100vh;
+}
+</style>

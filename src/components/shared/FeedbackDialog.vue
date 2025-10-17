@@ -2,12 +2,12 @@
   <v-dialog v-model="dialog" max-width="500px" persistent>
     <v-card>
       <v-card-title class="headline">
-        <v-icon left color="primary">mdi-lightbulb-outline</v-icon>
-        Suggest Improvement
+        <v-icon left>mdi-lightbulb-outline</v-icon>
+        Share Your Ideas with AgriBackup
       </v-card-title>
 
       <v-card-text>
-        <p class="mb-4">Help us improve AgriBackup by sharing your suggestions and feedback.</p>
+        <p class="mb-4">Help us improve AgriBackup! Share your feature requests, report bugs, or suggest improvements.</p>
 
         <v-form ref="feedbackForm" v-model="valid">
           <v-text-field
@@ -33,7 +33,7 @@
           <v-select
             v-model="feedback.category"
             :items="categories"
-            label="Category"
+            label="Request Type"
             outlined
             dense
             class="mb-3"
@@ -70,6 +70,8 @@
 </template>
 
 <script>
+import FeedbackService from '@/services/feedback.service.js';
+
 export default {
   name: 'FeedbackDialog',
   data() {
@@ -84,11 +86,9 @@ export default {
         email: '',
       },
       categories: [
-        'User Interface',
-        'Features',
-        'Performance',
-        'Bug Report',
-        'Other',
+        'FEATURE',
+        'BUG',
+        'IMPROVEMENT',
       ],
       rules: {
         required: (value) => !!value || 'This field is required.',
@@ -125,10 +125,7 @@ export default {
       this.submitting = true;
 
       try {
-        // Here you would typically send the feedback to your backend
-        // For now, we'll just simulate the submission
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
+        await FeedbackService.submitFeedback(this.feedback);
         this.$toast.success('Thank you for your feedback! We appreciate your input.');
         this.closeDialog();
       } catch (error) {
@@ -143,8 +140,91 @@ export default {
 
 <style scoped>
 .headline {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2e7d32, #4caf50);
   color: white;
-  border-radius: 8px 8px 0 0;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+}
+
+.headline .v-icon {
+  color: #bbf7d0 !important;
+}
+
+/* Update dialog styling to match home page theme */
+.v-dialog .v-card {
+  border-radius: 16px;
+  border: 2px solid rgba(230, 225, 195, 0.4);
+  box-shadow: 0 20px 60px rgba(46, 125, 50, 0.15);
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(247, 245, 238, 0.95));
+  backdrop-filter: blur(10px);
+}
+
+.v-text-field .v-input__control .v-input__slot {
+  border-radius: 12px;
+  border: 2px solid rgba(230, 225, 195, 0.4);
+  background: rgba(255,255,255,0.8);
+}
+
+.v-text-field .v-input__control .v-input__slot:hover {
+  border-color: rgba(76, 175, 80, 0.4);
+}
+
+.v-text-field .v-input__control .v-input__slot:focus-within {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+}
+
+.v-select .v-input__control .v-input__slot {
+  border-radius: 12px;
+  border: 2px solid rgba(230, 225, 195, 0.4);
+  background: rgba(255,255,255,0.8);
+}
+
+.v-select .v-input__control .v-input__slot:hover {
+  border-color: rgba(76, 175, 80, 0.4);
+}
+
+.v-select .v-input__control .v-input__slot:focus-within {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+}
+
+.v-btn {
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.v-btn.primary {
+  background: linear-gradient(135deg, #2e7d32, #4caf50) !important;
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+}
+
+.v-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3) !important;
+  background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+}
+
+.v-card__text {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.v-card__text p {
+  color: #6b4f2c;
+  line-height: 1.6;
+}
+
+.v-label {
+  color: #2e7d32 !important;
+  font-weight: 600;
+}
+
+.v-messages__message {
+  color: #f44336 !important;
+  font-weight: 500;
 }
 </style>

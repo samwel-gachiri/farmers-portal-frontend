@@ -20,9 +20,7 @@
             </div>
           </div>
         </div>
-
-        <!-- Role Indicator -->
-        <role-indicator />
+<!--   <role-indicator /> -->
       </div>
 
       <!-- Navigation (comprehensive, role-based) -->
@@ -61,13 +59,14 @@ import jwtDecode from 'jwt-decode';
 import LogoTitle from '@/components/shared/LogoText.vue';
 // eslint-disable-next-line vue/no-unused-components
 import Avatar from '@/components/layout/partials/nav/Avatar.vue';
+// eslint-disable-next-line no-unused-vars
 import RoleIndicator from '@/components/shared/RoleIndicator.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
 
 export default {
   name: 'AppDrawer',
   // eslint-disable-next-line vue/no-unused-components
-  components: { LogoTitle, Avatar, RoleIndicator },
+  components: { LogoTitle, Avatar },
   data: () => ({
     navigationItems: [
       // Common: Dashboard for all roles
@@ -231,7 +230,14 @@ export default {
         iconColor: '#0ea5e9',
       },
 
-      // === SYSTEM ADMIN PORTAL ===
+      // === ADMIN PORTAL ===
+      {
+        icon: 'mdi-file-document-check',
+        text: 'License Review',
+        link: { name: 'LicenseReview' },
+        roles: ['ADMIN'],
+        iconColor: '#f59e0b',
+      },
       {
         icon: 'mdi-account-group',
         text: 'Users Report',
@@ -302,7 +308,8 @@ export default {
   flex-direction: column;
   z-index: 20;
   right: 0;
-  box-shadow: -4px 0 32px rgba(34,197,94,0.06);
+  box-shadow: -4px 0 32px rgba(46, 125, 50, 0.12);
+  background: linear-gradient(135deg, rgba(247, 245, 238, 0.95), rgba(230, 244, 234, 0.95));
 }
 .app-drawer-bg {
   position: absolute;
@@ -314,17 +321,17 @@ export default {
   position: absolute;
   border-radius: 50%;
   filter: blur(48px);
-  opacity: 0.18;
+  opacity: 0.15;
   animation: app-drawer-float 18s ease-in-out infinite;
 }
 .app-drawer-shape.shape-1 {
   width: 180px; height: 180px; top: -40px; right: -40px;
-  background: radial-gradient(circle at 70% 30%, #a7f3d0 0%, #38bdf8 80%, transparent 100%);
+  background: radial-gradient(circle at 70% 30%, #bbf7d0 0%, #86efac 80%, transparent 100%);
   animation-delay: 0s;
 }
 .app-drawer-shape.shape-2 {
   width: 120px; height: 120px; bottom: 10%; right: 10%;
-  background: radial-gradient(circle at 80% 80%, #c7d2fe 0%, #f0abfc 80%, transparent 100%);
+  background: radial-gradient(circle at 80% 80%, #dcfce7 0%, #bbf7d0 80%, transparent 100%);
   animation-delay: 2.5s;
 }
 @keyframes app-drawer-float {
@@ -338,11 +345,12 @@ export default {
   display: flex;
   flex-direction: column;
   background: rgba(255,255,255,0.92);
-  border-left: 1px solid rgba(34,197,94,0.08);
-  box-shadow: -4px 0 32px rgba(34,197,94,0.06);
-  backdrop-filter: blur(12px) saturate(160%);
+  border-left: 2px solid rgba(230, 225, 195, 0.4);
+  box-shadow: -4px 0 32px rgba(46, 125, 50, 0.08);
+  backdrop-filter: blur(16px) saturate(160%);
   border-top-right-radius: 24px;
   overflow: hidden;
+  border-image: linear-gradient(135deg, rgba(46, 125, 50, 0.2), rgba(76, 175, 80, 0.2)) 1;
 }
 .app-drawer-header {
   display: flex;
@@ -350,9 +358,11 @@ export default {
   align-items: flex-start;
   gap: 12px;
   padding: 24px 18px 12px 18px;
-  border-bottom: 1px solid rgba(34,197,94,0.08);
+  border-bottom: 2px solid rgba(230, 225, 195, 0.4);
   background: rgba(255,255,255,0.98);
   z-index: 2;
+  backdrop-filter: blur(8px);
+  border-top-right-radius: 24px;
 }
 .app-brand-row {
   display: flex;
@@ -363,25 +373,27 @@ export default {
   margin-bottom: 2px;
 }
 .app-portal-badge {
-  background: #16a34a;
+  background: linear-gradient(135deg, #2e7d32, #4caf50);
   color: #fff;
   font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 2px 10px;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 4px 12px;
   margin-left: 4px;
   letter-spacing: 0.02em;
-  box-shadow: 0 1px 4px rgba(34,197,94,0.08);
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 .app-user-mini {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.7);
-  /* border: 1px solid rgba(34,197,94,0.08);*/
-  box-shadow: 0 1px 4px rgba(34,197,94,0.04);
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(247, 245, 238, 0.9));
+  border: 2px solid rgba(230, 225, 195, 0.4);
+  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.08);
+  backdrop-filter: blur(8px);
 }
 .app-user-info {
   display: flex;
@@ -389,81 +401,117 @@ export default {
   gap: 2px;
 }
 .app-user-name {
-  font-weight: 700;
-  font-size: 1.01rem;
-  color: #0f172a;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #2e7d32;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 .app-role-chip {
   display: inline-flex;
   align-items: center;
   font-size: 0.82rem;
-  color: #334155;
-  background: rgba(34,197,94,0.08);
-  border: 1px solid rgba(34,197,94,0.08);
-  padding: 2px 10px;
+  color: #4caf50;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(46, 125, 50, 0.1));
+  border: 2px solid rgba(76, 175, 80, 0.2);
+  padding: 4px 12px;
   border-radius: 999px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.08);
 }
 .app-nav-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 18px 0 0 0;
+  gap: 4px;
+  padding: 10px 0 0 0;
   flex: 1 1 auto;
 }
 .app-nav-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px 24px 10px 24px;
-  border-radius: 12px;
-  color: #222;
+  gap: 16px;
+  padding: 6px 12px 6px 12px;
+  border-radius: 6px;
+  color: #2e7d32;
   font-weight: 500;
-  font-size: 1.01rem;
+  font-family: 'Arial, sans-serif';
+  font-size: 1.02rem;
   text-decoration: none;
-  transition: background 0.18s, color 0.18s;
+  transition: all 0.3s ease;
+  margin: 0 8px;
+  border: 2px solid transparent;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  letter-spacing: 0.01em;
 }
 .app-nav-item:hover {
-  background: rgba(34,197,94,0.07);
-  color: #16a34a;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(46, 125, 50, 0.1));
+  color: #2e7d32;
+  border-color: rgba(76, 175, 80, 0.3);
+  /* transform: translateX(4px); */
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.12);
 }
 .app-nav-active {
-  background: rgba(34,197,94,0.13) !important;
-  color: #16a34a !important;
-  font-weight: 700;
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.15), rgba(76, 175, 80, 0.15)) !important;
+  color: #2e7d32 !important;
+  font-weight: 800 !important;
+  border-color: rgba(46, 125, 50, 0.4) !important;
+  box-shadow: 0 8px 25px rgba(46, 125, 50, 0.15) !important;
+  /* transform: translateX(6px); */
 }
 .app-nav-icon {
   display: flex;
   align-items: center;
-  font-size: 1.3em;
+  font-size: 1.4em;
+  color: #4caf50;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.app-nav-item:hover .app-nav-icon {
+  color: #2e7d32;
+  transform: scale(1.1);
+}
+.app-nav-active .app-nav-icon {
+  color: #2e7d32 !important;
 }
 .app-nav-text {
-  font-size: 1.01rem;
-  font-weight: 500;
+  font-size: 1.02rem;
+  font-weight: light;
   letter-spacing: 0.01em;
+  line-height: 1.3;
 }
 .app-feedback-section {
-  padding: 18px 18px 18px 18px;
+  padding: 20px 18px 20px 18px;
   margin-top: auto;
-  border-top: 1px solid rgba(34,197,94,0.08);
-  background: rgba(255,255,255,0.98);
-  box-shadow: 0 -2px 8px rgba(34,197,94,0.03);
+  border-top: 2px solid rgba(230, 225, 195, 0.4);
+  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(247, 245, 238, 0.98));
+  box-shadow: 0 -4px 16px rgba(46, 125, 50, 0.06);
+  backdrop-filter: blur(8px);
 }
 .app-feedback-btn {
-  font-weight: 600;
-  font-size: 1.01rem;
+  font-weight: 700;
+  font-size: 1.02rem;
   letter-spacing: 0.01em;
-  border-radius: 10px;
-  padding: 10px 0;
+  border-radius: 14px;
+  padding: 12px 0;
   text-transform: none;
+  background: linear-gradient(135deg, #2e7d32, #4caf50) !important;
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+.app-feedback-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3) !important;
+  background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
 }
 @media (max-width: 1200px) {
   .app-drawer-wrap { min-width: 220px; }
 }
 @media (max-width: 960px) {
   .app-drawer-wrap { min-width: 0; max-width: 100vw; }
-  .app-nav-text { font-size: 0.95rem; }
-  .app-nav-item { min-height: 38px; }
+  .app-nav-text { font-size: 0.98rem; }
+  .app-nav-item { min-height: 42px; padding: 12px 20px; }
 }
 </style>
-}

@@ -1,8 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <div class="signup-background tw-flex tw-border-2 tw-justify-center tw-items-center">
-        <v-container class="fill-height" fluid>
+      <div class="signup-background tw-flex tw-border-2 tw-justify-center tw-items-center tw-pt-4">
           <div>
             <v-card
               class="pa-6 signup-card"
@@ -126,7 +125,6 @@
               </v-card-text>
             </v-card>
           </div>
-        </v-container>
       </div>
     </v-main>
   </v-app>
@@ -299,7 +297,6 @@ export default {
 <style scoped>
 .signup-background {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  min-height: 100vh;
 }
 
 .signup-card {

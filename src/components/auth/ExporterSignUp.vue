@@ -1,5 +1,5 @@
 <template>
-    <v-app class="tw-p-8 tw-bg-white tw-rounded-2xl tw-mx-auto tw-mt-3 ">
+    <v-app class="tw-p-8 tw-bg-white tw-rounded-2xl tw-max-w-5xl tw-mx-auto tw-mt-3 ">
         <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-8">
             <!-- Personal Details Section -->
             <div class="tw-flex-1 tw-flex tw-flex-col tw-gap-4">
@@ -55,18 +55,6 @@
                     class="modern-input tw-w-full"
                     aria-label="Company Name"
                     placeholder="e.g. Exporters Ltd"
-                />
-                <v-text-field
-                    label="License ID"
-                    dense
-                    v-model="form.licenseId"
-                    :outlined="false"
-                    :filled="true"
-                    :rules="[required('License Id')]"
-                    :hide-details="false"
-                    class="modern-input tw-w-full"
-                    aria-label="License ID"
-                    placeholder="e.g. LIC123456"
                 />
             </div>
             <!-- Password Section -->
@@ -145,7 +133,6 @@ export default {
         phoneNumber: '',
         email: '',
         businessName: '',
-        licenseId: '',
         password: '',
         terms: false,
         fullPhoneNumber: '',
@@ -165,7 +152,6 @@ export default {
             password: this.form.password,
           },
           companyDesc: '',
-          licenseId: this.form.licenseId,
           businessType: '',
         };
         const saveResponse = await axios.post('/api/auth/register/exporter', userPayload);

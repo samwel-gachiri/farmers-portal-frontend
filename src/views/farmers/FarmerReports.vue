@@ -385,7 +385,6 @@ export default {
         this.hasYieldData = this.yieldRecords.length > 0;
         this.hasAccuracyData = this.yieldRecords.some((record) => record.accuracy !== null);
       } catch (error) {
-        // console.error('Error loading reports data:', error);
         this.$toast.error('Failed to load reports data');
       } finally {
         this.loadingTable = false;
@@ -396,32 +395,27 @@ export default {
       if (!this.hasYieldData && !this.hasAccuracyData) return;
 
       this.loadingCharts = true;
-      try {
-        const params = {
-          startDate: this.dateRange.start,
-          endDate: this.dateRange.end,
-        };
+      const params = {
+        startDate: this.dateRange.start,
+        endDate: this.dateRange.end,
+      };
 
-        const response = await axios.get(`/api/farmers/${getCurrentUserId()}/reports/charts`, { params });
-        const chartData = response.data;
+      const response = await axios.get(`/api/farmers/${getCurrentUserId()}/reports/charts`, { params });
+      const chartData = response.data;
 
-        await this.$nextTick();
+      await this.$nextTick();
 
-        // Update yield trends chart
-        if (this.hasYieldData && chartData.yieldTrends) {
-          this.yieldTrendsOptions.xaxis.categories = chartData.yieldTrends.labels || [];
-          this.yieldTrendsSeries[0].data = chartData.yieldTrends.values || [];
-        }
-
-        // Update accuracy chart
-        if (this.hasAccuracyData && chartData.accuracy) {
-          this.accuracySeries = [chartData.accuracy.accurate || 0, chartData.accuracy.inaccurate || 0];
-        }
-      } catch (error) {
-        // console.error('Error loading chart data:', error);
-      } finally {
-        this.loadingCharts = false;
+      // Update yield trends chart
+      if (this.hasYieldData && chartData.yieldTrends) {
+        this.yieldTrendsOptions.xaxis.categories = chartData.yieldTrends.labels || [];
+        this.yieldTrendsSeries[0].data = chartData.yieldTrends.values || [];
       }
+
+      // Update accuracy chart
+      if (this.hasAccuracyData && chartData.accuracy) {
+        this.accuracySeries = [chartData.accuracy.accurate || 0, chartData.accuracy.inaccurate || 0];
+      }
+      this.loadingCharts = false;
     },
 
     async exportToPDF() {
@@ -447,7 +441,6 @@ export default {
 
         this.$toast.success('PDF report exported successfully');
       } catch (error) {
-        // console.error('Error exporting PDF:', error);
         this.$toast.error('Failed to export PDF report');
       } finally {
         this.exportingPDF = false;
@@ -477,7 +470,6 @@ export default {
 
         this.$toast.success('CSV report exported successfully');
       } catch (error) {
-        // console.error('Error exporting CSV:', error);
         this.$toast.error('Failed to export CSV report');
       } finally {
         this.exportingCSV = false;

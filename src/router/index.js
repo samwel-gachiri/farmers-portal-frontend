@@ -1,24 +1,25 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+/* eslint-disable */
+import Vue from "vue";
+import VueRouter from "vue-router";
 // eslint-disable-next-line import/extensions
-import store from '@/store';
-import VueMeta from 'vue-meta';
-import Landing from '@/views/Landing.vue';
-import Connection from '@/views/errors/Connection.vue';
-import Home from '@/views/Home.vue';
-import Offline from '@/views/Offline.vue';
+import store from "@/store";
+import VueMeta from "vue-meta";
+import Landing from "@/views/Landing.vue";
+import Connection from "@/views/errors/Connection.vue";
+import Home from "@/views/Home.vue";
+import Offline from "@/views/Offline.vue";
 
 Vue.use(VueMeta);
 
 Vue.use(VueRouter);
 
 const ifNotAuthenticated = (_to, _from, next) => {
-  if (!store.getters['auth/isAuthenticated']) {
+  if (!store.getters["auth/isAuthenticated"]) {
     next();
     return;
   }
   // eslint-disable-next-line sonarjs/no-duplicate-string
-  next('/dashboard');
+  next("/dashboard");
 };
 //
 // const ifAuthenticated = (_to, _from, next) => {
@@ -31,198 +32,242 @@ const ifNotAuthenticated = (_to, _from, next) => {
 
 const routes = [
   {
-    path: '/harvest-yields',
-    name: 'HarvestAndYields',
-    component: () => import('../views/HarvestAndYields.vue'),
+    path: "/harvest-yields",
+    name: "HarvestAndYields",
+    component: () => import("../views/HarvestAndYields.vue"),
     meta: {
-      title: 'Harvest & Yields',
+      title: "Harvest & Yields",
       requiresAuth: true,
-      roles: ['FARMER'],
-      description: 'Manage harvests, yields, and analytics',
-      icon: 'mdi-food-apple',
+      roles: ["FARMER"],
+      description: "Manage harvests, yields, and analytics",
+      icon: "mdi-food-apple",
     },
   },
   {
-    path: '/yield-recording',
-    name: 'YieldRecording',
-    component: () => import('../views/YieldRecording.vue'),
+    path: "/yield-recording",
+    name: "YieldRecording",
+    component: () => import("../views/YieldRecording.vue"),
     meta: {
-      title: 'Yield Recording',
+      title: "Yield Recording",
       requiresAuth: true,
-      roles: ['FARMER'],
-      description: 'Record and manage produce yields',
-      icon: 'mdi-chart-bar',
+      roles: ["FARMER"],
+      description: "Record and manage produce yields",
+      icon: "mdi-chart-bar",
     },
   },
   {
-    path: '/harvest-analytics',
-    name: 'HarvestAnalytics',
-    component: () => import('../views/HarvestAnalytics.vue'),
+    path: "/harvest-analytics",
+    name: "HarvestAnalytics",
+    component: () => import("../views/HarvestAnalytics.vue"),
     meta: {
-      title: 'Harvest Analytics',
+      title: "Harvest Analytics",
       requiresAuth: true,
-      roles: ['FARMER'],
-      description: 'View analytics and insights for harvests and yields',
-      icon: 'mdi-chart-areaspline',
+      roles: ["FARMER"],
+      description: "View analytics and insights for harvests and yields",
+      icon: "mdi-chart-areaspline",
     },
   },
   {
-    path: '/',
-    name: 'Landing',
+    path: "/",
+    name: "Landing",
     // beforeEnter: ifAuthenticated,
     component: Landing,
     meta: {
-      title: 'AgriBackup - company',
-      metaDescription: 'Farmers & Buyers Connection platform',
+      title: "AgriBackup - company",
+      metaDescription: "Farmers & Buyers Connection platform",
     },
   },
   {
-    path: '/pickup-routes',
-    name: 'PickupRoutes',
-    component: () => import('../views/PickupRoutes.vue'),
+    path: "/pickup-routes",
+    name: "PickupRoutes",
+    component: () => import("../views/PickupRoutes.vue"),
   },
   {
-    path: '/home',
-    name: 'Home',
+    path: "/home",
+    name: "Home",
     // beforeEnter: ifAuthenticated,
     component: Home,
   },
   {
-    path: '/signin',
-    name: 'SignIn',
+    path: "/signin",
+    name: "SignIn",
     // for before enter, i would like for it to check the query mode and if mode is self it can redirect to dashboard
     beforeEnter: (_to, _from, next) => {
       // get the query mode
       const queryMode = _to.query.mode;
-      if (!store.getters['auth/isAuthenticated'] || queryMode === 'exporter') {
+      if (!store.getters["auth/isAuthenticated"] || queryMode === "exporter") {
         next();
         return;
       }
-      next('/dashboard');
+      next("/dashboard");
     },
     // eslint-disable-next-line consistent-return
-    component: () => import('../views/auth/SignIn.vue'),
+    component: () => import("../views/auth/SignIn.vue"),
   },
   {
-    path: '/signup',
-    name: 'SignUp',
+    path: "/signup",
+    name: "SignUp",
     beforeEnter: ifNotAuthenticated,
-    component: () => import('../views/auth/SignUp.vue'),
+    component: () => import("../views/auth/SignUp.vue"),
   },
   {
-    path: '/forgot-password',
-    name: 'ForgotPassword',
-    component: () => import('../views/auth/ForgotPassword.vue'),
+    path: "/forgot-password",
+    name: "ForgotPassword",
+    component: () => import("../views/auth/ForgotPassword.vue"),
   },
   {
-    path: '/produces/:farmerId',
-    name: 'Produces',
-    component: () => import('../views/Produces.vue'),
+    path: "/produces/:farmerId",
+    name: "Produces",
+    component: () => import("../views/Produces.vue"),
   },
   {
-    path: '/add-produce',
-    name: 'AddFarmerProduce',
-    component: () => import('../views/AddFarmerProduce.vue'),
+    path: "/add-produce",
+    name: "AddFarmerProduce",
+    component: () => import("../views/AddFarmerProduce.vue"),
   },
   {
-    path: '/my-farm/:farmerId',
-    name: 'MyFarm',
-    component: () => import('../views/Produces.vue'),
+    path: "/my-farm/:farmerId",
+    name: "MyFarm",
+    component: () => import("../views/Produces.vue"),
   },
   {
-    path: '/listings',
-    name: 'Listings',
-    component: () => import('../views/Listings.vue'),
+    path: "/listings",
+    name: "Listings",
+    component: () => import("../views/Listings.vue"),
   },
   {
-    path: '/requests',
-    name: 'Requests',
-    component: () => import('../views/Requests.vue'),
+    path: "/requests",
+    name: "Requests",
+    component: () => import("../views/Requests.vue"),
   },
   {
-    path: '/buyer-orders',
-    name: 'BuyerOrders',
-    component: () => import('../views/buyers/BuyerOrders.vue'),
+    path: "/buyer-orders",
+    name: "BuyerOrders",
+    component: () => import("../views/buyers/BuyerOrders.vue"),
   },
   {
-    path: '/farmer-orders',
-    name: 'FarmerOrders',
-    component: () => import('../views/farmer/FarmerOrders.vue'),
+    path: "/farmer-orders",
+    name: "FarmerOrders",
+    component: () => import("../views/farmer/FarmerOrders.vue"),
   },
   {
-    path: '/browse',
-    name: 'BrowseListings',
-    component: () => import('../views/buyers/BrowseListings.vue'),
+    path: "/browse",
+    name: "BrowseListings",
+    component: () => import("../views/buyers/BrowseListings.vue"),
   },
   {
-    path: '/my-farmers',
-    name: 'MyFarmers',
-    component: () => import('../views/buyers/MyFarmers.vue'),
+    path: "/my-farmers",
+    name: "MyFarmers",
+    component: () => import("../views/buyers/MyFarmers.vue"),
   },
   {
-    path: '/pickup-planning',
-    name: 'PickupPlanning',
-    component: () => import('../views/buyers/PickupPlanning.vue'),
+    path: "/pickup-planning",
+    name: "PickupPlanning",
+    component: () => import("../views/buyers/PickupPlanning.vue"),
   },
   {
-    path: '/buyer-analytics',
-    name: 'BuyerAnalytics',
-    component: () => import('../views/buyers/BuyerAnalytics.vue'),
+    path: "/buyer-analytics",
+    name: "BuyerAnalytics",
+    component: () => import("../views/buyers/BuyerAnalytics.vue"),
   },
   {
-    path: '/browse-requests',
-    name: 'BrowseRequests',
-    component: () => import('../views/farmer/BrowseRequests.vue'),
+    path: "/browse-requests",
+    name: "BrowseRequests",
+    component: () => import("../views/farmer/BrowseRequests.vue"),
   },
   {
-    path: '/users-report',
-    name: 'UsersReport',
-    component: () => import('../views/admin/UsersReport.vue'),
+    path: "/admin/login",
+    name: "AdminLogin",
+    component: () => import("../views/admin/AdminLogin.vue"),
+    meta: {
+      title: "Admin Login",
+      requiresAuth: false,
+      public: true,
+    },
   },
   {
-    path: '/order-report',
-    name: 'OrdersReport',
-    component: () => import('../views/admin/OrdersReport.vue'),
+    path: "/admin/dashboard",
+    name: "AdminDashboard",
+    component: () => import("../components/layout/dashboard/AdminDashboard.vue"),
+    meta: {
+      title: "Admin Dashboard",
+      requiresAuth: true,
+      roles: ["ADMIN"],
+      icon: "mdi-shield-account",
+    },
   },
   {
-    path: '/zone-management',
-    name: 'ZoneManagement',
-    component: () => import('../views/exporter/ZoneManagement.vue'),
+    path: "/admin/licenses",
+    name: "LicenseReview",
+    component: () => import("../views/admin/LicenseReview.vue"),
+    meta: {
+      title: "License Review",
+      requiresAuth: true,
+      roles: ["ADMIN"],
+      icon: "mdi-file-document-check",
+    },
   },
   {
-    path: '/exporter/system-admins',
-    name: 'SystemAdminsManagement',
-    component: () => import('../views/exporter/SystemAdminsManagement.vue'),
+    path: "/admin/users-report",
+    name: "UsersReport",
+    component: () => import("../views/admin/UsersReport.vue"),
+    meta: {
+      title: "Users Report",
+      requiresAuth: true,
+      roles: ["ADMIN"],
+      icon: "mdi-account-group",
+    },
   },
   {
-    path: '/exporter/zone-supervisors',
-    name: 'ZoneSupervisorsManagement',
-    component: () => import('../views/exporter/ZoneSupervisorsManagement.vue'),
+    path: "/admin/orders-report",
+    name: "OrdersReport",
+    component: () => import("../views/admin/OrdersReport.vue"),
+    meta: {
+      title: "Orders Report",
+      requiresAuth: true,
+      roles: ["ADMIN"],
+      icon: "mdi-shopping",
+    },
   },
   {
-    path: '/exporter/farmers',
-    name: 'FarmersManagement',
-    component: () => import('../views/exporter/FarmersManagement.vue'),
+    path: "/zone-management",
+    name: "ZoneManagement",
+    component: () => import("../views/exporter/ZoneManagement.vue"),
   },
   {
-    path: '/exporter/pickup-schedules',
-    name: 'PickupSchedulesManagement',
-    component: () => import('../views/exporter/PickupSchedulesManagement.vue'),
+    path: "/exporter/system-admins",
+    name: "SystemAdminsManagement",
+    component: () => import("../views/exporter/SystemAdminsManagement.vue"),
   },
   {
-    path: '/exporter/system-analytics',
-    name: 'SystemAnalytics',
-    component: () => import('../views/exporter/SystemAnalytics.vue'),
+    path: "/exporter/zone-supervisors",
+    name: "ZoneSupervisorsManagement",
+    component: () => import("../views/exporter/ZoneSupervisorsManagement.vue"),
   },
   {
-    path: '/exporter/zone-comments',
-    name: 'ZoneCommentsManagement',
-    component: () => import('../views/exporter/ZoneCommentsManagement.vue'),
+    path: "/exporter/farmers",
+    name: "FarmersManagement",
+    component: () => import("../views/exporter/FarmersManagement.vue"),
   },
   {
-    path: '/exporter/profile',
-    name: 'ExporterProfile',
-    component: () => import('../views/exporter/ExporterProfile.vue'),
+    path: "/exporter/pickup-schedules",
+    name: "PickupSchedulesManagement",
+    component: () => import("../views/exporter/PickupSchedulesManagement.vue"),
+  },
+  {
+    path: "/exporter/system-analytics",
+    name: "SystemAnalytics",
+    component: () => import("../views/exporter/SystemAnalytics.vue"),
+  },
+  {
+    path: "/exporter/zone-comments",
+    name: "ZoneCommentsManagement",
+    component: () => import("../views/exporter/ZoneCommentsManagement.vue"),
+  },
+  {
+    path: "/exporter/profile",
+    name: "ExporterProfile",
+    component: () => import("../views/exporter/ExporterProfile.vue"),
   },
   // {
   //   path: '/confirm-otp',
@@ -243,41 +288,41 @@ const routes = [
   //   component: () => import('../views/auth/password/ForgotPassword'),
   // },
   {
-    path: '/reset-password',
-    name: 'ResetPassword',
-    component: () => import('@/views/auth/ResetPassoword.vue'),
+    path: "/reset-password",
+    name: "ResetPassword",
+    component: () => import("@/views/auth/ResetPassoword.vue"),
   },
   {
-    path: '/dashboard',
-    name: 'Dashboard',
+    path: "/dashboard",
+    name: "Dashboard",
     // beforeEnter: ifAuthenticated,
-    component: () => import('../views/Dashboard.vue'),
+    component: () => import("../views/Dashboard.vue"),
   },
   {
-    path: '/farm-ai',
-    name: 'FarmAI',
-    component: () => import('../views/FarmAI.vue'),
+    path: "/farm-ai",
+    name: "FarmAI",
+    component: () => import("../views/FarmAI.vue"),
   },
   {
-    path: '/community',
-    name: 'Community',
+    path: "/community",
+    name: "Community",
     // beforeEnter: ifAuthenticated,
-    component: () => import('../views/Community.vue'),
+    component: () => import("../views/Community.vue"),
   },
   {
-    path: '/farmer-report',
-    name: 'FarmerReports',
-    component: () => import('../views/report/farmer_reports.vue'),
+    path: "/farmer-report",
+    name: "FarmerReports",
+    component: () => import("../views/report/farmer_reports.vue"),
   },
   {
-    path: '/buyer-report',
-    name: 'BuyerReport',
-    component: () => import('../views/report/buyer_report.vue'),
+    path: "/buyer-report",
+    name: "BuyerReport",
+    component: () => import("../views/report/buyer_report.vue"),
   },
   {
-    path: '/contact',
-    name: 'Contact',
-    component: () => import('../views/Contact.vue'),
+    path: "/contact",
+    name: "Contact",
+    component: () => import("../views/Contact.vue"),
   },
   // {
   //   path: '/buy-cover',
@@ -335,36 +380,36 @@ const routes = [
   // },
   // ? last route for pwa default
   {
-    path: '/index.html', // or '*' this is for PWA
+    path: "/index.html", // or '*' this is for PWA
     beforeEnter: (_to, _from, next) => {
-      next('/');
+      next("/");
     },
   },
   {
-    path: '/error',
-    name: 'ServerError',
-    component: () => import('../views/errors/Error50x.vue'),
+    path: "/error",
+    name: "ServerError",
+    component: () => import("../views/errors/Error50x.vue"),
   },
   {
-    path: '/no-internet',
-    name: 'NoInternet',
+    path: "/no-internet",
+    name: "NoInternet",
     component: Connection,
   },
   {
-    path: '/offline',
-    name: 'Offline',
+    path: "/offline",
+    name: "Offline",
     component: Offline,
     meta: { public: true },
   },
   {
-    path: '*',
-    name: 'NotFound',
-    component: () => import('../views/errors/Error404.vue'),
+    path: "*",
+    name: "NotFound",
+    component: () => import("../views/errors/Error404.vue"),
   },
 ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
   // eslint-disable-next-line no-unused-vars
   scrollBehavior(to, _from, _savedPosition) {

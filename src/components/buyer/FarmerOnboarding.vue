@@ -372,7 +372,6 @@ export default {
           produceTypes: farmer.produceTypes,
         }));
       } catch (error) {
-        // console.error('Error searching farmers:', error);
         this.$toast.error('Failed to search farmers. Please try again.');
         this.searchResults = [];
       } finally {
@@ -401,7 +400,6 @@ export default {
         this.$toast.success(`Successfully connected to ${this.selectedFarmer.fullName}!`);
         this.$emit('farmer-added');
       } catch (error) {
-        // console.error('Error connecting to farmer:', error);
         const message = error.response?.data?.message || 'Failed to connect to farmer. Please try again.';
         this.$toast.error(message);
       } finally {
@@ -429,7 +427,6 @@ export default {
         this.showInviteDialog = false;
         this.resetInviteForm();
       } catch (error) {
-        // console.error('Error sending invitation:', error);
         this.$toast.error('Failed to send invitation. Please try again.');
       } finally {
         this.sendingInvite = false;

@@ -7,7 +7,7 @@
   app
   :temporary="isMobile"
     >
-  <drawer />
+  <drawer @openFeedback="handleOpenFeedback" />
     </v-navigation-drawer>
 
     <!-- App Bar -->
@@ -66,6 +66,9 @@
     <!-- AI Assistant Dialog -->
     <ai-assistant ref="assistant" />
 
+    <!-- Feedback Dialog -->
+    <feedback-dialog ref="feedbackDialog" />
+
     <!-- Screen Idle Component -->
     <screen-idle :dialog="isAppIdle" />
   </v-app>
@@ -81,6 +84,7 @@ import NotificationBell from '@/components/layout/partials/nav/NotificationBell.
 import AiAssistant from '@/components/ai/AiAssistant.vue';
 // Import the new BottomNav component
 import BottomNav from '@/components/layout/partials/BottomNav.vue';
+import FeedbackDialog from '@/components/shared/FeedbackDialog.vue';
 
 export default {
   name: 'FuturisticLayout',
@@ -91,6 +95,7 @@ export default {
     NotificationBell,
     AiAssistant,
     BottomNav,
+    FeedbackDialog,
   },
   data: () => ({
     drawer: false,
@@ -115,6 +120,10 @@ export default {
     openSearch() {
       // Placeholder for a future command palette
       this.$toast.info('Search coming soon');
+    },
+    handleOpenFeedback() {
+      // Open the feedback dialog
+      this.$refs.feedbackDialog.openDialog();
     },
   },
   mounted() {
