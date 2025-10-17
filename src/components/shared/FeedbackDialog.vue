@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import FeedbackService from '@/services/feedback.service.js';
+import axios from 'axios';
 
 export default {
   name: 'FeedbackDialog',
@@ -125,7 +125,7 @@ export default {
       this.submitting = true;
 
       try {
-        await FeedbackService.submitFeedback(this.feedback);
+        await this.submitFeedbackRequest(this.feedback);
         this.$toast.success('Thank you for your feedback! We appreciate your input.');
         this.closeDialog();
       } catch (error) {
@@ -133,6 +133,46 @@ export default {
       } finally {
         this.submitting = false;
       }
+    },
+
+    async submitFeedbackRequest(feedbackData) {
+      const response = await axios.post('/api/feature-requests', {
+        requestType: feedbackData.category,
+        message: `${feedbackData.title}\n\n${feedbackData.description}`,
+        userId: this.getCurrentUserId(),
+        userSection: this.getCurrentUserSection(),
+        aiGenerated: false,
+      });
+
+      return response.data;
+    },
+
+    getCurrentUserId() {
+      // Get user ID from store or local storage
+      const token = localStorage.getItem('token') || this.$store?.state?.auth?.token;
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          return payload.user?.id || payload.sub || 'anonymous';
+        } catch (e) {
+          return 'anonymous';
+        }
+      }
+      return 'anonymous';
+    },
+
+    getCurrentUserSection() {
+      // Get current user role/section
+      const token = localStorage.getItem('token') || this.$store?.state?.auth?.token;
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          return payload.role || payload.user?.role || 'general';
+        } catch (e) {
+          return 'general';
+        }
+      }
+      return 'general';
     },
   },
 };
