@@ -118,7 +118,7 @@ const routes = [
   {
     path: "/produces/:farmerId",
     name: "Produces",
-    component: () => import("../views/Produces.vue"),
+    component: () => import("../views/farm.vue"),
   },
   {
     path: "/add-produce",
@@ -128,7 +128,7 @@ const routes = [
   {
     path: "/my-farm/:farmerId",
     name: "MyFarm",
-    component: () => import("../views/Produces.vue"),
+    component: () => import("../views/farm.vue"),
   },
   {
     path: "/listings",

@@ -53,8 +53,8 @@
       <ellipse cx="1240" cy="180" rx="80" ry="24" fill="#b6e4a3" opacity="0.18"/>
     </svg>
 
-    <!-- Above the Fold -->
-    <section class="tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-px-10 tw-pt-20 tw-pb-12 tw-max-w-6xl tw-mx-auto">
+  <!-- Above the Fold -->
+  <section class="reveal tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-px-10 tw-pt-20 tw-pb-12 tw-max-w-6xl tw-mx-auto">
       <div class="tw-flex-1 tw-mb-12 md:tw-mb-0">
         <h1 class="tw-text-4xl md:tw-text-6xl tw-font-bold tw-text-green-900 tw-mb-6 tw-drop-shadow">
           Connect Directly to Buyers and Boost Your Farm’s Profits
@@ -89,7 +89,7 @@
     </section>
 
     <!-- For Farmers -->
-      <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row tw-items-start tw-border-2 tw-border-[#b6a16b] tw-w-2/3">
+  <section class="reveal tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row tw-items-start tw-border-2 tw-border-[#b6a16b] tw-w-2/3">
         <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
           <h2 class="tw-text-3xl tw-font-semibold tw-text-[#3d5a2a] tw-mb-4">For Farmers</h2>
           <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
@@ -115,7 +115,7 @@
       </section>
 
     <!-- For Buyers -->
-    <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row-reverse tw-items-center">
+  <section class="reveal tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row-reverse tw-items-center">
       <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
         <h2 class="tw-text-3xl tw-font-semibold tw-text-[#2a4f6b] tw-mb-4">For Buyers</h2>
         <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
@@ -143,7 +143,7 @@
 
     <!-- For Exporters -->
     <div class="tw-w-full tw-flex tw-justify-start tw-items-start">
-      <section class="tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row-reverse tw-items-center">
+  <section class="reveal tw-bg-[#f7f5ee] tw-py-12 tw-px-10 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-lg tw-mb-12 tw-flex tw-flex-col md:tw-flex-row-reverse tw-items-center">
         <div class="tw-flex-1 tw-mb-8 md:tw-mb-0">
           <h2 class="tw-text-3xl tw-font-semibold tw-text-[#b6a16b] tw-mb-4">For Exporters</h2>
           <ul class="tw-list-disc tw-list-inside tw-text-lg tw-text-[#6b4f2c] tw-mb-6">
@@ -220,6 +220,38 @@
       </div>
     </section>
 
+    <!-- Screenshots Gallery -->
+  <section class="reveal tw-max-w-6xl tw-mx-auto tw-px-6 tw-py-12 tw-mb-12">
+      <h2 class="tw-text-3xl tw-font-semibold tw-text-green-800 tw-mb-6 tw-text-center">AgriBackup in Action</h2>
+      <p class="tw-text-center tw-text-[#6b4f2c] tw-mb-8">A quick preview of the AgriBackup desktop experience — farm management, reports, and mapping.</p>
+
+      <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-6">
+        <div class="tw-relative tw-rounded-xl tw-overflow-hidden tw-bg-white tw-shadow-lg">
+          <img src="@/assets/images/screenshots/gis_on_farm.png" alt="GIS on Farm" class="tw-w-full tw-h-56 md:tw-h-64 tw-object-cover" />
+          <div class="tw-p-4">
+            <h3 class="tw-text-lg tw-font-semibold tw-text-green-800">Field Mapping</h3>
+            <p class="tw-text-sm tw-text-[#6b4f2c] tw-mt-1">Visualize your farm zones and GPS boundaries.</p>
+          </div>
+        </div>
+
+        <div class="tw-relative tw-rounded-xl tw-overflow-hidden tw-bg-white tw-shadow-lg">
+          <img src="@/assets/images/screenshots/zones.jpg" alt="Zone Management" class="tw-w-full tw-h-56 md:tw-h-64 tw-object-cover" />
+          <div class="tw-p-4">
+            <h3 class="tw-text-lg tw-font-semibold tw-text-green-800">Zone Management</h3>
+            <p class="tw-text-sm tw-text-[#6b4f2c] tw-mt-1">Organize fields by zones for efficient operations.</p>
+          </div>
+        </div>
+
+        <div class="tw-relative tw-rounded-xl tw-overflow-hidden tw-bg-white tw-shadow-lg">
+          <img src="@/assets/images/screenshots/reports.jpg" alt="Reports" class="tw-w-full tw-h-56 md:tw-h-64 tw-object-cover" />
+          <div class="tw-p-4">
+            <h3 class="tw-text-lg tw-font-semibold tw-text-green-800">Reports & Analytics</h3>
+            <p class="tw-text-sm tw-text-[#6b4f2c] tw-mt-1">Generate insights for yields, pickups and sales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Testimonials & Partners -->
     <section v-if="false" class="tw-bg-gray-50 tw-py-10 tw-px-6 tw-max-w-6xl tw-mx-auto tw-rounded-xl tw-shadow-md tw-mb-8">
       <h2 class="tw-text-2xl tw-font-semibold tw-text-green-700 tw-mb-6">What Our Users Say</h2>
@@ -237,6 +269,25 @@
         <!-- <img src="@/assets/images/partner-logo1.png" alt="Partner Logo 1" class="tw-h-10 tw-object-contain" />
         <img src="@/assets/images/partner-logo2.png" alt="Partner Logo 2" class="tw-h-10 tw-object-contain" />
         <img src="@/assets/images/partner-logo3.png" alt="Partner Logo 3" class="tw-h-10 tw-object-contain" /> -->
+      </div>
+    </section>
+
+    <!-- EUDR & Traceability (visible for SEO and users) -->
+  <section class="reveal tw-bg-white tw-py-12 tw-px-6 tw-max-w-6xl tw-mx-auto tw-rounded-2xl tw-shadow-md tw-mb-12">
+      <div class="tw-flex tw-flex-col md:tw-flex-row tw-items-start tw-gap-6">
+        <div class="tw-flex-1">
+          <h2 class="tw-text-2xl tw-font-semibold tw-text-green-800 tw-mb-3">EUDR Compliance & Supply-Chain Traceability</h2>
+          <p class="tw-text-[#6b4f2c] tw-mb-4">AgriBackup helps farms and exporters meet the EU Deforestation Regulation (EUDR) requirements by enabling secure document uploads, exporter licensing workflows, and per-item traceability.</p>
+          <ul class="tw-list-disc tw-list-inside tw-text-[#6b4f2c] tw-mb-4">
+            <li>Upload permits & certificates (PDF, JPG, PNG) and store them securely in private S3 buckets.</li>
+            <li>Generate time-limited presigned URLs for auditors and regulators to verify documents without exposing raw storage.</li>
+            <li>Track produce from farm to buyer with timestamps and location metadata to support chain-of-custody reporting.</li>
+          </ul>
+          <router-link to="/contact" class="tw-inline-block tw-bg-green-700 hover:tw-bg-green-800 tw-text-white tw-py-2 tw-px-4 tw-rounded">Contact us to learn about EUDR support</router-link>
+        </div>
+        <!-- <div class="tw-flex-1 tw-flex tw-justify-center">
+          <img src="@/assets/images/eudr-diagram.png" alt="EUDR traceability diagram" class="tw-w-full tw-max-w-sm tw-object-contain tw-rounded" />
+        </div> -->
       </div>
     </section>
 
@@ -300,11 +351,11 @@ export default {
   metaInfo: {
     title: 'AgriBackup - Connect Farmers, Buyers, Exporters & Institutions | Eliminate Middlemen',
     meta: [
-      { name: 'description', content: 'AgriBackup connects farmers, buyers, exporters, governments, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, access AI-powered insights, and join a global agricultural marketplace.' },
-      { name: 'keywords', content: 'AgriBackup, farmers, buyers, exporters, agriculture, farm produce, direct selling, global marketplace, AI farming, eliminate middlemen, institutions, government, food security' },
+      { name: 'description', content: 'AgriBackup connects farmers, buyers, exporters, governments, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, access AI-powered insights, and join a global agricultural marketplace. Supports EUDR traceability and compliant document workflows.' },
+      { name: 'keywords', content: 'AgriBackup, EUDR, EU Deforestation Regulation, traceability, sustainable sourcing, farmers, buyers, exporters, agriculture, farm produce, compliance' },
       { name: 'robots', content: 'index,follow' },
       { property: 'og:title', content: 'AgriBackup - Global Agricultural Marketplace' },
-      { property: 'og:description', content: 'Join AgriBackup to connect farmers, buyers, exporters, and institutions. Sell and buy farm produce directly, eliminate middlemen, and access AI-powered insights.' },
+      { property: 'og:description', content: 'Join AgriBackup to connect farmers, buyers, exporters, and institutions. Sell and buy farm produce directly, eliminate middlemen, access AI-powered insights, and manage supply-chain traceability for EUDR compliance.' },
       { property: 'og:type', content: 'website' },
       // eslint-disable-next-line sonarjs/no-duplicate-string
       { property: 'og:url', content: 'https://agribackup.com/' },
@@ -312,7 +363,7 @@ export default {
       { property: 'og:image', content: 'https://agribackup.com/assets/images/happy-farmer.jpg' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: 'AgriBackup - Global Agricultural Marketplace' },
-      { name: 'twitter:description', content: 'Connect farmers, buyers, exporters, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, and access AI-powered insights.' },
+      { name: 'twitter:description', content: 'Connect farmers, buyers, exporters, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, access AI-powered insights, and support EUDR traceability.' },
       { name: 'twitter:image', content: 'https://agribackup.com/assets/images/happy-farmer.jpg' },
       { rel: 'canonical', href: 'https://agribackup.com/' },
     ],
@@ -324,7 +375,7 @@ export default {
           '@type': 'WebSite',
           name: 'AgriBackup',
           url: 'https://agribackup.com/',
-          description: 'AgriBackup connects farmers, buyers, exporters, governments, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, access AI-powered insights, and join a global agricultural marketplace.',
+          description: 'AgriBackup connects farmers, buyers, exporters, governments, and institutions worldwide. Sell and buy farm produce directly, eliminate middlemen, access AI-powered insights, and join a global agricultural marketplace. Provides features to support EUDR compliance and supply-chain traceability.',
           image: 'https://agribackup.com/assets/images/happy-farmer.jpg',
           potentialAction: {
             '@type': 'SearchAction',
@@ -338,7 +389,17 @@ export default {
   data() {
     return {
       showDialog: false,
+      revealObserver: null,
     };
+  },
+  mounted() {
+    this.initRevealObserver();
+  },
+  beforeDestroy() {
+    if (this.revealObserver) {
+      this.revealObserver.disconnect();
+      this.revealObserver = null;
+    }
   },
   methods: {
     clearViewRole() {
@@ -369,6 +430,28 @@ export default {
       this.$store.dispatch('auth/setViewRole', 'farmer');
       this.$router.push({ name: 'Listings' });
     },
+
+    // IntersectionObserver-based reveal animations for sections
+    initRevealObserver() {
+      if (typeof IntersectionObserver === 'undefined') return;
+      const options = { root: null, rootMargin: '0px', threshold: 0.12 };
+      this.revealObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, options);
+
+      this.$nextTick(() => {
+        const els = this.$el.querySelectorAll('.reveal');
+        els.forEach((el) => {
+          el.classList.remove('revealed');
+          this.revealObserver.observe(el);
+        });
+      });
+    },
   },
 };
 </script>
@@ -380,5 +463,17 @@ nav {
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
 }
+/* Scroll reveal styles */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px) scale(0.995);
+  transition: opacity 520ms cubic-bezier(.22,.9,.26,1), transform 520ms cubic-bezier(.22,.9,.26,1);
+  will-change: opacity, transform;
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
 /* No extra styles needed; Tailwind handles layout and responsiveness */
 </style>

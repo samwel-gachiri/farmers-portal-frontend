@@ -22,9 +22,9 @@
             <div>
               <div class="tw-text-xs tw-tracking-wide tw-text-green-700">My Farm</div>
               <h1 class="tw-text-2xl md:tw-text-3xl tw-font-extrabold tw-text-gray-800 tw-mt-1">
-                {{ farmer.name || 'Your Farm' }}
+                {{ farmer.farmName || farmer.name || 'Your Farm' }}
               </h1>
-              <div class="tw-text-xs tw-text-gray-500 tw-mt-1">{{ farmer.farmerProduces.length }} produce item(s)</div>
+              <div class="tw-text-xs tw-text-gray-500 tw-mt-1">{{ (farmer.farmerProduces?.length) || 0 }} produce item(s)</div>
             </div>
             <div class="tw-flex tw-gap-2">
               <v-btn class="btn-glass-outline" outlined small @click="openShareDialog">
