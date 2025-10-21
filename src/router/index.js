@@ -67,6 +67,67 @@ const routes = [
       icon: "mdi-chart-areaspline",
     },
   },
+  // EUDR Compliance Routes
+  {
+    path: "/eudr/production-units",
+    name: "ProductionUnits",
+    component: () => import("../views/eudr/ProductionUnits.vue"),
+    meta: {
+      title: "Production Units",
+      requiresAuth: true,
+      roles: ["FARMER", "EXPORTER", "SYSTEM_ADMIN"],
+      description: "Manage farm production units and polygons",
+      icon: "mdi-map-marker-radius",
+    },
+  },
+  {
+    path: "/eudr/deforestation-monitoring",
+    name: "DeforestationMonitoring",
+    component: () => import("../views/eudr/DeforestationMonitoring.vue"),
+    meta: {
+      title: "Deforestation Monitoring",
+      requiresAuth: true,
+      roles: ["FARMER", "EXPORTER", "SYSTEM_ADMIN"],
+      description: "Real-time deforestation alerts and monitoring",
+      icon: "mdi-satellite-variant",
+    },
+  },
+  {
+    path: "/eudr/compliance-dashboard",
+    name: "EudrCompliance",
+    component: () => import("../views/eudr/ComplianceDashboard.vue"),
+    meta: {
+      title: "EUDR Compliance",
+      requiresAuth: true,
+      roles: ["FARMER", "EXPORTER", "SYSTEM_ADMIN"],
+      description: "EUDR compliance status and management",
+      icon: "mdi-shield-check",
+    },
+  },
+  {
+    path: "/eudr/batch-management",
+    name: "BatchManagement",
+    component: () => import("../views/eudr/BatchManagement.vue"),
+    meta: {
+      title: "Batch Management",
+      requiresAuth: true,
+      roles: ["FARMER", "EXPORTER", "SYSTEM_ADMIN"],
+      description: "Manage EUDR compliant batches",
+      icon: "mdi-package-variant",
+    },
+  },
+  {
+    path: "/eudr/document-management",
+    name: "DocumentManagement",
+    component: () => import("../views/eudr/DocumentManagement.vue"),
+    meta: {
+      title: "Document Management",
+      requiresAuth: true,
+      roles: ["FARMER", "EXPORTER", "SYSTEM_ADMIN"],
+      description: "Secure document storage with IPFS and blockchain verification",
+      icon: "mdi-file-document-multiple",
+    },
+  },
   {
     path: "/",
     name: "Landing",

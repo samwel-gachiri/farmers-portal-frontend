@@ -9,6 +9,8 @@ module.exports = {
     'apexcharts',
     '@stomp/stompjs',
     'marked',
+    'ethers',
+    '@noble/curves',
   ],
   devServer: {
     proxy: process.env.VUE_APP_API_BASE_URL,

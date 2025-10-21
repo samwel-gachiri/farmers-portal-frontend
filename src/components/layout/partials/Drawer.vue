@@ -118,6 +118,43 @@ export default {
         iconColor: '#8b5cf6',
       },
 
+      // === EUDR COMPLIANCE SECTION ===
+      {
+        icon: 'mdi-shield-check',
+        text: 'EUDR Compliance',
+        link: { name: 'EudrCompliance' },
+        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#dc2626',
+      },
+      {
+        icon: 'mdi-map-marker-radius',
+        text: 'Production Units',
+        link: { name: 'ProductionUnits' },
+        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#16a34a',
+      },
+      {
+        icon: 'mdi-satellite-variant',
+        text: 'Deforestation Monitor',
+        link: { name: 'DeforestationMonitoring' },
+        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#ea580c',
+      },
+      {
+        icon: 'mdi-package-variant',
+        text: 'Batch Management',
+        link: { name: 'BatchManagement' },
+        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#7c3aed',
+      },
+      {
+        icon: 'mdi-file-document-multiple',
+        text: 'Document Management',
+        link: { name: 'DocumentManagement' },
+        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#0ea5e9',
+      },
+
       // === BUYER PORTAL ===
       {
         // eslint-disable-next-line sonarjs/no-duplicate-string

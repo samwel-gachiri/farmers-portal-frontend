@@ -32,6 +32,7 @@
     "dompurify": "^3.2.5",
     "eslint-import-resolver-webpack": "^0.13.8",
     "esri-loader": "^3.7.0",
+    "ethers": "^6.15.0",
     "file-saver": "^2.0.5",
     "firebase": "^11.7.1",
     "flag-icons": "^7.2.3",
