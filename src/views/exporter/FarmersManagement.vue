@@ -139,6 +139,7 @@
                   </div>
                   <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 tw-mt-auto">
                     <v-btn icon x-small color="primary" @click="openProfile(farmer)"><v-icon x-small>mdi-account-box</v-icon></v-btn>
+                    <v-btn icon x-small color="orange" @click="openEditFarmerDialog(farmer)"><v-icon x-small>mdi-pencil</v-icon></v-btn>
                     <v-btn icon x-small color="indigo" :disabled="!hasLocation(farmer)" @click="focusFarmerOnMap(farmer)"><v-icon x-small>mdi-map-search</v-icon></v-btn>
                   </div>
                   <div class="tw-absolute -tw-top-2 -tw-left-2 tw-bg-white tw-rounded-full tw-shadow tw-border tw-border-slate-200 tw-px-2 tw-py-0.5 tw-text-[10px] tw-font-semibold tw-text-slate-500">ID {{ farmer.id.substring(0,4) }}</div>
@@ -174,6 +175,14 @@
                         </v-btn>
                       </template>
                       <span>Open Profile</span>
+                    </v-tooltip>
+                    <v-tooltip top>
+                      <template #activator="{ on, attrs }">
+                        <v-btn v-bind="attrs" v-on="on" small icon color="orange" @click="openEditFarmerDialog(farmer)">
+                          <v-icon small>mdi-pencil</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>Edit Details</span>
                     </v-tooltip>
                     <v-tooltip top>
                       <template #activator="{ on, attrs }">
@@ -228,6 +237,7 @@
             <div class="tw-text-xs tw-text-gray-500" v-if="hasLocation(selectedFarmer)">Lat: {{ selectedFarmer.latitude }}, Lng: {{ selectedFarmer.longitude }}</div>
             <div class="tw-flex tw-gap-2 tw-mt-2">
               <v-btn small color="primary" @click="openProfile(selectedFarmer)"><v-icon left small>mdi-account-box</v-icon> Profile</v-btn>
+              <v-btn small color="orange" @click="openEditFarmerDialog(selectedFarmer)"><v-icon left small>mdi-pencil</v-icon> Edit</v-btn>
               <v-btn small outlined color="indigo" :disabled="!hasLocation(selectedFarmer)" @click="focusFarmerOnMap(selectedFarmer)"><v-icon left small>mdi-map-marker</v-icon> Locate</v-btn>
             </div>
           </div>
@@ -254,6 +264,22 @@
         :zone="selectedZone"
         @closed="handleFarmerDialogClosed"
       />
+
+      <!-- Edit Farmer Details Dialog -->
+       <v-dialog
+        v-model="showEditFarmerDialog"
+        max-width="1200"
+        persistent
+        scrollable
+        >
+        <EditFarmerDetails
+          v-if="farmerToEdit"
+          v-model="showEditFarmerDialog"
+          :farmer="farmerToEdit"
+          @closed="handleEditFarmerDialogClosed"
+          @saved="handleFarmerSaved"
+        />
+      </v-dialog>
     </div>
   </Default>
 </template>
@@ -263,10 +289,11 @@ import axios from 'axios';
 import Default from '@/components/layout/Default.vue';
 import { getCurrentUserId } from '@/utils/roles.js';
 import AssistedFarmerRegistration from '@/components/AssistedFarmerRegistration.vue';
+import EditFarmerDetails from '@/components/exporter/EditFarmerDetails.vue';
 
 export default {
   name: 'FarmersManagement',
-  components: { Default, AssistedFarmerRegistration },
+  components: { Default, AssistedFarmerRegistration, EditFarmerDetails },
   data() {
     return {
       zones: [],
@@ -290,6 +317,8 @@ export default {
       showAddFarmerDialog: false,
       pendingOpenAddFarmer: false,
       viewMode: 'list',
+      showEditFarmerDialog: false,
+      farmerToEdit: null,
     };
   },
   computed: {
@@ -484,6 +513,19 @@ export default {
       this.$nextTick(() => { this.showAddFarmerDialog = true; });
     },
     handleFarmerDialogClosed() { this.showAddFarmerDialog = false; this.fetchFarmers(); },
+    openEditFarmerDialog(farmer) {
+      if (!farmer) return;
+      this.farmerToEdit = farmer;
+      this.showEditFarmerDialog = true;
+    },
+    handleEditFarmerDialogClosed() {
+      this.showEditFarmerDialog = false;
+      this.farmerToEdit = null;
+    },
+    handleFarmerSaved() {
+      this.showSnackbar('Farmer details updated successfully', 'success');
+      this.fetchFarmers();
+    },
     focusFarmerOnMap(f) {
       if (!this.mapView || !this.hasLocation(f)) return;
       const lon = f.longitude || f.lng; const lat = f.latitude || f.lat;

@@ -1,5 +1,14 @@
 /* eslint-disable */
-import { ethers } from 'ethers';
+import { ethers, BrowserProvider } from 'ethers';
+import walletConnectFcn, {
+  connectToHederaDefault,
+  connectToHederaTestnet,
+  connectToHederaMainnet,
+  connectToHederaPreviewnet,
+  isWalletAvailable as checkWalletAvailable,
+  getCurrentNetwork,
+  getDefaultNetwork
+} from './walletConnectUtil';
 
 class HederaWalletService {
   constructor() {
@@ -24,6 +33,17 @@ class HederaWalletService {
         },
         rpcUrls: ['https://testnet.hashio.io/api'],
         blockExplorerUrls: ['https://hashscan.io/testnet'],
+      },
+      previewnet: {
+        chainId: '0x129', // 297 in decimal
+        chainName: 'Hedera Previewnet',
+        nativeCurrency: {
+          name: 'HBAR',
+          symbol: 'ℏℏ',
+          decimals: 18,
+        },
+        rpcUrls: ['https://previewnet.hashio.io/api'],
+        blockExplorerUrls: ['https://hashscan.io/previewnet'],
       },
       mainnet: {
         chainId: '0x127', // 295 in decimal
@@ -50,10 +70,159 @@ class HederaWalletService {
   }
 
   /**
+   * Quick connect to Hedera Testnet (most common use case)
+   */
+  async quickConnectTestnet() {
+    try {
+      const [account, provider, network] = await connectToHederaTestnet();
+
+      this.provider = provider;
+      this.account = account;
+      this.isConnected = true;
+      this.networkId = 296; // Testnet chain ID
+
+      // Set up event listeners
+      this.setupEventListeners();
+
+      return {
+        account: this.account,
+        networkId: this.networkId,
+        isConnected: this.isConnected,
+        network: network
+      };
+    } catch (error) {
+      console.error('Quick connect to testnet failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Quick connect to Hedera Mainnet
+   */
+  async quickConnectMainnet() {
+    try {
+      const [account, provider, network] = await connectToHederaMainnet();
+
+      this.provider = provider;
+      this.account = account;
+      this.isConnected = true;
+      this.networkId = 295; // Mainnet chain ID
+
+      // Set up event listeners
+      this.setupEventListeners();
+
+      return {
+        account: this.account,
+        networkId: this.networkId,
+        isConnected: this.isConnected,
+        network: network
+      };
+    } catch (error) {
+      console.error('Quick connect to mainnet failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Quick connect using the utility function
+   */
+  /**
+   * Quick connect using environment variable (recommended)
+   */
+  async quickConnectDefault() {
+    try {
+      const [account, provider, networkType] = await connectToHederaDefault();
+
+      this.provider = provider;
+      this.account = account;
+      this.isConnected = true;
+
+      // Set network ID based on network type
+      switch (networkType) {
+        case 'testnet':
+          this.networkId = 296;
+          break;
+        case 'previewnet':
+          this.networkId = 297;
+          break;
+        case 'mainnet':
+          this.networkId = 295;
+          break;
+        default:
+          this.networkId = 296; // default to testnet
+      }
+
+      // Set up event listeners
+      this.setupEventListeners();
+
+      console.log(`✅ Connected to ${networkType} (from env: ${getDefaultNetwork()})`);
+
+      return {
+        account: this.account,
+        networkId: this.networkId,
+        isConnected: this.isConnected,
+        network: networkType,
+        envNetwork: getDefaultNetwork()
+      };
+    } catch (error) {
+      console.error('Quick connect to default network failed:', error);
+      throw error;
+    }
+  }
+
+  async quickConnect(network = null) {
+    try {
+      // If no network specified, use environment variable
+      const targetNetwork = network || getDefaultNetwork();
+      const [account, provider, networkType] = await walletConnectFcn(targetNetwork);
+
+      this.provider = provider;
+      this.account = account;
+      this.isConnected = true;
+
+      // Set network ID based on network type
+      switch (networkType) {
+        case 'testnet':
+          this.networkId = 296;
+          break;
+        case 'previewnet':
+          this.networkId = 297;
+          break;
+        case 'mainnet':
+          this.networkId = 295;
+          break;
+        default:
+          this.networkId = 296; // default to testnet
+      }
+
+      // Set up event listeners
+      this.setupEventListeners();
+
+      return {
+        account: this.account,
+        networkId: this.networkId,
+        isConnected: this.isConnected,
+        network: networkType,
+        envNetwork: getDefaultNetwork()
+      };
+    } catch (error) {
+      console.error('Quick connect failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Connect to wallet (HashPack, Blade, or MetaMask)
    */
-  async connectWallet(walletType = 'auto') {
+  async connectWallet(walletType = 'auto', network = null) {
     try {
+      // Use provided network or fall back to environment variable
+      const targetNetwork = network || getDefaultNetwork();
+
+      console.log(`\n=======================================`);
+      console.log(`- Starting wallet connection process...🟠`);
+      console.log(`- Target network: ${targetNetwork} (env: ${getDefaultNetwork()})`);
+
       if (!HederaWalletService.isWalletAvailable()) {
         throw new Error(
           'No wallet extension found. Please install HashPack, Blade, or MetaMask.',
@@ -61,6 +230,7 @@ class HederaWalletService {
       }
 
       let provider;
+      let selectedAccount;
 
       switch (walletType) {
         case 'hashpack':
@@ -70,40 +240,72 @@ class HederaWalletService {
           provider = await HederaWalletService.connectBlade();
           break;
         case 'metamask':
-          provider = await this.connectMetaMask();
+          provider = await this.connectMetaMask(targetNetwork);
           break;
         default:
           // Auto-detect available wallet
           if (window.hashpack) {
+            console.log('- HashPack wallet detected, connecting...🟠');
             provider = await HederaWalletService.connectHashPack();
           } else if (window.blade) {
+            console.log('- Blade wallet detected, connecting...🟠');
             provider = await HederaWalletService.connectBlade();
           } else if (window.ethereum) {
-            provider = await this.connectMetaMask();
+            console.log('- MetaMask wallet detected, connecting...🟠');
+            provider = await this.connectMetaMask(targetNetwork);
           } else {
             throw new Error('No compatible wallet found');
           }
       }
 
       this.provider = provider;
-      this.signer = provider.getSigner();
-      this.account = await this.signer.getAddress();
+
+      // Get account using the provider's send method for better compatibility
+      try {
+        const accounts = await provider.send("eth_requestAccounts", []);
+        selectedAccount = accounts[0];
+        this.account = selectedAccount;
+        console.log(`- Account connected: ${selectedAccount} ✅`);
+      } catch (accountError) {
+        // Fallback to signer method (v6 syntax)
+        this.signer = await provider.getSigner();
+        this.account = await this.signer.getAddress();
+        selectedAccount = this.account;
+        console.log(`- Account connected (fallback): ${selectedAccount} ✅`);
+      }
+
       this.isConnected = true;
 
       // Get network information
-      const network = await provider.getNetwork();
-      this.networkId = network.chainId;
+      try {
+        const networkInfo = await provider.getNetwork();
+        // In ethers v6, chainId is a bigint, convert to number
+        this.networkId = Number(networkInfo.chainId);
+        console.log(`- Network ID: ${this.networkId} ✅`);
+      } catch (networkError) {
+        console.log(`- Network detection error: ${networkError.message}`);
+        // Set default network ID based on network parameter
+        this.networkId = targetNetwork === 'testnet' ? 296 : (targetNetwork === 'previewnet' ? 297 : 295);
+      }
 
       // Set up event listeners
       this.setupEventListeners();
 
-      return {
+      const result = {
         account: this.account,
         networkId: this.networkId,
         isConnected: this.isConnected,
+        network: targetNetwork,
+        envNetwork: getDefaultNetwork()
       };
+
+      console.log('- Wallet connection completed ✅');
+      console.log(`=======================================\n`);
+
+      return result;
     } catch (error) {
-      console.error('Failed to connect wallet:', error);
+      console.error('❌ Failed to connect wallet:', error);
+      console.log(`=======================================\n`);
       throw error;
     }
   }
@@ -119,8 +321,8 @@ class HederaWalletService {
     const hashpack = window.hashpack;
     await hashpack.connectToLocalWallet();
 
-    // Create ethers provider for HashPack
-    return new ethers.providers.Web3Provider(hashpack);
+    // Create ethers provider for HashPack (v6 syntax)
+    return new BrowserProvider(hashpack);
   }
 
   /**
@@ -138,36 +340,70 @@ class HederaWalletService {
       throw new Error('No accounts found in Blade wallet');
     }
 
-    return new ethers.providers.Web3Provider(blade);
+    return new BrowserProvider(blade);
   }
 
   /**
    * Connect to MetaMask (configured for Hedera)
    */
-  async connectMetaMask() {
+  async connectMetaMask(network = 'testnet') {
     if (!window.ethereum) {
       throw new Error('MetaMask not found');
     }
 
-    // Request account access
-    const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts',
-    });
+    console.log(`\n=======================================`);
+    console.log(`- Connecting to MetaMask for Hedera ${network}...🟠`);
 
-    if (!accounts || accounts.length === 0) {
-      throw new Error('No accounts found in MetaMask');
+    // ETHERS PROVIDER (v6 syntax)
+    const provider = new BrowserProvider(window.ethereum);
+
+    // SWITCH TO HEDERA NETWORK
+    console.log(`- Switching network to the Hedera ${network}...🟠`);
+    let chainId;
+    if (network === "testnet") {
+      chainId = "0x128";
+    } else if (network === "previewnet") {
+      chainId = "0x129";
+    } else {
+      chainId = "0x127";
     }
 
-    // Check if we're on Hedera network, if not, try to switch
-    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-    const hederaTestnetChainId = '0x128'; // 296 in decimal
-    const hederaMainnetChainId = '0x127'; // 295 in decimal
-
-    if (chainId !== hederaTestnetChainId && chainId !== hederaMainnetChainId) {
-      await this.switchToHederaNetwork('testnet');
+    try {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainName: `Hedera ${network}`,
+          chainId: chainId,
+          nativeCurrency: { name: "HBAR", symbol: "ℏℏ", decimals: 18 },
+          rpcUrls: [`https://${network}.hashio.io/api`],
+          blockExplorerUrls: [`https://hashscan.io/${network}/`],
+        }],
+      });
+      console.log("- Network switched ✅");
+    } catch (networkError) {
+      console.log(`- Network switch error: ${networkError.message}`);
+      // Continue anyway, might already be on correct network
     }
 
-    return new ethers.providers.Web3Provider(window.ethereum, "any");
+    // CONNECT TO ACCOUNT
+    console.log("- Connecting wallet...🟠");
+    let selectedAccount;
+
+    try {
+      await provider.send("eth_requestAccounts", []).then((accounts) => {
+        selectedAccount = accounts[0];
+        console.log(`- Selected account: ${selectedAccount} ✅`);
+      });
+
+      if (!selectedAccount) {
+        throw new Error('No accounts found in MetaMask');
+      }
+
+      return provider;
+    } catch (connectError) {
+      console.log(`- Connection error: ${connectError.message}`);
+      throw new Error(`Failed to connect to MetaMask: ${connectError.message}`);
+    }
   }
 
   /**
@@ -178,27 +414,43 @@ class HederaWalletService {
       throw new Error('Wallet not available');
     }
 
-    const networkConfig = this.networks[network];
+    console.log(`- Switching network to the Hedera ${network}...🟠`);
+
+    let chainId;
+    if (network === "testnet") {
+      chainId = "0x128";
+    } else if (network === "previewnet") {
+      chainId = "0x129";
+    } else if (network === "mainnet") {
+      chainId = "0x127";
+    } else {
+      chainId = "0x128"; // default to testnet
+    }
 
     try {
-      // Try to switch to the network
+      // Always try to add the network first (this handles both adding and switching)
       await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: networkConfig.chainId }],
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainName: `Hedera ${network}`,
+          chainId: chainId,
+          nativeCurrency: { name: "HBAR", symbol: "ℏℏ", decimals: 18 },
+          rpcUrls: [`https://${network}.hashio.io/api`],
+          blockExplorerUrls: [`https://hashscan.io/${network}/`],
+        }],
       });
-    } catch (switchError) {
-      // If the network doesn't exist, add it
-      if (switchError.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [networkConfig],
-          });
-        } catch (addError) {
-          throw new Error('Failed to add Hedera network to wallet');
-        }
-      } else {
-        throw new Error('Failed to switch to Hedera network');
+      console.log("- Network switched ✅");
+    } catch (error) {
+      // If adding fails, try switching
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: chainId }],
+        });
+        console.log("- Network switched ✅");
+      } catch (switchError) {
+        console.error(`- Failed to switch network: ${switchError.message}`);
+        throw new Error(`Failed to switch to Hedera ${network}: ${switchError.message}`);
       }
     }
   }
@@ -225,8 +477,8 @@ class HederaWalletService {
       throw new Error(this.WALLET_NOT_CONNECTED_ERROR);
     }
 
-    const balance = await this.signer.getBalance();
-    return ethers.utils.formatEther(balance);
+    const balance = await this.signer.provider.getBalance(this.account);
+    return ethers.formatEther(balance);
   }
 
   /**
@@ -245,7 +497,7 @@ class HederaWalletService {
    */
   static verifySignature(message, signature, address) {
     try {
-      const recoveredAddress = ethers.utils.verifyMessage(message, signature);
+      const recoveredAddress = ethers.verifyMessage(message, signature);
       return recoveredAddress.toLowerCase() === address.toLowerCase();
     } catch (error) {
       console.error('Failed to verify signature:', error);
@@ -375,6 +627,8 @@ class HederaWalletService {
         return 'Hedera Mainnet';
       case 296:
         return 'Hedera Testnet';
+      case 297:
+        return 'Hedera Previewnet';
       default:
         return 'Unknown Network';
     }
@@ -384,7 +638,112 @@ class HederaWalletService {
    * Check if on correct network
    */
   isOnHederaNetwork() {
-    return this.networkId === 295 || this.networkId === 296;
+    return this.networkId === 295 || this.networkId === 296 || this.networkId === 297;
+  }
+
+  /**
+   * Get current network type
+   */
+  getCurrentNetworkType() {
+    switch (this.networkId) {
+      case 295:
+        return 'mainnet';
+      case 296:
+        return 'testnet';
+      case 297:
+        return 'previewnet';
+      default:
+        return 'unknown';
+    }
+  }
+
+  /**
+   * Get detailed network information
+   */
+  async getNetworkInfo() {
+    try {
+      if (checkWalletAvailable()) {
+        const networkInfo = await getCurrentNetwork();
+        return {
+          ...networkInfo,
+          connectedAccount: this.account,
+          isConnected: this.isConnected
+        };
+      } else {
+        return {
+          chainId: null,
+          chainIdDecimal: null,
+          networkName: 'No Wallet',
+          networkType: 'none',
+          isHedera: false,
+          connectedAccount: null,
+          isConnected: false
+        };
+      }
+    } catch (error) {
+      console.error('Failed to get network info:', error);
+      return {
+        chainId: null,
+        chainIdDecimal: null,
+        networkName: 'Error',
+        networkType: 'error',
+        isHedera: false,
+        connectedAccount: this.account,
+        isConnected: this.isConnected,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Validate connection and network
+   */
+  async validateConnection() {
+    try {
+      if (!this.isConnected || !this.provider) {
+        return { isValid: false, reason: 'Not connected to wallet' };
+      }
+
+      const networkInfo = await this.getNetworkInfo();
+
+      if (!networkInfo.isHedera) {
+        return {
+          isValid: false,
+          reason: `Connected to wrong network: ${networkInfo.networkName}. Please switch to a Hedera network.`,
+          currentNetwork: networkInfo
+        };
+      }
+
+      // Verify account is still accessible
+      try {
+        const accounts = await this.provider.send("eth_requestAccounts", []);
+        if (!accounts.includes(this.account)) {
+          return {
+            isValid: false,
+            reason: 'Account no longer accessible. Please reconnect.',
+            currentNetwork: networkInfo
+          };
+        }
+      } catch (accountError) {
+        return {
+          isValid: false,
+          reason: 'Cannot access wallet accounts. Please reconnect.',
+          currentNetwork: networkInfo
+        };
+      }
+
+      return {
+        isValid: true,
+        reason: 'Connection is valid',
+        currentNetwork: networkInfo
+      };
+    } catch (error) {
+      return {
+        isValid: false,
+        reason: `Validation error: ${error.message}`,
+        error: error
+      };
+    }
   }
 }
 

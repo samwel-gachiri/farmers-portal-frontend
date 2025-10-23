@@ -118,41 +118,116 @@ export default {
         iconColor: '#8b5cf6',
       },
 
-      // === EUDR COMPLIANCE SECTION ===
+      // === FARMER EUDR SECTION ===
       {
         icon: 'mdi-shield-check',
-        text: 'EUDR Compliance',
-        link: { name: 'EudrCompliance' },
-        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        text: 'My EUDR Status',
+        link: { name: 'FarmerEudrStatus' },
+        roles: ['FARMER'],
         iconColor: '#dc2626',
       },
       {
         icon: 'mdi-map-marker-radius',
-        text: 'Production Units',
-        link: { name: 'ProductionUnits' },
-        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        text: 'My Production Units',
+        link: { name: 'FarmerProductionUnits' },
+        roles: ['FARMER'],
         iconColor: '#16a34a',
       },
       {
+        icon: 'mdi-file-document-multiple',
+        text: 'My Documents',
+        link: { name: 'FarmerDocuments' },
+        roles: ['FARMER'],
+        iconColor: '#0ea5e9',
+      },
+      {
         icon: 'mdi-satellite-variant',
-        text: 'Deforestation Monitor',
-        link: { name: 'DeforestationMonitoring' },
-        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        text: 'My Farm Monitoring',
+        link: { name: 'FarmerMonitoring' },
+        roles: ['FARMER'],
         iconColor: '#ea580c',
       },
       {
         icon: 'mdi-package-variant',
+        text: 'My Batches',
+        link: { name: 'FarmerBatches' },
+        roles: ['FARMER'],
+        iconColor: '#7c3aed',
+      },
+
+      // === EXPORTER EUDR SECTION ===
+      {
+        icon: 'mdi-shield-account',
+        text: 'EUDR Dashboard',
+        link: { name: 'ExporterEudrDashboard' },
+        roles: ['EXPORTER'],
+        iconColor: '#dc2626',
+      },
+      {
+        // eslint-disable-next-line sonarjs/no-duplicate-string
+        icon: 'mdi-account-group',
+        text: 'Supplier Compliance',
+        link: { name: 'SupplierCompliance' },
+        roles: ['EXPORTER'],
+        iconColor: '#16a34a',
+      },
+      {
+        icon: 'mdi-alert-octagon',
+        text: 'Risk Management',
+        link: { name: 'RiskManagement' },
+        roles: ['EXPORTER'],
+        iconColor: '#ea580c',
+      },
+      {
+        icon: 'mdi-package-variant-closed',
         text: 'Batch Management',
-        link: { name: 'BatchManagement' },
-        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        link: { name: 'ExporterBatches' },
+        roles: ['EXPORTER'],
         iconColor: '#7c3aed',
       },
       {
-        icon: 'mdi-file-document-multiple',
-        text: 'Document Management',
-        link: { name: 'DocumentManagement' },
-        roles: ['FARMER', 'EXPORTER', 'SYSTEM_ADMIN'],
+        icon: 'mdi-file-chart',
+        text: 'Compliance Reports',
+        link: { name: 'ExporterReports' },
+        roles: ['EXPORTER'],
         iconColor: '#0ea5e9',
+      },
+      {
+        icon: 'mdi-map-search',
+        text: 'Supply Chain Mapping',
+        link: { name: 'SupplyChainMapping' },
+        roles: ['EXPORTER'],
+        iconColor: '#8b5cf6',
+      },
+      {
+        icon: 'mdi-gavel',
+        text: 'Due Diligence',
+        link: { name: 'DueDiligence' },
+        roles: ['EXPORTER'],
+        iconColor: '#f59e0b',
+      },
+
+      // === SYSTEM ADMIN EUDR SECTION ===
+      {
+        icon: 'mdi-shield-crown',
+        text: 'EUDR Administration',
+        link: { name: 'EudrAdministration' },
+        roles: ['SYSTEM_ADMIN'],
+        iconColor: '#dc2626',
+      },
+      {
+        icon: 'mdi-database-check',
+        text: 'Data Verification',
+        link: { name: 'DataVerification' },
+        roles: ['SYSTEM_ADMIN'],
+        iconColor: '#16a34a',
+      },
+      {
+        icon: 'mdi-chart-timeline-variant',
+        text: 'System Analytics',
+        link: { name: 'SystemAnalytics' },
+        roles: ['SYSTEM_ADMIN'],
+        iconColor: '#8b5cf6',
       },
 
       // === BUYER PORTAL ===
@@ -326,9 +401,17 @@ export default {
   },
   methods: {
     canView(item) {
+      // Check EUDR navigation setting
+      if (item.text && item.text.includes('EUDR') && !this.isEudrEnabled()) {
+        return false;
+      }
+
       return !item.roles || item.roles.length === 0
         ? true
         : (this.userRole && item.roles.includes(this.userRole));
+    },
+    isEudrEnabled() {
+      return localStorage.getItem('eudrEnabled') !== 'false';
     },
   },
 };
