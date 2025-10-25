@@ -57,10 +57,10 @@
   <section class="reveal tw-flex tw-flex-col md:tw-flex-row tw-items-center tw-justify-between tw-px-10 tw-pt-20 tw-pb-12 tw-max-w-6xl tw-mx-auto">
       <div class="tw-flex-1 tw-mb-12 md:tw-mb-0">
         <h1 class="tw-text-4xl md:tw-text-6xl tw-font-bold tw-text-green-900 tw-mb-6 tw-drop-shadow">
-          Connect Directly to Buyers and Boost Your Farm’s Profits
+          Farm to Exporters & Transparent EU Deforestation Compliance with Carbon Credit
         </h1>
         <p class="tw-text-xl tw-text-[#6b4f2c] tw-mr-3 tw-mb-8 tw-drop-shadow-sm">
-          Eliminating the need of middlemen by providing direct access to the market, and technologizing the Agricultural marketplace
+          Providing transparency from farm to export through Hedera DLT
         </p>
         <div class="tw-flex tw-gap-6 tw-mb-6">
           <button

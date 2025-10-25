@@ -442,6 +442,11 @@ const routes = [
     name: "ExporterProfile",
     component: () => import("../views/exporter/ExporterProfile.vue"),
   },
+  {
+    path: "/exporter/supply-chain",
+    name: "SupplyChainManagement",
+    component: () => import("../views/exporter/SupplyChainManagement.vue"),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',

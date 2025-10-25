@@ -1,18 +1,19 @@
 <template>
-  <v-container fluid class="supply-chain-container">
-    <v-row>
-      <v-col cols="12">
-        <div class="page-header">
-          <v-icon large color="primary" class="mr-3">mdi-package-variant-closed</v-icon>
-          <div>
-            <h1 class="text-h4 font-weight-bold">EUDR Supply Chain Management</h1>
-            <p class="text-subtitle-1 text--secondary">
-              Create and manage the complete supply chain from farm to export
-            </p>
+  <default>
+    <v-container fluid class="supply-chain-container">
+      <v-row>
+        <v-col cols="12">
+          <div class="page-header">
+            <v-icon large color="primary" class="mr-3">mdi-package-variant-closed</v-icon>
+            <div>
+              <h1 class="text-h4 font-weight-bold">EUDR Supply Chain Management</h1>
+              <p class="text-subtitle-1 text--secondary">
+                Create and manage the complete supply chain from farm to export
+              </p>
+            </div>
           </div>
-        </div>
-      </v-col>
-    </v-row>
+        </v-col>
+      </v-row>
 
     <!-- Supply Chain Stepper -->
     <v-row>
@@ -536,13 +537,18 @@
       </template>
     </v-snackbar>
   </v-container>
+  </default>
 </template>
 
 <script>
 import axios from 'axios';
+import Default from '@/components/layout/Default.vue';
 
 export default {
   name: 'SupplyChainManagement',
+  components: {
+    Default,
+  },
   data() {
     return {
       currentStep: 1,
@@ -625,7 +631,7 @@ export default {
         this.showSuccess('Aggregator created successfully!');
         this.currentStep = 2;
       } catch (error) {
-        this.showError('Failed to create aggregator: ' + (error.response?.data?.message || error.message));
+        this.showError(`Failed to create aggregator: ${error.response?.data?.message || error.message}`);
       } finally {
         this.loading = false;
       }
@@ -651,7 +657,7 @@ export default {
           collectionDate: new Date().toISOString().substr(0, 10),
         };
       } catch (error) {
-        this.showError('Failed to record collection: ' + (error.response?.data?.message || error.message));
+        this.showError(`Failed to record collection: ${error.response?.data?.message || error.message}`);
       } finally {
         this.loading = false;
       }
@@ -663,7 +669,7 @@ export default {
         const payload = {
           ...this.batch,
           aggregatorId: this.aggregator.id,
-          aggregationEventIds: this.batch.aggregationEventIds.split(',').map(id => id.trim()),
+          aggregationEventIds: this.batch.aggregationEventIds.split(',').map((id) => id.trim()),
         };
         const response = await axios.post('/api/v1/aggregators/batches', payload);
         this.batch.id = response.data.id;
@@ -671,7 +677,7 @@ export default {
         this.showSuccess('Batch created successfully!');
         this.currentStep = 4;
       } catch (error) {
-        this.showError('Failed to create batch: ' + (error.response?.data?.message || error.message));
+        this.showError(`Failed to create batch: ${error.response?.data?.message || error.message}`);
       } finally {
         this.loading = false;
       }
@@ -686,7 +692,7 @@ export default {
         this.showSuccess('Processor created successfully!');
         this.currentStep = 5;
       } catch (error) {
-        this.showError('Failed to create processor: ' + (error.response?.data?.message || error.message));
+        this.showError(`Failed to create processor: ${error.response?.data?.message || error.message}`);
       } finally {
         this.loading = false;
       }
@@ -706,7 +712,7 @@ export default {
         this.showSuccess('Processing event recorded successfully!');
         this.currentStep = 6;
       } catch (error) {
-        this.showError('Failed to record processing event: ' + (error.response?.data?.message || error.message));
+        this.showError(`Failed to record processing event: ${error.response?.data?.message || error.message}`);
       } finally {
         this.loading = false;
       }

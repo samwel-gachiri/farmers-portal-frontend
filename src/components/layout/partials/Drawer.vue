@@ -156,49 +156,56 @@ export default {
       },
 
       // === EXPORTER EUDR SECTION ===
+      // {
+      //   icon: 'mdi-shield-account',
+      //   text: 'EUDR Dashboard',
+      //   link: { name: 'ExporterEudrDashboard' },
+      //   roles: ['EXPORTER'],
+      //   iconColor: '#dc2626',
+      // },
       {
-        icon: 'mdi-shield-account',
-        text: 'EUDR Dashboard',
-        link: { name: 'ExporterEudrDashboard' },
-        roles: ['EXPORTER'],
-        iconColor: '#dc2626',
-      },
-      {
-        // eslint-disable-next-line sonarjs/no-duplicate-string
-        icon: 'mdi-account-group',
-        text: 'Supplier Compliance',
-        link: { name: 'SupplierCompliance' },
+        icon: 'mdi-package-variant-closed',
+        text: 'Supply Chain Management',
+        link: { name: 'SupplyChainManagement' },
         roles: ['EXPORTER'],
         iconColor: '#16a34a',
       },
-      {
-        icon: 'mdi-alert-octagon',
-        text: 'Risk Management',
-        link: { name: 'RiskManagement' },
-        roles: ['EXPORTER'],
-        iconColor: '#ea580c',
-      },
-      {
-        icon: 'mdi-package-variant-closed',
-        text: 'Batch Management',
-        link: { name: 'ExporterBatches' },
-        roles: ['EXPORTER'],
-        iconColor: '#7c3aed',
-      },
-      {
-        icon: 'mdi-file-chart',
-        text: 'Compliance Reports',
-        link: { name: 'ExporterReports' },
-        roles: ['EXPORTER'],
-        iconColor: '#0ea5e9',
-      },
-      {
-        icon: 'mdi-map-search',
-        text: 'Supply Chain Mapping',
-        link: { name: 'SupplyChainMapping' },
-        roles: ['EXPORTER'],
-        iconColor: '#8b5cf6',
-      },
+      // {
+      //   // eslint-disable-next-line sonarjs/no-duplicate-string
+      //   icon: 'mdi-account-group',
+      //   text: 'Supplier Compliance',
+      //   link: { name: 'SupplierCompliance' },
+      //   roles: ['EXPORTER'],
+      //   iconColor: '#16a34a',
+      // },
+      // {
+      //   icon: 'mdi-alert-octagon',
+      //   text: 'Risk Management',
+      //   link: { name: 'RiskManagement' },
+      //   roles: ['EXPORTER'],
+      //   iconColor: '#ea580c',
+      // },
+      // {
+      //   icon: 'mdi-package-variant-closed',
+      //   text: 'Batch Management',
+      //   link: { name: 'ExporterBatches' },
+      //   roles: ['EXPORTER'],
+      //   iconColor: '#7c3aed',
+      // },
+      // {
+      //   icon: 'mdi-file-chart',
+      //   text: 'Compliance Reports',
+      //   link: { name: 'ExporterReports' },
+      //   roles: ['EXPORTER'],
+      //   iconColor: '#0ea5e9',
+      // },
+      // {
+      //   icon: 'mdi-map-search',
+      //   text: 'Supply Chain Mapping',
+      //   link: { name: 'SupplyChainMapping' },
+      //   roles: ['EXPORTER'],
+      //   iconColor: '#8b5cf6',
+      // },
       {
         icon: 'mdi-gavel',
         text: 'Due Diligence',
@@ -376,6 +383,15 @@ export default {
         text: 'System Settings',
         link: { name: 'SystemSettings' },
         roles: ['ADMIN'],
+        iconColor: '#64748b',
+      },
+
+      // === COMMON: Settings for all users ===
+      {
+        icon: 'mdi-cog-outline',
+        text: 'Settings',
+        link: { name: 'Settings' },
+        roles: ['FARMER', 'BUYER', 'EXPORTER', 'SYSTEM_ADMIN', 'ZONE_SUPERVISOR', 'ADMIN'],
         iconColor: '#64748b',
       },
     ],
