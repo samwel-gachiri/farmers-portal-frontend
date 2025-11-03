@@ -1,11 +1,3 @@
-# Name: Samwel Gachiri Nganga
-# Registration number: J17/5082/2021
-
-
-[//]: # (# Supervisor: Prof. Elizaphan Maina)
-
-[//]: # (# Academic Year: 2024/2025)
-
 # AgriBackup System 
  A web-based application that Provides a platform for farmers to connect, with buyers, and make trade  
 
