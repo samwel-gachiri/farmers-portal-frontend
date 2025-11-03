@@ -246,13 +246,28 @@
         <div class="tw-mb-4 md:tw-mb-0">
           <h2 class="tw-text-xl tw-font-semibold">Ready to transform your farm?</h2>
         </div>
-        <router-link
-          to="/signup"
-          class="tw-bg-white tw-text-green-700 tw-font-semibold tw-py-3 tw-px-6 tw-rounded-lg tw-shadow tw-transition hover:tw-bg-green-100"
-          aria-label="Join AgriBackup Now"
-        >
-          Join Now
-        </router-link>
+        <div class="tw-flex tw-items-center tw-gap-4">
+          <router-link
+            to="/signup"
+            class="tw-bg-white tw-text-green-700 tw-font-semibold tw-py-3 tw-px-6 tw-rounded-lg tw-shadow tw-transition hover:tw-bg-green-100"
+            aria-label="Join AgriBackup Now"
+          >
+            Join Now
+          </router-link>
+
+          <!-- Pre-release product link -->
+          <a
+            href="https://dev.eudr.agribackup.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="tw-inline-flex tw-items-center tw-gap-2 tw-bg-transparent tw-border tw-border-white tw-text-white tw-py-2 tw-px-3 tw-rounded-lg tw-font-semibold hover:tw-bg-white hover:tw-text-green-700 tw-transition"
+            aria-label="EU DR Pre-release"
+            title="EU DR (Pre-release) - opens in a new tab"
+          >
+            <span>EU DR</span>
+            <span class="tw-text-xs tw-bg-yellow-300 tw-text-[#5a3d00] tw-font-bold tw-px-2 tw-py-1 tw-rounded">Pre-release</span>
+          </a>
+        </div>
       </div>
       <div class="tw-mt-6 tw-text-center tw-text-sm tw-opacity-80">
         &copy; 2024 AgriBackup. All rights reserved. | <router-link to="/contact" class="tw-underline tw-text-white">Contact Us</router-link>
