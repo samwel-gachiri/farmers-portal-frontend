@@ -418,7 +418,7 @@ export default {
           }
         }
       } catch (e) {
-        console.error('Auto-login failed', e);
+        this.$toast.error('Auto-login failed', e.message);
       }
     },
     async loginWithRole(roleType) {
