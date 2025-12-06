@@ -225,10 +225,8 @@ export default {
     // fetchRequests() {
     //   axios.get(`/request/buyer?buyerId=${getCurrentUserId()}`)
     //     .then((response) => {
-    //       console.log(response.data.data);
     //     })
     //     .catch((error) => {
-    //       console.log(error);
     //     });
     // },
     // Fetch requests from the API

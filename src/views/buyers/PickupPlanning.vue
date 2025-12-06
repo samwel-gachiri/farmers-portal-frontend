@@ -713,7 +713,6 @@ export default {
     },
 
     generateMockRouteData(stops) {
-      // console.log('Generating mock route data for stops:', stops);
 
       if (!stops || stops.length === 0) {
         // console.warn('No stops provided for mock route');
@@ -723,7 +722,6 @@ export default {
       // Create a simple route connecting all stops in order
       const routeCoordinates = stops.map((stop) => [stop.geometry.x, stop.geometry.y]);
 
-      // console.log('Generated route coordinates:', routeCoordinates);
 
       // Create proper Esri geometry format
       const routeGeometry = {
@@ -753,13 +751,11 @@ export default {
         directions,
       };
 
-      // console.log('Generated mock route:', mockResult);
       return mockResult;
     },
 
     async displayRoute(routeResult, selectedFarmers) {
       try {
-        // console.log('Displaying route on map:', routeResult);
 
         if (!routeResult || !routeResult.route) {
           throw new Error('Invalid route result');
@@ -771,7 +767,6 @@ export default {
             graphicsToKeep.push(graphic);
           }
         });
-        // console.log('Graphics to keep:', graphicsToKeep.length);
         this.routeLayer.removeAll();
         graphicsToKeep.forEach((graphic) => this.routeLayer.add(graphic));
 
@@ -781,7 +776,6 @@ export default {
           width: 4,
         });
 
-        // console.log('Route geometry:', routeResult.route.geometry);
 
         if (!routeResult.route.geometry) {
           throw new Error('Invalid route geometry');
@@ -810,7 +804,6 @@ export default {
         });
 
         this.routeLayer.add(routeGraphic);
-        // console.log('Route graphic added to layer');
 
         // Add stop markers for farmer locations only (starting location already marked)
         const stopSymbol = new SimpleMarkerSymbol({
@@ -849,9 +842,7 @@ export default {
         this.fitMapToRoute(routeGeometry);
 
         this.hasGeneratedRoute = true;
-        // console.log('Route displayed successfully');
       } catch (error) {
-        // console.error('Error displaying route:', error);
         this.$toast.error('Failed to display route on map');
       }
     },
@@ -922,7 +913,6 @@ export default {
         // Navigate to pickup schedules or orders
         this.$router.push({ name: 'BuyerOrders' });
       } catch (error) {
-        // console.error('Error confirming route:', error);
         this.$toast.error('Failed to confirm route. Please try again.');
       } finally {
         this.confirmingRoute = false;
@@ -1024,10 +1014,8 @@ export default {
             this.routeLayer.add(markerGraphic);
           }
         } catch (error) {
-          // console.error('Error creating starting location marker:', error);
         }
       }).catch((error) => {
-        // console.error('Error loading Esri modules for marker:', error);
       });
     },
 
@@ -1049,17 +1037,14 @@ export default {
             this.routeLayer.remove(graphic);
           });
         } catch (error) {
-          // console.error('Error removing starting location marker:', error);
         }
       }
     },
 
     handleMapClick(event) {
-      // console.log('Map clicked:', event);
       if (this.mapView && event && event.mapPoint) {
         try {
           const point = event.mapPoint;
-          // console.log('Setting starting location to:', point.latitude, point.longitude);
 
           this.selectedLocationCoords = { lat: point.latitude, lng: point.longitude };
           this.planningSettings.startLocation = `${point.latitude.toFixed(6)}, ${point.longitude.toFixed(6)}`;
@@ -1069,7 +1054,6 @@ export default {
 
           this.$toast.success('Starting location selected!');
         } catch (error) {
-          // console.error('Error handling map click:', error);
           this.$toast.error('Failed to set starting location');
         }
       } else {

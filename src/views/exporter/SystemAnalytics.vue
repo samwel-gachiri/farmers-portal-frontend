@@ -482,7 +482,6 @@ export default {
         };
       } catch (error) {
         this.error = error.message || 'Failed to load analytics data';
-        // console.error('Analytics loading error:', error);
       } finally {
         this.loading = false;
       }
@@ -497,7 +496,6 @@ export default {
         await this.loadAnalytics(); // Reload all data
       } catch (error) {
         this.$toast.error('Failed to refresh dashboard');
-        // console.error('Dashboard refresh error:', error);
       } finally {
         this.refreshing = false;
       }
@@ -512,7 +510,6 @@ export default {
         // Integrity report is already set in loadAnalytics
       } catch (error) {
         this.$toast.error('Failed to check data integrity');
-        // console.error('Data integrity check error:', error);
       } finally {
         this.checkingIntegrity = false;
       }
@@ -528,7 +525,6 @@ export default {
         await this.loadAnalytics(); // Reload analytics
       } catch (error) {
         this.$toast.error('Failed to fix data integrity issues');
-        // console.error('Data integrity fix error:', error);
       } finally {
         this.fixingIntegrity = false;
       }

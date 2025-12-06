@@ -100,7 +100,6 @@ export default {
           this.exporterId = this.zones[0].exporterId;
         }
       } catch (e) {
-        // console.error('Failed to load zones', e);
         this.$emit('error', 'Failed to load zones');
       }
     },
@@ -111,7 +110,6 @@ export default {
         const filtered = all.filter((f) => f.zoneId === this.zoneId);
         this.farmers = filtered.map((f) => ({ id: f.farmerId, name: f.farmerName }));
       } catch (e) {
-        // console.error('Failed to load farmers', e);
         this.$emit('error', 'Failed to load farmers');
       }
     },
@@ -155,7 +153,7 @@ export default {
             : null,
         }));
       } catch (e) {
-        // console.error('Failed to load suggestions', e);
+        this.$emit('error', 'Failed to load suggestions');
       }
     },
     toggleFarmer(farmerId) {
@@ -186,7 +184,6 @@ export default {
         };
         this.$emit('created', route);
       } catch (e) {
-        // console.error(e);
         this.$emit('error', 'Failed to create');
       }
       this.submitting = false;

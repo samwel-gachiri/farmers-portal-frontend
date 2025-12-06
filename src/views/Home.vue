@@ -42,14 +42,14 @@
       <div class="home-shell">
         <header class="brand">
           <img src="@/assets/images/logo.png" alt="AgriBackup" class="brand-logo" />
-          <div class="brand-content">
+          <!-- <div class="brand-content">
             <h1 class="brand-title">Welcome to AgriBackup</h1>
-            <p class="brand-sub">Connecting Farmers, Buyers & Exporters in One Platform</p>
-            <p class="brand-description">Choose your role below to access personalized features for managing crops, sourcing produce, or handling exports with full EUDR compliance.</p>
-          </div>
+            <p class="brand-sub">EUDR-Compliant Supply Chain Platform</p>
+          </div> -->
+          <p class="brand-description">Choose your role to access features</p>
         </header>
 
-        <section class="portals" :class="{ 'fade-out': showExporterRoles }">
+        <section v-if="!showExporterRoles" class="portals" :class="{ 'fade-out': showExporterRoles }">
           <button class="tile" @click="openSignIn('farmer')" aria-label="Farmer portal">
             <div class="tile-icon"><v-icon size="24">mdi-barn</v-icon></div>
             <div class="tile-body">
@@ -59,15 +59,32 @@
             <v-icon class="tile-arrow">mdi-arrow-right</v-icon>
           </button>
 
-          <button class="tile" @click="openSignIn('buyer')" aria-label="Buyer portal">
+          <!-- <button class="tile" @click="openSignIn('buyer')" aria-label="Buyer portal">
             <div class="tile-icon"><v-icon size="24">mdi-cart</v-icon></div>
             <div class="tile-body">
               <div class="tile-title">Buyer</div>
               <div class="tile-sub">Connect with farmers & buy produce</div>
             </div>
             <v-icon class="tile-arrow">mdi-arrow-right</v-icon>
+          </button> -->
+
+          <button class="tile" @click="openSignIn('aggregator')" aria-label="Aggregator portal">
+            <div class="tile-icon"><v-icon size="24">mdi-truck-delivery</v-icon></div>
+            <div class="tile-body">
+              <div class="tile-title">Aggregator</div>
+              <div class="tile-sub">Collect & coordinate produce logistics</div>
+            </div>
+            <v-icon class="tile-arrow">mdi-arrow-right</v-icon>
           </button>
 
+          <button class="tile" @click="openSignIn('processor')" aria-label="Processor portal">
+            <div class="tile-icon"><v-icon size="24">mdi-factory</v-icon></div>
+            <div class="tile-body">
+              <div class="tile-title">Processor</div>
+              <div class="tile-sub">Process & prepare for export</div>
+            </div>
+            <v-icon class="tile-arrow">mdi-arrow-right</v-icon>
+          </button>
           <button class="tile" @click="showExporterSelection" aria-label="Exporter portal">
             <div class="tile-icon"><v-icon size="24">mdi-export</v-icon></div>
             <div class="tile-body">
@@ -76,6 +93,16 @@
             </div>
             <v-icon class="tile-arrow">mdi-arrow-right</v-icon>
           </button>
+
+          <button class="tile" @click="openSignIn('importer')" aria-label="Importer portal">
+            <div class="tile-icon"><v-icon size="24">mdi-ship-wheel</v-icon></div>
+            <div class="tile-body">
+              <div class="tile-title">Importer</div>
+              <div class="tile-sub">Import & distribute products</div>
+            </div>
+            <v-icon class="tile-arrow">mdi-arrow-right</v-icon>
+          </button>
+
         </section>
 
         <!-- Exporter Roles Section -->
@@ -147,9 +174,15 @@ export default {
       // Determine portal and role context
       let portal = userName;
       let role = '';
-      // exporter roles may pass specific role identifiers like 'system_admin'
-      if (portal !== 'farmer' && portal !== 'buyer' && portal !== 'exporter') {
-        role = portal;
+
+      // Map EUDR roles - these should use their own portal context
+      const eudrRoles = ['aggregator', 'processor', 'importer'];
+      if (eudrRoles.includes(userName)) {
+        portal = userName; // Keep portal as the role name
+        role = userName.toUpperCase(); // Set role to uppercase
+      } else if (userName !== 'farmer' && userName !== 'buyer' && userName !== 'exporter') {
+        // Exporter sub-roles like 'system_admin'
+        role = userName;
         portal = 'exporter';
       }
 
@@ -276,8 +309,8 @@ nav {
 
 .portals {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
   transition: all 0.5s ease;
 }
 

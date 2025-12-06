@@ -4,23 +4,20 @@ import { register } from 'register-service-worker';
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready() {
-      // console.log(
       //   'App is being served from cache by a service worker.\n'
       //   + 'For more details, visit https://goo.gl/AFskqB',
       // );
     },
     registered() {
-      // console.log('Service worker has been registered.');
+      // Service worker registered
     },
     cached() {
-      // console.log('Content has been cached for offline use.');
+      // Content cached
     },
     updatefound() {
-      // console.log('New content is downloading.');
+      // New content available
     },
     updated() {
-      // console.log('New content is available; please refresh.');
-
       // Show a non-blocking banner to prompt user to refresh
       if (!document.getElementById('sw-update-banner')) {
         const banner = document.createElement('div');
@@ -41,8 +38,6 @@ if (process.env.NODE_ENV === 'production') {
       }
     },
     offline() {
-      // console.log('No internet connection found. App is running in offline mode.');
-
       // You can also notify the user that they are offline:
       const offlineBanner = document.createElement('div');
       offlineBanner.textContent = 'You are offline. Some features may not be available.';
@@ -58,7 +53,7 @@ if (process.env.NODE_ENV === 'production') {
     },
     // eslint-disable-next-line no-unused-vars
     error(error) {
-      // console.error('Error during service worker registration:', error);
+      // Service worker error
     },
   });
 }

@@ -185,10 +185,8 @@ export default {
     // fetchListings() {
     //   axios.get(`/listing/farmer?farmerId=${getCurrentUserId()}`)
     //     .then((response) => {
-    //       console.log(response.data.data);
     //     })
     //     .catch((error) => {
-    //       console.log(error);
     //     });
     // },
     // Fetch listings from the API

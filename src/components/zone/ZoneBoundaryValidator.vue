@@ -399,7 +399,6 @@ export default {
               };
             }
           } catch (error) {
-            // console.error(`Error validating farmer ${farmer.farmerId}:`, error);
             return {
               id: farmer.farmerId,
               farmerName: farmer.farmerName,
@@ -417,7 +416,6 @@ export default {
         this.displayValidationResults();
         this.$emit('validation-completed', this.validationResults);
       } catch (error) {
-        // console.error('Error validating farmers:', error);
         // eslint-disable-next-line sonarjs/no-duplicate-string
         this.$emit('show-message', { type: 'error', text: 'Failed to validate farmers' });
       } finally {
@@ -458,7 +456,6 @@ export default {
           this.$emit('overlaps-found', this.overlapResults);
         }
       } catch (error) {
-        // console.error('Error checking zone overlaps:', error);
         this.$emit('show-message', { type: 'error', text: 'Failed to check zone overlaps' });
       } finally {
         this.checkingOverlaps = false;
@@ -486,7 +483,6 @@ export default {
           });
         }
       } catch (error) {
-        // console.error('Error finding optimal zone:', error);
         this.$emit('show-message', { type: 'error', text: 'Failed to find optimal zone' });
       } finally {
         this.findingOptimal = false;

@@ -41,7 +41,6 @@ export default {
       })
       .catch(() => {
         // eslint-disable-next-line no-console
-        // console.error('ArcGIS load failed', e);
       });
   },
   watch: {

@@ -1,9 +1,6 @@
+<!-- eslint-disable vue/no-use-v-if-with-v-for -->
 <template>
-  <div class="app-drawer-wrap">
-    <div class="app-drawer-bg">
-      <div class="app-drawer-shape shape-1"></div>
-      <div class="app-drawer-shape shape-2"></div>
-    </div>
+  <div class="">
     <div class="app-drawer-glass">
       <!-- Header: Brand + User (minimal) -->
       <div class="app-drawer-header">
@@ -20,15 +17,46 @@
             </div>
           </div>
         </div>
-<!--   <role-indicator /> -->
+        <role-indicator />
       </div>
 
       <!-- Navigation (comprehensive, role-based) -->
       <nav class="app-nav-list">
         <template v-for="(item, i) in navigationItems">
+          <!-- Section with children (collapsible) -->
+          <div v-if="item.isSection && canView(item)" :key="`section-${i}`" class="app-nav-section">
+            <div class="app-nav-section-header" @click="toggleSection(item.text)">
+              <span class="app-nav-icon">
+                <v-icon :color="item.iconColor || 'primary'">{{ item.icon }}</v-icon>
+              </span>
+              <span class="app-nav-text">{{ item.text }}</span>
+              <v-icon class="app-nav-expand-icon" :class="{ 'app-nav-expanded': isSectionExpanded(item.text) }">
+                mdi-chevron-down
+              </v-icon>
+            </div>
+            <transition name="app-nav-expand">
+              <div v-show="isSectionExpanded(item.text)" class="app-nav-children">
+                <router-link
+                  v-for="(child, j) in item.children"
+                  v-if="canView(child)"
+                  :key="`${i}-${j}`"
+                  :to="child.link"
+                  class="app-nav-item app-nav-child"
+                  active-class="app-nav-active"
+                  exact
+                >
+                  <span class="app-nav-icon">
+                    <v-icon :color="child.iconColor || 'primary'">{{ child.icon }}</v-icon>
+                  </span>
+                  <span class="app-nav-text">{{ child.text }}</span>
+                </router-link>
+              </div>
+            </transition>
+          </div>
+          <!-- Regular navigation item -->
           <router-link
-            v-if="canView(item)"
-            :key="i"
+            v-else-if="!item.isSection && canView(item)"
+            :key="`item-${i}`"
             :to="item.link"
             class="app-nav-item"
             active-class="app-nav-active"
@@ -43,7 +71,7 @@
       </nav>
 
       <!-- Feedback (minimal) -->
-      <div class="app-feedback-section">
+      <div v-if="false" class="app-feedback-section">
         <v-btn block text color="primary" class="app-feedback-btn" @click="$emit('openFeedback')">
           <v-icon left>mdi-lightbulb-outline</v-icon>
           Suggest Improvement
@@ -61,27 +89,38 @@ import LogoTitle from '@/components/shared/LogoText.vue';
 import Avatar from '@/components/layout/partials/nav/Avatar.vue';
 // eslint-disable-next-line no-unused-vars
 import RoleIndicator from '@/components/shared/RoleIndicator.vue';
-import { getCurrentUserId } from '@/utils/roles.js';
+import { getCurrentUserId } from '@/utils/roles';
 
 export default {
   name: 'AppDrawer',
-  // eslint-disable-next-line vue/no-unused-components
-  components: { LogoTitle, Avatar },
+  components: {
+    // eslint-disable-next-line vue/no-unused-components
+    LogoTitle, Avatar, RoleIndicator, getCurrentUserId,
+  },
   data: () => ({
+    expandedSections: [], // Default expanded sections
     navigationItems: [
       // Common: Dashboard for all roles
       {
         icon: 'mdi-apps-box',
         text: 'Dashboard',
         link: { name: 'Dashboard' },
-        roles: ['FARMER', 'BUYER', 'EXPORTER', 'SYSTEM_ADMIN', 'ZONE_SUPERVISOR'],
+        roles: ['FARMER', 'BUYER', 'EXPORTER', 'SYSTEM_ADMIN', 'ZONE_SUPERVISOR', 'AGGREGATOR'],
         iconColor: '#222',
       },
+      // === FARMER EUDR SECTION ===
+      {
+        icon: 'mdi-map-marker-radius',
+        text: 'My Production Units',
+        link: { name: 'FarmerProductionUnits' },
+        roles: ['FARMER'],
+        iconColor: '#16a34a',
+      },
 
-      // === FARMER PORTAL ===
+      // === FARMER PORTAL (NON-EUDR - COMMENTED OUT) ===
       {
         icon: 'mdi-barn',
-        text: 'My Farm',
+        text: 'My Produces',
         get link() {
           const id = getCurrentUserId();
           return id ? { name: 'MyFarm', params: { farmerId: id } } : { name: 'MyFarm' };
@@ -89,13 +128,13 @@ export default {
         roles: ['FARMER'],
         iconColor: '#16a34a',
       },
-      {
-        icon: 'mdi-sprout-outline',
-        text: 'Harvest & Yields',
-        link: { name: 'HarvestAndYields' },
-        roles: ['FARMER'],
-        iconColor: '#f97316',
-      },
+      // {
+      //   icon: 'mdi-sprout-outline',
+      //   text: 'Harvest & Yields',
+      //   link: { name: 'HarvestAndYields' },
+      //   roles: ['FARMER'],
+      //   iconColor: '#f97316',
+      // },
       {
         icon: 'mdi-format-list-bulleted-square',
         text: 'Listings',
@@ -118,154 +157,250 @@ export default {
         iconColor: '#8b5cf6',
       },
 
-      // === BUYER PORTAL ===
+      // {
+      //   icon: 'mdi-file-document-multiple',
+      //   text: 'My Documents',
+      //   link: { name: 'FarmerDocuments' },
+      //   roles: ['FARMER'],
+      //   iconColor: '#0ea5e9',
+      // },
+
+      // === AGGREGATOR EUDR SECTION ===
       {
-        // eslint-disable-next-line sonarjs/no-duplicate-string
-        icon: 'mdi-account-group',
-        text: 'My Farmers',
-        link: { name: 'MyFarmers' },
-        roles: ['BUYER'],
+        icon: 'mdi-vector-polygon',
+        text: 'Spatial Intersections',
+        link: { name: 'AggregatorSpatialIntersections' },
+        roles: ['AGGREGATOR'],
+        iconColor: '#2563eb',
+      },
+
+      // === PROCESSOR EUDR SECTION ===
+      {
+        icon: 'mdi-factory',
+        text: 'Processor Dashboard',
+        link: { name: 'ProcessorDashboard' },
+        roles: ['PROCESSOR'],
+        iconColor: '#7c3aed',
+      },
+
+      // === IMPORTER EUDR SECTION ===
+      {
+        icon: 'mdi-ship-wheel',
+        text: 'Importer Dashboard',
+        link: { name: 'ImporterDashboard' },
+        roles: ['IMPORTER'],
+        iconColor: '#0891b2',
+      },
+
+      // === SYSTEM ADMIN EUDR SECTION ===
+      {
+        icon: 'mdi-shield-crown',
+        text: 'EUDR Administration',
+        link: { name: 'EudrAdministration' },
+        roles: ['SYSTEM_ADMIN'],
+        iconColor: '#dc2626',
+      },
+      {
+        icon: 'mdi-database-check',
+        text: 'Data Verification',
+        link: { name: 'DataVerification' },
+        roles: ['SYSTEM_ADMIN'],
         iconColor: '#16a34a',
       },
       {
-        icon: 'mdi-magnify',
-        text: 'Browse Listings',
-        link: { name: 'BrowseListings' },
-        roles: ['BUYER'],
-        iconColor: '#6366f1',
-      },
-      {
-        icon: 'mdi-cart-outline',
-        text: 'My Orders',
-        link: { name: 'BuyerOrders' },
-        roles: ['BUYER'],
-        iconColor: '#0ea5e9',
-      },
-      {
-        icon: 'mdi-map-marker-path',
-        text: 'Pickup Planning',
-        link: { name: 'PickupPlanning' },
-        roles: ['BUYER'],
-        iconColor: '#f59e0b',
-      },
-      {
-        icon: 'mdi-chart-areaspline',
-        text: 'Analytics',
-        link: { name: 'BuyerAnalytics' },
-        roles: ['BUYER'],
+        icon: 'mdi-chart-timeline-variant',
+        text: 'System Analytics',
+        link: { name: 'SystemAnalytics' },
+        roles: ['SYSTEM_ADMIN'],
         iconColor: '#8b5cf6',
       },
 
-      // === EXPORTER PORTAL (Super Admin role: 'exporter') ===
+      // === BUYER PORTAL (NON-EUDR - COMMENTED OUT) ===
+      // {
+      //   icon: 'mdi-account-group',
+      //   text: 'My Farmers',
+      //   link: { name: 'MyFarmers' },
+      //   roles: ['BUYER'],
+      //   iconColor: '#16a34a',
+      // },
+      // {
+      //   icon: 'mdi-magnify',
+      //   text: 'Browse Listings',
+      //   link: { name: 'BrowseListings' },
+      //   roles: ['BUYER'],
+      //   iconColor: '#6366f1',
+      // },
+      // {
+      //   icon: 'mdi-cart-outline',
+      //   text: 'My Orders',
+      //   link: { name: 'BuyerOrders' },
+      //   roles: ['BUYER'],
+      //   iconColor: '#0ea5e9',
+      // },
+      // {
+      //   icon: 'mdi-map-marker-path',
+      //   text: 'Pickup Planning',
+      //   link: { name: 'PickupPlanning' },
+      //   roles: ['BUYER'],
+      //   iconColor: '#f59e0b',
+      // },
+      // {
+      //   icon: 'mdi-chart-areaspline',
+      //   text: 'Analytics',
+      //   link: { name: 'BuyerAnalytics' },
+      //   roles: ['BUYER'],
+      //   iconColor: '#8b5cf6',
+      // },
+
+      // === EXPORTER PORTAL (EUDR Management) ===
+      {
+        icon: 'mdi-shield-check',
+        text: 'EUDR Compliance',
+        isSection: true,
+        roles: ['EXPORTER', 'SYSTEM_ADMIN', 'VERIFIER', 'AUDITOR'],
+        iconColor: '#dc2626',
+        children: [
+          {
+            icon: 'mdi-alert-octagon',
+            text: 'Risk Management',
+            link: { name: 'RiskManagement' },
+            roles: ['EXPORTER', 'SYSTEM_ADMIN', 'VERIFIER', 'AUDITOR'],
+            iconColor: '#ea580c',
+          },
+          {
+            icon: 'mdi-clipboard-check-outline',
+            text: 'Mitigation Tracking',
+            link: { name: 'MitigationTracking' },
+            roles: ['EXPORTER', 'SYSTEM_ADMIN', 'VERIFIER', 'AUDITOR'],
+            iconColor: '#f59e0b',
+          },
+          {
+            icon: 'mdi-file-document-outline',
+            text: 'Compliance Reporting',
+            link: { name: 'ComplianceReporting' },
+            roles: ['EXPORTER', 'SYSTEM_ADMIN', 'VERIFIER', 'AUDITOR'],
+            iconColor: '#10b981',
+          },
+          {
+            icon: 'mdi-certificate',
+            text: 'Certificate Viewer',
+            link: { name: 'CertificateViewer' },
+            roles: ['EXPORTER', 'SYSTEM_ADMIN', 'VERIFIER', 'AUDITOR', 'IMPORTER'],
+            iconColor: '#3b82f6',
+          },
+        ],
+      },
       {
         icon: 'mdi-map-marker-radius',
-        text: 'Zone Management',
+        text: 'Zones',
         link: { name: 'ZoneManagement' },
         roles: ['EXPORTER', 'SYSTEM_ADMIN'],
         iconColor: '#f59e42',
       },
       {
-        icon: 'mdi-account-group',
-        text: 'System Admins',
-        link: { name: 'SystemAdminsManagement' },
-        roles: ['EXPORTER'],
-        iconColor: '#6366f1',
-      },
-      {
-        icon: 'mdi-account-supervisor',
-        text: 'Zone Supervisors',
-        link: { name: 'ZoneSupervisorsManagement' },
-        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
-        iconColor: '#16a34a',
-      },
-      {
         icon: 'mdi-account-multiple',
-        text: 'Farmers Management',
+        text: 'Farmers',
         link: { name: 'FarmersManagement' },
         roles: ['EXPORTER', 'SYSTEM_ADMIN'],
         iconColor: '#f97316',
       },
       {
         icon: 'mdi-truck-delivery',
-        text: 'Pickup Schedules',
-        link: { name: 'PickupSchedulesManagement' },
+        text: 'Aggregators',
+        link: { name: 'AggregatorsManagement' },
         roles: ['EXPORTER', 'SYSTEM_ADMIN'],
-        iconColor: '#0ea5e9',
+        iconColor: '#2563eb',
       },
+      {
+        icon: 'mdi-factory',
+        text: 'Processors',
+        link: { name: 'ProcessorsManagement' },
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#7c3aed',
+      },
+      {
+        icon: 'mdi-ship-wheel',
+        text: 'Importers',
+        link: { name: 'ImportersManagement' },
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#0891b2',
+      },
+      {
+        icon: 'mdi-transit-connection-variant',
+        text: 'Supply Chain Workflow',
+        link: { name: 'SupplyChainWorkflow' },
+        roles: ['EXPORTER', 'SYSTEM_ADMIN'],
+        iconColor: '#10b981',
+      },
+
+      // === ZONE SUPERVISOR PORTAL (NON-EUDR - COMMENTED OUT) ===
       // {
-      //   icon: 'mdi-routes',
-      //   text: 'Pickup Routes',
-      //   link: { name: 'PickupRoutes' },
-      //   roles: ['EXPORTER', 'SYSTEM_ADMIN'],
-      //   iconColor: '#ec4899',
+      //   icon: 'mdi-map-marker-path',
+      //   text: 'Zone Management',
+      //   link: { name: 'ZoneManagement' },
+      //   roles: ['ZONE_SUPERVISOR'],
+      //   iconColor: '#f59e42',
       // },
       // {
-      //   icon: 'mdi-chart-box-outline',
-      //   text: 'System Analytics',
-      //   link: { name: 'SystemAnalytics' },
-      //   roles: ['EXPORTER', 'SYSTEM_ADMIN'],
+      //   icon: 'mdi-account-multiple',
+      //   text: 'Zone Farmers',
+      //   link: { name: 'ZoneFarmers' },
+      //   roles: ['ZONE_SUPERVISOR'],
+      //   iconColor: '#16a34a',
+      // },
+      // {
+      //   icon: 'mdi-truck-delivery',
+      //   text: 'Zone Pickups',
+      //   link: { name: 'ZonePickups' },
+      //   roles: ['ZONE_SUPERVISOR'],
+      //   iconColor: '#0ea5e9',
+      // },
+
+      // === ADMIN PORTAL (NON-EUDR - COMMENTED OUT) ===
+      // {
+      //   icon: 'mdi-file-document-check',
+      //   text: 'License Review',
+      //   link: { name: 'LicenseReview' },
+      //   roles: ['ADMIN'],
+      //   iconColor: '#f59e0b',
+      // },
+      // {
+      //   icon: 'mdi-account-group',
+      //   text: 'Users Report',
+      //   link: { name: 'UsersReport' },
+      //   roles: ['ADMIN'],
+      //   iconColor: '#6366f1',
+      // },
+      // {
+      //   icon: 'mdi-file-document-outline',
+      //   text: 'Orders Report',
+      //   link: { name: 'OrdersReport' },
+      //   roles: ['ADMIN'],
+      //   iconColor: '#0ea5e9',
+      // },
+      // {
+      //   icon: 'mdi-chart-line',
+      //   text: 'System Reports',
+      //   link: { name: 'SystemReports' },
+      //   roles: ['ADMIN'],
       //   iconColor: '#8b5cf6',
       // },
+      // {
+      //   icon: 'mdi-cog',
+      //   text: 'System Settings',
+      //   link: { name: 'SystemSettings' },
+      //   roles: ['ADMIN'],
+      //   iconColor: '#64748b',
+      // },
 
-      // === ZONE SUPERVISOR PORTAL ===
-      {
-        icon: 'mdi-map-marker-path',
-        text: 'Zone Management',
-        link: { name: 'ZoneManagement' },
-        roles: ['ZONE_SUPERVISOR'],
-        iconColor: '#f59e42',
-      },
-      {
-        icon: 'mdi-account-multiple',
-        text: 'Zone Farmers',
-        link: { name: 'ZoneFarmers' },
-        roles: ['ZONE_SUPERVISOR'],
-        iconColor: '#16a34a',
-      },
-      {
-        icon: 'mdi-truck-delivery',
-        text: 'Zone Pickups',
-        link: { name: 'ZonePickups' },
-        roles: ['ZONE_SUPERVISOR'],
-        iconColor: '#0ea5e9',
-      },
-
-      // === ADMIN PORTAL ===
-      {
-        icon: 'mdi-file-document-check',
-        text: 'License Review',
-        link: { name: 'LicenseReview' },
-        roles: ['ADMIN'],
-        iconColor: '#f59e0b',
-      },
-      {
-        icon: 'mdi-account-group',
-        text: 'Users Report',
-        link: { name: 'UsersReport' },
-        roles: ['ADMIN'],
-        iconColor: '#6366f1',
-      },
-      {
-        icon: 'mdi-file-document-outline',
-        text: 'Orders Report',
-        link: { name: 'OrdersReport' },
-        roles: ['ADMIN'],
-        iconColor: '#0ea5e9',
-      },
-      {
-        icon: 'mdi-chart-line',
-        text: 'System Reports',
-        link: { name: 'SystemReports' },
-        roles: ['ADMIN'],
-        iconColor: '#8b5cf6',
-      },
-      {
-        icon: 'mdi-cog',
-        text: 'System Settings',
-        link: { name: 'SystemSettings' },
-        roles: ['ADMIN'],
-        iconColor: '#64748b',
-      },
+      // === COMMON: Settings for all users (except FARMER for EUDR focus) ===
+      // {
+      //   icon: 'mdi-cog-outline',
+      //   text: 'Settings',
+      //   link: { name: 'Settings' },
+      //   roles: ['BUYER', 'EXPORTER', 'SYSTEM_ADMIN', 'ZONE_SUPERVISOR', 'ADMIN', 'AGGREGATOR', 'PROCESSOR', 'IMPORTER'],
+      //   iconColor: '#64748b',
+      // },
     ],
   }),
   computed: {
@@ -289,9 +424,28 @@ export default {
   },
   methods: {
     canView(item) {
+      // Check EUDR navigation setting
+      if (item.text && item.text.includes('EUDR') && !this.isEudrEnabled()) {
+        return false;
+      }
+
       return !item.roles || item.roles.length === 0
         ? true
         : (this.userRole && item.roles.includes(this.userRole));
+    },
+    isEudrEnabled() {
+      return localStorage.getItem('eudrEnabled') !== 'false';
+    },
+    toggleSection(sectionName) {
+      const index = this.expandedSections.indexOf(sectionName);
+      if (index > -1) {
+        this.expandedSections.splice(index, 1);
+      } else {
+        this.expandedSections.push(sectionName);
+      }
+    },
+    isSectionExpanded(sectionName) {
+      return this.expandedSections.includes(sectionName);
     },
   },
 };
@@ -425,17 +579,75 @@ export default {
   gap: 4px;
   padding: 10px 0 0 0;
   flex: 1 1 auto;
+  overflow-y: auto;
+}
+.app-nav-section {
+  display: flex;
+  flex-direction: column;
+  margin: 0 8px;
+}
+.app-nav-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: #2e7d32;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(4px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  letter-spacing: 0.01em;
+  user-select: none;
+}
+.app-nav-section-header:hover {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(46, 125, 50, 0.15));
+  color: #2e7d32;
+  border-color: rgba(76, 175, 80, 0.3);
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.12);
+}
+.app-nav-expand-icon {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+.app-nav-expanded {
+  transform: rotate(180deg);
+}
+.app-nav-children {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0;
+  margin-left: 12px;
+  border-left: 2px solid rgba(76, 175, 80, 0.2);
+  padding-left: 8px;
+}
+.app-nav-child {
+  font-size: 0.95rem !important;
+  padding: 5px 10px !important;
+}
+.app-nav-expand-enter-active,
+.app-nav-expand-leave-active {
+  transition: all 0.3s ease;
+  max-height: 500px;
+  overflow: hidden;
+}
+.app-nav-expand-enter-from,
+.app-nav-expand-leave-to {
+  max-height: 0;
+  opacity: 0;
 }
 .app-nav-item {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   padding: 6px 12px 6px 12px;
   border-radius: 6px;
   color: #2e7d32;
-  font-weight: 500;
-  font-family: 'Arial, sans-serif';
-  font-size: 1.02rem;
+  font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
   margin: 0 8px;
@@ -463,7 +675,7 @@ export default {
 .app-nav-icon {
   display: flex;
   align-items: center;
-  font-size: 1.4em;
+  /* font-size: 1.4em; */
   color: #4caf50;
   text-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }

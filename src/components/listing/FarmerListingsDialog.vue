@@ -154,7 +154,6 @@ export default {
     //     });
     //     this.farmerProducts = response.data.data || [];
     //   } catch (error) {
-    //     console.error('Error fetching farmer products:', error.message);
     //   }
     // },
 

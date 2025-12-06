@@ -248,7 +248,6 @@ export default {
           this.performanceChartSeries = this.buildPerformanceChartSeries(performanceData);
         }
       } catch (error) {
-        // console.error('Error loading analytics:', error);
         this.$toast.error('Failed to load analytics data. Using demo data.');
         // Keep the existing mock data as fallback
         this.topPerformers = [

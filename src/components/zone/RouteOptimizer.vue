@@ -287,7 +287,6 @@ export default {
           this.displayZoneAndFarmers();
         }
       } catch (error) {
-        // console.error('Error loading farmers:', error);
         // eslint-disable-next-line sonarjs/no-duplicate-string
         this.$emit('show-message', { type: 'error', text: 'Failed to load farmers' });
       } finally {
@@ -376,7 +375,6 @@ export default {
           this.$emit('route-optimized', this.optimizedRoute);
         }
       } catch (error) {
-        // console.error('Error optimizing route:', error);
         // Fallback to client-side optimization
         this.optimizedRoute = this.clientSideOptimization();
         this.displayOptimizedRoute();
@@ -635,7 +633,6 @@ export default {
 
         this.scheduleDialog = false;
       } catch (error) {
-        // console.error('Error scheduling pickups:', error);
         this.$emit('show-message', { type: 'error', text: 'Failed to schedule pickups' });
       } finally {
         this.scheduling = false;

@@ -203,7 +203,6 @@ export default {
         // Filter produces for yield recording: only GROWING, READY_TO_HARVEST, or HARVESTED
         this.produces = (farmer.farmerProduces || []).filter((produce) => ['GROWING', 'READY_TO_HARVEST', 'HARVESTED'].includes(produce.status));
       } catch (error) {
-        // console.error('Error fetching farmer produces:', error);
         this.produces = [];
         this.$toast.error('Failed to load your produces. Please try again.');
       }
@@ -256,7 +255,6 @@ export default {
         this.form.notes = '';
         this.fetchYieldHistory();
       } catch (e) {
-        // console.error('Error recording yield:', e);
         this.$toast.error(e.response?.data?.message || 'Failed to record yield. Please try again.');
       }
     },
@@ -293,7 +291,7 @@ export default {
     },
     async deleteYield(yieldItem) {
       // eslint-disable-next-line no-alert, no-restricted-globals
-      if (!confirm('Delete this yield record?')) return;
+      // if (!confirm('Delete this yield record?')) return;
       try {
         await axios.delete(`/api/yields/${yieldItem.id}`);
         this.$toast.success('Yield deleted.');

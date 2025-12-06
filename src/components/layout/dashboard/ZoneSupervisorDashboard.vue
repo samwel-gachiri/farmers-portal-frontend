@@ -309,7 +309,6 @@ export default {
         ]);
         this.calculateMetrics();
       } catch (error) {
-        // console.error('Error loading dashboard data:', error);
         this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
       } finally {
         this.loading = false;
@@ -317,24 +316,16 @@ export default {
     },
 
     async loadAssignedZones() {
-      try {
-        const response = await axios.get('/api/zone-supervisor-service/zones');
-        if (response.data.success) {
-          this.assignedZones = response.data.data;
-        }
-      } catch (error) {
-        // console.error('Error loading assigned zones:', error);
+      const response = await axios.get('/api/zone-supervisor-service/zones');
+      if (response.data.success) {
+        this.assignedZones = response.data.data;
       }
     },
 
     async loadFarmersInZones() {
-      try {
-        const response = await axios.get('/api/zone-supervisor-service/farmers');
-        if (response.data.success) {
-          this.farmersInZones = response.data.data;
-        }
-      } catch (error) {
-        // console.error('Error loading farmers:', error);
+      const response = await axios.get('/api/zone-supervisor-service/farmers');
+      if (response.data.success) {
+        this.farmersInZones = response.data.data;
       }
     },
 
@@ -351,7 +342,6 @@ export default {
           }));
         }
       } catch (error) {
-        // console.error('Error loading today\'s schedule:', error);
         // Mock data for demonstration
         this.todaysSchedule = [
           {
@@ -426,7 +416,6 @@ export default {
           await this.loadTodaysSchedule();
         }
       } catch (error) {
-        // console.error('Error scheduling pickup:', error);
         this.showMessage({ type: 'error', text: 'Failed to schedule pickup' });
       } finally {
         this.schedulingPickup = false;
@@ -435,16 +424,13 @@ export default {
 
     onZoneSelected(zone) {
       this.selectedZone = zone;
-      // console.log('Zone selected:', zone);
     },
 
     onFarmerSelected(farmer) {
       this.selectedFarmer = farmer;
-      // console.log('Farmer selected:', farmer);
     },
 
     onRouteOptimized(route) {
-      // console.log('Route optimized:', route);
       this.showMessage({
         type: 'success',
         text: `Route optimized: ${route.estimatedDistance}km, ${route.estimatedDuration}min`,
@@ -452,7 +438,6 @@ export default {
     },
 
     onPickupsScheduled() {
-      // console.log('Pickups scheduled:', data);
       this.loadTodaysSchedule();
     },
 

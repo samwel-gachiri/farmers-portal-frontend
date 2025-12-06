@@ -32,6 +32,15 @@ const ifNotAuthenticated = (_to, _from, next) => {
 
 const routes = [
   {
+    path: "/documentation",
+    name: "Documentation",
+    component: () => import("../views/common/Documentation.vue"),
+    meta: {
+      title: "Documentation | AgriBackup",
+      requiresAuth: false,
+    },
+  },
+  {
     path: "/harvest-yields",
     name: "HarvestAndYields",
     component: () => import("../views/HarvestAndYields.vue"),
@@ -67,6 +76,273 @@ const routes = [
       icon: "mdi-chart-areaspline",
     },
   },
+  // === FARMER EUDR ROUTES ===
+  {
+    path: "/farmer/eudr/production-units",
+    name: "FarmerProductionUnits",
+    component: () => import("../views/farmer/eudr/FarmerProductionUnits.vue"),
+    meta: {
+      title: "My Production Units",
+      requiresAuth: true,
+      roles: ["FARMER"],
+      description: "Manage your farm production areas and land verification",
+      icon: "mdi-map-marker-radius",
+    },
+  },
+  {
+    path: "/farmer/eudr/documents",
+    name: "FarmerDocuments",
+    component: () => import("../views/farmer/eudr/FarmerDocuments.vue"),
+    meta: {
+      title: "My Documents",
+      requiresAuth: true,
+      roles: ["FARMER"],
+      description: "Upload and manage your EUDR compliance documents",
+      icon: "mdi-file-document-multiple",
+    },
+  },
+
+  // === EXPORTER EUDR ROUTES ===
+  {
+    path: "/exporter/eudr/dashboard",
+    name: "ExporterEudrDashboard",
+    component: () => import("../views/exporter/eudr/ExporterEudrDashboard.vue"),
+    meta: {
+      title: "EUDR Dashboard",
+      requiresAuth: true,
+      roles: ["EXPORTER"],
+      description: "Monitor and manage your suppliers' EUDR compliance status",
+      icon: "mdi-shield-account",
+    },
+  },
+  {
+    path: "/exporter/eudr/supplier-compliance",
+    name: "SupplierCompliance",
+    component: () => import("../views/exporter/eudr/SupplierCompliance.vue"),
+    meta: {
+      title: "Supplier Compliance",
+      requiresAuth: true,
+      roles: ["EXPORTER"],
+      description: "Manage and verify all farmer suppliers' compliance",
+      icon: "mdi-account-group",
+    },
+  },
+  {
+    path: "/exporter/eudr/risk-management",
+    name: "RiskManagement",
+    component: () => import("../views/exporter/eudr/RiskManagement.vue"),
+    meta: {
+      title: "Risk Management",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN", "VERIFIER", "AUDITOR"],
+      description: "Assess and mitigate supply chain risks",
+      icon: "mdi-alert-octagon",
+    },
+  },
+  {
+    path: "/exporter/eudr/mitigation-tracking",
+    name: "MitigationTracking",
+    component: () => import("../views/exporter/eudr/MitigationTracking.vue"),
+    meta: {
+      title: "Mitigation Tracking",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN", "VERIFIER", "AUDITOR"],
+      description: "Track and manage risk mitigation workflows",
+      icon: "mdi-shield-check",
+    },
+  },
+  {
+    path: "/exporter/eudr/compliance-reporting",
+    name: "ComplianceReporting",
+    component: () => import("../views/exporter/eudr/ComplianceReporting.vue"),
+    meta: {
+      title: "Compliance Reporting",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN", "VERIFIER", "AUDITOR"],
+      description: "Generate and submit authority compliance reports",
+      icon: "mdi-file-chart",
+    },
+  },
+  {
+    path: "/exporter/eudr/batches",
+    name: "ExporterBatches",
+    component: () => import("../views/exporter/eudr/ExporterBatches.vue"),
+    meta: {
+      title: "Batch Management",
+      requiresAuth: true,
+      roles: ["EXPORTER"],
+      description: "Manage and track commodity batches from suppliers",
+      icon: "mdi-package-variant-closed",
+    },
+  },
+  {
+    path: "/exporter/eudr/compliance-reports",
+    name: "ExporterReports",
+    component: () => import("../views/exporter/eudr/ExporterReports.vue"),
+    meta: {
+      title: "Compliance Reports",
+      requiresAuth: true,
+      roles: ["EXPORTER"],
+      description: "Generate reports for regulatory submission",
+      icon: "mdi-file-chart",
+    },
+  },
+  {
+    path: "/exporter/eudr/supply-chain-mapping",
+    name: "SupplyChainMapping",
+    component: () => import("../views/exporter/eudr/SupplyChainMapping.vue"),
+    meta: {
+      title: "Supply Chain Mapping",
+      requiresAuth: true,
+      roles: ["EXPORTER"],
+      description: "Visualize and map your entire supply chain",
+      icon: "mdi-map-search",
+    },
+  },
+
+  // === AGGREGATOR EUDR ROUTES ===
+  {
+    path: "/aggregator/dashboard",
+    name: "AggregatorDashboard",
+    component: () => import("../views/aggregator/AggregatorDashboard.vue"),
+    meta: {
+      title: "Aggregator Dashboard",
+      requiresAuth: true,
+      roles: ["AGGREGATOR"],
+      description: "Aggregator overview and main workspace",
+      icon: "mdi-view-dashboard",
+    },
+  },
+  {
+    path: "/aggregator/eudr/intersections",
+    name: "AggregatorSpatialIntersections",
+    component: () => import("../views/aggregator/AggregatorSpatialIntersections.vue"),
+    meta: {
+      title: "Spatial Intersections",
+      requiresAuth: true,
+      roles: ["AGGREGATOR"],
+      description: "Run polygon intersection checks against registered production units",
+      icon: "mdi-vector-polygon",
+    },
+  },
+
+  // === PROCESSOR EUDR ROUTES ===
+  {
+    path: "/processor/dashboard",
+    name: "ProcessorDashboard",
+    component: () => import("../views/processor/ProcessorDashboard.vue"),
+    meta: {
+      title: "Processor Dashboard",
+      requiresAuth: true,
+      roles: ["PROCESSOR"],
+      description: "Processor overview and compliance workspace",
+      icon: "mdi-factory",
+    },
+  },
+
+  // === IMPORTER EUDR ROUTES ===
+  {
+    path: "/importer/dashboard",
+    name: "ImporterDashboard",
+    component: () => import("../views/importer/ImporterDashboard.vue"),
+    meta: {
+      title: "Importer Dashboard",
+      requiresAuth: true,
+      roles: ["IMPORTER"],
+      description: "Importer overview and due diligence workspace",
+      icon: "mdi-ship-wheel",
+    },
+  },
+
+  // === COMMON EUDR ROUTES (Multi-role access) ===
+  {
+    path: "/common/certificates",
+    name: "CertificateViewer",
+    component: () => import("../views/common/CertificateViewer.vue"),
+    meta: {
+      title: "EUDR Certificates",
+      requiresAuth: true,
+      roles: ["EXPORTER", "IMPORTER", "SYSTEM_ADMIN", "VERIFIER", "AUDITOR"],
+      description: "View and verify blockchain-based compliance certificates",
+      icon: "mdi-certificate",
+    },
+  },
+
+  // === ADMIN MANAGEMENT ROUTES ===
+  {
+    path: "/exporter/supply-chain-workflow",
+    name: "SupplyChainWorkflow",
+    component: () => import("../views/exporter/SupplyChainWorkflow.vue"),
+    meta: {
+      title: "Supply Chain Workflow",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN"],
+      description: "Track produce journey from farm to export",
+      icon: "mdi-transit-connection-variant",
+    },
+  },
+  {
+    path: "/admin/aggregators",
+    name: "AggregatorsManagement",
+    component: () => import("../views/admin/AggregatorsManagement.vue"),
+    meta: {
+      title: "Aggregators Management",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN"],
+      description: "Manage aggregators in the supply chain",
+      icon: "mdi-truck-delivery",
+    },
+  },
+  {
+    path: "/admin/processors",
+    name: "ProcessorsManagement",
+    component: () => import("../views/admin/ProcessorsManagement.vue"),
+    meta: {
+      title: "Processors Management",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN"],
+      description: "Manage processors in the supply chain",
+      icon: "mdi-factory",
+    },
+  },
+  {
+    path: "/admin/importers",
+    name: "ImportersManagement",
+    component: () => import("../views/admin/ImportersManagement.vue"),
+    meta: {
+      title: "Importers Management",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN"],
+      description: "Manage importers in the supply chain",
+      icon: "mdi-ship-wheel",
+    },
+  },
+
+  // === SYSTEM ADMIN EUDR ROUTES ===
+  {
+    path: "/admin/eudr/administration",
+    name: "EudrAdministration",
+    component: () => import("../views/admin/eudr/EudrAdministration.vue"),
+    meta: {
+      title: "EUDR Administration",
+      requiresAuth: true,
+      roles: ["SYSTEM_ADMIN"],
+      description: "System-wide EUDR administration and oversight",
+      icon: "mdi-shield-crown",
+    },
+  },
+  {
+    path: "/admin/eudr/data-verification",
+    name: "DataVerification",
+    component: () => import("../views/admin/eudr/DataVerification.vue"),
+    meta: {
+      title: "Data Verification",
+      requiresAuth: true,
+      roles: ["FARMER", "EXPORTER", "AGGREGATOR", "PROCESSOR", "IMPORTER", "SYSTEM_ADMIN"],
+      description: "Verify and validate EUDR compliance data",
+      icon: "mdi-database-check",
+    },
+  },
   {
     path: "/",
     name: "Landing",
@@ -75,6 +351,15 @@ const routes = [
     meta: {
       title: "AgriBackup - company",
       metaDescription: "Farmers & Buyers Connection platform",
+    },
+  },
+  {
+    path: "/what-is-eudr",
+    name: "EUDRInfo",
+    component: () => import("../views/EUDRInfo.vue"),
+    meta: {
+      title: "What is EUDR? - AgriBackup",
+      metaDescription: "Learn about the EU Deforestation Regulation and how AgriBackup helps you comply",
     },
   },
   {
@@ -111,6 +396,15 @@ const routes = [
     component: () => import("../views/auth/SignUp.vue"),
   },
   {
+    path: "/role-selection",
+    name: "RoleSelection",
+    component: () => import("../views/auth/RoleSelection.vue"),
+    meta: {
+      title: "Select Role",
+      requiresAuth: true,
+    },
+  },
+  {
     path: "/forgot-password",
     name: "ForgotPassword",
     component: () => import("../views/auth/ForgotPassword.vue"),
@@ -118,7 +412,7 @@ const routes = [
   {
     path: "/produces/:farmerId",
     name: "Produces",
-    component: () => import("../views/Produces.vue"),
+    component: () => import("../views/farm.vue"),
   },
   {
     path: "/add-produce",
@@ -128,7 +422,7 @@ const routes = [
   {
     path: "/my-farm/:farmerId",
     name: "MyFarm",
-    component: () => import("../views/Produces.vue"),
+    component: () => import("../views/farm.vue"),
   },
   {
     path: "/listings",
@@ -269,6 +563,11 @@ const routes = [
     name: "ExporterProfile",
     component: () => import("../views/exporter/ExporterProfile.vue"),
   },
+  {
+    path: "/exporter/supply-chain",
+    name: "SupplyChainManagement",
+    component: () => import("../views/exporter/SupplyChainManagement.vue"),
+  },
   // {
   //   path: '/confirm-otp',
   //   name: 'ConfirmOtp',
@@ -405,6 +704,17 @@ const routes = [
     path: "*",
     name: "NotFound",
     component: () => import("../views/errors/Error404.vue"),
+  },
+  {
+    path: "/settings",
+    name: "Settings",
+    component: () => import("../views/Settings.vue"),
+    meta: {
+      title: "Settings",
+      requiresAuth: true,
+      description: "User settings and preferences",
+      icon: "mdi-cog",
+    },
   },
 ];
 

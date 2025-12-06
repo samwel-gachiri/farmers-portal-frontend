@@ -152,7 +152,6 @@ export default {
     formatDateTime(dt) { if (!dt) return ''; return new Date(dt).toLocaleString(); },
     async updateRouteStatus() {
       // Mock route status update
-      // console.log(`Updating route ${this.route.routeId} status to ${this.routeStatus}`);
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 500));
       this.route.status = this.routeStatus;
@@ -161,7 +160,6 @@ export default {
     },
     async updateStopStatus(stop) {
       // Mock stop status update
-      // console.log(`Updating stop ${stop.stopId} status to ${this.stopStatus[stop.stopId]}`);
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 500));
       // Update the stop status in the route data

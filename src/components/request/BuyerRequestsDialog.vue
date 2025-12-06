@@ -152,7 +152,6 @@ export default {
     //     });
     //     this.buyerProducts = response.data.data || [];
     //   } catch (error) {
-    //     console.error('Error fetching buyer products:', error.message);
     //   }
     // },
 

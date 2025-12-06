@@ -338,7 +338,6 @@ export default {
         ]);
         this.calculateMetrics();
       } catch (error) {
-        // console.error('Error loading dashboard data:', error);
         this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
       } finally {
         this.loading = false;
@@ -346,35 +345,23 @@ export default {
     },
 
     async loadMyZones() {
-      try {
-        const response = await axios.get('/api/admin-service/zones/my-zones');
-        if (response.data.success) {
-          this.myZones = response.data.data;
-        }
-      } catch (error) {
-        // console.error('Error loading zones:', error);
+      const response = await axios.get('/api/admin-service/zones/my-zones');
+      if (response.data.success) {
+        this.myZones = response.data.data;
       }
     },
 
     async loadFarmers() {
-      try {
-        const response = await axios.get('/api/admin-service/farmers');
-        if (response.data.success) {
-          this.farmers = response.data.data;
-        }
-      } catch (error) {
-        // console.error('Error loading farmers:', error);
+      const response = await axios.get('/api/admin-service/farmers');
+      if (response.data.success) {
+        this.farmers = response.data.data;
       }
     },
 
     async loadZoneSupervisors() {
-      try {
-        const response = await axios.get('/api/admin-service/zone-supervisors');
-        if (response.data.success) {
-          this.zoneSupervisors = response.data.data;
-        }
-      } catch (error) {
-        // console.error('Error loading zone supervisors:', error);
+      const response = await axios.get('/api/admin-service/zone-supervisors');
+      if (response.data.success) {
+        this.zoneSupervisors = response.data.data;
       }
     },
 
@@ -464,7 +451,6 @@ export default {
           await this.loadMyZones();
         }
       } catch (error) {
-        // console.error('Error creating zone:', error);
         this.showMessage({ type: 'error', text: 'Failed to create zone' });
       } finally {
         this.creatingZone = false;
@@ -473,7 +459,6 @@ export default {
 
     onZoneSelected(zone) {
       this.selectedZone = zone;
-      // console.log('Zone selected:', zone);
     },
 
     async onZoneCreated(zone) {

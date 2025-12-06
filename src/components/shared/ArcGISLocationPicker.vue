@@ -247,7 +247,6 @@ export default {
           });
         }
       } catch (error) {
-        // console.error('Geocoding error:', error);
         this.$emit('show-message', {
           type: 'error',
           text: 'Failed to search location. Please try again.',
@@ -278,7 +277,6 @@ export default {
           this.gettingLocation = false;
         },
         (error) => {
-          // console.error('Geolocation error:', error);
           let message = 'Failed to get current location.';
 
           // eslint-disable-next-line default-case

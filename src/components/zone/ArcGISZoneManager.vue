@@ -523,7 +523,6 @@ export default {
           this.displayOptimalRoute(response.data.data);
         }
       } catch (error) {
-        // console.error('Error calculating optimal route:', error);
         this.$emit('show-message', { type: 'error', text: 'Failed to calculate optimal route' });
       } finally {
         this.loading = false;
@@ -644,7 +643,6 @@ export default {
           this.mapMode = 'view';
         }
       } catch (error) {
-        // console.error('Error creating zone:', error);
         this.$emit('show-message', { type: 'error', text: 'Failed to create zone' });
       } finally {
         this.loading = false;
@@ -667,7 +665,6 @@ export default {
           this.$emit('show-message', { type: 'success', text: 'Zone comments updated' });
         }
       } catch (error) {
-        // console.error('Error updating zone:', error);
         this.$emit('show-message', { type: 'error', text: 'Failed to update zone' });
       } finally {
         this.loading = false;
@@ -697,7 +694,6 @@ export default {
           this.selectedZone = null;
         }
       } catch (error) {
-        // console.error('Error deleting zone:', error);
         this.$emit('show-message', { type: 'error', text: 'Failed to delete zone' });
       } finally {
         this.loading = false;

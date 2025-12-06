@@ -107,7 +107,7 @@
 <script>
 import axios from 'axios';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime.js';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import pluralize from 'pluralize';
 import Default from '@/components/layout/Default.vue';
 import NumberInput from '@/components/shared/NumberInput.vue';

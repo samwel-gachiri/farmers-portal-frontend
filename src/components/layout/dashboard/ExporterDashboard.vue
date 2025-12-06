@@ -548,7 +548,6 @@ export default {
             this.loadHarvestPredictions(),
           ]);
         } catch (fallbackError) {
-          // console.error('Error loading dashboard data:', fallbackError);
           this.showMessage({ type: 'error', text: 'Failed to load dashboard data' });
         }
       } finally {
@@ -593,8 +592,6 @@ export default {
             status: 'HARVEST_PLANNED',
           },
         ];
-      } catch (e) {
-        // console.error('Error loading harvest predictions', e);
       } finally {
         this.loadingHarvests = false;
       }
@@ -609,7 +606,6 @@ export default {
           this.analytics = response.data.data;
         }
       } catch (error) {
-        // console.error('Error loading analytics:', error);
         this.showMessage({ type: 'error', text: 'Failed to load analytics data' });
       }
     },
@@ -623,7 +619,6 @@ export default {
           this.zones = response.data.data;
         }
       } catch (error) {
-        // console.error('Error loading zones:', error);
         if (error.response && error.response.status === 403) {
           this.showMessage({ type: 'error', text: 'Access denied loading zones.' });
         }
@@ -639,7 +634,6 @@ export default {
           this.farmers = response.data.data;
         }
       } catch (error) {
-        // console.error('Error loading farmers:', error);
         if (error.response && error.response.status === 403) {
           this.showMessage({ type: 'error', text: 'Access denied loading farmers.' });
         }
@@ -698,7 +692,6 @@ export default {
           throw new Error(response.data.message || 'Failed to refresh data');
         }
       } catch (error) {
-        // console.error('Error refreshing dashboard data:', error);
         this.showMessage({ type: 'error', text: 'Failed to refresh dashboard data' });
         // Fallback to individual data loading
         await this.loadDashboardData();
@@ -729,7 +722,6 @@ export default {
           }
         }
       } catch (error) {
-        // console.error('Error checking data integrity:', error);
         this.showMessage({ type: 'error', text: 'Failed to check data integrity' });
       }
     },
@@ -749,7 +741,6 @@ export default {
           await this.refreshData();
         }
       } catch (error) {
-        // console.error('Error fixing data integrity issues:', error);
         this.showMessage({ type: 'error', text: 'Failed to fix data integrity issues' });
       }
     },
@@ -786,7 +777,6 @@ export default {
           await this.loadAnalytics();
         }
       } catch (error) {
-        // console.error('Error creating system admin:', error);
         if (error.response && error.response.status === 403) {
           this.showMessage({ type: 'error', text: 'Access denied creating System Admin' });
         } else {
@@ -815,7 +805,6 @@ export default {
           await this.loadAnalytics();
         }
       } catch (error) {
-        // console.error('Error creating zone supervisor:', error);
         if (error.response && error.response.status === 403) {
           this.showMessage({ type: 'error', text: 'Access denied creating Zone Supervisor' });
         } else {
@@ -828,7 +817,6 @@ export default {
 
     // eslint-disable-next-line no-unused-vars
     onZoneSelected(zone) {
-      // console.log('Zone selected:', zone);
     },
 
     async onZoneCreated(zone) {

@@ -230,13 +230,11 @@ export default {
       // // updateNotificationDisplay();
       // this.stompClient.subscribe('/topic/messages', (message) => {
       //   // showMessage(JSON.parse(message.body).content);
-      //   console.log('pub msg received');
       //   this.$toast.success(JSON.parse(message.body).content, 'public msg');
       // });
 
       // this.stompClient.subscribe('/user/topic/private-messages', (message) => {
       //   // showMessage(JSON.parse(message.body).content);
-      //   console.log('priv msg received');
       //   this.$toast.success(JSON.parse(message.body).content, 'private msg');
       // });
 

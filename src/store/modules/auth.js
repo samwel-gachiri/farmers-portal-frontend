@@ -171,11 +171,7 @@ const actions = {
     }
   },
   signOut: async ({ commit }) => {
-    try {
-      await signOut(auth);
-    } catch (err) {
-      // console.error('Error during sign out:', err);
-    }
+    await signOut(auth);
     commit('clearAuthentication');
   },
   signUp: async (context, params) => {
@@ -340,7 +336,6 @@ const actions = {
     };
     await axios.post('/customer/otp/validate', params)
       .then((response) => {
-        // console.log({ response });
         if (response.data.data) {
           const user = JSON.parse(localStorage.getItem('tempUser'));
           context.commit('setUserAuthenticated', user);

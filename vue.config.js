@@ -9,6 +9,9 @@ module.exports = {
     'apexcharts',
     '@stomp/stompjs',
     'marked',
+    'markdown-it',
+    'ethers',
+    '@noble/curves',
   ],
   devServer: {
     proxy: process.env.VUE_APP_API_BASE_URL,
@@ -19,7 +22,7 @@ module.exports = {
         {
           test: /\.mjs$/,
           include: /node_modules/,
-          type: 'javascript/auto', // Required for .mjs files
+          type: 'javascript/auto',
         },
       ],
     },
@@ -29,13 +32,13 @@ module.exports = {
     ],
   },
   chainWebpack: (config) => {
-    // Alternative way to handle .mjs (if the above doesn't work)
+    // Handle .mjs files properly
     config.module
       .rule('mjs')
       .test(/\.mjs$/)
-      .type('javascript/auto')
       .include.add(/node_modules/)
-      .end();
+      .end()
+      .type('javascript/auto');
   },
   pwa: {
     themeColor: manifestJSON.theme_color,

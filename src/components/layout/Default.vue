@@ -39,7 +39,11 @@
 
       <div class="bar-right">
         <v-btn icon class="mr-1" v-if="isMobile" @click="openSearch"><v-icon>mdi-magnify</v-icon></v-btn>
+        <!-- <hedera-wallet-connect class="mr-2" /> -->
         <notification-bell class="mr-1" />
+        <!-- <v-btn icon class="mr-1" @click="$router.push({ name: 'Settings' })" title="Settings">
+          <v-icon>mdi-cog</v-icon>
+        </v-btn> -->
         <div v-if="!isAuthenticated()" class="ml-2">
           <v-btn to="/signin" rounded class="btn-glass-outline">
             <span class="mr-1">Login</span>
@@ -85,6 +89,7 @@ import AiAssistant from '@/components/ai/AiAssistant.vue';
 // Import the new BottomNav component
 import BottomNav from '@/components/layout/partials/BottomNav.vue';
 import FeedbackDialog from '@/components/shared/FeedbackDialog.vue';
+// import HederaWalletConnect from '@/components/shared/HederaWalletConnect.vue';
 
 export default {
   name: 'FuturisticLayout',
@@ -96,6 +101,7 @@ export default {
     AiAssistant,
     BottomNav,
     FeedbackDialog,
+    // HederaWalletConnect,
   },
   data: () => ({
     drawer: false,
