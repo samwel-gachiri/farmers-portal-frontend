@@ -1615,7 +1615,7 @@ export default {
           this.certificateStep = 4; // Show error
         }
       } catch (error) {
-        console.error('Failed to issue certificate:', error);
+        this.$toast.error('Failed to issue certificate:', error.message);
         const errorData = error.response?.data;
         this.certificateError = errorData?.message || 'Failed to issue certificate. Please try again.';
 
@@ -1656,7 +1656,7 @@ export default {
           }, 1000);
         }
       } catch (error) {
-        console.error('Failed to create Hedera account:', error);
+        this.$toast.error('Failed to create Hedera account:', error.message);
         const errorMessage = error.response?.data?.message || 'Failed to create Hedera account';
         this.showSnackbar(errorMessage, 'error');
       } finally {
