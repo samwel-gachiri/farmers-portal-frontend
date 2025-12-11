@@ -134,20 +134,32 @@
           >
             <v-card-title class="d-flex align-center">
               <v-icon
-                :color="getStatusColor(certificate.eudrComplianceStatus)"
+                :color="getStatusColor(certificate.certificateStatus || certificate.eudrComplianceStatus)"
                 left
                 size="32"
               >
-                {{ getStatusIcon(certificate.eudrComplianceStatus) }}
+                {{ getStatusIcon(certificate.certificateStatus || certificate.eudrComplianceStatus) }}
               </v-icon>
-              <span class="text-subtitle-1">{{ certificate.shipmentNumber }}</span>
+              <div class="d-flex flex-column">
+                <v-chip
+                  x-small
+                  :color="certificate.certificateType === 'WORKFLOW' ? 'primary' : 'grey'"
+                  text-color="white"
+                  class="mb-1"
+                >
+                  {{ certificate.certificateType === 'WORKFLOW' ? 'Workflow Certificate' : 'Legacy Batch' }}
+                </v-chip>
+                <span class="text-subtitle-1">
+                  {{ certificate.certificateType === 'WORKFLOW' ? certificate.workflowName : certificate.shipmentNumber }}
+                </span>
+              </div>
               <v-spacer></v-spacer>
               <v-chip
-                :color="getStatusColor(certificate.eudrComplianceStatus)"
+                :color="getStatusColor(certificate.certificateStatus || certificate.eudrComplianceStatus)"
                 text-color="white"
                 small
               >
-                {{ certificate.eudrComplianceStatus }}
+                {{ certificate.certificateStatus || certificate.eudrComplianceStatus }}
               </v-chip>
             </v-card-title>
             <v-divider></v-divider>
@@ -516,8 +528,16 @@ export default {
         'CANCELLED',
       ],
       complianceStatusOptions: [
-        'PENDING',
+        'NOT_CREATED',
+        'PENDING_VERIFICATION',
         'COMPLIANT',
+        'IN_TRANSIT',
+        'TRANSFERRED_TO_IMPORTER',
+        'CUSTOMS_VERIFIED',
+        'DELIVERED',
+        'FROZEN',
+        'EXPIRED',
+        'PENDING',
         'NON_COMPLIANT',
         'UNDER_REVIEW',
       ],
@@ -537,16 +557,18 @@ export default {
 
       if (this.filterComplianceStatus) {
         filtered = filtered.filter(
-          (c) => c.eudrComplianceStatus === this.filterComplianceStatus,
+          (c) => (c.certificateStatus === this.filterComplianceStatus || c.eudrComplianceStatus === this.filterComplianceStatus),
         );
       }
 
       if (this.search) {
         const searchLower = this.search.toLowerCase();
         filtered = filtered.filter(
-          (c) => c.shipmentNumber.toLowerCase().includes(searchLower)
-            || c.produceType.toLowerCase().includes(searchLower)
-            || c.originCountry.toLowerCase().includes(searchLower),
+          (c) => (c.shipmentNumber && c.shipmentNumber.toLowerCase().includes(searchLower))
+            || (c.workflowName && c.workflowName.toLowerCase().includes(searchLower))
+            || (c.produceType && c.produceType.toLowerCase().includes(searchLower))
+            || (c.originCountry && c.originCountry.toLowerCase().includes(searchLower))
+            || (c.exporterCompanyName && c.exporterCompanyName.toLowerCase().includes(searchLower)),
         );
       }
 
@@ -557,7 +579,7 @@ export default {
     },
     validCertificates() {
       return this.certificates.filter(
-        (c) => c.eudrComplianceStatus === 'COMPLIANT',
+        (c) => c.eudrComplianceStatus === 'COMPLIANT' || c.certificateStatus === 'COMPLIANT',
       ).length;
     },
     transferredCertificates() {
@@ -648,7 +670,15 @@ export default {
         COMPLIANT: 'success',
         NON_COMPLIANT: 'error',
         PENDING: 'warning',
+        PENDING_VERIFICATION: 'warning',
         UNDER_REVIEW: 'info',
+        NOT_CREATED: 'grey',
+        IN_TRANSIT: 'info',
+        TRANSFERRED_TO_IMPORTER: 'purple',
+        CUSTOMS_VERIFIED: 'teal',
+        DELIVERED: 'success',
+        FROZEN: 'error',
+        EXPIRED: 'grey darken-2',
       };
       return colors[status] || 'grey';
     },
@@ -657,7 +687,15 @@ export default {
         COMPLIANT: 'mdi-check-circle',
         NON_COMPLIANT: 'mdi-alert-circle',
         PENDING: 'mdi-clock-outline',
+        PENDING_VERIFICATION: 'mdi-clock-alert-outline',
         UNDER_REVIEW: 'mdi-magnify',
+        NOT_CREATED: 'mdi-file-document-outline',
+        IN_TRANSIT: 'mdi-truck-delivery',
+        TRANSFERRED_TO_IMPORTER: 'mdi-swap-horizontal',
+        CUSTOMS_VERIFIED: 'mdi-shield-check',
+        DELIVERED: 'mdi-package-variant-closed',
+        FROZEN: 'mdi-snowflake-alert',
+        EXPIRED: 'mdi-clock-remove',
       };
       return icons[status] || 'mdi-help-circle';
     },

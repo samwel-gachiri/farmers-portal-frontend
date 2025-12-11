@@ -4,7 +4,7 @@
       <v-container fluid class="tw-pt-3 fill-height">
         <v-row no-gutters class="fill-height">
           <!-- Left Side: Brand & Testimonial -->
-          <v-col cols="12" md="5" lg="4" class="brand-column d-none d-md-flex flex-column justify-space-between pa-10 white--text">
+          <v-col cols="12" md="6" lg="4" class="brand-column d-none d-md-flex flex-column justify-space-between pa-10 white--text">
             <!-- Background Image/Gradient -->
             <div class="brand-bg"></div>
 
@@ -47,7 +47,7 @@
           </v-col>
 
           <!-- Right Side: Form -->
-          <v-col cols="12" md="7" lg="8" class="form-column white">
+          <v-col cols="12" md="6" lg="8" class="form-column white">
             <div class="form-container">
               <!-- Header -->
               <div class="text-center mb-8">
