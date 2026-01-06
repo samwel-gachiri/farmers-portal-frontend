@@ -31,6 +31,18 @@ const ifNotAuthenticated = (_to, _from, next) => {
 // };
 
 const routes = [
+  // === PUBLIC VERIFICATION ROUTE (No Auth Required) ===
+  {
+    path: "/verify/:batchCode",
+    name: "ConsumerVerification",
+    component: () => import("../views/public/ConsumerVerification.vue"),
+    meta: {
+      title: "Product Verification | AgriBackup",
+      requiresAuth: false,
+      public: true,
+      description: "Verify product authenticity and view supply chain journey",
+    },
+  },
   {
     path: "/documentation",
     name: "Documentation",
@@ -74,6 +86,31 @@ const routes = [
       roles: ["FARMER"],
       description: "View analytics and insights for harvests and yields",
       icon: "mdi-chart-areaspline",
+    },
+  },
+  // === AGGREGATOR ROUTES ===
+  {
+    path: "/aggregator/dashboard",
+    name: "AggregatorDashboard",
+    component: () => import("../views/aggregator/AggregatorDashboard.vue"),
+    meta: {
+      title: "Aggregator Dashboard | AgriBackup",
+      requiresAuth: true,
+      roles: ["AGGREGATOR", "SYSTEM_ADMIN"],
+      description: "Manage farmer collections and consolidated batches",
+      icon: "mdi-warehouse",
+    },
+  },
+  {
+    path: "/aggregator/collection",
+    name: "AggregatorCollection",
+    component: () => import("../views/aggregator/AggregatorCollection.vue"),
+    meta: {
+      title: "Record Collection | AgriBackup",
+      requiresAuth: true,
+      roles: ["AGGREGATOR", "SYSTEM_ADMIN"],
+      description: "Collect produce from farmers with QR scanning",
+      icon: "mdi-basket",
     },
   },
   // === FARMER EUDR ROUTES ===
@@ -268,7 +305,19 @@ const routes = [
     },
   },
 
-  // === ADMIN MANAGEMENT ROUTES ===
+  // === EXPORTER EUDR DASHBOARD ===
+  {
+    path: "/exporter/eudr-dashboard",
+    name: "EudrDashboard",
+    component: () => import("../views/exporter/EudrDashboard.vue"),
+    meta: {
+      title: "EUDR Compliance Dashboard",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN"],
+      description: "EUDR compliance overview and quick actions",
+      icon: "mdi-view-dashboard",
+    },
+  },
   {
     path: "/exporter/supply-chain-workflow",
     name: "SupplyChainWorkflow",
@@ -291,6 +340,18 @@ const routes = [
       roles: ["EXPORTER", "SYSTEM_ADMIN"],
       description: "Manage aggregators in the supply chain",
       icon: "mdi-truck-delivery",
+    },
+  },
+  {
+    path: "/admin/suppliers",
+    name: "SupplierManagement",
+    component: () => import("../views/admin/SupplierManagement.vue"),
+    meta: {
+      title: "Supplier Management",
+      requiresAuth: true,
+      roles: ["EXPORTER", "SYSTEM_ADMIN"],
+      description: "Manage suppliers and supply chain partners",
+      icon: "mdi-account-group",
     },
   },
   {

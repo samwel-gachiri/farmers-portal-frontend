@@ -9,7 +9,7 @@
               <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Aggregator Dashboard</h1>
               <p class="tw-text-gray-600 tw-mt-1">Manage farmer collections and consolidated batches</p>
             </div>
-            <v-btn color="primary" large @click="showCollectionDialog = true">
+            <v-btn color="primary" large :to="{ name: 'AggregatorCollection' }">
               <v-icon left>mdi-plus</v-icon>
               New Collection
             </v-btn>
@@ -92,6 +92,10 @@
               <v-tab>
                 <v-icon left>mdi-chart-bar</v-icon>
                 Analytics
+              </v-tab>
+              <v-tab>
+                <v-icon left>mdi-account-group</v-icon>
+                Sub-Suppliers
               </v-tab>
             </v-tabs>
 
@@ -291,6 +295,77 @@
                   </v-row>
                 </v-card-text>
               </v-tab-item>
+
+              <!-- Sub-Suppliers Tab -->
+              <v-tab-item>
+                <v-card-text>
+                  <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                    <h3 class="tw-text-lg tw-font-semibold tw-text-gray-800">Your Sub-Suppliers</h3>
+                    <v-btn color="success" @click="showSubSupplierInviteDialog = true">
+                      <v-icon left>mdi-email-plus</v-icon>
+                      Invite Sub-Supplier
+                    </v-btn>
+                  </div>
+
+                  <v-data-table
+                    :headers="subSupplierHeaders"
+                    :items="subSuppliers"
+                    :loading="loadingSubSuppliers"
+                    class="elevation-1"
+                  >
+                    <template v-slot:item.supplierName="{ item }">
+                      <div class="tw-flex tw-items-center tw-gap-3 tw-py-2">
+                        <v-avatar color="teal" size="40">
+                          <v-icon color="white">mdi-account-tie</v-icon>
+                        </v-avatar>
+                        <div>
+                          <div class="tw-font-semibold">{{ item.supplierName }}</div>
+                          <v-chip x-small color="teal" text-color="white">{{ formatSupplierType(item.supplierType) }}</v-chip>
+                        </div>
+                      </div>
+                    </template>
+
+                    <template v-slot:item.contact="{ item }">
+                      <div class="tw-text-sm">{{ item.email || 'N/A' }}</div>
+                    </template>
+
+                    <template v-slot:item.verificationStatus="{ item }">
+                      <v-chip small :color="getVerificationColor(item.verificationStatus)">
+                        {{ item.verificationStatus }}
+                      </v-chip>
+                    </template>
+
+                    <template v-slot:no-data>
+                      <div class="tw-text-center tw-py-8">
+                        <v-icon size="64" color="grey lighten-1">mdi-account-group</v-icon>
+                        <p class="tw-text-gray-500 tw-mt-2">No sub-suppliers yet</p>
+                        <v-btn color="success" class="tw-mt-4" @click="showSubSupplierInviteDialog = true">
+                          Invite Your First Sub-Supplier
+                        </v-btn>
+                      </div>
+                    </template>
+                  </v-data-table>
+
+                  <!-- Pending Invites Section -->
+                  <div class="tw-mt-6" v-if="pendingInvites.length > 0">
+                    <h4 class="tw-font-semibold tw-text-gray-700 tw-mb-3">Pending Invitations</h4>
+                    <v-list dense>
+                      <v-list-item v-for="invite in pendingInvites" :key="invite.id">
+                        <v-list-item-avatar>
+                          <v-icon color="orange">mdi-email-outline</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                          <v-list-item-title>{{ invite.email }}</v-list-item-title>
+                          <v-list-item-subtitle>{{ invite.supplierName || 'Pending acceptance' }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-btn x-small color="primary" @click="resendInvite(invite.id)">Resend</v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </v-list>
+                  </div>
+                </v-card-text>
+              </v-tab-item>
             </v-tabs-items>
           </v-card>
         </v-col>
@@ -298,18 +373,113 @@
     </v-container>
 
     <!-- Collection Event Dialog -->
-    <v-dialog v-model="showCollectionDialog" max-width="800" persistent>
+    <v-dialog v-model="showCollectionDialog" max-width="850" persistent>
       <v-card>
-        <v-card-title class="tw-bg-primary tw-text-white">
+        <v-card-title class="tw-bg-primary tw-text-white tw-flex tw-items-center">
           <v-icon color="white" class="tw-mr-2">mdi-package-variant</v-icon>
-          Record New Collection
+          <span>{{ quickMode ? 'Quick Collection Mode' : 'Record New Collection' }}</span>
+          <v-chip v-if="quickMode && sessionCount > 0" small color="white" class="tw-ml-3" text-color="primary">
+            {{ sessionCount }} collected
+          </v-chip>
           <v-spacer></v-spacer>
-          <v-btn icon dark @click="showCollectionDialog = false">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon dark v-bind="attrs" v-on="on" @click="quickMode = !quickMode">
+                <v-icon>{{ quickMode ? 'mdi-lightning-bolt' : 'mdi-lightning-bolt-outline' }}</v-icon>
+              </v-btn>
+            </template>
+            <span>{{ quickMode ? 'Disable Quick Mode' : 'Enable Quick Mode (stay open after submit)' }}</span>
+          </v-tooltip>
+          <v-btn icon dark @click="closeCollectionDialog">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
 
         <v-card-text class="tw-pt-4">
+          <!-- Farmer Search Section -->
+          <v-card outlined class="tw-mb-4 tw-bg-blue-50">
+            <v-card-text class="tw-py-3">
+              <div class="tw-flex tw-items-center tw-justify-between">
+                <div class="tw-flex tw-items-center tw-gap-3">
+                  <v-icon color="blue">mdi-account-search</v-icon>
+                  <span class="tw-font-medium tw-text-blue-800">Find Farmer</span>
+                </div>
+                <v-btn small color="purple" dark @click="openQrScanner">
+                  <v-icon left small>mdi-qrcode-scan</v-icon>
+                  Scan QR
+                </v-btn>
+              </div>
+              <v-row class="tw-mt-2">
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="farmerSearch"
+                    label="Search by phone number or name"
+                    outlined
+                    dense
+                    hide-details
+                    prepend-inner-icon="mdi-magnify"
+                    :loading="searchingFarmer"
+                    @input="debouncedFarmerSearch"
+                    clearable
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="selectedFarmer"
+                    :items="farmerSearchResults"
+                    item-text="displayName"
+                    item-value="id"
+                    label="Select farmer"
+                    outlined
+                    dense
+                    hide-details
+                    return-object
+                    :disabled="farmerSearchResults.length === 0"
+                    @change="onFarmerSelected"
+                  >
+                    <template v-slot:item="{ item }">
+                      <div class="tw-py-1">
+                        <div class="tw-font-medium">{{ item.name }}</div>
+                        <div class="tw-text-sm tw-text-gray-500">{{ item.phoneNumber }}</div>
+                      </div>
+                    </template>
+                  </v-select>
+                </v-col>
+              </v-row>
+
+              <!-- Production Unit Selection (appears after farmer selected) -->
+              <v-row v-if="selectedFarmer && farmerProductionUnits.length > 0" class="tw-mt-2">
+                <v-col cols="12">
+                  <v-select
+                    v-model="newCollection.productionUnitId"
+                    :items="farmerProductionUnits"
+                    item-text="displayName"
+                    item-value="id"
+                    label="Select Production Unit (where produce was grown)"
+                    outlined
+                    dense
+                    hide-details
+                    prepend-inner-icon="mdi-map-marker"
+                    :loading="loadingProductionUnits"
+                  >
+                    <template v-slot:item="{ item }">
+                      <div class="tw-py-1">
+                        <div class="tw-font-medium">{{ item.unitName }}</div>
+                        <div class="tw-text-xs tw-text-gray-500">
+                          {{ item.areaHectares }} ha • {{ item.administrativeRegion || 'Unknown region' }}
+                        </div>
+                      </div>
+                    </template>
+                  </v-select>
+                </v-col>
+              </v-row>
+              <v-alert v-if="selectedFarmer && farmerProductionUnits.length === 0 && !loadingProductionUnits"
+                       type="warning" dense class="tw-mt-2">
+                This farmer has no production units registered.
+              </v-alert>
+            </v-card-text>
+          </v-card>
+
           <v-form ref="collectionForm" v-model="collectionFormValid">
             <v-row>
               <v-col cols="12" md="6">
@@ -319,6 +489,8 @@
                   outlined
                   dense
                   :rules="[rules.required]"
+                  :readonly="!!selectedFarmer"
+                  :background-color="selectedFarmer ? 'green lighten-5' : ''"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -328,16 +500,19 @@
                   outlined
                   dense
                   :rules="[rules.required]"
+                  :readonly="!!selectedFarmer"
+                  :background-color="selectedFarmer ? 'green lighten-5' : ''"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field
+                <v-combobox
                   v-model="newCollection.produceType"
                   label="Produce Type *"
+                  :items="commonProduceTypes"
                   outlined
                   dense
                   :rules="[rules.required]"
-                ></v-text-field>
+                ></v-combobox>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
@@ -347,9 +522,10 @@
                   outlined
                   dense
                   :rules="[rules.required, rules.positive]"
+                  ref="quantityField"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="4">
                 <v-text-field
                   v-model="newCollection.collectionDate"
                   label="Collection Date *"
@@ -359,56 +535,115 @@
                   :rules="[rules.required]"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" md="6">
-                <v-select
-                  v-model="newCollection.qualityGrade"
-                  label="Quality Grade *"
-                  :items="['A', 'B', 'C']"
-                  outlined
-                  dense
-                  :rules="[rules.required]"
-                ></v-select>
+              <v-col cols="12" md="4">
+                <v-btn-toggle v-model="newCollection.qualityGrade" mandatory class="tw-w-full">
+                  <v-btn value="A" color="green" class="tw-flex-1" :outlined="newCollection.qualityGrade !== 'A'">
+                    <v-icon left small>mdi-star</v-icon> A
+                  </v-btn>
+                  <v-btn value="B" color="blue" class="tw-flex-1" :outlined="newCollection.qualityGrade !== 'B'">
+                    <v-icon left small>mdi-star-half-full</v-icon> B
+                  </v-btn>
+                  <v-btn value="C" color="orange" class="tw-flex-1" :outlined="newCollection.qualityGrade !== 'C'">
+                    <v-icon left small>mdi-star-outline</v-icon> C
+                  </v-btn>
+                </v-btn-toggle>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="4">
                 <v-text-field
                   v-model.number="newCollection.pricePerKg"
-                  label="Price per kg *"
+                  label="Price/kg"
                   type="number"
                   step="0.01"
                   outlined
                   dense
-                  :rules="[rules.required, rules.positive]"
+                  prefix="KES"
                 ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  :value="calculateTotal"
-                  label="Total Payment"
-                  outlined
-                  dense
-                  readonly
-                  prefix="$"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-textarea
-                  v-model="newCollection.notes"
-                  label="Notes"
-                  outlined
-                  dense
-                  rows="3"
-                ></v-textarea>
               </v-col>
             </v-row>
+
+            <!-- Quick total display -->
+            <v-alert v-if="calculateTotal > 0" type="info" dense class="tw-mb-3">
+              <div class="tw-flex tw-justify-between tw-items-center">
+                <span>Total Payment:</span>
+                <span class="tw-font-bold tw-text-lg">KES {{ formatNumber(calculateTotal) }}</span>
+              </div>
+            </v-alert>
+          </v-form>
+        </v-card-text>
+
+        <v-card-actions class="tw-px-6 tw-pb-4">
+          <v-chip v-if="quickMode" small color="amber" text-color="black">
+            <v-icon left small>mdi-lightning-bolt</v-icon>
+            Quick Mode ON
+          </v-chip>
+          <v-spacer></v-spacer>
+          <v-btn text @click="closeCollectionDialog">{{ quickMode ? 'Done' : 'Cancel' }}</v-btn>
+          <v-btn color="primary" :loading="submitting" @click="submitCollection">
+            <v-icon left>mdi-check</v-icon>
+            {{ quickMode ? 'Save & Next' : 'Record Collection' }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Sub-Supplier Invite Dialog -->
+    <v-dialog v-model="showSubSupplierInviteDialog" max-width="500" persistent>
+      <v-card>
+        <v-card-title class="tw-bg-success tw-text-white">
+          <v-icon color="white" class="tw-mr-2">mdi-email-plus</v-icon>
+          Invite Sub-Supplier
+        </v-card-title>
+
+        <v-card-text class="tw-pt-4">
+          <v-alert type="info" dense class="tw-mb-4">
+            Invite a supplier to join your network as a sub-supplier. They'll receive an email with a registration link.
+          </v-alert>
+
+          <v-form ref="subSupplierInviteForm" v-model="subSupplierInviteFormValid">
+            <v-text-field
+              v-model="subSupplierInvite.email"
+              label="Email *"
+              type="email"
+              outlined
+              dense
+              prepend-inner-icon="mdi-email"
+              :rules="[rules.required, v => /.+@.+\..+/.test(v) || 'Valid email required']"
+            ></v-text-field>
+
+            <v-text-field
+              v-model="subSupplierInvite.supplierName"
+              label="Supplier/Business Name"
+              outlined
+              dense
+              prepend-inner-icon="mdi-domain"
+            ></v-text-field>
+
+            <v-select
+              v-model="subSupplierInvite.supplierType"
+              label="Supplier Type"
+              :items="supplierTypes"
+              outlined
+              dense
+              prepend-inner-icon="mdi-tag"
+            ></v-select>
+
+            <v-textarea
+              v-model="subSupplierInvite.message"
+              label="Personal Message (Optional)"
+              outlined
+              dense
+              rows="3"
+              placeholder="Add a note to the invitation..."
+            ></v-textarea>
           </v-form>
         </v-card-text>
 
         <v-card-actions class="tw-px-6 tw-pb-4">
           <v-spacer></v-spacer>
-          <v-btn text @click="showCollectionDialog = false">Cancel</v-btn>
-          <v-btn color="primary" :loading="submitting" @click="submitCollection">
-            <v-icon left>mdi-check</v-icon>
-            Record Collection
+          <v-btn text @click="showSubSupplierInviteDialog = false">Cancel</v-btn>
+          <v-btn color="success" :loading="sendingInvite" @click="sendSubSupplierInvite">
+            <v-icon left>mdi-send</v-icon>
+            Send Invitation
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -441,10 +676,11 @@ export default {
       newCollection: {
         farmerId: '',
         farmerName: '',
+        productionUnitId: null,
         produceType: '',
         quantityKg: null,
         collectionDate: new Date().toISOString().split('T')[0],
-        qualityGrade: '',
+        qualityGrade: 'A',
         pricePerKg: null,
         notes: '',
       },
@@ -472,6 +708,59 @@ export default {
         { text: 'Hedera', value: 'hederaVerification' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
+      // Sub-supplier management
+      subSuppliers: [],
+      pendingInvites: [],
+      loadingSubSuppliers: false,
+      showSubSupplierInviteDialog: false,
+      subSupplierInviteFormValid: false,
+      sendingInvite: false,
+      subSupplierInvite: {
+        email: '',
+        supplierName: '',
+        supplierType: '',
+        message: '',
+      },
+      subSupplierHeaders: [
+        { text: 'Supplier', value: 'supplierName' },
+        { text: 'Contact', value: 'contact' },
+        { text: 'Country', value: 'countryCode' },
+        { text: 'Status', value: 'verificationStatus' },
+      ],
+      supplierTypes: [
+        { text: 'Farmer', value: 'FARMER' },
+        { text: 'Farmer Group', value: 'FARMER_GROUP' },
+        { text: 'Aggregator', value: 'AGGREGATOR' },
+        { text: 'Cooperative', value: 'COOPERATIVE' },
+        { text: 'Trader', value: 'TRADER' },
+        { text: 'Processor', value: 'PROCESSOR' },
+        { text: 'Warehouse', value: 'WAREHOUSE' },
+      ],
+      // Quick Collection Mode
+      quickMode: false,
+      sessionCount: 0,
+      farmerSearch: '',
+      searchingFarmer: false,
+      farmerSearchResults: [],
+      selectedFarmer: null,
+      searchDebounceTimer: null,
+      commonProduceTypes: [
+        'Coffee Arabica',
+        'Coffee Robusta',
+        'Tea',
+        'Macadamia',
+        'Avocado',
+        'Maize',
+        'Beans',
+        'Sorghum',
+        'Millet',
+        'Cassava',
+      ],
+      // Production Units
+      farmerProductionUnits: [],
+      loadingProductionUnits: false,
+      // QR Scanner
+      showQrScanner: false,
     };
   },
   computed: {
@@ -480,9 +769,9 @@ export default {
     },
     calculateTotal() {
       if (this.newCollection.quantityKg && this.newCollection.pricePerKg) {
-        return (this.newCollection.quantityKg * this.newCollection.pricePerKg).toFixed(2);
+        return this.newCollection.quantityKg * this.newCollection.pricePerKg;
       }
-      return '0.00';
+      return 0;
     },
   },
   mounted() {
@@ -494,6 +783,8 @@ export default {
         this.loadStatistics(),
         this.loadCollectionEvents(),
         this.loadConsolidatedBatches(),
+        this.loadSubSuppliers(),
+        this.loadPendingInvites(),
       ]);
     },
 
@@ -524,21 +815,140 @@ export default {
         const payload = {
           ...this.newCollection,
           aggregatorId: this.aggregatorId,
-          totalPayment: parseFloat(this.calculateTotal),
+          totalPayment: this.calculateTotal,
           paymentStatus: 'PENDING',
         };
 
         await axios.post(`/api/v1/aggregators/${this.aggregatorId}/collection-events`, payload);
 
         this.$toast.success('Collection recorded successfully!');
-        this.showCollectionDialog = false;
-        this.$refs.collectionForm.reset();
+
+        if (this.quickMode) {
+          // Quick mode: stay open, reset form for next farmer
+          this.sessionCount += 1;
+          this.resetCollectionForm();
+          // Focus on quantity field for speed
+          this.$nextTick(() => {
+            if (this.$refs.quantityField) {
+              this.$refs.quantityField.focus();
+            }
+          });
+        } else {
+          // Normal mode: close dialog
+          this.showCollectionDialog = false;
+          this.$refs.collectionForm.reset();
+        }
+
         await this.loadData();
       } catch (error) {
         this.$toast.error(`Failed to record collection: ${error.response?.data?.message || error.message}`);
       } finally {
         this.submitting = false;
       }
+    },
+
+    resetCollectionForm() {
+      this.newCollection = {
+        farmerId: '',
+        farmerName: '',
+        productionUnitId: null,
+        produceType: this.newCollection.produceType, // Keep produce type
+        quantityKg: null,
+        collectionDate: new Date().toISOString().split('T')[0],
+        qualityGrade: this.newCollection.qualityGrade || 'A', // Keep quality grade
+        pricePerKg: this.newCollection.pricePerKg, // Keep price
+        notes: '',
+      };
+      this.selectedFarmer = null;
+      this.farmerSearch = '';
+      this.farmerSearchResults = [];
+      this.farmerProductionUnits = [];
+    },
+
+    closeCollectionDialog() {
+      this.showCollectionDialog = false;
+      this.sessionCount = 0;
+      this.quickMode = false;
+      this.resetCollectionForm();
+    },
+
+    debouncedFarmerSearch() {
+      clearTimeout(this.searchDebounceTimer);
+      this.searchDebounceTimer = setTimeout(() => {
+        this.searchFarmers();
+      }, 300);
+    },
+
+    async searchFarmers() {
+      if (!this.farmerSearch || this.farmerSearch.length < 2) {
+        this.farmerSearchResults = [];
+        return;
+      }
+
+      this.searchingFarmer = true;
+      try {
+        // Search farmers by phone or name using correct API
+        const response = await axios.get('/api/farmers/search', {
+          params: {
+            phone: this.farmerSearch,
+            name: this.farmerSearch,
+          },
+        });
+
+        this.farmerSearchResults = (response.data || []).map((farmer) => ({
+          id: farmer.farmerId || farmer.id,
+          name: farmer.fullName || farmer.name || 'Unknown',
+          phoneNumber: farmer.phoneNumber || 'N/A',
+          displayName: `${farmer.fullName || farmer.name || 'Unknown'} (${farmer.phoneNumber || 'No phone'})`,
+        }));
+      } catch (error) {
+        // console.error('Farmer search error:', error);
+        this.farmerSearchResults = [];
+      } finally {
+        this.searchingFarmer = false;
+      }
+    },
+
+    async onFarmerSelected(farmer) {
+      if (farmer) {
+        this.newCollection.farmerId = farmer.id;
+        this.newCollection.farmerName = farmer.name;
+        // Load production units for this farmer
+        await this.loadFarmerProductionUnits(farmer.id);
+      }
+    },
+
+    async loadFarmerProductionUnits(farmerId) {
+      this.loadingProductionUnits = true;
+      this.farmerProductionUnits = [];
+      try {
+        const response = await axios.get(`/api/production-units/farmer/${farmerId}`);
+        const units = response.data?.data || response.data || [];
+        this.farmerProductionUnits = units.map((unit) => ({
+          ...unit,
+          displayName: `${unit.unitName} (${unit.areaHectares || 0} ha)`,
+        }));
+      } catch (error) {
+        // console.error('Error loading production units:', error);
+        this.farmerProductionUnits = [];
+      } finally {
+        this.loadingProductionUnits = false;
+      }
+    },
+
+    openQrScanner() {
+      // For now, show an alert - QR scanning requires camera access
+      // In production, integrate with a QR scanning library like vue-qrcode-reader
+      this.$toast.info('QR Scanner coming soon! For now, search by phone number.');
+      // TODO: Implement QR scanning with vue-qrcode-reader or similar
+      // this.showQrScanner = true;
+    },
+
+    onQrCodeScanned(decodedString) {
+      // Expected format: farmer ID or phone number
+      this.farmerSearch = decodedString;
+      this.showQrScanner = false;
+      this.searchFarmers();
     },
 
     async markAsPaid(item) {
@@ -597,6 +1007,102 @@ export default {
         SHIPPED: 'info',
         DELIVERED: 'success',
         CANCELLED: 'error',
+      };
+      return colors[status] || 'grey';
+    },
+
+    // ========== SUB-SUPPLIER METHODS ==========
+
+    async loadSubSuppliers() {
+      this.loadingSubSuppliers = true;
+      try {
+        const supplierId = this.$store.state.user?.supplierId || this.aggregatorId;
+        if (!supplierId) return;
+
+        const response = await axios.get(`/api/v1/supply-chain/suppliers/${supplierId}/sub-suppliers`);
+        this.subSuppliers = response.data?.data || [];
+      } catch (error) {
+        this.$toast.error('Failed to load sub-suppliers:', error.message);
+        this.subSuppliers = [];
+      } finally {
+        this.loadingSubSuppliers = false;
+      }
+    },
+
+    async loadPendingInvites() {
+      try {
+        const supplierId = this.$store.state.user?.supplierId || this.aggregatorId;
+        if (!supplierId) return;
+
+        const response = await axios.get(`/api/v1/supply-chain/suppliers/${supplierId}/invites`);
+        this.pendingInvites = response.data?.data || [];
+      } catch (error) {
+        this.$toast.error('Failed to load pending invites:', error.message);
+        this.pendingInvites = [];
+      }
+    },
+
+    async sendSubSupplierInvite() {
+      if (!this.$refs.subSupplierInviteForm.validate()) return;
+
+      this.sendingInvite = true;
+      try {
+        const supplierId = this.$store.state.user?.supplierId || this.aggregatorId;
+
+        await axios.post('/api/v1/supply-chain/invites', {
+          email: this.subSupplierInvite.email,
+          supplierName: this.subSupplierInvite.supplierName,
+          supplierType: this.subSupplierInvite.supplierType,
+          inviterId: supplierId,
+          inviterType: 'SUPPLIER',
+          message: this.subSupplierInvite.message,
+        });
+
+        if (this.$toast) {
+          this.$toast.success('Invitation sent successfully!');
+        }
+        this.showSubSupplierInviteDialog = false;
+        this.subSupplierInvite = {
+          email: '',
+          supplierName: '',
+          supplierType: '',
+          message: '',
+        };
+        await this.loadPendingInvites();
+      } catch (err) {
+        const msg = err.response?.data?.message || err.message;
+        if (this.$toast) {
+          this.$toast.error(`Failed to send invite: ${msg}`);
+        }
+      } finally {
+        this.sendingInvite = false;
+      }
+    },
+
+    async resendInvite(inviteId) {
+      try {
+        await axios.post(`/api/v1/supply-chain/invites/${inviteId}/resend`);
+        if (this.$toast) {
+          this.$toast.success('Invitation resent!');
+        }
+      } catch (err) {
+        if (this.$toast) {
+          this.$toast.error('Failed to resend invite');
+        }
+      }
+    },
+
+    formatSupplierType(type) {
+      if (!type) return 'N/A';
+      return type.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+    },
+
+    getVerificationColor(status) {
+      const colors = {
+        VERIFIED: 'success',
+        PENDING: 'warning',
+        UNDER_REVIEW: 'info',
+        REJECTED: 'error',
       };
       return colors[status] || 'grey';
     },
