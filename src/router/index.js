@@ -44,6 +44,24 @@ const routes = [
     },
   },
   {
+    path: "/terms",
+    name: "TermsOfService",
+    component: () => import("../views/legal/TermsOfService.vue"),
+    meta: {
+      title: "Terms of Service | AgriBackup",
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/privacy",
+    name: "PrivacyPolicy",
+    component: () => import("../views/legal/PrivacyPolicy.vue"),
+    meta: {
+      title: "Privacy Policy | AgriBackup",
+      requiresAuth: false,
+    },
+  },
+  {
     path: "/documentation",
     name: "Documentation",
     component: () => import("../views/common/Documentation.vue"),

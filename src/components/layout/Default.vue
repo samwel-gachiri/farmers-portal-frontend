@@ -1,13 +1,21 @@
+<!-- eslint-disable no-unused-vars -->
 <template>
   <v-app id="agri-future" class="app-background">
     <!-- Navigation Drawer -->
     <v-navigation-drawer
       class="futuristic-drawer"
       v-model="drawer"
-  app
-  :temporary="isMobile"
+      app
+      :temporary="isMobile"
+      :permanent="!isMobile"
     >
-  <drawer @openFeedback="handleOpenFeedback" />
+      <!-- Key forces re-render when auth state changes, fixing navigation persistence issue -->
+      <drawer
+        ref="drawerComponent"
+        :key="authStateKey"
+        @openFeedback="handleOpenFeedback"
+        @navigation-items-updated="updateNavigationItems"
+      />
     </v-navigation-drawer>
 
     <!-- App Bar -->
@@ -22,28 +30,32 @@
         </v-toolbar-title>
       </div>
 
-      <div class="bar-center" v-if="!isMobile">
-        <v-text-field
-          v-model="quickQuery"
-          class="quick-search"
-          dense
-          rounded
-          solo-inverted
-          hide-details
-          clearable
-          prepend-inner-icon="mdi-magnify"
-          placeholder="Search farmers, listings, orders…"
+      <div class="bar-center" id="global-command-palette" v-if="!isMobile">
+        <command-palette
+          :navigation-items="visibleNavigationItems"
+          placeholder="Search pages or ask AI..."
+          @navigate="handleNavigate"
         />
       </div>
 
       <div class="bar-right">
         <v-btn icon class="mr-1" v-if="isMobile" @click="openSearch"><v-icon>mdi-magnify</v-icon></v-btn>
+
+        <!-- Tour Help Button -->
+        <v-btn icon class="mr-1" id="tour-help-btn" @click="startTour" title="Start Tour">
+          <v-icon>mdi-help-circle-outline</v-icon>
+        </v-btn>
+
         <!-- <hedera-wallet-connect class="mr-2" /> -->
-        <notification-bell class="mr-1" />
+        <div id="header-notification-btn" class="d-inline-block">
+          <notification-bell class="mr-1" />
+        </div>
         <!-- <v-btn icon class="mr-1" @click="$router.push({ name: 'Settings' })" title="Settings">
           <v-icon>mdi-cog</v-icon>
         </v-btn> -->
-        <avatar class="ml-2" ref="avatar" />
+        <div id="header-profile-menu" class="d-inline-block">
+          <avatar class="ml-2" ref="avatar" />
+        </div>
         <div v-if="!isAuthenticated()" class="ml-2">
           <v-btn to="/signin" rounded class="btn-glass-outline">
             <span class="mr-1">Login</span>
@@ -86,9 +98,10 @@ import ScreenIdle from '@/components/shared/ScreenIdle.vue';
 import { isAuthenticated } from '@/utils/roles.js';
 import NotificationBell from '@/components/layout/partials/nav/NotificationBell.vue';
 import AiAssistant from '@/components/ai/AiAssistant.vue';
-// Import the new BottomNav component
 import BottomNav from '@/components/layout/partials/BottomNav.vue';
 import FeedbackDialog from '@/components/shared/FeedbackDialog.vue';
+import CommandPalette from '@/components/shared/CommandPalette.vue';
+import TourService from '@/services/TourService';
 // import HederaWalletConnect from '@/components/shared/HederaWalletConnect.vue';
 
 export default {
@@ -101,22 +114,35 @@ export default {
     AiAssistant,
     BottomNav,
     FeedbackDialog,
+    CommandPalette,
     // HederaWalletConnect,
   },
   data: () => ({
     drawer: false,
     isAppIdle: false,
-    quickQuery: '',
+    visibleNavigationItems: [],
   }),
   computed: {
     ...mapGetters('auth', ['authenticatedUser']),
     // ...mapGetters('farm', ['currentWeather']),
+    // Only treat as mobile for extra-small screens (phones)
+    // Medium screens (sm and above) keep the drawer visible and permanent
     isMobile() {
-      return this.$vuetify.breakpoint.smAndDown;
+      return this.$vuetify.breakpoint.xs;
+    },
+    // Composite key that changes when auth state changes, forcing Drawer to re-mount
+    authStateKey() {
+      const token = this.$store.state.auth.token || '';
+      const role = this.$store.state.auth.role || 'guest';
+      return `${token.slice(-8)}-${role}`;
     },
   },
   methods: {
     isAuthenticated,
+    startTour() {
+      const role = this.$store.getters['auth/role'];
+      TourService.startTour(role);
+    },
     activateAI() {
       this.$refs.assistant.openDialog();
     },
@@ -124,18 +150,36 @@ export default {
       this.drawer = !this.drawer;
     },
     openSearch() {
-      // Placeholder for a future command palette
-      this.$toast.info('Search coming soon');
+      // TODO: Open mobile search dialog
+      this.$toast.info('Use Ctrl+K to search');
     },
     handleOpenFeedback() {
       // Open the feedback dialog
       this.$refs.feedbackDialog.openDialog();
+    },
+    // eslint-disable-next-line no-unused-vars
+    handleNavigate(item) {
+      // Optional: track navigation analytics
+    },
+    updateNavigationItems(items) {
+      this.visibleNavigationItems = items;
     },
   },
   mounted() {
     // Desktop: open drawer in mini, Mobile: keep closed until toggled
     if (!this.isMobile) {
       this.drawer = true;
+    }
+
+    // Check if user has seen the tour
+    if (!TourService.hasSeenTour()) {
+      // Small delay to ensure everything is rendered
+      setTimeout(() => {
+        if (!this.isMobile) {
+          TourService.startTour();
+          TourService.markTourAsSeen();
+        }
+      }, 2000);
     }
   },
   watch: {

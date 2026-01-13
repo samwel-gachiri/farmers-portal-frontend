@@ -589,7 +589,7 @@ export default {
     },
 
     async revertStage() {
-      // eslint-disable-next-line no-restricted-globals
+      // eslint-disable-next-line no-restricted-globals, no-alert
       if (!confirm('Are you sure you want to go back to the previous stage?')) return;
 
       this.reverting = true;

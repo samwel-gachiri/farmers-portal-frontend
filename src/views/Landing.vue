@@ -668,16 +668,30 @@ export default {
   },
   methods: {
     clearViewRole() {
+      // Only clear view role for non-authenticated users (used for portal selection)
       // eslint-disable-next-line sonarjs/no-duplicate-string
-      this.$store.dispatch('auth/setViewRole', '');
+      if (!this.$store.getters['auth/isAuthenticated']) {
+        // eslint-disable-next-line sonarjs/no-duplicate-string
+        this.$store.dispatch('auth/setViewRole', '');
+      }
     },
     handleLogin() {
       this.trackButtonClick('login_navbar', { source: 'navbar' });
+      // If already authenticated, go directly to dashboard without clearing role
+      if (this.$store.getters['auth/isAuthenticated']) {
+        this.$router.push({ name: 'Dashboard' });
+        return;
+      }
       this.clearViewRole();
       this.$router.push({ name: 'SignIn' });
     },
     handleSignup() {
       this.trackButtonClick('create_account_navbar', { source: 'navbar' });
+      // If already authenticated, go to dashboard
+      if (this.$store.getters['auth/isAuthenticated']) {
+        this.$router.push({ name: 'Dashboard' });
+        return;
+      }
       this.clearViewRole();
       this.$router.push({ name: 'SignUp' });
     },
@@ -694,6 +708,11 @@ export default {
         source: 'landing_page',
         section: 'for_buyers',
       });
+      // If already authenticated, go to dashboard
+      if (this.$store.getters['auth/isAuthenticated']) {
+        this.$router.push({ name: 'Dashboard' });
+        return;
+      }
       // eslint-disable-next-line sonarjs/no-duplicate-string
       this.$store.dispatch('auth/setViewRole', 'buyer');
       this.$router.push({ name: 'SignIn' });
@@ -704,6 +723,11 @@ export default {
         source: 'landing_page',
         section: 'for_exporters',
       });
+      // If already authenticated, go to dashboard
+      if (this.$store.getters['auth/isAuthenticated']) {
+        this.$router.push({ name: 'Dashboard' });
+        return;
+      }
       this.$store.dispatch('auth/setViewRole', 'exporter');
       this.$router.push({ name: 'SignIn' });
     },
@@ -713,6 +737,11 @@ export default {
         source: 'landing_page',
         section: 'for_farmers',
       });
+      // If already authenticated, go to dashboard
+      if (this.$store.getters['auth/isAuthenticated']) {
+        this.$router.push({ name: 'Dashboard' });
+        return;
+      }
       this.$store.dispatch('auth/setViewRole', 'farmer');
       this.$router.push({ name: 'SignIn' });
     },

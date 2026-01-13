@@ -57,7 +57,7 @@ export default {
         {
           icon: 'mdi-sprout',
           text: 'My Produces',
-          short: 'Farm',
+          short: 'Inventory',
           link: { name: 'MyFarm', params: { farmerId: getCurrentUserId() } },
           roles: ['FARMER'],
         },

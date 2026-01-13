@@ -2,6 +2,7 @@
   <nav class="professional-navbar" :class="{ 'navbar-scrolled': isScrolled, 'mobile-menu-open': isMenuOpen, 'landing-page': isLandingPage }">
     <div class="navbar-container">
       <div class="navbar-brand" @click="goHome">
+        <!-- <img src="@/assets/images/logo.png" alt="AgriBackup Logo" class="brand-logo" /> -->
         <span class="brand-name">AgriBackup</span>
       </div>
 
@@ -141,11 +142,21 @@ export default {
     },
     handleLogin() {
       this.trackButtonClick('login_navbar', { source: 'navbar' });
+      // If already authenticated, go directly to dashboard without clearing role
+      if (this.$store.getters['auth/isAuthenticated']) {
+        this.$router.push({ name: 'Dashboard' });
+        return;
+      }
       this.$store.dispatch('auth/setViewRole', '');
       this.$router.push({ name: 'SignIn' });
     },
     handleSignup() {
       this.trackButtonClick('create_account_navbar', { source: 'navbar' });
+      // If already authenticated, go to dashboard
+      if (this.$store.getters['auth/isAuthenticated']) {
+        this.$router.push({ name: 'Dashboard' });
+        return;
+      }
       this.$store.dispatch('auth/setViewRole', '');
       this.$router.push({ name: 'SignUp' });
     },
@@ -229,6 +240,12 @@ export default {
   width: 100%;
 }
 
+.brand-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
 .brand-name {
   font-size: 26px;
   font-weight: 700;
@@ -246,6 +263,13 @@ export default {
 .professional-navbar.landing-page .brand-name {
   color: #ffffff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Logo Filter for Landing Page (White Mode) */
+.professional-navbar.landing-page:not(.navbar-scrolled):not(.mobile-menu-open) .brand-logo {
+  filter: brightness(0) invert(1);
+  -webkit-filter: brightness(0) invert(1);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
 }
 
 /* Landing page scrolled or menu open: green */

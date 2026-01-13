@@ -1,19 +1,25 @@
 <template>
-  <Default ref="default">
-    <FarmerDashboard v-if="user && getCurrentUserRole() === 'farmer'"/>
-    <AggregatorDashboard v-if="user && getCurrentUserRole() === 'aggregator'"/>
-    <BuyerDashboard v-if="user && getCurrentUserRole() === 'buyer'"/>
-    <AdminDashboard v-if="user && getCurrentUserRole() === 'admin'"/>
-    <ExporterDashboardLayout v-if="user && getCurrentUserRole() === 'exporter'"/>
-    <SystemAdminDashboard v-if="user && getCurrentUserRole() === 'system_admin'"/>
-    <ZoneSupervisorDashboard v-if="user && getCurrentUserRole() === 'zone_supervisor'"/>
-    <ARDashboardRedirect v-if="user && getCurrentUserRole() === 'authorised_representative'"/>
-    <SupplierDashboard v-if="user && ['supplier', 'processor', 'trader', 'warehouse'].includes(getCurrentUserRole())"/>
+  <Default ref="default" :key="authKey">
+    <!-- Use computed currentRole for better reactivity -->
+    <FarmerDashboard v-if="user && currentRole === 'farmer'"/>
+    <AggregatorDashboard v-if="user && currentRole === 'aggregator'"/>
+    <BuyerDashboard v-if="user && currentRole === 'buyer'"/>
+    <AdminDashboard v-if="user && currentRole === 'admin'"/>
+    <ExporterDashboardLayout v-if="user && currentRole === 'exporter'"/>
+    <SystemAdminDashboard v-if="user && currentRole === 'system_admin'"/>
+    <ZoneSupervisorDashboard v-if="user && currentRole === 'zone_supervisor'"/>
+    <ARDashboardRedirect v-if="user && currentRole === 'authorised_representative'"/>
+    <SupplierDashboard v-if="user && ['supplier', 'processor', 'trader', 'warehouse'].includes(currentRole)"/>
+
+    <!-- Loading state while auth loads -->
+    <div v-if="!user && !isLoading" class="tw-flex tw-items-center tw-justify-center tw-h-64">
+      <v-progress-circular indeterminate color="green" />
+    </div>
   </Default>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import Default from '@/components/layout/Default.vue';
 import FarmerDashboard from '@/components/layout/dashboard/FarmerDashboard.vue';
 import AggregatorDashboard from '@/views/aggregator/AggregatorDashboard.vue';
@@ -24,7 +30,6 @@ import ExporterDashboardLayout from '@/views/exporter/EudrDashboard.vue';
 import SystemAdminDashboard from '@/components/layout/dashboard/SystemAdminDashboard.vue';
 import ZoneSupervisorDashboard from '@/components/layout/dashboard/ZoneSupervisorDashboard.vue';
 import SupplierDashboard from '@/views/supplier/SupplierDashboard.vue';
-import { getCurrentUserRole } from '@/utils/roles.js';
 // eslint-disable-next-line import/no-unresolved
 
 // AR Dashboard Redirect Component - redirects to dedicated AR Dashboard
@@ -39,7 +44,6 @@ const ARDashboardRedirect = {
 };
 
 export default {
-  methods: { getCurrentUserRole },
   components: {
     BuyerDashboard,
     AdminDashboard,
@@ -52,16 +56,34 @@ export default {
     SupplierDashboard,
     Default,
   },
+  data: () => ({
+    isLoading: true,
+  }),
   computed: {
     ...mapState({
       user: (state) => state.auth.user,
     }),
+    ...mapGetters('auth', ['role']),
+    // Use computed property for role to ensure Vue reactivity
+    currentRole() {
+      return this.role || this.$store.getters['auth/role'] || '';
+    },
+    // Key to force re-render when auth changes
+    authKey() {
+      return `dashboard-${this.currentRole}-${this.user ? this.user.id || 'user' : 'none'}`;
+    },
   },
   mounted() {
-    if (this.user == null || this.user === '') {
-      this.$router.push({ name: 'Landing' });
-      this.$refs.default.$refs.avatar.logout();
-    }
+    // Give a brief moment for auth state to hydrate
+    this.$nextTick(() => {
+      this.isLoading = false;
+      if (this.user == null || this.user === '') {
+        this.$router.push({ name: 'Landing' });
+        if (this.$refs.default?.$refs?.avatar?.logout) {
+          this.$refs.default.$refs.avatar.logout();
+        }
+      }
+    });
   },
 };
 </script>

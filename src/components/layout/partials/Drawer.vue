@@ -78,9 +78,12 @@
 
     <!-- Footer Section -->
     <div class="drawer-footer">
-      <div class="footer-info">
-        <v-icon size="16" color="#94a3b8">mdi-shield-check</v-icon>
-        <span>EUDR Compliant</span>
+      <div
+        class="footer-info tw-cursor-pointer hover:tw-text-green-600 tw-transition-colors"
+        @click="startTour"
+      >
+        <v-icon size="16" color="#94a3b8">mdi-help-circle-outline</v-icon>
+        <span>System Tour</span>
       </div>
     </div>
   </div>
@@ -95,6 +98,7 @@ import Avatar from '@/components/layout/partials/nav/Avatar.vue';
 // eslint-disable-next-line no-unused-vars
 import RoleIndicator from '@/components/shared/RoleIndicator.vue';
 import { getCurrentUserId } from '@/utils/roles';
+import TourService from '@/services/TourService';
 
 export default {
   name: 'AppDrawer',
@@ -103,7 +107,16 @@ export default {
     LogoTitle, Avatar, RoleIndicator, getCurrentUserId,
   },
   data: () => ({
-    expandedSections: ['EUDR Compliance', 'Supply Chain'],
+    // All sections expanded by default
+    expandedSections: [
+      'Farmer Portal',
+      'Aggregator Portal',
+      'Transfers',
+      'EUDR Compliance',
+      'AR Portal',
+      'Supply Chain',
+      'Administration',
+    ],
     navigationItems: [
       // ==========================================
       // COMMON: Dashboard for all roles
@@ -136,7 +149,7 @@ export default {
           },
           {
             icon: 'mdi-barn',
-            text: 'My Produces',
+            text: 'My produces',
             get link() {
               const id = getCurrentUserId();
               return id ? { name: 'MyFarm', params: { farmerId: id } } : { name: 'MyFarm' };
@@ -460,6 +473,35 @@ export default {
       // Use the store getter for consistency with BottomNav and roles.js
       return this.$store.getters['auth/role'] || null;
     },
+    /**
+     * Flattened list of all visible navigation items for CommandPalette search.
+     * Includes parent section name for context.
+     */
+    visibleNavigationItems() {
+      const items = [];
+      this.navigationItems.forEach((item) => {
+        if (!this.canView(item)) return;
+
+        if (item.isSection && item.children) {
+          // Add children with parent section context
+          item.children.forEach((child) => {
+            if (this.canView(child)) {
+              items.push({
+                ...child,
+                parentSection: item.text,
+              });
+            }
+          });
+        } else if (item.link) {
+          // Add standalone items
+          items.push({
+            ...item,
+            parentSection: null,
+          });
+        }
+      });
+      return items;
+    },
   },
   methods: {
     canView(item) {
@@ -496,6 +538,26 @@ export default {
     isSectionExpanded(sectionName) {
       return this.expandedSections.includes(sectionName);
     },
+    emitNavigationItems() {
+      this.$emit('navigation-items-updated', this.visibleNavigationItems);
+    },
+    startTour() {
+      TourService.startTour(this.userRole);
+    },
+  },
+  watch: {
+    visibleNavigationItems: {
+      immediate: true,
+      handler() {
+        this.emitNavigationItems();
+      },
+    },
+  },
+  mounted() {
+    // Emit navigation items after mount
+    this.$nextTick(() => {
+      this.emitNavigationItems();
+    });
   },
 };
 </script>
@@ -508,13 +570,13 @@ export default {
   height: 100vh;
   width: 280px;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border-right: 1px solid #e2e8f0;
+  border-right: 12px solid #fafafa;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
 }
 
-/* Header Section */
+/* Header Section - Compact */
 .drawer-header {
-  padding: 24px 20px 20px;
+  padding: 12px 16px 10px 16px;
   border-bottom: 1px solid #e2e8f0;
   background: white;
 }
@@ -522,8 +584,8 @@ export default {
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .brand-logo {
@@ -542,16 +604,16 @@ export default {
   box-shadow: 0 2px 4px rgba(46, 125, 50, 0.2);
 }
 
-/* User Card */
+/* User Card - Compact */
 .user-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: 8px;
+  padding: 10px;
   background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid #e2e8f0;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .user-avatar {
@@ -568,9 +630,10 @@ export default {
 .user-details {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
   flex: 1;
   min-width: 0;
+  margin-right: 5px;
 }
 
 .user-name {
@@ -604,26 +667,26 @@ export default {
 .nav-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 12px;
+  padding: 8px 16px 8px 8px;
 }
 
-/* Navigation Groups */
+/* Navigation Groups - Compact */
 .nav-group {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .nav-group-header {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 6px 10px;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #334155;
 }
@@ -646,12 +709,12 @@ export default {
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  margin-bottom: 4px;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 2px;
+  border-radius: 6px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #475569;
   transition: all 0.2s ease;
@@ -677,17 +740,17 @@ export default {
   flex: 1;
 }
 
-/* Navigation Children */
+/* Navigation Children - Compact */
 .nav-children {
-  padding: 8px 0 8px 16px;
+  padding: 4px 0 4px 12px;
   border-left: 2px solid #e2e8f0;
-  margin-left: 28px;
-  margin-top: 4px;
+  margin-left: 20px;
+  margin-top: 2px;
 }
 
 .nav-child {
-  font-size: 13px;
-  padding: 8px 12px;
+  font-size: 12px;
+  padding: 5px 8px;
 }
 
 /* Expand Animation */

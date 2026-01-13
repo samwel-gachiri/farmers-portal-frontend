@@ -21,21 +21,40 @@
     <div class="footer-main">
       <div class="tw-max-w-6xl tw-mx-auto tw-px-6 tw-py-16">
         <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-12">
-          <!-- Brand Column -->
+          <!-- Brand Column with NAP -->
           <div class="tw-col-span-1 md:tw-col-span-1">
-            <h3 class="tw-text-2xl tw-font-bold tw-text-white tw-mb-4">AgriBackup</h3>
-            <p class="tw-text-gray-400 tw-text-sm tw-leading-relaxed tw-mb-6">
+            <!-- Logo Adjustment -->
+            <div class="tw-mb-6">
+               <img src="@/assets/images/logo.png" alt="AgriBackup" class="tw-h-12 tw-w-auto tw-brightness-0 tw-invert" />
+            </div>
+
+            <p class="tw-text-gray-300 tw-text-sm tw-leading-relaxed tw-mb-6">
               EUDR-compliant supply chain platform powered by Hedera DLT. Full transparency from farm to export.
             </p>
+
+            <div class="tw-mb-6">
+              <p class="tw-text-gray-300 tw-text-sm tw-flex tw-items-center tw-gap-2 tw-mb-2">
+                <v-icon size="16" color="grey lighten-1">mdi-map-marker</v-icon>
+                <span>Nairobi, Kenya</span>
+              </p>
+              <p class="tw-text-gray-300 tw-text-sm tw-flex tw-items-center tw-gap-2">
+                <v-icon size="16" color="grey lighten-1">mdi-phone</v-icon>
+                <span>+254 705 644 805</span>
+              </p>
+            </div>
+
             <div class="tw-flex tw-gap-4">
-              <a href="#" class="tw-w-10 tw-h-10 tw-bg-gray-800 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-transition hover:tw-bg-green-600" aria-label="LinkedIn">
+              <a href="https://linkedin.com/company/agribackup" target="_blank" class="social-icon-btn" aria-label="LinkedIn">
                 <v-icon size="20" color="white">mdi-linkedin</v-icon>
               </a>
-              <a href="#" class="tw-w-10 tw-h-10 tw-bg-gray-800 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-transition hover:tw-bg-green-600" aria-label="Twitter">
-                <v-icon size="20" color="white">mdi-twitter</v-icon>
+              <a href="https://www.facebook.com/share/16vmX16zcx/" target="_blank" class="social-icon-btn" aria-label="Facebook">
+                <v-icon size="20" color="white">mdi-facebook</v-icon>
               </a>
-              <a href="#" class="tw-w-10 tw-h-10 tw-bg-gray-800 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-transition hover:tw-bg-green-600" aria-label="GitHub">
-                <v-icon size="20" color="white">mdi-github</v-icon>
+              <a href="https://www.instagram.com/agribackup/" target="_blank" class="social-icon-btn" aria-label="Instagram">
+                <v-icon size="20" color="white">mdi-instagram</v-icon>
+              </a>
+              <a href="https://www.tiktok.com/@agribackup2?_t=ZM-90zFsYG5ZWe&_r=1" target="_blank" class="social-icon-btn" aria-label="TikTok">
+                <v-icon size="20" color="white">mdi-music-note</v-icon>
               </a>
             </div>
           </div>
@@ -44,10 +63,10 @@
           <div>
             <h4 class="tw-text-sm tw-font-semibold tw-text-white tw-uppercase tw-tracking-wider tw-mb-4">Platform</h4>
             <ul class="tw-space-y-3">
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">For Farmers</a></li>
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">For Suppliers</a></li>
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">For Exporters</a></li>
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">Pricing</a></li>
+              <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">For Farmers</a></li>
+              <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">For Suppliers</a></li>
+              <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">For Exporters</a></li>
+              <!-- <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">Pricing</a></li> -->
             </ul>
           </div>
 
@@ -55,10 +74,12 @@
           <div>
             <h4 class="tw-text-sm tw-font-semibold tw-text-white tw-uppercase tw-tracking-wider tw-mb-4">Resources</h4>
             <ul class="tw-space-y-3">
-              <li><router-link to="/eudr-info" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">What is EUDR?</router-link></li>
-              <li><router-link to="/documentation" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">Documentation</router-link></li>
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">API Reference</a></li>
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">Blog</a></li>
+              <li><router-link to="/what-is-eudr" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">What is EUDR?</router-link></li>
+              <li><router-link to="/documentation" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">Documentation</router-link></li>
+              <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">Status Page</a></li>
+              <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">Changelog</a></li>
+              <!-- <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">API Reference</a></li> -->
+              <!-- <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">Blog</a></li> -->
             </ul>
           </div>
 
@@ -66,10 +87,10 @@
           <div>
             <h4 class="tw-text-sm tw-font-semibold tw-text-white tw-uppercase tw-tracking-wider tw-mb-4">Company</h4>
             <ul class="tw-space-y-3">
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">About Us</a></li>
-              <li><router-link to="/contact" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">Contact</router-link></li>
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">Privacy Policy</a></li>
-              <li><a href="#" class="tw-text-gray-400 hover:tw-text-white tw-transition tw-text-sm">Terms of Service</a></li>
+              <!-- <li><a href="#" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">About Us</a></li> -->
+              <li><router-link to="/contact" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">Contact</router-link></li>
+              <li><router-link to="/privacy" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">Privacy Policy</router-link></li>
+              <li><router-link to="/terms" class="tw-text-gray-300 hover:tw-text-white tw-transition tw-text-sm">Terms of Service</router-link></li>
             </ul>
           </div>
         </div>
@@ -123,5 +144,23 @@ export default {
 
 .footer-bottom {
   background: #0f172a;
+}
+
+.social-icon-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.social-icon-btn:hover {
+  background: #166534;
+  border-color: #166534;
+  transform: translateY(-2px);
 }
 </style>
